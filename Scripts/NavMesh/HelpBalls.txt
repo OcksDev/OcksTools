@@ -1,0 +1,17 @@
+
+
+
+Requires:
+NavMeshPlus (https://github.com/h8man/NavMeshPlus)
+
+
+
+Word around the block is that the navmesh wont find any sources (aka NavMeshModifier), and testing has shown a probable cause is the need to use things called NavigationModifier.
+
+
+
+Help:
+https://www.youtube.com/watch?v=SDfEytEjb5o
+
+
+

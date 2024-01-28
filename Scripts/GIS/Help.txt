@@ -1,0 +1,13 @@
+
+
+
+So this is the GIS (General Inventory System)
+Some of the code is black magic, but I designed it in a way to be somewhat easy to use and to be very easy to modify
+
+To best understand it, view the files of GISLol and GISSlot. 
+(GISLol has the class GISItem within the same file)
+
+
+Requirements:
+	TextMeshPro
+	A Will To Live (Optional)

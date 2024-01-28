@@ -1,0 +1,20 @@
+-Test Dialog-
+</> <Name=Boner> <Speed=69.69, -, 1> <TitleColor=150,0,0,255> <TextColor=150,0,0,255> <BgColor=150,0,0,255>
+</> Hait eating time!
+</> 
+</> <Speed=69.69, -, 1> <Voiceline=0> <Name=Gamer> 
+</> I guess I will join
+</> 
+</> <Name=Boner> <Voiceline=1>
+</> Yay!
+</> 
+</> <Name=Gamer> <Speed=69.69, -, 1> <Voiceline=2>
+</> banana
+</> 
+</> <Name=Boner> <Voiceline=3>
+</> Smell my greasy balls <End=0>
+</> 
+</> <Name=Boner> <Voiceline=3>
+</> You will literally never see this text in game because the previous dialog line escapes the sequence
+</> <End>
+

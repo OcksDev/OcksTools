@@ -1,0 +1,17 @@
+-Test Dialog-
+</> <Name=Boner> <Speed=69.69, -, 1> <TitleColor=150,0,0,255> <TextColor=150,0,0,255> <BgColor=150,0,0,255>
+</> Want to eat hair with me?
+</> 
+</> <Speed=69.69, -, 1> <Voiceline=0> <Name=Gamer> 
+</> No 
+</> 
+</> <Name=Boner> <Voiceline=1>
+</> Why not?
+</> 
+</> <Name=Gamer> <Speed=69.69, -, 1> <Voiceline=2>
+</> Yes
+</> 
+</> <Name=Boner> <Voiceline=3>
+</> How about the player chooses?
+</> <Choose=0>
+
