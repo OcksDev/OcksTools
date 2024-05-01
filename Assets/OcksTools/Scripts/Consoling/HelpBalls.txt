@@ -1,0 +1,32 @@
+
+
+Requires:
+TextMeshPro
+
+
+Setup:
+Should just be good to go off the bat, make sure object referecnes are all set up.
+You can use the setup machine in OcksTools>Console>Setup
+    But this will not fully set it up, and you need to use the fix mentioned below
+
+
+Console refusing to accept any inputs and not showing any logged messages?
+    More than likely the InputField gameobject isnt calling the correct function
+        To fix this find the object, reference the ConsoleHandler object, in the script ConsoleLol select Submit()
+        This should fix the problem.
+        If it doesn't then idk man your on your own on this one
+
+
+
+
+
+
+
+
+
+Benefits:
+   Easy game control and allows players to fuck with shit
+   Gives access to players to view a console, and gives access to Console.Instance.ConsoleLog();
+      Allows players/devs to get further insight in the innerworkings of the game.
+      Similar functionality to Debug.Log(); but can easily be viewed in builds and during runtime
+          also allows for easily customizable messaging

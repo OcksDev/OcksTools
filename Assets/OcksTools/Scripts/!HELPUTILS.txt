@@ -1,0 +1,31 @@
+
+
+this isnt really important for most people, just some helpful stuff for me as a dev
+
+
+
+
+Organization:
+Main Systems go in the scripts folder
+	Misc classes go in the Misc folder
+	Things of many classes or parts have their own folder
+		Only would go in Misc if not a "main" system
+
+
+
+NavMesh 2D Help:
+https://www.youtube.com/watch?v=SDfEytEjb5o
+
+jsfxr sound thing:
+https://sfxr.me
+
+Build to standalone .exe file:
+https://www.youtube.com/watch?v=h6BcN6Z289w
+
+How to export to a package:
+  Assets>Export Package...
+
+
+
+
+

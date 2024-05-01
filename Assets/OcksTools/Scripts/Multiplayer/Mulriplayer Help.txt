@@ -1,0 +1,22 @@
+
+Installs:
+- Relay
+- Netcode for Gameobjects
+- whatever this is: https://github.com/Unity-Technologies/com.unity.multiplayer.samples.coop.git?path=/Packages/com.unity.multiplayer.samples.coop#main 
+	- The package also has a reference here incase the download link changes: https://docs-multiplayer.unity3d.com/netcode/current/components/networktransform#clientnetworktransform
+
+
+Steps:
+1. Install packages shown above
+   1a. If the package needs to be downloaded via githup and you have never done so before, you will need to install GitBash and restart unity/computer to download packages from Git.
+2. Setup the project with a project ID (Edit > Project Settings) for the unity dashboard inside a company who has Relay
+   2a. If you don't have a unity company with Relay, make one. (I set one up a while ago so I don't remember the step by step process to make one)  
+3. Enable relay within the unity dashboard (make sure its the right project)
+that should be it, unless something changed from when I made this
+
+
+Various Help Videos and Locations:
+https://www.youtube.com/watch?v=3yuBOB3VrCk
+https://www.youtube.com/watch?v=82Lbho7S0OA
+https://www.youtube.com/watch?v=msPNJ2cxWfw
+Unity Discord Server #networking

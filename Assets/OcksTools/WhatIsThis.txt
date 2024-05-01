@@ -1,0 +1,40 @@
+
+
+
+OcksTools is a tools package I created to speed up developement time by creating a bunch of premade systems that most games need.
+The tools package is mostly made for me, Ocks, but anyone is more than welcome to use it.
+If you have any feedback or things I can add/change please submit it to me and I will see what I can do.
+
+
+How To Use?
+I designed OcksTools to be as easy as I could think of to implement. 
+Almost all systems just simply require dragging the class scripts onto gameobjects in a scene and they should work out of the box.
+Of course some systems like the save system require some extra work to make work since I can't predict what you do/don't want to be saved.
+
+Why do I see nine thousand errors when importing this package?
+Some systems like the multiplayer base or the navmesh base require extra packages to be installed on the project to work, and I can not ship OcksTools with them.
+If you do not need said systems, you can simply remove the Multiplayer and/or Navmesh folders and think no more of the errors.
+If you do need the systems, then each of the systems have a file containing all the required dependancies and how to get them.
+
+What is up with the scripts folder and its subfolders?
+So the Scripts folder itself contains some classes like Tags, RandomFunctions, and InputManager, which I consider core systems. Other things such as Multiplayer or GIS may require functions
+or other stuff from the core systems, so its best if you keep those unless you are absolutely sure about removing them.
+The subfolders like GIS, Multiplayer, NavMesh, Consoling, and more all act kinda like addons, each can be removed or added independantly of each other, and you can delete every subfolder of
+OckTools without causing damage to anything else. This gives the package a good bit of modularity, allowing you to select what you do or do not need for your projects.
+
+As of 1.0.5 the package includes:
+- Dialog System
+- Save System
+- Console System
+- Chat System
+- Base Multiplayer Setup
+- General Inventory Systems (GIS)
+- Base NavMesh Setup
+- A lot of random functions
+- Sound System
+- Modified Object Spawning (to allow for passing in data on spawn)
+- Input Manager
+- Custom Tags System (because unity's tags are bad)
+- Some common base classes such as an Entity class
+- A Bunch of Util Windows
+- A Bunch of random scripts for things

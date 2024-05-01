@@ -1,0 +1,354 @@
+
+------------
+   v1.1.0
+- Save System improvements!
+  - HoldingData now is a dictionary of dictionairies, meaning multiple lines of saved data now can be held.
+    - You could do this with the old save system but it was clunky, new version is cleaner
+  - Created new c# events which are called on save/load, so now other classes can safely save/load data easily
+- GIS improvements!
+  - GISContainers now can be toggled into a mode called "Abstract" so they can work like a list of items. (untested)
+  - new class GISItemBar/prefab AbstractDisplay
+    - Works like an item bar similar to Risk Of Rain 2 where items are ordered in a bar
+    - Inspired by Risk Of Rain 2's item system.
+  - new IndexOf method, lets you find the slot index of an item
+  - new AbstractAdd method, lets you add items into an abstract container
+  - GISContainers now can be referenced by name in a dictionary in GISLol
+  - Officially removed support for CanRetainItems boolean in the GIS, it wasn't useful and was causing unneeded complexity
+  - GISContianers now can disable shiftclicking
+  - GISSlots now can have filters applied which determine if you are or are not able to interact with them
+    - Included are three default filters of "TakeOnly", "PlaceOnly", and "AbstractInput"
+  - GISContainers should no longer add duplicate slot references of already existing slots.
+  - Revamped how GISItems are saved/loaded in text, now much more modular and easy to update
+  - Revamped how saving of GISContainers is handled, should now be much more reliable.
+    - Now integrated with the new save event from SaveSystem
+- Entity has some much needed improvements
+  - Damage and Effects now have their own custom classes
+  - Completely reworked effect adding, new combining methods have been created and effects should actually have a timer now
+    - Currently 8 default ways to combine effects
+  - Effects are now in one list instead of being spread across 3.
+  - Damage now contains data for procs, although no code exists to utilize the procs
+  - All health and damage values have been changes from floats to doubles
+- Console Improvements!
+  - new class Console to act as a shorthand for ConsoleLol.Instance, makes life easier as a dev
+    - Also stores write commands so that they can be used even when ConsoleLol.Instance hasn't been assigned yet.
+  - Console now properly moves down to the bottom of the console when entering commands
+  - Console command "data listall" now actually reads from the updated saving/load system
+- Sound System Improvements!
+  - Completely changed how audio sources are handled. Old method was to create a source for each audio clip, new method creates a few audio sources as needed and cycles through them to conserve space. The result is even during scenes where many sounds are playing simultaniously, only the needed amount of sources exist.
+  - These changes also make it so now audio will not clip into itself when played repeatedly, so no more fear of clipping sounds!
+    - If you still want to have clipped sounds when they overlap though, you can use PlaySoundWithClipping()
+- Dialog Improvements!
+  - New "SoundOnType" attribute allows for a sound to be played whenever a new character is displayed in the dialog box
+  - New "Animate" attribute allows for the various texts in the Dialog System to be animated using the new Text Animator
+  - New "Shutdown" attribute is kind of a joke, literally just closes the application
+  - Fixed strange bug where it tried to get the text at index -1
+  - New method to StartDialogFromLine(), lets you go to a specific line of dialog from a specific dialog file (does not work for choose)
+  - Changed more things to use VariableParse()
+  - Fixed "Wait Bug" where attributes immeditately following the Wait attribute were improperly handled.
+  - Fixed bug where you could click outside of the choose window to attempt to reach the next line (would break the dialog box)
+  - Dialog variables should be parsed slightly faster
+    - normal variables are declared like "*fart", but now you can declare variables like "!fart" to instead look up the value in Language File System
+  - Fixed a bug where no argument attributes were not being parsed properly midtext like <End> and <Skip>, previously requiring them to be written like <Skip=1> or something similar
+- Room Generator Improvements!
+  - Completely changed how new rooms are defined, now you make them in the inspector instead of being hardcoded.
+  - Changed room spawner to not rely on the local scale of the spawned object
+- New Text Animator!
+  - Allows for the animating of text in a very cool way, animations can be stacked and mixed
+    - Comes with many example animations: Wave, WaveND, Rainbow, RainbowSnap, Shake, ShakeWhole, Halloween
+- New Object Creation System (core system)
+  - Here to replace the RandomFunctions.SpawnObject()
+  - Creates new optional Object Pooling functionality for all spawnable objects
+  - Currently does not fully replace every bit of old functionality, so old code remains for now. 
+  - Pooling allows for either quicker object spawning or spawning at the same time cost but with extra functionality
+- New Profile Handler
+  - Allows for interaction with Ocks Universal Profile
+- New Tags Refs
+  - A quick script you can slap on any gameobject to create a reference to it using Tags
+  - default values are the name and gameobject of the attached script, can be manually changed to new values
+- New Input Buffer
+  - Allows the buffering of inputs so that they can be checked more leniently
+- New Default Assets!
+  - Reorganized some folders to have different names, the images folder is much more localical now
+  - Created new folder of useful shaders and materials I have made.
+  - Added a few more fonts
+- New Random Functions!
+  - New CharPrepend() allows you to do things like converting 1, 10, 100 into 001, 010, 100.
+  - New MousePosition() allows you to get the mouse position relative to a given camera
+  - New RemoveDuplicates<>() allows you to easily remove any duplicate elements in a list
+- Misc Changes
+  - Renamed Tags "miscrefs" to "refs"
+  - Save System now runs after all other classes
+  - File System now creates the Ocks Universal folder on awake to match other created directories
+  - Multiplayer systems should no longer throw an error on start when failing to connect to the internet
+    - Multiplayer methods like starting or joining a game now also automatically attempt to sign in via the internet when clicked if not currently signed in.
+  - NumToRead should be fixed for values above 1Ce
+    - Also changed the names of things past 1Tg so that they do not match with the stuff prior to 1De
+    - Also made new style for converting numbers into roman numberals
+  - GameVer has been moved from RandomFunctions into FileSystem and slightly changed
+  - New test class called AbstractContainerTester, that follows its namesake and tests abstract containers
+  - Some new test stuff for Object Pooling and the new spawn system
+  - Input Manager no longer crashes when Language File System is not present
+  - Should have removed file loading race condition in Language File System  
+  - RandomFunctions.SpawnObject() is now buried at the bottom of the file and is labled Obselete
+  - Tags now has a singleton, although nothing currently uses it
+  - Got this project onto Github so now people can actually see what I am doing lol
+    - I think?
+------------
+
+------------
+   v1.0.5
+- Random Room Generator! (big feature)
+  - A pretty customizable room/path/dungeon layout generator
+  - I had been trying to make this since v1.0.2, this was my third attempt, and it finally worked.
+- Massive SpawnObject Overhaul
+  - Object parenting should now be much more flexible, giving the option to parent an object while only knowing the OXTLS string ID.
+  - Object parenting now should work over multiplayer so long as both clients have a object with the same ID. (using OXTLS Tags)
+  - Multiplayer functionality with the new changes should be fully imlpemented, although changes are untested.
+- Language File System!
+  - Using new improvements to File System, now there is a way to have a universal text file which holds all of the game text
+  - Console Integration
+  - Input Manager Integration
+  - GIS Integration
+- Massive Dialog Manager Updates!
+  - Dialog Interpreter now supports TextMeshPro RichText properly
+    - Previously you could use richtext, but the code would be visable in the dialogs
+    - New "RichText" attribute which lets you toggle on/off the rich text skipping
+  - Dialog Interpreter now allows for mid-text attribute modification (works with custom stuff as well)
+  - You can now add and use variables in Dialogs text as well Dialog Attributes
+  - New Attribute "CanSkip" lets you allow or disallow skipping of dialog messages
+  - New Attribute "Escape" lets you allow or disallow escaping dialog sequences
+  - New Attribute "Skip" forces a skip to happen
+  - New Attribute "Wait" holds dialog progress for x seconds
+  - New Attribute "Jump" jumps x characters forward (negative goes backwards lol)
+  - New Attribute "PlaySound" lets you play a specified sound effect
+  - Ending attributes have been moved into ApplyAttribute() just like every other attribute
+    - Should still work the same except now <End> will do something different
+- General Item System (GIS) big changes
+  - Completely changed how base item data is stored, now uses a new class called GISItem_Data
+  - New container methods to get data about the contents
+  - Modified how creating a new GISItem object works, so now it should be easier to spawn in items
+- File System and Save System upgrades!
+  - Created base functionality to interact with AppData folders
+  - Created base Ocks folder which will be used for my games going forward
+  - Save System now can save to a Game Data folder using File System
+  - Save System has new functions and variables for disk file interactions
+  - Reworked how saving and loading data works within the Save System to set data into a temporary dictionary then save the dictionary to a file.
+  - New StringToBoolArray and BoolArrayToString methods, mostly used for data compression/transportation
+  - New Console functionality with the "data" command
+- Base Clipboard Interactivity Handler (OXClip) now exists 
+- New NumToRead Functionality
+  - Now can display numbers in long form (5,420,295,609.34), not very efficiently tho
+  - Exposed some variables (Dot, Dash, and Comma) which lets you customize which characters are used
+    - Can be useful for unique number systems or other languages, idk
+- MOAR MISC CHANGES
+  - New RandomFunctions stuff
+    - TimeToRead (similar to NumToRead, except for time instead)
+  - Added new Console commands like "clear"
+  - Tags now has a thing called "miscrefs", mostly will be utilized in future versions.
+  - Edited some stuff in StringToDictionary and DictionaryToString to make them slightly less bad
+    - I did this multiple times
+  - Added more help documentation as well as updates to existing documentation
+  - Dialog Manager ApplyAttribute() now returns a bool for successful completeion of the attribute change
+  - Console now displays capitilization from inputs
+    - Console now can perserve capitilization in general.
+  - Console now forces selection on the text input when opened
+  - Entity related scripts have been moved from "Misc" to a new folder called "Entity"
+  - Text From Data now has functionality to switch update functions
+  - Dialog Manager's functions should be layed out in a more nice way
+  - Dialog Tests have been updated to include examples of the new features
+  - Console no longer lets you enter completely blank commands
+  - Slight changes to console appearance and misc tweaks
+  - Rect Utils now overwrites Canvas Scaler if the component already exists
+------------
+
+------------
+   v1.0.4
+- Massive Dialog Interpreter Overhaul
+  - Syntax for dialog attributes has been reworked from the ground up
+  - All tests have been updated to use the new system
+- Game Entity Class (untested)
+  - Health/Shield/related Logic
+  - Hit/Death functions
+  - Basic status effects system
+  - Replaces old Entity script
+- Misc Additions
+  - Multiplayer related code now autmatically spawns a ServerGamer object when the host creates a game
+  - Grappling Hook Test (2D, but can easily be modified to be 3D)
+  - Misc Broken Random Room Generation Code (Still working on it)
+  - Mod() function for modulo operations that go negative
+  - New PointAtPoint() function (old PointAtPoint is now PointAtPoint2D)
+  - New RotateLock() function (rotates from one quaternion towards another, with a max speed input)
+  - Added StringToDictionary() and DictionaryToString() functions inside SaveSystem
+  - SpawnObject now has extra integration with SpawnData, passing a bool called "IsReal" for multiplayer shit
+- Input Manager Updates
+  - Migrated a lot more things to use Input Manager
+  - Fixed keybind loading bug when the amount of keybinds changed
+- Organized all fonts into subfolders with more specific niches
+  - Also added 27 more fonts lol
+- Major GIS improvements!
+  - Added new inputs which can be used
+    - Shift left/right click which moves and stacks the items to the first/last most open positions respectively
+  - System is now much more reliable and robust, with multiple bugs fixed
+  - Items now store their current container as well as all interacted containers
+  - This data is used to prevent basically all item manipulation using the save/loading of containers
+  - Remember to call SaveContents() or LoadTempForAll() when closing a container!
+  - Updated the GIS test scene with two new containers, one which doesn't save, and another using a kind of buggy feature for temp item storage
+  - Re-arraged the GISContainer serialized interface and added a buggy option to not retain items (ie can't ever save items in it, could be useful idk)
+    -  The reason it is kind of buggy is because when it tries to return items on container reset, it will delete items if there is no open room to return them to
+- File System Updates
+  - File System now has coroutines for downloading texture/audio files from the local computer drive
+  - All functions have been slightly reworked to require the full file path as an input instead of the file name
+    - You can just do "DirectoryLol + FileName" for the inputs
+- New Rect Utils!
+  - Added Rect Util for auto sizing the cells for grid layout groups with fixes columns/rows
+    - Added a script in Misc which can do what this Rect Util does
+  - Added Rect Util for auto fitting a child to the parent size, with an input for border amounts
+    - Added a script in Misc which can do what this Rect Util does
+- Misc Changes/Fixes
+  - Fixed some multiplayer functions returning 1 no matter what, which sometimes caused crashes
+  - More commenting lol
+  - Fixed typo in GenerateID()
+  - Changed GetUnixTime() to return long instead of int
+  - Fixed bug in Console when users tried to view backlog of entered commands when none existed
+  - ArrayWrap() now uses new method called Mod()
+  - Console now automatically opens with the text field selected
+  - Fixed bug with multiplayer spawning data in SpawnObject
+  - Cleared up a bunch of random warnings
+------------
+
+------------
+   v1.0.3
+- General Inventory Systems (W.I.P)
+  - The base systems for handling inventory related interfaces
+- A Bunch Of Custom Windows
+  - Test Windows (for testing, learning, or messing around)
+  - Console Utils
+    - Setup (allows for easy setup of anything within the Console folder)
+    - Dialog (easy access to running any dialog/choice menu)
+    - Chat (allows for sending chat messages, multiplayer supported)
+  - Rect Utils
+    - Finally something to auto size the rect anchors of UI elements
+    - Something to auto set and apply a canvas scaler with the correct values
+  - Multiplayer Utils
+    - Idk man some shit for testing multiplayer stuff
+- Created the base system for keybind changing in InputManager
+    - Keybind storage, save/load as well
+    - Keybind changing
+    - Keybind resetting
+- Dialog Machine Changes
+  - Added new option for dialog background color
+  - Added new option for delay between dialog lines
+  - Cleaned up the help document a bit
+  - Cleaned up *some* of the code
+- New Organization (Moved everything into a file called OcksTools)
+- SoundSystem Updates
+  - Added pitchmod to Playsound, allowing you to change the pitch
+  - added RandomPitch to PlaySound at position, because I didnt have it before
+- Tags has some new things
+  - New DefineReference() function, to easily define a reference for an object
+  - New gameobject_dict tag (allowing for the lookup of a gameobject's id)
+- ServerGamer and SpawnObject now share a new bool for realness
+- Shell for Random Room Generation (a planned future feature, currently does not work)
+  - (Old) Random Room Generation (Kinda buggy and laggy, please ignore)
+- Save System Upgrades!
+  - IntToBool and BoolToInt methods
+  - Preset saving/loading of SoundSystem volume settings and Keybinds
+  - Fixed the saving/loading of SaveFiles
+  - Added some helpful comments in the methods
+- Many misc fixes/tweaks
+  - Stability fixes for the Dialog Machine
+  - More Console Tweaks
+  - Added image preset for 2d sprite ui that is also transparent
+  - Fixed SpawnObject to share the generated ID over multiplayer
+  - Gave SpawnData a Type string
+  - RelayMoment now accurately stores the join code for connecting clients
+  - Fixed Spread Functions to be slightly more cooler and to actually return a value
+  - SoundSystem actually uses the correct volume now
+  - Created some more helpful help files
+  - Multiplayer Scene Fixes
+  - Added some helpful code snippets in ServerGamer and RandomFunctions
+  - General Code Organizaion and code comments
+  - Added "WhatIsThis.txt" which provides an overview of the tools package
+  - More lol
+------------
+
+------------
+   v1.0.2
+- Dialog Machine
+- Random Functions
+  - Readable Number Converter (converts huge numbers to readable things like 4SxVt)
+    - Also ability to change the style to scientific notation (1.22E44)
+  - A base function to close the program
+  - A base function to run some code when the program closes (like saving the game)
+  - A thing to get the current Unix time
+  - Spread Functions
+- Created Tags
+  - Extremely powerful and simple to use
+  - SpawnData and SpawnObject now have a dependacy on Tags
+- ChatLog (Found with the Console)
+- Custom Input Manager (basically just for input locking)
+- Entity Script + Related Attributes (W.I.P)
+- Changes to the Console
+  - Added new default command (SetTimeScale)
+  - Changed the visuals again
+  - Added Tests command
+  - Reworked help command
+  - Other misc changes
+- TextFromData (basic script to allow for TextMeshPro texts to display updateable text)
+- Reorganized some stuff
+  - Created "Misc" folder to hold a bunch of misc functions (Main systems stay in scripts folder)
+  - Moved ServerGamer into Multiplayer
+    - Also fixed the name to not be a copy
+- Added Particle Inherits Color from parent function
+- Added Color Shift function with a few color states
+  0: from black to white and bounce
+  1: Rainbow
+  2: Rainbow but funky
+- Removed a bunch of random references to unity netcode
+- Added AutoTextSize (does not work with auto canva scaling)
+- Added Auto Canvas Scaling to the Console scene
+- Fixed some random stuff
+------------
+
+------------
+   v1.0.1
+- Sound System v2
+- Save System
+- Some basic code to transmit main game functions over Multiplayer (ServerGamer)
+- Console tweaks
+  - Made it harder to accidentally enter a command
+  - Changed the UI to look nicer
+  - Some other minor tweaks
+- File Manager (To Manage Files)
+- More Random Functions
+  - Array Wrap
+  - Online Disconnect
+  - Lazy Check
+- Some Sample Assets
+  - A Few Basic Shapes
+  - 21 Fonts
+- NavMesh2d Base
+  - Comes with BuildNavMesh()
+- Added Prefabs for Console, Multiplayer, and Navmesh
+- Split player controller into singleplayer vs mulitplayer
+  - Also made some tweaks to it
+- Changes to the Camera System
+  - Moved to LateUpdate
+  - Added Shake
+  - Added Shove (just change the vector3 ppos)
+    - Added a decent example for some player hurt effects within the camera script
+------------
+
+------------
+   v1.0.0
+- Sound System v1
+- Camera System 2D
+- Some Random Functions
+  - String and List Conversions
+  - Object Spawning
+  - Some rotation based commands like Point() and PointAtPoint()
+  - Distance function
+  - Unique ID generator
+- Multiplayer Base Setup
+- Homemade Console
+------------                                      
