@@ -60,6 +60,8 @@
   - Creates new optional Object Pooling functionality for all spawnable objects
   - Currently does not fully replace every bit of old functionality, so old code remains for now. 
   - Pooling allows for either quicker object spawning or spawning at the same time cost but with extra functionality
+- New Animator that hopefully helps get around unity's inbuilt garbage one
+  - W.I.P
 - New Profile Handler
   - Allows for interaction with Ocks Universal Profile
 - New Tags Refs
