@@ -203,10 +203,9 @@ public class GISItem
     }
     public void StringToItem(string e)
     {
-        var s = RandomFunctions.Instance.StringToList(e, "~|~");
+        var s = Converter.StringToList(e, "~|~");
         ItemIndex = int.Parse(s[0]);
         Amount = int.Parse(s[1]);
-
     }
 
 }

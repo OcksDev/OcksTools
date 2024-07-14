@@ -45,7 +45,7 @@ public class LanguageFileSystem : MonoBehaviour
         var file = $"{f.GameDirectory}\\Lang.txt";
         f.WriteFile(file, "", false);
         var e = f.ReadFile(file);
-        var dic = RandomFunctions.Instance.StringToDictionary(e, Environment.NewLine, ":: ");
+        var dic = Converter.StringToDictionary(e, Environment.NewLine, ":: ");
         if (dic.ContainsKey("Game Version") && dic["Game Version"] != f.GameVer) dic.Clear();
         //where you set the base language file data
         IndexValuePairs.Add("Game Name", "Ocks Tools");
@@ -70,6 +70,6 @@ public class LanguageFileSystem : MonoBehaviour
     }
     public void UpdateTextFile()
     {
-        FileSystem.Instance.WriteFile($"{FileSystem.Instance.GameDirectory}\\Lang.txt", RandomFunctions.Instance.DictionaryToString(IndexValuePairs, Environment.NewLine, ":: "), true);
+        FileSystem.Instance.WriteFile($"{FileSystem.Instance.GameDirectory}\\Lang.txt", Converter.DictionaryToString(IndexValuePairs, Environment.NewLine, ":: "), true);
     }
 }

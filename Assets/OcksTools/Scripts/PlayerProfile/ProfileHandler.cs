@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class ProfileHandler : MonoBehaviour
 {
+    // This is an Experimental Class, mostly used to begin interacting with an idea I had about a universal profile, needs much work
+
+
     // Start is called before the first frame update
     void Start()
     {

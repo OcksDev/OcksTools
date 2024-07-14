@@ -82,14 +82,14 @@ public class SaveSystem : MonoBehaviour
         GetDataFromFile();
 
         var ghghgg = PlayerPrefs.GetString("keybinds", "fuck");
-        list = StringToList(ghghgg);
+        list = Converter.StringToList(ghghgg);
         if (ghghgg != "fuck")
         {
             foreach (var a in list)
             {
                 try
                 {
-                    var sseexx = StringToList(a, "<K>");
+                    var sseexx = Converter.StringToList(a, "<K>");
                     InputManager.gamekeys[sseexx[0]] = InputManager.namekeys[sseexx[1]];
                     x++;
                 }
@@ -138,7 +138,7 @@ public class SaveSystem : MonoBehaviour
         {
             list.Add(a.Key + "<K>" + InputManager.keynames[a.Value]);
         }
-        PlayerPrefs.SetString("keybinds", ListToString(list));
+        PlayerPrefs.SetString("keybinds", Converter.ListToString(list));
         //PlayerPrefs.SetInt("UnitySelectMonitor", index); // sets the monitor that unity uses
 
         if (s != null)
@@ -198,7 +198,7 @@ public class SaveSystem : MonoBehaviour
     {
         var f = FileSystem.Instance;
         f.AssembleFilePaths();
-        f.WriteFile(f.FileLocations[path], DictionaryToString(GetDict(dict), Environment.NewLine, ": "), true);
+        f.WriteFile(f.FileLocations[path], Converter.DictionaryToString(GetDict(dict), Environment.NewLine, ": "), true);
     }
 
 
@@ -214,7 +214,7 @@ public class SaveSystem : MonoBehaviour
             f.WriteFile(fp, "", false);
             return;
         }
-        var s = StringToList(f.ReadFile(fp), Environment.NewLine);
+        var s = Converter.StringToList(f.ReadFile(fp), Environment.NewLine);
         foreach (var d in s)
         {
             if (d.IndexOf(": ") > -1)
@@ -231,63 +231,5 @@ public class SaveSystem : MonoBehaviour
         return UniqueGamePrefix + "#" + file + "_";
     }
 
-
-    public int BoolToInt(bool a)
-    {
-        return a ? 1 : 0;
-    }
-    public bool IntToBool(int a)
-    {
-        return a == 1;
-    }
-
-    public string ListToString(List<string> eee, string split = ", ")
-    {
-        return String.Join(split, eee);
-    }
-
-    public List<string> StringToList(string eee, string split = ", ")
-    {
-        return eee.Split(split).ToList();
-    }
-
-    public string DictionaryToString(Dictionary<string, string> dic, string splitter = ", ", string splitter2 = "<K>")
-    {
-        List<string> list = new List<string>();
-        foreach (var a in dic)
-        {
-            list.Add(a.Key + splitter2 + a.Value);
-        }
-        return ListToString(list, splitter);
-    }
-    public Dictionary<string, string> StringToDictionary(string e, string splitter = ", ", string splitter2 = "<K>")
-    {
-        var dic = new Dictionary<string, string>();
-        var list = StringToList(e, splitter);
-        foreach (var a in list)
-        {
-            try
-            {
-                int i = a.IndexOf(splitter2);
-                List<string> sseexx = new List<string>()
-                {
-                    a.Substring(0, i),
-                    a.Substring(i + splitter2.Length),
-                };
-                if (dic.ContainsKey(sseexx[0]))
-                {
-                    dic[sseexx[0]] = dic[sseexx[1]];
-                }
-                else
-                {
-                    dic.Add(sseexx[0], sseexx[1]);
-                }
-            }
-            catch
-            {
-            }
-        }
-        return dic;
-    }
 
 }

@@ -281,7 +281,9 @@ public class RoomLol : MonoBehaviour
         float z = 0;
         int sz = RoomColliders.GetLength(0) / 2;
         var sp = cr.room.RoomObject;
-        var gm = Instantiate(sp, CenterSpawn + ((new Vector3(cr.pos.x, cr.pos.y, z) - new Vector3(sz, sz, 0)) * DistanceScaler) + new Vector3(((cr.room.RoomSize.x*DistanceScaler)/2) - 0.5f, ((cr.room.RoomSize.y * DistanceScaler) / 2) - 0.5f, 0), parent.transform.rotation, parent.transform);
+        var aaaaaaaaa = ((new Vector3(cr.pos.x, cr.pos.y, z) - new Vector3(sz, sz, 0)) * DistanceScaler);
+        aaaaaaaaa.y *= -1;
+        var gm = Instantiate(sp, CenterSpawn + aaaaaaaaa + new Vector3(((cr.room.RoomSize.x*DistanceScaler)/2) - 0.5f, ((cr.room.RoomSize.y * -DistanceScaler) / 2) - 0.5f, 0), parent.transform.rotation, parent.transform);
         SpawnedRooms.Add(gm);
         foreach (var c in cr.comlpetedRooms)
         {

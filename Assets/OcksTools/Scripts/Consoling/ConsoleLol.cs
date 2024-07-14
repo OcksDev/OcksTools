@@ -383,7 +383,7 @@ public class ConsoleLol : MonoBehaviour
                         case "listall":
                             if (SaveSystem.Instance.UseFileSystem)
                             {
-                                ConsoleLol.Instance.ConsoleLog($"{SaveSystem.Instance.DictionaryToString( SaveSystem.Instance.GetDict(), Environment.NewLine, ": ")}");
+                                ConsoleLol.Instance.ConsoleLog($"{Converter.DictionaryToString( SaveSystem.Instance.GetDict(), Environment.NewLine, ": ")}");
                             }
                             else
                             {

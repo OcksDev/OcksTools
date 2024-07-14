@@ -53,8 +53,8 @@ public class SpawnSystem : MonoBehaviour
     public GameObject SpawnObject(int refe, GameObject parent, Vector3 pos, Quaternion rot, bool SendToEveryone = false, string data = "", string hidden_data = "")
     {
         //object parenting over multiplayer is untested
-        List<string> dadalol = RandomFunctions.Instance.StringToList(data);
-        List<string> hidden_dadalol = RandomFunctions.Instance.StringToList(hidden_data);
+        List<string> dadalol = Converter.StringToList(data);
+        List<string> hidden_dadalol = Converter.StringToList(hidden_data);
         if (hidden_data == "")
         {
             hidden_dadalol = RandomFunctions.Instance.GenerateBlankHiddenData();

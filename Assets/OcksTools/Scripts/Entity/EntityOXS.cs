@@ -135,8 +135,8 @@ public class DamageProfile
     {
         Name = pp.Name;
         Damage = pp.Damage;
-        Procs = pp.Procs;
-        Effects = pp.Effects;
+        Procs = new List<string>(pp.Procs);
+        Effects = new List<EffectProfile>(pp.Effects);
     }
 
 }

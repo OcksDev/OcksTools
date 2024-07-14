@@ -23,11 +23,11 @@ public class PlayerControllerMulti : NetworkBehaviour
         if (!Owner) return;
         move *= 0.8f;
         Vector3 dir = new Vector3(0, 0, 0);
-        if (Input.GetKey(KeyCode.W)) dir += Vector3.up;
-        if (Input.GetKey(KeyCode.S)) dir += Vector3.down;
-        if (Input.GetKey(KeyCode.D)) dir += Vector3.right;
-        if (Input.GetKey(KeyCode.A)) dir += Vector3.left;
-        if(dir.magnitude > 0.5f)
+        if (InputManager.IsKey(InputManager.gamekeys["move_forward"])) dir += Vector3.up;
+        if (InputManager.IsKey(InputManager.gamekeys["move_back"])) dir += Vector3.down;
+        if (InputManager.IsKey(InputManager.gamekeys["move_right"])) dir += Vector3.right;
+        if (InputManager.IsKey(InputManager.gamekeys["move_left"])) dir += Vector3.left;
+        if (dir.magnitude > 0.5f)
         {
             dir.Normalize();
             move += dir;

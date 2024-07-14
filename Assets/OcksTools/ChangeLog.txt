@@ -52,31 +52,42 @@
 - Room Generator Improvements!
   - Completely changed how new rooms are defined, now you make them in the inspector instead of being hardcoded.
   - Changed room spawner to not rely on the local scale of the spawned object
+  - Fixed bug so rooms should no longer spawn upside down (generation was good, spawning in the prefabs based on the generation was not)
 - New Text Animator!
   - Allows for the animating of text in a very cool way, animations can be stacked and mixed
     - Comes with many example animations: Wave, WaveND, Rainbow, RainbowSnap, Shake, ShakeWhole, Halloween
-- New Object Creation System (core system)
+- New Object Creation System (core system)!
   - Here to replace the RandomFunctions.SpawnObject()
   - Creates new optional Object Pooling functionality for all spawnable objects
   - Currently does not fully replace every bit of old functionality, so old code remains for now. 
   - Pooling allows for either quicker object spawning or spawning at the same time cost but with extra functionality
+- New Converter (core system)!
+  - A centralized (and static) location for all things like ListToString() or BoolToInt()
+  - No longer will they be defined by being pasted in random locations in code or depend on RandomFunctions to work
+  - New StringToColor() to convert hex strings to color32
+
+
 - New Animator that hopefully helps get around unity's inbuilt garbage one
   - W.I.P
-- New Profile Handler
+
+
+- New Profile Handler (very bare bones)
   - Allows for interaction with Ocks Universal Profile
 - New Tags Refs
   - A quick script you can slap on any gameobject to create a reference to it using Tags
   - default values are the name and gameobject of the attached script, can be manually changed to new values
-- New Input Buffer
+- New Input Buffer!
   - Allows the buffering of inputs so that they can be checked more leniently
-- New Default Assets!
+- Did some organization of things
   - Reorganized some folders to have different names, the images folder is much more localical now
   - Created new folder of useful shaders and materials I have made.
   - Added a few more fonts
-- New Random Functions!
+  - Fixed some random typos I found around random classes
+- New Random Functions
   - New CharPrepend() allows you to do things like converting 1, 10, 100 into 001, 010, 100.
   - New MousePosition() allows you to get the mouse position relative to a given camera
   - New RemoveDuplicates<>() allows you to easily remove any duplicate elements in a list
+  - New PointFromTo2D() allows greater rotation control other than just using the mouse pos
 - Misc Changes
   - Renamed Tags "miscrefs" to "refs"
   - Save System now runs after all other classes
@@ -92,6 +103,9 @@
   - Input Manager no longer crashes when Language File System is not present
   - Should have removed file loading race condition in Language File System  
   - RandomFunctions.SpawnObject() is now buried at the bottom of the file and is labled Obselete
+  - Randomfunctions "point" methods no longer have "spread" attributes
+  - Removed PointAtPoint2D(), as new method PointFromTo2D() is superior
+  - RotateTowards() now uses a Vector3 input instead of GameObject
   - Tags now has a singleton, although nothing currently uses it
   - Got this project onto Github so now people can actually see what I am doing lol
     - I think?
