@@ -22,15 +22,18 @@ public class FileSystem : MonoBehaviour
 
 
     private static FileSystem instance;
-    public string GameFolderName = "OcksTools";
+    private string GameFolderName = "OcksTools";
     private string GameName = "Ocks Tools v?";
-    [HideInInspector]
     public string GameVer = "v1.1.0";
+    [HideInInspector]
     public string DirectoryLol = "";
+    [HideInInspector]
     public string OcksDirectry = "";
+    [HideInInspector]
     public string UniversalDirectory = "";
+    [HideInInspector]
     public string GameDirectory = "";
-    public List<DownloadDataHandler> DDH = new List<DownloadDataHandler>();
+    [HideInInspector]
     public List<string> FileLocations = new List<string>();
     public static FileSystem Instance
     {
@@ -114,27 +117,28 @@ public class FileSystem : MonoBehaviour
     {
         File.Delete(file);
     }
-    public int DownloadFile(int type, string filelocation)
+    public DownloadDataHandler DownloadFile(int type, string filelocation)
     {
-        int index = DDH.Count;
-        DDH.Add(new DownloadDataHandler());
+        var DDH = new DownloadDataHandler();
         switch (type)
         {
             default:
             case 0:
-                StartCoroutine(GetAudioClip(filelocation, index));
+                //image file
+                StartCoroutine(GetImage(DDH, filelocation));
                 break;
             case 1:
-                StartCoroutine(GetImage(filelocation, index));
+                //audio file
+                StartCoroutine(GetAudioClip(DDH, filelocation));
                 break;
 
         }
-        return index;
+        return DDH;
     }
 
-    IEnumerator GetAudioClip(string fileName, int index = 0)
+    IEnumerator GetAudioClip(DownloadDataHandler DDH, string fileName)
     {
-        DDH[index].ErrorLol = false;
+        DDH.ErrorLol = false;
         UnityWebRequest webRequest = UnityWebRequestMultimedia.GetAudioClip(
             fileName, AudioType.MPEG);
         //Debug.Log("SexPath: "+ DirectoryLol + "/" + fileName);
@@ -143,18 +147,18 @@ public class FileSystem : MonoBehaviour
         {
             AudioClip clip = DownloadHandlerAudioClip.GetContent(webRequest);
             clip.name = fileName;
-            DDH[index].Clip = clip;
+            DDH.Clip = clip;
         }
         catch
         {
-            DDH[index].ErrorLol = true;
+            DDH.ErrorLol = true;
         }
-        DDH[index].CompletedDownload = true;
+        DDH.CompletedDownload = true;
     }
 
-    IEnumerator GetImage(string fileName, int index = 0)
+    IEnumerator GetImage(DownloadDataHandler DDH, string fileName)
     {
-        DDH[index].ErrorLol = false;
+        DDH.ErrorLol = false;
         UnityWebRequest webRequest = UnityWebRequestTexture.GetTexture(
             fileName);
 
@@ -163,13 +167,14 @@ public class FileSystem : MonoBehaviour
         {
             Texture sex = DownloadHandlerTexture.GetContent(webRequest);
             sex.name = fileName;
-            DDH[index].Texture = sex;
+            DDH.Texture = sex;
+            DDH.Sprite = Converter.Texture2DToSprite((Texture2D)sex);
         }
         catch
         {
-            DDH[index].ErrorLol = true;
+            DDH.ErrorLol = true;
         }
-        DDH[index].CompletedDownload = true;
+        DDH.CompletedDownload = true;
     }
 
 }
@@ -180,5 +185,6 @@ public class DownloadDataHandler
     public bool ErrorLol = false;
     public bool CompletedDownload = false;
     public Texture Texture;
+    public Sprite Sprite;
     public AudioClip Clip;
 }

@@ -8,27 +8,9 @@ public class InputBuffer : MonoBehaviour
     /*
      * how to use:
      *     BufferListen() to run every time you want to check for a new input of a given key
-     *     GetBuffer() gets if the button exists in the buffer
+     *     GetBuffer() gets if the button exists in the buffer (aka was pressed by the user)
      *     RemoveBuffer() removes the button from the buffer if it exists
      */
-
-
-    public Dictionary<string, BufferedInput> buffer = new Dictionary<string, BufferedInput>();
-
-    public void Update()
-    {
-        for(int i = 0; i < buffer.Count; i++)
-        {
-            var p = buffer.ElementAt(i);
-            p.Value.Time -= Time.deltaTime;
-            if(p.Value.Time <= 0)
-            {
-                buffer.Remove(p.Key);
-                i--;
-            }
-        }
-    }
-
     public bool GetBuffer(string name)
     {
         return buffer.ContainsKey(name);
@@ -38,8 +20,9 @@ public class InputBuffer : MonoBehaviour
         if (buffer.ContainsKey(name)) buffer.Remove(name);
     }
 
-    public void BufferListen(string name, KeyCode key, float time, bool isdown = true)
+    public void BufferListen(KeyCode key, string name, float time, bool isdown = true)
     {
+        //would be run every frame
         if(isdown? InputManager.IsKeyDown(key, name) : InputManager.IsKey(key, name))
         {
             var b = new BufferedInput();
@@ -53,6 +36,22 @@ public class InputBuffer : MonoBehaviour
             else
             {
                 buffer.Add(name, b);
+            }
+        }
+    }
+
+    public Dictionary<string, BufferedInput> buffer = new Dictionary<string, BufferedInput>();
+
+    public void Update()
+    {
+        for (int i = 0; i < buffer.Count; i++)
+        {
+            var p = buffer.ElementAt(i);
+            p.Value.Time -= Time.deltaTime;
+            if (p.Value.Time <= 0)
+            {
+                buffer.Remove(p.Key);
+                i--;
             }
         }
     }

@@ -192,7 +192,10 @@ public class Converter : MonoBehaviour
         }
     }
 
-
+    public static Sprite Texture2DToSprite(Texture2D tex)
+    {
+        return Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(tex.width / 2, tex.height / 2));
+    }
     public static string NumToRead(string number, int style = 0)
     {
         //converts a raw string of numbers into a much nicer format of your choosing

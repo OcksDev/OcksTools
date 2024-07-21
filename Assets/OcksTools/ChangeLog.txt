@@ -49,6 +49,9 @@
   - Dialog variables should be parsed slightly faster
     - normal variables are declared like "*fart", but now you can declare variables like "!fart" to instead look up the value in Language File System
   - Fixed a bug where no argument attributes were not being parsed properly midtext like <End> and <Skip>, previously requiring them to be written like <Skip=1> or something similar
+- File System Improvements!
+  - Downloading files from your computer is no longer a hassle, streamlined the process to flow through a single DownloadFile() method
+  - Downloading images from computer no longer just saves them as textures, but also as sprites
 - Room Generator Improvements!
   - Completely changed how new rooms are defined, now you make them in the inspector instead of being hardcoded.
   - Changed room spawner to not rely on the local scale of the spawned object
@@ -65,6 +68,7 @@
   - A centralized (and static) location for all things like ListToString() or BoolToInt()
   - No longer will they be defined by being pasted in random locations in code or depend on RandomFunctions to work
   - New StringToColor() to convert hex strings to color32
+  - New Texture2DToSprite() which converts texture2ds to sprites
 
 
 - New Animator that hopefully helps get around unity's inbuilt garbage one
@@ -72,7 +76,7 @@
 
 
 - New Profile Handler (very bare bones)
-  - Allows for interaction with Ocks Universal Profile
+  - Allows for basic interaction with Ocks Universal Profile
 - New Tags Refs
   - A quick script you can slap on any gameobject to create a reference to it using Tags
   - default values are the name and gameobject of the attached script, can be manually changed to new values
