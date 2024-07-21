@@ -333,13 +333,13 @@ public class Converter : MonoBehaviour
         return n;
     }
 
-    public static string TimeToRead(string ine, int type = 0)
+    public static string TimeToRead(System.Numerics.BigInteger ine, int type = 0)
     {
         //converts a time (in whole seconds) into a readable format
         //type changes the format type:
         // 0 - 5w 4d 3h 2m 1s
         // 1 - 5:4:3:2:1
-        var g = System.Numerics.BigInteger.Parse(ine);
+        var g = ine;
         string outp = "";
         List<string> things;
         switch (type)

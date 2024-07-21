@@ -268,6 +268,7 @@ GameObject:
   - component: {fileID: 9086538579855579344}
   - component: {fileID: 868351408578299096}
   - component: {fileID: 3795958678563882320}
+  - component: {fileID: 55484494941321771}
   m_Layer: 0
   m_Name: NavMesh
   m_TagString: Untagged
@@ -353,7 +354,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SpawnRefs:
   - {fileID: 0}
+  ParticleSpawnRefs:
+  - {fileID: 0}
+  ParticleSpawnObject: {fileID: 0}
   ClientID: 
+--- !u!114 &55484494941321771
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9086538579855579346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae4376f568938f14886d41f6e0e56131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &9086538580806153095
 GameObject:
   m_ObjectHideFlags: 0

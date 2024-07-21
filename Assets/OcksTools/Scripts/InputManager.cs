@@ -217,7 +217,7 @@ public class InputManager : MonoBehaviour
         }
     }
 
-    public void CheckNewBind(string keyname)
+    public bool CheckNewBind(string keyname)
     {
         //run this every frame until a new keybind is selected
 
@@ -225,7 +225,7 @@ public class InputManager : MonoBehaviour
         {
             bool goodboi = false;
             KeyCode boi = KeyCode.Mouse0;
-            foreach(var kb in keynames)
+            foreach (var kb in keynames)
             {
                 if (Input.GetKeyDown(kb.Key))
                 {
@@ -238,12 +238,59 @@ public class InputManager : MonoBehaviour
             {
                 gamekeys[keyname] = boi;
                 //code here will run when you have pressed a valid key
+                return true;
             }
         }
+        return false;
+    }
+
+    public KeyCode GetArbitraryKeyPressed()
+    {
+        if (Input.anyKeyDown)
+        {
+            bool goodboi = false;
+            KeyCode boi = KeyCode.Mouse0;
+            foreach (var kb in keynames)
+            {
+                if (Input.GetKeyDown(kb.Key))
+                {
+                    boi = kb.Key;
+                    goodboi = true;
+                    break;
+                }
+            }
+            if (goodboi)
+            {
+                return boi;
+            }
+        }
+        return KeyCode.None;
+    }
+    public List<KeyCode> GetAllCurrentlyPressedKeys()
+    {
+        if (Input.anyKeyDown)
+        {
+            bool goodboi = false;
+            List<KeyCode> boi = new List<KeyCode>();
+            foreach (var kb in keynames)
+            {
+                if (Input.GetKey(kb.Key))
+                {
+                    boi.Add(kb.Key);
+                    goodboi = true;
+                }
+            }
+            if (goodboi)
+            {
+                return boi;
+            }
+        }
+        return new List<KeyCode>();
     }
 
     public void ReseBind(string keyname)
     {
+        //this is ResetBind but misspelled, I cant be bothered to fix this
         gamekeys[keyname] = gamedefkeys[keyname];
     }
 
@@ -272,7 +319,7 @@ public class InputManager : MonoBehaviour
         bool a = false;
 
         //add code to change boolean to true if the input is denied
-
+        if(!a) a = !GetSelected(b2);
 
         return a;
     }
