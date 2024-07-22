@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class DialogLol : MonoBehaviour
 {
@@ -747,5 +748,6 @@ public class DialogLol : MonoBehaviour
         List<string> list2 = new List<string>(g2.Split(Environment.NewLine));
         list2.RemoveAt(0);
         UseEnding(list2[index]);
+
     }
 }

@@ -6,6 +6,7 @@ using UnityEngine;
 public class ServerGamer : NetworkBehaviour
 {
     private static ServerGamer instance;
+    public string ClientID;
 
     // public NetworkVariable<int> PlayerNum = new NetworkVariable<int>(100, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     // FixedString128Bytes
@@ -17,8 +18,11 @@ public class ServerGamer : NetworkBehaviour
     private void Awake()
     {
         if (Instance == null) instance = this;
+        ClientID = Tags.GenerateID();
     }
 
+    public static Dictionary<string, OcksNetworkVar> OcksVars = new Dictionary<string, OcksNetworkVar>();
+    public static Dictionary<NetworkObject, List<OcksNetworkVar>> OcksVars2 = new Dictionary<NetworkObject, List<OcksNetworkVar>>();
 
     /* working code, commented out to prevent error messages when importing oxtools*/
     [ServerRpc(RequireOwnership = false)]
@@ -30,7 +34,7 @@ public class ServerGamer : NetworkBehaviour
     [ClientRpc]
     public void SpawnObjectClientRpc(int refe, Vector3 pos, Quaternion rot, string id, string data = "", string hdata = "")
     {
-        if (id == RandomFunctions.Instance.ClientID) return;
+        if (id == ClientID) return;
 
         RandomFunctions.Instance.SpawnObject(refe, gameObject, pos, rot, false, data, hdata);
     }
@@ -47,7 +51,7 @@ public class ServerGamer : NetworkBehaviour
     [ClientRpc]
     public void RecieveMessageClientRpc(string id, string type, string data)
     {
-        if (id == RandomFunctions.Instance.ClientID) return;
+        if (id == ClientID) return;
         switch (type)
         {
             default:
@@ -67,9 +71,33 @@ public class ServerGamer : NetworkBehaviour
     [ClientRpc]
     public void RecieveChatMessageClientRpc(string id, string message, string hex)
     {
-        if (id == RandomFunctions.Instance.ClientID) return;
+        if (id == ClientID) return;
 
         ChatLol.Instance.WriteChat(message, hex);
+    }
+
+    public void SendOcksVar(string name, string data)
+    {
+        OcksVarServerRpc(ClientID, name, data);
+    }
+
+
+    [ServerRpc(RequireOwnership = false)]
+    public void OcksVarServerRpc(string id, string type, string data)
+    {
+        RecieveOcksVarClientRpc(id, type, data);
+    }
+
+    //chat related method
+    [ClientRpc]
+    public void RecieveOcksVarClientRpc(string id, string type, string data)
+    {
+        if (id == ClientID) return;
+        switch (type)
+        {
+            default:
+                break;
+        }
     }
 
 }

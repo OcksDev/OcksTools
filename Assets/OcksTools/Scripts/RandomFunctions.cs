@@ -15,7 +15,7 @@ public class RandomFunctions : MonoBehaviour
     public GameObject[] ParticleSpawnRefs = new GameObject[1];
     [HideInInspector]
     public GameObject ParticleSpawnObject;
-    public string ClientID;
+    public delegate void JustFuckingRunTheMethods();
 
     /* Welcome to Random Functions, your one stop shop of random functions
      * 
@@ -30,7 +30,6 @@ public class RandomFunctions : MonoBehaviour
     public static RandomFunctions Instance;
     private void Awake()
     {
-        ClientID = GenerateID();
         if (Instance == null) Instance = this;
     }
 
@@ -60,7 +59,7 @@ public class RandomFunctions : MonoBehaviour
     {
         return new List<string>()
         {
-            /*Object ID, Tags*/ GenerateObjectID(),
+            /*Object ID, Tags*/ Tags.GenerateID(),
             /*Is Real (multiplayer object handling)*/ "false",
             /*Parent ID, Tags*/ "-",
         };
@@ -89,13 +88,6 @@ public class RandomFunctions : MonoBehaviour
         SpreadCalc(index, max, spread, fix);
     }
 
-    public string GenerateObjectID()
-    {
-        //a more secrure method of making gameobject ids for the Tags system
-        string e = GenerateID();
-        e = e + Tags.dict.Count.ToString();
-        return e;
-    }
     public string CharPrepend(string input, int length, char nerd = '0')
     {
         var e = length - input.Length;
@@ -221,22 +213,6 @@ public class RandomFunctions : MonoBehaviour
         float rotation_z = Mathf.Atan2(difference.y, difference.x) * Mathf.Rad2Deg;
         var sex = Quaternion.Euler(0f, 0f, rotation_z + offset2);
         return sex;
-    }
-
-    public string GenerateID()
-    {
-        //generates an id
-        List<string> bpp = new List<string>()
-        {
-            "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z",
-        };
-
-        string e = "";
-        for (int i = 0; i < 15; i++)
-        {
-            e = e + bpp[UnityEngine.Random.Range(0, bpp.Count)];
-        }
-        return e;
     }
 
 
