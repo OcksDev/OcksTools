@@ -75,7 +75,8 @@
 
 - New Animator that hopefully helps get around unity's inbuilt garbage one
   - W.I.P
-
+- New Ocks Network Variable, something which should allow for the syncing of arbitrarily long strings in multiplayer
+  - W.I.P
 
 - New Profile Handler (very bare bones)
   - Allows for basic interaction with Ocks Universal Profile
@@ -113,6 +114,7 @@
   - Removed PointAtPoint2D(), as new method PointFromTo2D() is superior
   - RotateTowards() now uses a Vector3 input instead of GameObject
   - Tags now has a singleton, although nothing currently uses it
+  - GenerateID has been updated and now resides in Tags
   - Got this project onto Github so now people can actually see what I am doing lol
     - I think?
 ------------
