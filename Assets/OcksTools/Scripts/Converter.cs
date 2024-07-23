@@ -65,6 +65,17 @@ public class Converter : MonoBehaviour
         return dic;
     }
 
+    public Vector3Int StringToVector3Int(string e)
+    {
+        var s = StringToList(e.Substring(1, e.Length - 3));
+        return new Vector3Int(int.Parse(s[0]), int.Parse(s[1]), int.Parse(s[2]));
+    }
+
+    public Vector3 StringToVector3(string e)
+    {
+        var s = StringToList(e.Substring(1, e.Length - 3));
+        return new Vector3(float.Parse(s[0]), float.Parse(s[1]), float.Parse(s[2]));
+    }
 
     public string BoolArrayToString(bool[] arr)
     {

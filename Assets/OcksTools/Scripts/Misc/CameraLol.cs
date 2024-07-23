@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class CameraLol : MonoBehaviour
 {
+    public bool FollowsMouse = true;
+    public float CameraFollowMult = 1;
     public static CameraLol instance;
     public Vector3 targetpos = new Vector3(0, 0, 0);
     private Vector3 ppos = new Vector3(0, 0, 0);
@@ -50,14 +52,18 @@ public class CameraLol : MonoBehaviour
         */
         transform.position = ppos;
         //handles getting the mouse position and making the camera adjust to move to it
-        Vector3 p = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        p -= transform.position;
-        p /= 5;
+        Vector3 p = Vector3.zero;
+        if (FollowsMouse)
+        {
+            p = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            p -= transform.position;
+            p /= 5;
+        }
 
         // "pos" is the location the camera tries to get to
         p += targetpos;
         p.z = -10;
-        var z = Vector3.MoveTowards(transform.position, p, Dist(p, transform.position) * 8 * Time.deltaTime);
+        var z = Vector3.MoveTowards(transform.position, p, Dist(p, transform.position) * 8 * Time.deltaTime * CameraFollowMult);
 
         /* zz can be the max size the camera can go to, remove/change as needed
         float zz = 99999;

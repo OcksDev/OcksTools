@@ -16,8 +16,8 @@ public class SaveSystem : MonoBehaviour
 
 
     public delegate void JustFuckingRunTheMethods();
-    public event JustFuckingRunTheMethods SaveAllData;
-    public event JustFuckingRunTheMethods LoadAllData;
+    public static event JustFuckingRunTheMethods SaveAllData;
+    public static event JustFuckingRunTheMethods LoadAllData;
 
     public Dictionary<string, Dictionary<string, string>> HoldingData = new Dictionary<string, Dictionary<string, string>>();
 

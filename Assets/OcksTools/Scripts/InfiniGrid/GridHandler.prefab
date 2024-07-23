@@ -1,0 +1,138 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4154949118217916685
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1551856253646423280}
+  - component: {fileID: 3894221343068239146}
+  - component: {fileID: 4050190728695048726}
+  - component: {fileID: 7820386521007768101}
+  - component: {fileID: 2374851100739685873}
+  - component: {fileID: 6533616000490764875}
+  m_Layer: 0
+  m_Name: GridHandler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1551856253646423280
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4154949118217916685}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.7977977, y: 0.1455132, z: 11.526724}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3894221343068239146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4154949118217916685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5091420f840ec8d47b5003eff8f22b61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Collidermap: {fileID: 0}
+  collidertile: {fileID: 11400000, guid: 585007e6496f9f0489faa9000ab8320a, type: 2}
+  Tiles: []
+  TileToSpawn: {fileID: 3229164317912901354, guid: 9e770db98a30b0849af52ff117f21979, type: 3}
+  colors:
+  - serializedVersion: 2
+    rgba: 4294967295
+  - serializedVersion: 2
+    rgba: 4278190335
+  - serializedVersion: 2
+    rgba: 4278227711
+  - serializedVersion: 2
+    rgba: 4278255606
+  - serializedVersion: 2
+    rgba: 4278255379
+  - serializedVersion: 2
+    rgba: 4293918464
+  - serializedVersion: 2
+    rgba: 4294930944
+  - serializedVersion: 2
+    rgba: 4294903040
+  - serializedVersion: 2
+    rgba: 4294901855
+  - serializedVersion: 2
+    rgba: 4294901992
+--- !u!114 &4050190728695048726
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4154949118217916685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1275a46d4d89f7440ac13deba225ab42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SpawnRefs:
+  - {fileID: 0}
+  ParticleSpawnRefs:
+  - {fileID: 0}
+  ParticleSpawnObject: {fileID: 0}
+--- !u!114 &7820386521007768101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4154949118217916685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e079614b067d2db4faf31eb5e5f87b5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UseFileSystem: 1
+  SaveFile: 0
+  test: 0
+  LoadedData: 0
+--- !u!114 &2374851100739685873
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4154949118217916685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac1cfc2e71f50cf4496bb3866b830a15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GameVer: v1.1.0
+  DirectoryLol: 
+  OcksDirectry: 
+  UniversalDirectory: 
+  GameDirectory: 
+  FileLocations: []
+--- !u!114 &6533616000490764875
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4154949118217916685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae4376f568938f14886d41f6e0e56131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

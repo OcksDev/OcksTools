@@ -40,7 +40,7 @@ public class GISLol : MonoBehaviour
 
     private void Start()
     {
-        SaveSystem.Instance.SaveAllData += SaveAll;
+        SaveSystem.SaveAllData += SaveAll;
         MouseFollower.SetActive(true);
 
         if (UseLanguageFile)
