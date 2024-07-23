@@ -6,9 +6,12 @@ using UnityEngine.XR;
 
 public class GridLol : MonoBehaviour
 {
+    public float GeneralScale = 1f;
     public int XPlaceSize = 1;
     public int YPlaceSize = 1;
     public static GridLol Instance;
+    public GameObject Highligher;
+    public Color32[] HighligherColors;
     public Dictionary<Vector3Int, OcksTileData> Tiles = new Dictionary<Vector3Int, OcksTileData>();
     public GameObject TileToSpawn;
     public List<Color32> colors = new List<Color32>();
@@ -17,38 +20,40 @@ public class GridLol : MonoBehaviour
         Instance = this;
         SaveSystem.SaveAllData += SaveAllTiles;
         SaveSystem.LoadAllData += LoadAllTiles;
-
+        highlighrt = Instantiate(Highligher, transform).GetComponent<SpriteRenderer>();
     }
-
+    private SpriteRenderer highlighrt;
     public void Update()
     {
-        if (InputManager.IsKeyDown(InputManager.gamekeys["shoot"]))
+        var z = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        z /= GeneralScale;
+        var zi = new Vector3Int(Mathf.RoundToInt(z.x - ((XPlaceSize - 1) / 2f)), Mathf.RoundToInt(z.y - ((YPlaceSize - 1) / 2f)), 0);
+
+        var zi2 = new Vector3Int(Mathf.RoundToInt(z.x), Mathf.RoundToInt(z.y), 0);
+        bool destroya = false;
+        bool antiplace = false;
+        OcksTileData x = GetTile(zi2);
+        var dummythicccheeks = new OcksTileData(zi, new Vector2Int(XPlaceSize, YPlaceSize), 0);
+        //Debug.Log(x);
+        if (x != null)
         {
-            var z = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            var zi = new Vector3Int(Mathf.RoundToInt(z.x-((XPlaceSize-1)/2f)), Mathf.RoundToInt(z.y-((YPlaceSize - 1) / 2f)), 0);
-            var zi2 = new Vector3Int(Mathf.RoundToInt(z.x), Mathf.RoundToInt(z.y), 0);
-            bool destroya = false;
-            bool antiplace = false;
-            OcksTileData x = GetTile(zi2);
-            //Debug.Log(x);
-            if (x != null)
+            destroya = true;
+        }
+        else
+        {
+            foreach (var t in dummythicccheeks.GetUsedTiles())
             {
-                destroya = true;
-            }
-            else
-            {
-                var dummythicccheeks = new OcksTileData(zi, new Vector2Int(XPlaceSize, YPlaceSize), 0);
-                foreach (var t in dummythicccheeks.GetUsedTiles())
+                if (t == zi2) continue;
+                x = GetTile(t);
+                if (x != null)
                 {
-                    if (t == zi2) continue;
-                    x = GetTile(t);
-                    if (x != null)
-                    {
-                        antiplace = true;
-                        break;
-                    }
+                    antiplace = true;
+                    break;
                 }
             }
+        }
+        if (InputManager.IsKeyDown(InputManager.gamekeys["shoot"]))
+        {
             if (!antiplace)
             {
                 if (destroya)
@@ -66,6 +71,10 @@ public class GridLol : MonoBehaviour
                 }
             }
         }
+        highlighrt.color = HighligherColors[(antiplace||destroya)?0:1];
+        highlighrt.transform.position = GetPosOfScaled(dummythicccheeks);
+        highlighrt.transform.localScale = GetScaleOfScaled(dummythicccheeks);
+
     }
 
     public OcksTileData GetTile(Vector3Int pos)
@@ -80,9 +89,18 @@ public class GridLol : MonoBehaviour
         }
     }
 
+    Vector3 GetPosOfScaled(OcksTileData zi)
+    {
+        return (zi.pos + new Vector3((zi.size.x - 1) / 2f, (zi.size.y - 1) / 2f, 1)) * GeneralScale;
+    }
+    Vector3 GetScaleOfScaled(OcksTileData zi)
+    {
+        return new Vector3(zi.size.x, zi.size.y, 1) * GeneralScale;
+    }
+
     public TileObject SpawnTile(OcksTileData zi)
     {
-        var a = Instantiate(TileToSpawn, zi.pos + new Vector3((zi.size.x-1)/2f, (zi.size.y - 1) / 2f, 1), Quaternion.identity, transform).GetComponent<TileObject>();
+        var a = Instantiate(TileToSpawn, GetPosOfScaled(zi), Quaternion.identity, transform).GetComponent<TileObject>();
         a.data = zi;
         a.data.tob = a;
         Debug.Log("TileSpawn");
@@ -92,7 +110,7 @@ public class GridLol : MonoBehaviour
             Tiles.Add(b, zi);
         }
         a.spriteRenderer.color = colors[zi.TileType];
-        a.transform.localScale = new Vector3(zi.size.x, zi.size.y, 1);
+        a.transform.localScale = GetScaleOfScaled(zi);
         //Debug.Log(zi.ToString());
         return a;
     }

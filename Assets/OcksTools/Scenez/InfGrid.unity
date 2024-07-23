@@ -625,6 +625,18 @@ PrefabInstance:
       propertyPath: Collidermap
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 3894221343068239146, guid: 8520f25a5d8090245870db6325dd2cef, type: 3}
+      propertyPath: GeneralScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894221343068239146, guid: 8520f25a5d8090245870db6325dd2cef, type: 3}
+      propertyPath: HighligherColors.Array.data[0].rgba
+      value: 1946157206
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894221343068239146, guid: 8520f25a5d8090245870db6325dd2cef, type: 3}
+      propertyPath: HighligherColors.Array.data[1].rgba
+      value: 1946195456
+      objectReference: {fileID: 0}
     - target: {fileID: 4154949118217916685, guid: 8520f25a5d8090245870db6325dd2cef, type: 3}
       propertyPath: m_Name
       value: GridHandler
