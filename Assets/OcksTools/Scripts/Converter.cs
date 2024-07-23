@@ -65,19 +65,31 @@ public class Converter : MonoBehaviour
         return dic;
     }
 
-    public Vector3Int StringToVector3Int(string e)
+    public static Vector3Int StringToVector3Int(string e)
     {
-        var s = StringToList(e.Substring(1, e.Length - 3));
+        var s = StringToList(e.Substring(1, e.Length - 2));
         return new Vector3Int(int.Parse(s[0]), int.Parse(s[1]), int.Parse(s[2]));
     }
 
-    public Vector3 StringToVector3(string e)
+    public static Vector3 StringToVector3(string e)
     {
-        var s = StringToList(e.Substring(1, e.Length - 3));
+        var s = StringToList(e.Substring(1, e.Length - 2));
         return new Vector3(float.Parse(s[0]), float.Parse(s[1]), float.Parse(s[2]));
     }
 
-    public string BoolArrayToString(bool[] arr)
+    public static Vector2Int StringToVector2Int(string e)
+    {
+        var s = Converter.StringToList(e.Substring(1, e.Length - 2));
+        return new Vector2Int(int.Parse(s[0]), int.Parse(s[1]));
+    }
+
+    public static Vector2 StringToVector2(string e)
+    {
+        var s = Converter.StringToList(e.Substring(1, e.Length - 2));
+        return new Vector2(float.Parse(s[0]), float.Parse(s[1]));
+    }
+
+    public static string BoolArrayToString(bool[] arr)
     {
         string op = arr.Length + ":";
         List<string> chars = new List<string>(){
@@ -121,7 +133,7 @@ public class Converter : MonoBehaviour
         return op;
     }
 
-    public bool[] StringToBoolArray(string e)
+    public static bool[] StringToBoolArray(string e)
     {
         bool[] arr = new bool[int.Parse(e.Substring(0, e.IndexOf(":")))];
         e = e.Substring(e.IndexOf(":") + 1);
