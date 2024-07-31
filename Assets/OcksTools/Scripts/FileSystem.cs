@@ -77,11 +77,10 @@ public class FileSystem : MonoBehaviour
         GameDirectory = OcksDirectry + "\\" + GameFolderName;
         UniversalDirectory = OcksDirectry + "\\Universal";
 
+        //this feature might be deprecated soon
         FileLocations = new List<string>()
         {
             $"{OcksDirectry}\\Ocks_Games_Owned.txt",
-            $"{GameDirectory}\\Game_Data.txt",
-            $"{UniversalDirectory}\\Player_Data.txt",
         };
     }
     public void WriteFile(string FileName, string data, bool CanOverride)

@@ -5,6 +5,7 @@
   - HoldingData now is a dictionary of dictionairies, meaning multiple lines of saved data now can be held.
     - You could do this with the old save system but it was clunky, new version is cleaner
   - Created new c# events which are called on save/load, so now other classes can safely save/load data easily
+  - Fully moved away from old SaveFile index ideology, all systems in FileSystem and other related fields have been adjusted accordingly.
 - GIS improvements!
   - GISContainers now can be toggled into a mode called "Abstract" so they can work like a list of items. (untested)
   - new class GISItemBar/prefab AbstractDisplay
@@ -118,7 +119,6 @@
   - Tags now has a singleton, although nothing currently uses it
   - GenerateID has been updated and now resides in Tags
   - Got this project onto Github so now people can actually see what I am doing lol
-    - I think?
 ------------
 
 ------------

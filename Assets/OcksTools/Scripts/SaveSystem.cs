@@ -9,7 +9,6 @@ public class SaveSystem : MonoBehaviour
 {
     private static SaveSystem instance;
     public bool UseFileSystem = true;
-    public int SaveFile = 0;
     //idk how needed this is tbh
     private string UniqueGamePrefix = "oxt";
     public int test = 0;
@@ -39,49 +38,24 @@ public class SaveSystem : MonoBehaviour
     }
     [HideInInspector]
     public bool LoadedData = false;
-    public void ChangeFile(int i = 0)
+    public void LoadGame(string dict = "def")
     {
-        SaveFile = i;
-        LoadGame(i);
-    }
-    public void LoadGame(int i  = -1)
-    {
-        /* Input Modes:
-         * -1 = Load whatever was the last used file (if being used for the first time it defaults to 0)
-         * Any Other Value = Load the data of a specific file
-         */
-
         LoadedData = true;
+
 
         InputManager.AssembleTheCodes();
         List<string> list = new List<string>();
 
 
 
-        if (i == -1)
-        {
-            var xx = PlayerPrefs.GetInt("SaveFile", -1);
-            if (xx != -1)
-            {
-                SaveFile = xx;
-            }
-            else
-            {
-                SaveFile = 0;
-            }
-        }
-        else
-        {
-            SaveFile = i;
-        }
         var s = SoundSystem.Instance;
 
         int x = 0;
 
 
-        GetDataFromFile();
+        GetDataFromFile(dict);
 
-        var ghghgg = PlayerPrefs.GetString("keybinds", "fuck");
+        var ghghgg = GetString("keybinds", "fuck", dict);
         list = Converter.StringToList(ghghgg);
         if (ghghgg != "fuck")
         {
@@ -102,19 +76,17 @@ public class SaveSystem : MonoBehaviour
 
         if(s != null)
         {
-            s.MasterVolume = PlayerPrefs.GetFloat("snd_mas", 1);
-            s.SFXVolume = PlayerPrefs.GetFloat("snd_sfx", 1);
-            s.MusicVolume = PlayerPrefs.GetFloat("snd_mus", 1);
+            s.MasterVolume = float.Parse(GetString("snd_mas", "1", dict));
+            s.SFXVolume = float.Parse(GetString("snd_sfx", "1", dict));
+            s.MusicVolume = float.Parse(GetString("snd_mus", "1", dict));
         }
 
-        test = int.Parse(GetString("test_num", "0"));
+        test = int.Parse(GetString("test_num", "0", dict));
         //ConsoleLol.Instance.ConsoleLog(Prefix(i) + "test_num");
 
-
-        SaveFile = i;
         LoadAllData?.Invoke();
     }
-    public void SaveGame(int i = -1)
+    public void SaveGame(string dict = "def")
     {
         /* Input Modes:
          * -1 = Save whatever is the currently selected file (by default is 0)
@@ -122,15 +94,6 @@ public class SaveSystem : MonoBehaviour
          */
 
         List<string> list = new List<string>();
-        if (i == -1)
-        {
-            PlayerPrefs.SetInt("SaveFile", SaveFile);
-        }
-        else
-        {
-            PlayerPrefs.SetInt("SaveFile", i);
-            SaveFile = i;
-        }
         var s = SoundSystem.Instance;
 
         list.Clear();
@@ -138,22 +101,34 @@ public class SaveSystem : MonoBehaviour
         {
             list.Add(a.Key + "<K>" + InputManager.keynames[a.Value]);
         }
-        PlayerPrefs.SetString("keybinds", Converter.ListToString(list));
+        SetString("keybinds", Converter.ListToString(list), dict);
         //PlayerPrefs.SetInt("UnitySelectMonitor", index); // sets the monitor that unity uses
 
         if (s != null)
         {
-            PlayerPrefs.SetFloat("snd_mas", s.MasterVolume);
-            PlayerPrefs.SetFloat("snd_sfx", s.SFXVolume);
-            PlayerPrefs.SetFloat("snd_mus", s.MusicVolume);
+            SetString("snd_mas", s.MasterVolume.ToString(), dict);
+            SetString("snd_sfx", s.SFXVolume.ToString(), dict);
+            SetString("snd_mus", s.MusicVolume.ToString(), dict);
         }
 
-        SetString("test_num", test.ToString());
+        SetString("test_num", test.ToString(), dict);
 
         SaveAllData?.Invoke();
 
-        SaveDataToFile();
+        SaveDataToFile(dict);
     }
+
+    public string DictNameToFilePath(string e)
+    {
+        var f = FileSystem.Instance;
+        switch (e)
+        {
+            case "def": return $"{f.GameDirectory}\\Game_Data.txt";
+            case "ox_profile": return $"{f.UniversalDirectory}\\Player_Data.txt";
+            default: return $"{f.GameDirectory}\\Data_{e}.txt";
+        }
+    }
+
 
     public Dictionary<string, string> GetDict(string name = "def")
     {
@@ -194,19 +169,19 @@ public class SaveSystem : MonoBehaviour
         }
     }
 
-    public void SaveDataToFile(int path = 1, string dict = "def")
+    public void SaveDataToFile(string dict = "def")
     {
         var f = FileSystem.Instance;
         f.AssembleFilePaths();
-        f.WriteFile(f.FileLocations[path], Converter.DictionaryToString(GetDict(dict), Environment.NewLine, ": "), true);
+        f.WriteFile(DictNameToFilePath(dict), Converter.DictionaryToString(GetDict(dict), Environment.NewLine, ": "), true);
     }
 
 
-    public void GetDataFromFile(int path = 1, string dict = "def")
+    public void GetDataFromFile(string dict = "def")
     {
         var f = FileSystem.Instance;
         f.AssembleFilePaths();
-        var fp = f.FileLocations[path];
+        var fp = DictNameToFilePath(dict);
         var des = GetDict(dict);
         des.Clear();
         if (!File.Exists(fp))
@@ -227,8 +202,7 @@ public class SaveSystem : MonoBehaviour
 
     public string Prefix(int file)
     {
-        if (file == -1) file = SaveFile;
-        return UniqueGamePrefix + "#" + file + "_";
+        return UniqueGamePrefix + "_";
     }
 
 
