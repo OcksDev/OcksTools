@@ -40,7 +40,15 @@ public class OcksNetworkVar : MonoBehaviour
     public void SetData(string data)
     {
         Value = data;
-        HasRecievedData = true;
+        if (!HasRecievedData)
+        {
+            HasRecievedData = true;
+            OnInitialDataRecieved?.Invoke();
+        }
+        else
+        {
+            HasRecievedData = true;
+        }
         OnValueChanged?.Invoke();
     }
 

@@ -164,7 +164,6 @@ public class GISContainer : MonoBehaviour
         return i;
     }
 
-    private string ContainerPath = "";
     public void SaveContents()
     {
         if (SaveLoadData)

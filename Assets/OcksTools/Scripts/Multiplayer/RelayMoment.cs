@@ -29,7 +29,7 @@ public class RelayMoment : MonoBehaviour
     // Start is called before the first frame update
     async void Start()
     {
-        SignIn();
+        await SignIn();
     }
 
 

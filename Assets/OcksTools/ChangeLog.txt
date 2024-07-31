@@ -119,6 +119,7 @@
   - Tags now has a singleton, although nothing currently uses it
   - GenerateID has been updated and now resides in Tags
   - Got this project onto Github so now people can actually see what I am doing lol
+  - Cleared out all the random warnings from unused variables n' stuff
 ------------
 
 ------------

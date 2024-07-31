@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
+using static UnityEngine.Rendering.DebugUI.Table;
 
 public class SpawnSystem : MonoBehaviour
 {
@@ -21,10 +23,15 @@ public class SpawnSystem : MonoBehaviour
 
     public IEnumerator SpawnPools()
     {
+        // dictates the amount of objects to spawn every 50th of a second, in other words spawning amount*50 objects per second.
         int simulateousspawns = 1;
+
+
+
         int sim = 0;
         for (int i = 0; i < Pools.Count; i++)
         {
+            if (!Pools[i].UsePoolForObject) continue;
             for (int z = 0; z < Pools[i].PoolSize; z++)
             {
                 sim++;
@@ -32,22 +39,6 @@ public class SpawnSystem : MonoBehaviour
                 SpawnPoolObject(Pools[i]);
             }
         }
-    }
-    public void SpawnPoolObject(Pool pp)
-    {
-        var e = Instantiate(pp.Object, transform.position, Quaternion.identity, transform);
-        e.SetActive(false);
-        pp.PoolLol.Enqueue(e);
-    }
-
-    public void ReturnObject(GameObject sex, int pool)
-    {
-        Pools[pool].ReturnObject(sex);
-    }
-    public GameObject QuickSpawnObject(int i)
-    {
-        //only works for pooled objects
-        return Pools[i].PullObject();
     }
 
     public GameObject SpawnObject(int refe, GameObject parent, Vector3 pos, Quaternion rot, bool SendToEveryone = false, string data = "", string hidden_data = "")
@@ -112,6 +103,28 @@ public class SpawnSystem : MonoBehaviour
             //ServerGamer.Instance.SpawnObjectServerRpc(refe, pos, rot, ClientID, RandomFunctions.Instance.ListToString(dadalol), RandomFunctions.Instance.ListToString(hidden_dadalol));
         }
         return f;
+    }
+    public void SpawnPoolObject(Pool pp)
+    {
+        var e = Instantiate(pp.Object, transform.position, Quaternion.identity, transform);
+        e.SetActive(false);
+        pp.PoolLol.Enqueue(e);
+    }
+
+    public void ReturnObject(GameObject sex, int pool)
+    {
+        Pools[pool].ReturnObject(sex);
+    }
+    public GameObject QuickSpawnObject(int i)
+    {
+        if (Pools[i].UsePoolForObject)
+        {
+            return Pools[i].PullObject();
+        }
+        else
+        {
+            return Instantiate(Pools[i].Object);
+        }
     }
 }
 

@@ -259,7 +259,7 @@ public class ConsoleLol : MonoBehaviour
                             Tags.ClearAllOf("penis");
                             break;
                         case "circle":
-                            RandomFunctions.Instance.SpawnObject(0, gameObject, Vector3.zero, Quaternion.Euler(0, 0, 0));
+                            SpawnSystem.Instance.SpawnObject(0, gameObject, Vector3.zero, Quaternion.Euler(0, 0, 0));
                             break;
                         case "chat":
                             for(int i = 0; i < 10; i++)

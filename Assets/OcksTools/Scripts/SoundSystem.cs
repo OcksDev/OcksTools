@@ -34,7 +34,6 @@ public class SoundSystem : MonoBehaviour
 
     public void ModSound(int sound, bool findexisting = false)
     {
-        int k = 0;
         pvolume = 1;
         int the_sound = sound;
         switch (sound)
@@ -42,7 +41,7 @@ public class SoundSystem : MonoBehaviour
             case 0:
                 pvolume = SFXVolume;
                 /*
-                k = Random.Range(0, 2);
+                var k = Random.Range(0, 2);
                 switch (k)
                 {
                     case 0:

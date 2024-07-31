@@ -36,7 +36,7 @@ public class ServerGamer : NetworkBehaviour
     {
         if (id == ClientID) return;
 
-        RandomFunctions.Instance.SpawnObject(refe, gameObject, pos, rot, false, data, hdata);
+        SpawnSystem.Instance.SpawnObject(refe, gameObject, pos, rot, false, data, hdata);
     }
 
 
