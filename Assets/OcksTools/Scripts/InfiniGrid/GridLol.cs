@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.WSA;
 using UnityEngine.XR;
 
 public class GridLol : MonoBehaviour
@@ -103,15 +104,12 @@ public class GridLol : MonoBehaviour
         var a = Instantiate(TileToSpawn, GetPosOfScaled(zi), Quaternion.identity, transform).GetComponent<TileObject>();
         a.data = zi;
         a.data.tob = a;
-        Debug.Log("TileSpawn");
         foreach(var b in zi.GetUsedTiles())
         {
-            Debug.Log(b);
             Tiles.Add(b, zi);
         }
         a.spriteRenderer.color = colors[zi.TileType];
         a.transform.localScale = GetScaleOfScaled(zi);
-        //Debug.Log(zi.ToString());
         return a;
     }
 
@@ -123,7 +121,7 @@ public class GridLol : MonoBehaviour
         {
             if (fuckyou.ContainsKey(tile.Value)) continue;
             fuckyou.Add(tile.Value, 0);
-            boners.Add(tile.Value.pos.ToString() + "|=|" + tile.Value.size.ToString() + "|=|" + tile.Value.TileType.ToString());
+            boners.Add(tile.Value.TileToString());
         }
         SaveSystem.Instance.SetString("InfiniGrid", Converter.ListToString(boners, "-=-"));
     }
@@ -133,16 +131,10 @@ public class GridLol : MonoBehaviour
         foreach(var b in a)
         {
             if (b == "") continue;
-            var c = Converter.StringToList(b, "|=|");
-            var d = new OcksTileData(SpecializedStringToVector3Int(c[0]), Converter.StringToVector2Int(c[1]), int.Parse(c[2]));
-            SpawnTile(d);
+            var sex = new OcksTileData();
+            sex.StringToTile(b);
+            SpawnTile(sex);
         }
-    }
-
-    public Vector3Int SpecializedStringToVector3Int(string e)
-    {
-        var s = Converter.StringToList(e.Substring(1, e.Length - 2));
-        return new Vector3Int(int.Parse(s[0]), int.Parse(s[1]), 0);
     }
 
 
@@ -178,5 +170,31 @@ public class OcksTileData
         }
         return e;
     }
+
+    public string TileToString()
+    {
+        List<string> strings = new List<string>();
+        strings.Add(pos.ToString());
+        strings.Add(size.ToString());
+        strings.Add(TileType.ToString());
+
+        return Converter.ListToString(strings, "|=|");
+    }
+    public void StringToTile(string e)
+    {
+        var c = Converter.StringToList(e, "|=|");
+        pos = SpecializedStringToVector3Int(c[0]);
+        size = Converter.StringToVector2Int(c[1]);
+        TileType = int.Parse(c[2]);
+    }
+
+
+    public Vector3Int SpecializedStringToVector3Int(string e)
+    {
+        //dont mind this method
+        var s = Converter.StringToList(e.Substring(1, e.Length - 2));
+        return new Vector3Int(int.Parse(s[0]), int.Parse(s[1]), 0);
+    }
+
 
 }
