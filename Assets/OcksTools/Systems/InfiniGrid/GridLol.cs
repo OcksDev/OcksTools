@@ -182,12 +182,12 @@ public class OcksTileData
         data["type"] = TileType.ToString();
         foreach(var a in data)
         {
-            if (!defaul.ContainsKey(a.Key) || defaul[a.Key] != a.Value)
+            if ((!defaul.ContainsKey(a.Key)) || (defaul[a.Key] != a.Value))
             {
                 boner.Add(a.Key, a.Value);
             }
         }
-        return Converter.DictionaryToString(data);
+        return Converter.DictionaryToString(boner);
     }
     public void StringToTile(string e)
     {

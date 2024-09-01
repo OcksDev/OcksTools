@@ -33,9 +33,12 @@ public class Screenshot : MonoBehaviour
         var e = camera.targetTexture;
         camera.targetTexture = rt;
         Texture2D screenShot = new Texture2D(rw, rh, TextureFormat.RGBA32, false);
-        foreach (var cam in Sdata.CamerasToUpdate)
+        if (Sdata.PreRenderCameras)
         {
-            cam.Render();
+            foreach (var cam in Sdata.CamerasToUpdate)
+            {
+                cam.Render();
+            }
         }
         RenderTexture.active = rt;
         screenShot.ReadPixels(new Rect(0, 0, rw, rh), 0, 0);
@@ -50,7 +53,13 @@ public class Screenshot : MonoBehaviour
 
         System.IO.File.WriteAllBytes(ww, bytes);
         if (e != null) camera.targetTexture = e;
-        //camera.Render();
+        if (Sdata.PostRenderCameras)
+        {
+            foreach (var cam in Sdata.CamerasToUpdate)
+            {
+                cam.Render();
+            }
+        }
     }
 }
 [System.Serializable]
@@ -61,10 +70,15 @@ public class ScreenshotData
     public int Height_PX = 69;
     public Camera Camera;
     public bool UseCameraSizeForImage = false;
+
     [HideInInspector]
     public string OutputLocation;
     [HideInInspector]
     public List<Camera> CamerasToUpdate = new List<Camera>();
+    [HideInInspector]
+    public bool PreRenderCameras = true;
+    [HideInInspector]
+    public bool PostRenderCameras = false;
     public ScreenshotData()
     {
 
