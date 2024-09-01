@@ -6,10 +6,9 @@ this isnt really important for most people, just some helpful stuff for me as a 
 
 
 Organization:
-Main Systems go in the scripts folder
+Main Systems go in the systems folder
 	Misc classes go in the Misc folder
-	Things of many classes or parts have their own folder
-		Only would go in Misc if not a "main" system
+	Things consisting of many classes or parts have their own folder
 
 
 

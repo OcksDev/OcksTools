@@ -14,12 +14,6 @@ public class GISSlot : MonoBehaviour
     public string InteractFilter = "";
     private float DoubleClickTimer = -69f;
     private RectTransform erect;
-
-    public GISSlot(GISContainer cum)
-    {
-        Conte = cum;
-    }
-
     public void Awake()
     {
         if (Held_Item == null)

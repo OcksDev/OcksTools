@@ -95,7 +95,8 @@
 - New Screenshot System!
   - Allows for easy screenshotting because unity doesn't have this by default for some reason
 - Did some organization of things
-  - Reorganized some folders to have different names, the images folder is much more localical now
+  - Reorganized some folders to have different names, the images folder is much more logical now
+  - Scenes for systems have been moved out of a dedicated folder into their respective component folders
   - Created new folder of useful shaders and materials I have made.
   - Added a few more fonts
   - Fixed some random typos I found around random classes

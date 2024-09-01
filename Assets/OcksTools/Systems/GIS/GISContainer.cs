@@ -125,7 +125,8 @@ public class GISContainer : MonoBehaviour
             slots.Clear();
             foreach (var h in saved_items)
             {
-                var pp = new GISSlot(this);
+                var pp = new GISSlot();
+                pp.Conte = this;
                 pp.Held_Item = new GISItem(h);
                 slots.Add(pp);
             }
@@ -319,7 +320,8 @@ public class GISContainer : MonoBehaviour
                 while(item.Amount > f)
                 {
                     //Debug.Log("sex: " +item.Amount);
-                    var ns = new GISSlot(this);
+                    var ns = new GISSlot();
+                    ns.Conte = this;
                     var pp = new GISItem(item);
                     pp.Amount = f;
                     ns.Held_Item = pp;
@@ -328,14 +330,16 @@ public class GISContainer : MonoBehaviour
                 }
                 if(item.Amount > 0)
                 {
-                    var ns = new GISSlot(this);
+                    var ns = new GISSlot();
+                    ns.Conte = this;
                     ns.Held_Item = item;
                     slots.Add(ns);
                 }
             }
             else
             {
-                var ns = new GISSlot(this);
+                var ns = new GISSlot();
+                ns.Conte = this;
                 ns.Held_Item = item;
                 slots.Add(ns);
             }
