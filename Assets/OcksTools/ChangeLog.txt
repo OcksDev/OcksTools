@@ -88,6 +88,8 @@
   - default values are the name and gameobject of the attached script, can be manually changed to new values
 - New Input Buffer!
   - Allows the buffering of inputs so that they can be checked more leniently
+- New Screenshot System!
+  - Allows for easy screenshotting because unity doesn't have this by default for some reason
 - Did some organization of things
   - Reorganized some folders to have different names, the images folder is much more localical now
   - Created new folder of useful shaders and materials I have made.

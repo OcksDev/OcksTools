@@ -73,7 +73,8 @@ public class ConsoleLol : MonoBehaviour
             { "Error_NoReg", "No registry inputted" },
             { "Error_NoData", "- No Data -" },
             { "Error_InvalidTime", "Invalid time scale input" },
-            { "Error_InvalidData", "Invalid data modification selected" }
+            { "Error_InvalidData", "Invalid data modification selected" },
+            { "Error_NoScreenshot", "No screenshot component is loaded in the scene" }
         };
 
         var l = LanguageFileSystem.Instance;
@@ -348,6 +349,22 @@ public class ConsoleLol : MonoBehaviour
                             DialogLol.Instance.StartDialog(int.Parse(command[1]));
                             CloseConsole();
                             break;
+                    }
+                    break;
+                case "screenshot":
+                    if(Screenshot.Instance != null)
+                    {
+                        CloseConsole();
+                        var ss = new ScreenshotData("test", 1000, 1000, Camera.main, true);
+                        Screenshot.Instance.TakeScreenshot(ss);
+                    }
+                    else
+                    {
+                        ConsoleLog((
+
+                            lang.IndexValuePairs["Error_NoScreenshot"]
+
+                        ), "#bdbdbdff");
                     }
                     break;
                 case "settimescale":
