@@ -2,7 +2,7 @@
 ------------
    v1.1.0
 - Save System improvements!
-  - HoldingData now is a dictionary of dictionairies, meaning multiple lines of saved data now can be held.
+  - HoldingData now is a dictionary of dictionaries, meaning multiple lines of saved data now can be held.
     - You could do this with the old save system but it was clunky, new version is cleaner
   - Created new c# events which are called on save/load, so now other classes can safely save/load data easily
   - Fully moved away from old SaveFile index ideology, all systems in FileSystem and other related fields have been adjusted accordingly.
