@@ -8,11 +8,14 @@
   - Fully moved away from old SaveFile index ideology, all systems in FileSystem and other related fields have been adjusted accordingly.
 - GIS improvements!
   - GISContainers now can be toggled into a mode called "Abstract" so they can work like a list of items. (untested)
+  - Completely reworked items to now be dictionary based instead of list based
   - new class GISItemBar/prefab AbstractDisplay
     - Works like an item bar similar to Risk Of Rain 2 where items are ordered in a bar
     - Inspired by Risk Of Rain 2's item system.
   - new IndexOf method, lets you find the slot index of an item
   - new AbstractAdd method, lets you add items into an abstract container
+  - new ClearSlots method, destroys all existing slots
+  - new GenerateSlots method, creates a given amount of slots
   - GISContainers now can be referenced by name in a dictionary in GISLol
   - Officially removed support for CanRetainItems boolean in the GIS, it wasn't useful and was causing unneeded complexity
   - GISContianers now can disable shiftclicking
@@ -22,6 +25,7 @@
   - Revamped how GISItems are saved/loaded in text, now much more modular and easy to update
   - Revamped how saving of GISContainers is handled, should now be much more reliable.
     - Now integrated with the new save event from SaveSystem
+  - Reworked hover logic, should be much less prone to not detecting clicks.
 - Entity has some much needed improvements
   - Damage and Effects now have their own custom classes
   - Completely reworked effect adding, new combining methods have been created and effects should actually have a timer now

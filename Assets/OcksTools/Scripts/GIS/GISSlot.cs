@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class GISSlot : MonoBehaviour
@@ -11,6 +13,7 @@ public class GISSlot : MonoBehaviour
     public GISContainer Conte;
     public string InteractFilter = "";
     private float DoubleClickTimer = -69f;
+    private RectTransform erect;
 
     public GISSlot(GISContainer cum)
     {
@@ -24,20 +27,24 @@ public class GISSlot : MonoBehaviour
             Held_Item = new GISItem();
         }
     }
+    private void Start()
+    {
+        erect = GetComponent<RectTransform>();
+    }
     public bool FailToClick()
     {
         var pp = GISLol.Instance.Mouse_Held_Item;
-        if (pp.ItemIndex == 0) return false;
+        if (pp.ItemIndex == "Empty") return false;
         switch (InteractFilter)
         {
             case "TakeOnly":
-                if (pp.ItemIndex != 0) return true;
+                if (pp.ItemIndex != "Empty") return true;
                 break;
             case "PlaceOnly":
-                if (Held_Item.ItemIndex != 0) return true;
+                if (Held_Item.ItemIndex != "Empty") return true;
                 break;
             case "AbstractInput":
-                if (pp.ItemIndex != 0)
+                if (pp.ItemIndex != "Empty")
                 {
                     Conte.AbstractAdd(pp);
                     return true;
@@ -52,14 +59,17 @@ public class GISSlot : MonoBehaviour
         //code called whenever a slot if interacted with
     }
 
-    private void OnMouseOver()
+    private void Update()
     {
-        if (FailToClick()) return;
         var g = GISLol.Instance;
-
         bool shift = InputManager.IsKey(InputManager.gamekeys["item_alt"]);
         bool left = InputManager.IsKeyDown(InputManager.gamekeys["item_select"]);
         bool right = InputManager.IsKeyDown(InputManager.gamekeys["item_half"]);
+
+        if (!(left || right)) return;
+        if (FailToClick()) return;
+        if (!IsHovering()) return;
+
         if (Conte.CanShiftClickItems && shift)
         {
             if (left || right)
@@ -75,7 +85,7 @@ public class GISSlot : MonoBehaviour
                     var x = Conte.slots[i].Held_Item;
                     if (x.Compare(a))
                     {
-                        int max = g.Items[a.ItemIndex].MaxAmount;
+                        int max = g.ItemDict[a.ItemIndex].MaxAmount;
                         int t = x.Amount + a.Amount;
                         if (max <= 0)
                         {
@@ -95,7 +105,7 @@ public class GISSlot : MonoBehaviour
                             }
                         }
                     }
-                    else if (x.ItemIndex == 0)
+                    else if (x.ItemIndex == "Empty")
                     {
                         break;
                     }
@@ -122,11 +132,11 @@ public class GISSlot : MonoBehaviour
 
                     if (Held_Item.Compare(a))
                     {
-                        int d = Held_Item.ItemIndex;
+                        var d = Held_Item.ItemIndex;
                         int b = a.Amount;
                         int c = Held_Item.Amount + b;
                         Held_Item.Amount = c;
-                        int K = g.Items[d].MaxAmount;
+                        int K = g.ItemDict[d].MaxAmount;
                         if (K != 0)
                         {
                             if (c > K)
@@ -155,7 +165,7 @@ public class GISSlot : MonoBehaviour
                     {
                         g.Mouse_Held_Item = Held_Item;
                         g.Mouse_Held_Item.AddConnection(Conte);
-                        if (g.Mouse_Held_Item.ItemIndex == 0)
+                        if (g.Mouse_Held_Item.ItemIndex == "Empty")
                         {
                             g.Mouse_Held_Item.SetContainer(null);
                         }
@@ -175,7 +185,7 @@ public class GISSlot : MonoBehaviour
                     {
                         if (slot != this && slot.Held_Item.Compare(g.Mouse_Held_Item))
                         {
-                            int x = g.Items[g.Mouse_Held_Item.ItemIndex].MaxAmount;
+                            int x = g.ItemDict[g.Mouse_Held_Item.ItemIndex].MaxAmount;
                             if (x != 0 && g.Mouse_Held_Item.Amount + slot.Held_Item.Amount > x)
                             {
                                 slot.Held_Item.Amount = slot.Held_Item.Amount - (x - g.Mouse_Held_Item.Amount);
@@ -208,7 +218,7 @@ public class GISSlot : MonoBehaviour
                 SaveItemContainerData();
                 var a = g.Mouse_Held_Item;
 
-                if (Held_Item.ItemIndex == 0)
+                if (Held_Item.ItemIndex == "Empty")
                 {
                     if (a.Amount > 0)
                     {
@@ -226,7 +236,7 @@ public class GISSlot : MonoBehaviour
                 }
                 else
                 {
-                    if (a.ItemIndex == 0)
+                    if (a.ItemIndex == "Empty")
                     {
                         float b = (float)Held_Item.Amount / 2;
                         g.Mouse_Held_Item = new GISItem(Held_Item);
@@ -240,7 +250,7 @@ public class GISSlot : MonoBehaviour
                     }
                     else if (Held_Item.Compare(a))
                     {
-                        int max = g.Items[Held_Item.ItemIndex].MaxAmount;
+                        int max = g.ItemDict[Held_Item.ItemIndex].MaxAmount;
                         if (max == 0 || Held_Item.Amount < max)
                         {
                             Held_Item.Amount++;
@@ -265,6 +275,46 @@ public class GISSlot : MonoBehaviour
 
     }
 
+    public bool IsHovering2()
+    {
+        //deprecated mouse hovering code, only keeping it incase anyone wants to use it because im like 95% certain its faster than the new method, it just works less well
+        var size = 1f;
+
+        var m = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        var pos = erect.position;
+        if (pos.x - size < m.x && pos.x + size > m.x && pos.y - size < m.y && pos.y + size > m.y)
+        {
+            return true;
+        }
+        return false;
+    }
+    public bool IsHovering()
+    {
+        PointerEventData ped = new PointerEventData(EventSystem.current);
+        ped.position = Input.mousePosition;
+        List<RaycastResult> rcl = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(ped, rcl);
+        foreach (var ray in rcl)
+        {
+            if(ray.gameObject == this.gameObject)
+            {
+                return true;
+            }
+        }
+
+
+        return false;
+    }
+
+    public GISSlot HoverCheckerData()
+    {
+        if (!gameObject.activeInHierarchy) return null;
+        if (IsHovering())
+        {
+            return this;
+        }
+        return null;
+    }
     private void FixedUpdate()
     {
         DoubleClickTimer -= Time.deltaTime;

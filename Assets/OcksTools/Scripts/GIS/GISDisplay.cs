@@ -20,6 +20,6 @@ public class GISDisplay : MonoBehaviour
     void FixedUpdate()
     {
         amnt.text = item.Amount > 0?"x" + item.Amount:"";
-        display.sprite = GISLol.Instance.Items[item.ItemIndex].Sprite;
+        display.sprite = GISLol.Instance.ItemDict[item.ItemIndex].Sprite;
     }
 }

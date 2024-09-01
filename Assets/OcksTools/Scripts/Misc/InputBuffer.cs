@@ -5,12 +5,18 @@ using UnityEngine;
 
 public class InputBuffer : MonoBehaviour
 {
+    public static InputBuffer Instance;
     /*
      * how to use:
      *     BufferListen() to run every time you want to check for a new input of a given key
      *     GetBuffer() gets if the button exists in the buffer (aka was pressed by the user)
      *     RemoveBuffer() removes the button from the buffer if it exists
      */
+    private void Awake()
+    {
+        Instance = this;
+    }
+
     public bool GetBuffer(string name)
     {
         return buffer.ContainsKey(name);

@@ -53,27 +53,26 @@ MonoBehaviour:
   Mouse_Displayer: {fileID: 0}
   MouseFollower: {fileID: 0}
   Items:
-  - Sprite: {fileID: 21300000, guid: 85723baf3a25a534aa78fc87435dd36b, type: 3}
-    Name: Void
+  - Name: Empty
+    Sprite: {fileID: 21300000, guid: 85723baf3a25a534aa78fc87435dd36b, type: 3}
     Description: Nothing
     MaxAmount: 0
-  - Sprite: {fileID: 21300000, guid: f10dcfa5a64722e4fab1eef72583f731, type: 3}
-    Name: Banana
+  - Name: Banana
+    Sprite: {fileID: 21300000, guid: f10dcfa5a64722e4fab1eef72583f731, type: 3}
     Description: Ban ananing lol
     MaxAmount: 0
-  - Sprite: {fileID: 21300000, guid: 7b7a75fcb3af49c44964d5593d9c85c8, type: 3}
-    Name: Holy Shield
+  - Name: Holy Shield
+    Sprite: {fileID: 21300000, guid: 7b7a75fcb3af49c44964d5593d9c85c8, type: 3}
     Description: Licking my balls
     MaxAmount: 0
-  - Sprite: {fileID: 21300000, guid: 773793f07231daa46913610b00efaaf7, type: 3}
-    Name: Drugs
+  - Name: Drugs
+    Sprite: {fileID: 21300000, guid: 773793f07231daa46913610b00efaaf7, type: 3}
     Description: EEEEEE
     MaxAmount: 150
-  - Sprite: {fileID: 21300000, guid: e36690a6e6d5eec4b949f2403daa9e33, type: 3}
-    Name: Shield Of Balls
+  - Name: Shield Of Balls
+    Sprite: {fileID: 21300000, guid: e36690a6e6d5eec4b949f2403daa9e33, type: 3}
     Description: EEEEEE 69 2
     MaxAmount: 0
-  All_Containers: []
 --- !u!114 &324499805810810536
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -98,8 +97,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac1cfc2e71f50cf4496bb3866b830a15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GameFolderName: OcksTools
+  GameVer: v1.1.0
+  DirectoryLol: 
+  OcksDirectry: 
+  UniversalDirectory: 
   GameDirectory: 
+  FileLocations: []
 --- !u!114 &324499805810810537
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -117,8 +120,6 @@ MonoBehaviour:
   ParticleSpawnRefs:
   - {fileID: 0}
   ParticleSpawnObject: {fileID: 0}
-  GameVer: 1.0.5
-  ClientID: 
 --- !u!114 &324499805810810538
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -144,7 +145,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   UseFileSystem: 1
-  SaveFile: 0
   test: 0
-  GameDataFileName: Game_Data
-  GameFilePath: 
+  LoadedData: 0

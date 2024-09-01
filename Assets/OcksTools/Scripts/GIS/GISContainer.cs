@@ -34,14 +34,7 @@ public class GISContainer : MonoBehaviour
                     Destroy(pp.gameObject);
                 }
 
-                for (int i = 0; i < GenerateXSlots; i++)
-                {
-                    var h = Instantiate(SlotPrefab, transform.position, transform.rotation, transform);
-                    var h2 = h.GetComponent<GISSlot>();
-                    h2.Conte = this;
-                    h2.Held_Item = new GISItem();
-                    slots.Add(h2);
-                }
+                GenerateSlots(GenerateXSlots);
             }
             else
             {
@@ -68,10 +61,10 @@ public class GISContainer : MonoBehaviour
             //this is some debug shit for creating a bunch of randomly generated new containers.
             foreach(var s in slots)
             {
-                s.Held_Item = new GISItem(UnityEngine.Random.Range(0, 5));
+                s.Held_Item = new GISItem(GISLol.Instance.Items[UnityEngine.Random.Range(0, GISLol.Instance.Items.Count)].Name);
                 s.Held_Item.Amount = 69;
                 s.Held_Item.Container = this;
-                if (s.Held_Item.ItemIndex == 0)
+                if (s.Held_Item.ItemIndex == "Empty")
                 {
                     s.Held_Item.Amount = 0;
                 }
@@ -113,7 +106,7 @@ public class GISContainer : MonoBehaviour
 
     public bool SaveTempContents()
     {
-        if(GISLol.Instance.Mouse_Held_Item.ItemIndex == 0)
+        if(GISLol.Instance.Mouse_Held_Item.ItemIndex == "Empty")
         {
             saved_items.Clear();
             foreach(var h in slots)
@@ -153,7 +146,7 @@ public class GISContainer : MonoBehaviour
         int k = 0;
         foreach (var j in slots)
         {
-            if (j.Held_Item.ItemIndex == 0)
+            if (j.Held_Item.ItemIndex == "Empty")
             {
                 i = k;
                 break;
@@ -200,23 +193,20 @@ public class GISContainer : MonoBehaviour
                 GISItem ghj = null;
                 foreach (var st in a)
                 {
-                    if (st != "")
-                    {
-                        ghj = new GISItem();
-                        ghj.StringToItem(st);
-                        ghj.Container = this;
+                    ghj = new GISItem();
+                    ghj.StringToItem(st);
+                    ghj.Container = this;
 
-                        if (IsAbstract)
-                        {
-                            AbstractAdd(ghj);
-                        }
-                        else
-                        {
-                            slots[i].Held_Item = ghj;
-                        }
-                        i++;
-                        if (!IsAbstract && i >= slots.Count) break;
+                    if (IsAbstract)
+                    {
+                        AbstractAdd(ghj);
                     }
+                    else
+                    {
+                        slots[i].Held_Item = ghj;
+                    }
+                    i++;
+                    if (!IsAbstract && i >= slots.Count) break;
                 }
 
             }
@@ -250,7 +240,7 @@ public class GISContainer : MonoBehaviour
             var x = slots[i].Held_Item;
             if (x.Compare(a))
             {
-                int max = GISLol.Instance.Items[a.ItemIndex].MaxAmount;
+                int max = GISLol.Instance.ItemDict[a.ItemIndex].MaxAmount;
                 int t = x.Amount + a.Amount;
                 if (max <= 0)
                 {
@@ -270,7 +260,7 @@ public class GISContainer : MonoBehaviour
                     }
                 }
             }
-            else if (x.ItemIndex == 0)
+            else if (x.ItemIndex == "Empty")
             {
                 found = true;
                 slots[i].Held_Item = a;
@@ -291,7 +281,7 @@ public class GISContainer : MonoBehaviour
     //any method prefixed with "Abstract" should only be used if the container is abstract.
     public void AbstractAdd(GISItem item)
     {
-        var f = GISLol.Instance.Items[item.ItemIndex].MaxAmount;
+        var f = GISLol.Instance.ItemDict[item.ItemIndex].MaxAmount;
         foreach (var s in slots)
         {
             if (item.Compare(s.Held_Item))
@@ -328,7 +318,7 @@ public class GISContainer : MonoBehaviour
             {
                 while(item.Amount > f)
                 {
-                    Debug.Log("sex: " +item.Amount);
+                    //Debug.Log("sex: " +item.Amount);
                     var ns = new GISSlot(this);
                     var pp = new GISItem(item);
                     pp.Amount = f;
@@ -351,6 +341,26 @@ public class GISContainer : MonoBehaviour
             }
         }
     }
+    public void ClearSlots()
+    {
+        foreach( var ns in slots)
+        {
+            Destroy(ns.gameObject);
+        }
+        slots.Clear();
+    }
+    public void GenerateSlots(int amount)
+    {
+        for(int i = 0; i < amount; i++)
+        {
+            var h = Instantiate(SlotPrefab, transform.position, transform.rotation, transform);
+            var h2 = h.GetComponent<GISSlot>();
+            h2.Conte = this;
+            h2.Held_Item = new GISItem();
+            slots.Add(h2);
+        }
+    }
+
     public int IndexOf(GISItem item, bool truecompare = false)
     {
         for (int i = 0; i < slots.Count; i++)

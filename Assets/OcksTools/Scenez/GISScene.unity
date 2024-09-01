@@ -1868,7 +1868,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0271b96d44d50ac4f879d777a2691ca5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ItemToFind: 2
+  ItemToFind: Shield
   Container: {fileID: 1800330448}
 --- !u!114 &1531936150
 MonoBehaviour:
@@ -3498,6 +3498,10 @@ PrefabInstance:
     - target: {fileID: 324499805810810541, guid: e0c709a7a21216947a721dc882abbf55, type: 3}
       propertyPath: Items.Array.size
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 324499805810810541, guid: e0c709a7a21216947a721dc882abbf55, type: 3}
+      propertyPath: Items.Array.data[2].Name
+      value: Shield
       objectReference: {fileID: 0}
     - target: {fileID: 324499805810810541, guid: e0c709a7a21216947a721dc882abbf55, type: 3}
       propertyPath: Items.Array.data[5].Name

@@ -13,6 +13,7 @@ public class GISLol : MonoBehaviour
     public GameObject MouseFollower;
     private static GISLol instance;
     public List<GISItem_Data> Items = new List<GISItem_Data>();
+    public Dictionary<string,GISItem_Data> ItemDict = new Dictionary<string, GISItem_Data>();
 
 
     public Dictionary<string,GISContainer> All_Containers = new Dictionary<string, GISContainer>();
@@ -35,12 +36,16 @@ public class GISLol : MonoBehaviour
     {
         if (Instance == null) instance = this;
         Mouse_Held_Item = new GISItem();
+        foreach(var item in Items)
+        {
+            ItemDict.Add(item.Name, item);
+        }
+        SaveSystem.SaveAllData += SaveAll;
     }
 
 
     private void Start()
     {
-        SaveSystem.SaveAllData += SaveAll;
         MouseFollower.SetActive(true);
 
         if (UseLanguageFile)
@@ -127,7 +132,7 @@ public class GISItem
      * GISContainer.LoadContents()
      */
 
-    public int ItemIndex;
+    public string ItemIndex;
     public int Amount;
     public GISContainer Container;
     public List<GISContainer> Interacted_Containers = new List<GISContainer>();
@@ -136,7 +141,7 @@ public class GISItem
     {
         setdefaultvals();
     }
-    public GISItem(int base_type)
+    public GISItem(string base_type)
     {
         setdefaultvals();
         ItemIndex = base_type;
@@ -150,8 +155,9 @@ public class GISItem
     }
     private void setdefaultvals()
     {
+        Data = GetDefaultData();
         Amount = 0;
-        ItemIndex = 0;
+        ItemIndex = "Empty";
         Container = null;
     }
     public void Solidify()
@@ -194,18 +200,71 @@ public class GISItem
         }
     }
 
+    public Dictionary<string, string> Data = new Dictionary<string, string>();
+
+    public Dictionary<string, string> GetDefaultData()
+    {
+        var e = new Dictionary<string, string>()
+        {
+            { "Index", "Empty" },
+            { "Count", "0" },
+        };
+        return e;
+    }
+
+
     public string ItemToString()
     {
         string e = "";
-        var s = "~|~";
-        e += ItemIndex + s + Amount;
+        var def = GetDefaultData();
+
+        Data["Index"] = ItemIndex.ToString();
+        Data["Count"] = Amount.ToString();
+
+
+
+        Dictionary<string, string> bb = new Dictionary<string, string>();
+        foreach (var dat in Data)
+        {
+            if (!def.ContainsKey(dat.Key) || dat.Value != def[dat.Key])
+            {
+                bb.Add(dat.Key, dat.Value);
+            }
+        }
+        if (bb.ContainsKey("Count") && bb["Count"] == "1") bb.Remove("Count");
+
+        e = Converter.DictionaryToString(bb, "~|~", "~o~");
+
         return e;
     }
     public void StringToItem(string e)
     {
-        var s = Converter.StringToList(e, "~|~");
-        ItemIndex = int.Parse(s[0]);
-        Amount = int.Parse(s[1]);
+        setdefaultvals();
+
+        var wanker = Converter.StringToDictionary(e, "~|~", "~o~");
+        foreach (var ae in wanker)
+        {
+            if (Data.ContainsKey(ae.Key))
+            {
+                Data[ae.Key] = ae.Value;
+            }
+            else
+            {
+                Data.Add(ae.Key, ae.Value);
+            }
+        }
+
+        ItemIndex = Data["Index"];
+        if (wanker.ContainsKey("Count"))
+        {
+            Amount = int.Parse(Data["Count"]);
+        }
+        else
+        {
+            Amount = ItemIndex != "Empty" ? 1 : 0;
+        }
+
+
     }
 
 }
@@ -215,8 +274,8 @@ public class GISItem_Data
 {
     //this is what holds all of the base data for a general item of it's type.
     //EX: All "coal" items refer back to this for things like icon and name
-    public Sprite Sprite;
     public string Name;
+    public Sprite Sprite;
     public string Description;
     public int MaxAmount;
     public GISItem_Data()

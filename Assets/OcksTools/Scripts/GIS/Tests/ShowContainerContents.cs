@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class ShowContainerContents : MonoBehaviour
 {
-    public int ItemToFind;
+    public string ItemToFind;
     public GISContainer Container;
     private TextMeshProUGUI se;
     private GISItem thi;
@@ -19,6 +19,6 @@ public class ShowContainerContents : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        se.text = GISLol.Instance.Items[ItemToFind].Name + ": " + Container.AmountOfItem(thi).ToString();
+        se.text = GISLol.Instance.ItemDict[ItemToFind].Name + ": " + Container.AmountOfItem(thi).ToString();
     }
 }
