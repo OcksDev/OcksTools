@@ -297,7 +297,7 @@ public class InputManager : MonoBehaviour
 
     public static bool GetSelected(string ide)
     {
-        return locklevel == ide || locklevel == "";
+        return locklevel == ide || locklevel == "" || ide == "";
     }
 
     public static void ResetLockLevel()
