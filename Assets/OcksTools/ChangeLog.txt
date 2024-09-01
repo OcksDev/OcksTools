@@ -63,6 +63,7 @@
   - Fixed bug so rooms should no longer spawn upside down (generation was good, spawning in the prefabs based on the generation was not)
 - Input Manager Improvements!
   - New random methods to GetAllCurrentlyPressedKeys() and/or GetArbitraryKeyPressed() 
+  - Organization plus simplificaiton of some things
 - New Text Animator!
   - Allows for the animating of text in a very cool way, animations can be stacked and mixed
     - Comes with many example animations: Wave, WaveND, Rainbow, RainbowSnap, Shake, ShakeWhole, Halloween

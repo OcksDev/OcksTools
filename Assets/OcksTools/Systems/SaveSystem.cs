@@ -44,11 +44,9 @@ public class SaveSystem : MonoBehaviour
 
 
         InputManager.AssembleTheCodes();
-        List<string> list = new List<string>();
-
-
-
         var s = SoundSystem.Instance;
+        List<string> list = new List<string>();
+        Dictionary<string,string> dic = new Dictionary<string, string>();
 
         int x = 0;
 
@@ -56,15 +54,14 @@ public class SaveSystem : MonoBehaviour
         GetDataFromFile(dict);
 
         var ghghgg = GetString("keybinds", "fuck", dict);
-        list = Converter.StringToList(ghghgg);
+        dic = Converter.StringToDictionary(ghghgg);
         if (ghghgg != "fuck")
         {
-            foreach (var a in list)
+            foreach (var a in dic)
             {
                 try
                 {
-                    var sseexx = Converter.StringToList(a, "<K>");
-                    InputManager.gamekeys[sseexx[0]] = InputManager.namekeys[sseexx[1]];
+                    InputManager.gamekeys[a.Key] = InputManager.namekeys[a.Value];
                     x++;
                 }
                 catch
@@ -88,20 +85,16 @@ public class SaveSystem : MonoBehaviour
     }
     public void SaveGame(string dict = "def")
     {
-        /* Input Modes:
-         * -1 = Save whatever is the currently selected file (by default is 0)
-         * Any Other Value = Save curent data to a specfic file
-         */
-
-        List<string> list = new List<string>();
         var s = SoundSystem.Instance;
+        List<string> list = new List<string>();
+        Dictionary<string, string> dic = new Dictionary<string, string>();
 
-        list.Clear();
+        dic.Clear();
         foreach (var a in InputManager.gamekeys)
         {
-            list.Add(a.Key + "<K>" + InputManager.keynames[a.Value]);
+            dic.Add(a.Key,InputManager.keynames[a.Value]);
         }
-        SetString("keybinds", Converter.ListToString(list), dict);
+        SetString("keybinds", Converter.DictionaryToString(dic), dict);
         //PlayerPrefs.SetInt("UnitySelectMonitor", index); // sets the monitor that unity uses
 
         if (s != null)

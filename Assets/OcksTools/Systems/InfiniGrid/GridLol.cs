@@ -147,12 +147,14 @@ public class OcksTileData
     public Vector2Int size = Vector2Int.one;
     public int TileType;
     public TileObject tob;
+    Dictionary<string,string> data = new Dictionary<string,string>();
     public OcksTileData()
     {
-
+        data = GetDataDict();
     }
     public OcksTileData(Vector3Int pos, Vector2Int size, int tileType)
     {
+        data = GetDataDict();
         this.pos = pos;
         TileType = tileType;
         this.size = size;
@@ -173,21 +175,50 @@ public class OcksTileData
 
     public string TileToString()
     {
-        List<string> strings = new List<string>();
-        strings.Add(pos.ToString());
-        strings.Add(size.ToString());
-        strings.Add(TileType.ToString());
-
-        return Converter.ListToString(strings, "|=|");
+        Dictionary<string, string> boner = new Dictionary<string, string>();
+        var defaul = GetDataDict();
+        data["pos"] = pos.ToString();
+        data["size"] = size.ToString();
+        data["type"] = TileType.ToString();
+        foreach(var a in data)
+        {
+            if (!defaul.ContainsKey(a.Key) || defaul[a.Key] != a.Value)
+            {
+                boner.Add(a.Key, a.Value);
+            }
+        }
+        return Converter.DictionaryToString(data);
     }
     public void StringToTile(string e)
     {
-        var c = Converter.StringToList(e, "|=|");
-        pos = SpecializedStringToVector3Int(c[0]);
-        size = Converter.StringToVector2Int(c[1]);
-        TileType = int.Parse(c[2]);
+        data = GetDataDict();
+        var c = Converter.StringToDictionary(e);
+        foreach(var k in c)
+        {
+            if (data.ContainsKey(k.Key))
+            {
+                data[k.Key] = k.Value;
+            }
+            else
+            {
+                data.Add(k.Key,k.Value);
+            }
+        }
+
+        pos = SpecializedStringToVector3Int(data["pos"]);
+        size = Converter.StringToVector2Int(data["size"]);
+        TileType = int.Parse(data["type"]);
     }
 
+    public Dictionary<string,string> GetDataDict()
+    {
+        return new Dictionary<string, string>()
+        {
+            {"pos","(0, 0, 0)"},
+            {"size","(1, 1)"},
+            {"type","0"},
+        };
+    }
 
     public Vector3Int SpecializedStringToVector3Int(string e)
     {

@@ -26,7 +26,7 @@ public class Converter : MonoBehaviour
         return eee.Split(split).ToList();
     }
 
-    public static string DictionaryToString(Dictionary<string, string> dic, string splitter = ", ", string splitter2 = "<K>")
+    public static string DictionaryToString(Dictionary<string, string> dic, string splitter = "<K>", string splitter2 = "<->")
     {
         List<string> list = new List<string>();
         foreach (var a in dic)
@@ -35,7 +35,7 @@ public class Converter : MonoBehaviour
         }
         return ListToString(list, splitter);
     }
-    public static Dictionary<string, string> StringToDictionary(string e, string splitter = ", ", string splitter2 = "<K>")
+    public static Dictionary<string, string> StringToDictionary(string e, string splitter = "<K>", string splitter2 = "<->")
     {
         var dic = new Dictionary<string, string>();
         var list = StringToList(e, splitter);
