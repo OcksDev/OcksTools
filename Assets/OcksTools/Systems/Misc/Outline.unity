@@ -292,9 +292,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ss: {fileID: 461053597}
-  tex2: {fileID: 2800000, guid: 7b7a75fcb3af49c44964d5593d9c85c8, type: 3}
-  sprit: {fileID: 21300000, guid: 7b7a75fcb3af49c44964d5593d9c85c8, type: 3}
-  gaming: {fileID: 0}
+  tex2: {fileID: 2800000, guid: 7b91cbec418a13a498ffa377e6ce9258, type: 3}
   gaming2: {fileID: 1071860550}
 --- !u!114 &461053597
 MonoBehaviour:
