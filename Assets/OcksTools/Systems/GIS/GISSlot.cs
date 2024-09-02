@@ -37,13 +37,6 @@ public class GISSlot : MonoBehaviour
             case "PlaceOnly":
                 if (Held_Item.ItemIndex != "Empty") return true;
                 break;
-            case "AbstractInput":
-                if (pp.ItemIndex != "Empty")
-                {
-                    Conte.AbstractAdd(pp);
-                    return true;
-                }
-                break;
         }
         return false;
     }
@@ -63,208 +56,217 @@ public class GISSlot : MonoBehaviour
         if (!(left || right)) return;
         if (FailToClick()) return;
         if (!IsHovering()) return;
-
-        if (Conte.CanShiftClickItems && shift)
+        switch (Name)
         {
-            if (left || right)
-            {
-                Held_Item.AddConnection(Conte);
-                SaveItemContainerData();
-                var a = new GISItem(Held_Item);
-                Held_Item = new GISItem();
-                int i = left ? 0 : Conte.slots.Count - 1;
-                bool found = false;
-                foreach (var item in Conte.slots)
+            case "AbstractAdd":
+                var mitem = GISLol.Instance.Mouse_Held_Item;
+                Conte.AbstractAdd(mitem);
+                GISLol.Instance.Mouse_Held_Item = new GISItem();
+                break;
+            default:
+                if (Conte.CanShiftClickItems && shift)
                 {
-                    var x = Conte.slots[i].Held_Item;
-                    if (x.Compare(a))
+                    if (left || right)
                     {
-                        int max = g.ItemDict[a.ItemIndex].MaxAmount;
-                        int t = x.Amount + a.Amount;
-                        if (max <= 0)
+                        Held_Item.AddConnection(Conte);
+                        SaveItemContainerData();
+                        var a = new GISItem(Held_Item);
+                        Held_Item = new GISItem();
+                        int i = left ? 0 : Conte.slots.Count - 1;
+                        bool found = false;
+                        foreach (var item in Conte.slots)
                         {
-                            x.Amount = t;
-                            found = true;
-                            break;
-                        }
-                        else
-                        {
-                            int z = Mathf.Clamp(t, 0, max);
-                            x.Amount = z;
-                            a.Amount = t - z;
-                            if (a.Amount == 0)
+                            var x = Conte.slots[i].Held_Item;
+                            if (x.Compare(a))
                             {
-                                found = true;
+                                int max = g.ItemDict[a.ItemIndex].MaxAmount;
+                                int t = x.Amount + a.Amount;
+                                if (max <= 0)
+                                {
+                                    x.Amount = t;
+                                    found = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    int z = Mathf.Clamp(t, 0, max);
+                                    x.Amount = z;
+                                    a.Amount = t - z;
+                                    if (a.Amount == 0)
+                                    {
+                                        found = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            else if (x.ItemIndex == "Empty")
+                            {
                                 break;
                             }
+                            i += left ? 1 : -1;
                         }
-                    }
-                    else if (x.ItemIndex == "Empty")
-                    {
-                        break;
-                    }
-                    i += left ? 1 : -1;
-                }
-                if (!found)
-                {
-                    Conte.slots[i].Held_Item = a;
-                }
-                SaveItemContainerData();
-                OnInteract();
-            }
-        }
-        else
-        {
-            if (left)
-            {
-                Held_Item.AddConnection(Conte);
-                SaveItemContainerData();
-                if (DoubleClickTimer < 0)
-                {
-                    DoubleClickTimer = 0.2f;
-                    var a = g.Mouse_Held_Item;
-
-                    if (Held_Item.Compare(a))
-                    {
-                        var d = Held_Item.ItemIndex;
-                        int b = a.Amount;
-                        int c = Held_Item.Amount + b;
-                        Held_Item.Amount = c;
-                        int K = g.ItemDict[d].MaxAmount;
-                        if (K != 0)
+                        if (!found)
                         {
-                            if (c > K)
+                            Conte.slots[i].Held_Item = a;
+                        }
+                        SaveItemContainerData();
+                        OnInteract();
+                    }
+                }
+                else
+                {
+                    if (left)
+                    {
+                        Held_Item.AddConnection(Conte);
+                        SaveItemContainerData();
+                        if (DoubleClickTimer < 0)
+                        {
+                            DoubleClickTimer = 0.2f;
+                            var a = g.Mouse_Held_Item;
+
+                            if (Held_Item.Compare(a))
                             {
-                                Held_Item.Amount = K;
-                                g.Mouse_Held_Item.Amount = c - K;
+                                var d = Held_Item.ItemIndex;
+                                int b = a.Amount;
+                                int c = Held_Item.Amount + b;
+                                Held_Item.Amount = c;
+                                int K = g.ItemDict[d].MaxAmount;
+                                if (K != 0)
+                                {
+                                    if (c > K)
+                                    {
+                                        Held_Item.Amount = K;
+                                        g.Mouse_Held_Item.Amount = c - K;
+                                    }
+                                    else
+                                    {
+                                        g.Mouse_Held_Item.Amount = 0;
+                                    }
+                                }
+                                else
+                                {
+                                    g.Mouse_Held_Item.Amount = 0;
+                                }
+                                Held_Item.AddConnection(g.Mouse_Held_Item.Container);
+
+
+                                if (g.Mouse_Held_Item.Amount <= 0)
+                                {
+                                    g.Mouse_Held_Item = new GISItem();
+                                }
                             }
                             else
                             {
-                                g.Mouse_Held_Item.Amount = 0;
+                                g.Mouse_Held_Item = Held_Item;
+                                g.Mouse_Held_Item.AddConnection(Conte);
+                                if (g.Mouse_Held_Item.ItemIndex == "Empty")
+                                {
+                                    g.Mouse_Held_Item.SetContainer(null);
+                                }
+                                Held_Item = a;
+                                if (Held_Item.Container != Conte)
+                                {
+                                    Held_Item.SetContainer(Conte);
+                                }
                             }
                         }
                         else
                         {
-                            g.Mouse_Held_Item.Amount = 0;
-                        }
-                        Held_Item.AddConnection(g.Mouse_Held_Item.Container);
+                            //double click code
+                            DoubleClickTimer = -69f;
 
-
-                        if (g.Mouse_Held_Item.Amount <= 0)
-                        {
-                            g.Mouse_Held_Item = new GISItem();
-                        }
-                    }
-                    else
-                    {
-                        g.Mouse_Held_Item = Held_Item;
-                        g.Mouse_Held_Item.AddConnection(Conte);
-                        if (g.Mouse_Held_Item.ItemIndex == "Empty")
-                        {
-                            g.Mouse_Held_Item.SetContainer(null);
-                        }
-                        Held_Item = a;
-                        if (Held_Item.Container != Conte)
-                        {
-                            Held_Item.SetContainer(Conte);
-                        }
-                    }
-                }
-                else
-                {
-                    //double click code
-                    DoubleClickTimer = -69f;
-
-                    foreach (var slot in Conte.slots)
-                    {
-                        if (slot != this && slot.Held_Item.Compare(g.Mouse_Held_Item))
-                        {
-                            int x = g.ItemDict[g.Mouse_Held_Item.ItemIndex].MaxAmount;
-                            if (x != 0 && g.Mouse_Held_Item.Amount + slot.Held_Item.Amount > x)
+                            foreach (var slot in Conte.slots)
                             {
-                                slot.Held_Item.Amount = slot.Held_Item.Amount - (x - g.Mouse_Held_Item.Amount);
-                                g.Mouse_Held_Item.Amount = x;
+                                if (slot != this && slot.Held_Item.Compare(g.Mouse_Held_Item))
+                                {
+                                    int x = g.ItemDict[g.Mouse_Held_Item.ItemIndex].MaxAmount;
+                                    if (x != 0 && g.Mouse_Held_Item.Amount + slot.Held_Item.Amount > x)
+                                    {
+                                        slot.Held_Item.Amount = slot.Held_Item.Amount - (x - g.Mouse_Held_Item.Amount);
+                                        g.Mouse_Held_Item.Amount = x;
+                                    }
+                                    else
+                                    {
+                                        g.Mouse_Held_Item.Amount += slot.Held_Item.Amount;
+                                        slot.Held_Item.Amount = 0;
+                                    }
+                                }
                             }
-                            else
+                            for (int i = 0; i < Conte.slots.Count; i++)
                             {
-                                g.Mouse_Held_Item.Amount += slot.Held_Item.Amount;
-                                slot.Held_Item.Amount = 0;
+                                if (Conte.slots[i].Held_Item.Amount <= 0)
+                                {
+                                    Conte.slots[i].Held_Item = new GISItem();
+                                }
                             }
-                        }
-                    }
-                    for (int i = 0; i < Conte.slots.Count; i++)
-                    {
-                        if (Conte.slots[i].Held_Item.Amount <= 0)
-                        {
-                            Conte.slots[i].Held_Item = new GISItem();
-                        }
-                    }
-                    g.Mouse_Held_Item.AddConnection(Conte);
+                            g.Mouse_Held_Item.AddConnection(Conte);
 
-                }
-                SaveItemContainerData();
-                OnInteract();
-
-            }
-            if (right)
-            {
-                Held_Item.AddConnection(Conte);
-                SaveItemContainerData();
-                var a = g.Mouse_Held_Item;
-
-                if (Held_Item.ItemIndex == "Empty")
-                {
-                    if (a.Amount > 0)
-                    {
-                        Held_Item = new GISItem(a);
-                        Held_Item.Amount = 1;
-                        Held_Item.SetContainer(Conte);
-
-                        g.Mouse_Held_Item.Amount--;
-                        g.Mouse_Held_Item.AddConnection(Conte);
-                        if (g.Mouse_Held_Item.Amount <= 0)
-                        {
-                            g.Mouse_Held_Item = new GISItem();
                         }
+                        SaveItemContainerData();
+                        OnInteract();
+
                     }
-                }
-                else
-                {
-                    if (a.ItemIndex == "Empty")
+                    if (right)
                     {
-                        float b = (float)Held_Item.Amount / 2;
-                        g.Mouse_Held_Item = new GISItem(Held_Item);
-                        g.Mouse_Held_Item.Amount = Mathf.CeilToInt(b);
-                        Held_Item.Amount = Mathf.FloorToInt(b);
-                        g.Mouse_Held_Item.AddConnection(Conte);
-                        if (Held_Item.Amount <= 0)
+                        Held_Item.AddConnection(Conte);
+                        SaveItemContainerData();
+                        var a = g.Mouse_Held_Item;
+
+                        if (Held_Item.ItemIndex == "Empty")
                         {
-                            Held_Item = new GISItem();
-                        }
-                    }
-                    else if (Held_Item.Compare(a))
-                    {
-                        int max = g.ItemDict[Held_Item.ItemIndex].MaxAmount;
-                        if (max == 0 || Held_Item.Amount < max)
-                        {
-                            Held_Item.Amount++;
-                            Held_Item.AddConnection(g.Mouse_Held_Item.Container);
-                            g.Mouse_Held_Item.AddConnection(Held_Item.Container);
-                            g.Mouse_Held_Item.Amount--;
-                            if (g.Mouse_Held_Item.Amount <= 0)
+                            if (a.Amount > 0)
                             {
-                                g.Mouse_Held_Item = new GISItem();
+                                Held_Item = new GISItem(a);
+                                Held_Item.Amount = 1;
+                                Held_Item.SetContainer(Conte);
+
+                                g.Mouse_Held_Item.Amount--;
+                                g.Mouse_Held_Item.AddConnection(Conte);
+                                if (g.Mouse_Held_Item.Amount <= 0)
+                                {
+                                    g.Mouse_Held_Item = new GISItem();
+                                }
                             }
                         }
+                        else
+                        {
+                            if (a.ItemIndex == "Empty")
+                            {
+                                float b = (float)Held_Item.Amount / 2;
+                                g.Mouse_Held_Item = new GISItem(Held_Item);
+                                g.Mouse_Held_Item.Amount = Mathf.CeilToInt(b);
+                                Held_Item.Amount = Mathf.FloorToInt(b);
+                                g.Mouse_Held_Item.AddConnection(Conte);
+                                if (Held_Item.Amount <= 0)
+                                {
+                                    Held_Item = new GISItem();
+                                }
+                            }
+                            else if (Held_Item.Compare(a))
+                            {
+                                int max = g.ItemDict[Held_Item.ItemIndex].MaxAmount;
+                                if (max == 0 || Held_Item.Amount < max)
+                                {
+                                    Held_Item.Amount++;
+                                    Held_Item.AddConnection(g.Mouse_Held_Item.Container);
+                                    g.Mouse_Held_Item.AddConnection(Held_Item.Container);
+                                    g.Mouse_Held_Item.Amount--;
+                                    if (g.Mouse_Held_Item.Amount <= 0)
+                                    {
+                                        g.Mouse_Held_Item = new GISItem();
+                                    }
+                                }
+                            }
+                        }
+
+                        SaveItemContainerData();
+                        OnInteract();
+
+
+
                     }
                 }
-
-                SaveItemContainerData();
-                OnInteract();
-
-
-
-            }
+                break;
         }
 
     }

@@ -59,29 +59,6 @@ public class InputManager : MonoBehaviour
         gamekeys.Add("dialog_skip", KeyCode.Space);
         gamekeys.Add("dialog_skip_mouse", KeyCode.Mouse0);
 
-        var lang = LanguageFileSystem.Instance;
-        if(lang != null)
-        {
-            bool create = false;
-            foreach (var k in gamekeys)
-            {
-                var s = "Input_" + k.Key;
-                if (lang.IndexValuePairs.ContainsKey(s))
-                {
-                    gamekeynames[k.Key] = lang.IndexValuePairs[s];
-                }
-                else
-                {
-                    create = true;
-                    lang.IndexValuePairs.Add(s, gamekeynames[k.Key]);
-                }
-            }
-            if (create)
-            {
-                lang.UpdateTextFile();
-            }
-        }
-
         //assign default game keys
         foreach (var a in gamekeys)
         {
