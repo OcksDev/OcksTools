@@ -5,6 +5,9 @@ using UnityEngine;
 [HideInInspector]
 public class OcksNetworkVar : MonoBehaviour
 {
+    /*
+            heavily W.I.P idea of mine
+    */
     public string Value;
     public string Name = "";
     public bool HasRecievedData = false;

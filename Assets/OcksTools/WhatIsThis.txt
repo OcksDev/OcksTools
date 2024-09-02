@@ -16,25 +16,14 @@ Some systems like the multiplayer base or the navmesh base require extra package
 If you do not need said systems, you can simply remove the Multiplayer and/or Navmesh folders and think no more of the errors.
 If you do need the systems, then each of the systems have a file containing all the required dependancies and how to get them.
 
-What is up with the scripts folder and its subfolders?
-So the Scripts folder itself contains some classes like Tags, RandomFunctions, and InputManager, which I consider core systems. Other things such as Multiplayer or GIS may require functions
-or other stuff from the core systems, so its best if you keep those unless you are absolutely sure about removing them.
-The subfolders like GIS, Multiplayer, NavMesh, Consoling, and more all act kinda like addons, each can be removed or added independantly of each other, and you can delete every subfolder of
-OckTools without causing damage to anything else. This gives the package a good bit of modularity, allowing you to select what you do or do not need for your projects.
+What is up with the systems folder and its subfolders?
+So the systems folder itself contains some classes like Tags, RandomFunctions, and InputManager, which I consider core systems. Other things such as Multiplayer or GIS may require functions or other stuff from the core systems, so its best if you keep those unless you are absolutely sure about removing them.
+The subfolders like GIS, Multiplayer, NavMesh, Consoling, and more all act kinda like addons, each can be removed or added independantly of each other, and you can delete every subfolder of OckTools without causing damage to anything else. This gives the package a good bit of modularity, allowing you to select what you do or do not need for your projects.
 
-As of 1.0.5 the package includes:
-- Dialog System
-- Save System
-- Console System
-- Chat System
-- Base Multiplayer Setup
-- General Inventory Systems (GIS)
-- Base NavMesh Setup
-- A lot of random functions
-- Sound System
-- Modified Object Spawning (to allow for passing in data on spawn)
-- Input Manager
-- Custom Tags System (because unity's tags are bad)
-- Some common base classes such as an Entity class
-- A Bunch of Util Windows
-- A Bunch of random scripts for things
+How stable are the various features?
+I try to keep them as stable as possible, many things being incorperated to handle abuse, however I am not perfect and every update I am always implementing patches to systems. New things keep being added, old things keep being reworked, and some things stop working due to changes somewhere else, so bugs are always around, if you find one then let me know about it and I will do my best to have it patched by the next release.
+
+How do I contact you?
+Discord: ocks_dev
+Email: ocks.dev@gmail.com
+

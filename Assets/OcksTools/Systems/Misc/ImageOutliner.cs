@@ -1,14 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class ImageOutliner : MonoBehaviour
 {
+    /*
+     * VERY experimental thing going on here
+     * the current issue is that it modifies the source file when changing pixels, which is not ideal.
+     * Also despite the name, it currently just makes things entirely white, because I am working on the original problem first.
+     * 
+     * Images must have "read/writeable" be enabled and be in one of unity's supported formats (which you set in the image instead of automatic)
+     * I already provided a preset for how images should be prepared.
+     */
+
+
+
     public Screenshot ss;
     public Texture2D tex2;
-    public Sprite sprit;
-    public SpriteRenderer gaming;
     public Image gaming2;
     // Start is called before the first frame update
     void Start()
@@ -29,25 +39,32 @@ public class ImageOutliner : MonoBehaviour
     public void ScreenshotImage()
     {
         var tex = tex2;
-        
-        var colors = tex.GetPixels();
-        for(int i = 0; i < colors.Length; i++)
-        {
-            if (colors[i].a >= 0.1f)
-            {
-                colors[i] = new Color(1,1,1,1);
-            }
-        }
-        tex.SetPixels(colors);
-        gaming2.sprite = Converter.Texture2DToSprite(tex2);
         float w = ((float)tex2.width) / 100f;
+        w *= 600f / tex2.width;
         float h = ((float)tex2.height) / 100f;
+        h *= 600f / tex2.height;
         gaming2.transform.localScale = new Vector3(w, h, 1);
         var e = new ScreenshotData();
         e.Camera = Camera.main;
-        e.Camera.Reset();
         e.Height_PX = tex.height;
         e.Width_PX = tex.width;
+        e.Name = "OriginalImage";
+
+        gaming2.sprite = Converter.Texture2DToSprite(tex2);
+        ss.TakeScreenshot(e);
+
+        var colors = tex.GetPixels32();
+        
+        for(int i = 0; i < colors.Length; i++)
+        {
+            if (colors[i].a >= 200)
+            {
+                colors[i] = new Color32(255, 255, 255, 255);
+            }
+        }
+        tex.SetPixels32(colors);
+        tex.Apply();
+        gaming2.sprite = Converter.Texture2DToSprite(tex);
         e.Name = "OutlinedImage";
         ss.TakeScreenshot(e);
     }
