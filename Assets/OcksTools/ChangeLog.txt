@@ -107,6 +107,7 @@
   - New MousePosition() allows you to get the mouse position relative to a given camera
   - New RemoveDuplicates<>() allows you to easily remove any duplicate elements in a list
   - New PointFromTo2D() allows greater rotation control other than just using the mouse pos
+  - New CombineLists<>() allows you to easily combine the data of two lists into one
 - Misc Changes
   - Renamed Tags "miscrefs" to "refs"
   - Save System now runs after all other classes
@@ -124,6 +125,7 @@
   - RandomFunctions.SpawnObject() is now buried at the bottom of the file and is labled Obselete
   - Randomfunctions "point" methods no longer have "spread" attributes
   - Removed PointAtPoint2D(), as new method PointFromTo2D() is superior
+  - Removed ArrayWrap(), what the fuck was the point of it
   - RotateTowards() now uses a Vector3 input instead of GameObject
   - Tags now has a singleton, although nothing currently uses it
   - GenerateID has been updated and now resides in Tags

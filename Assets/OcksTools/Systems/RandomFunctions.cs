@@ -38,7 +38,7 @@ public class RandomFunctions : MonoBehaviour
         //save game or something idk man
     }
 
-    public void Close()
+    public static void Close()
     {
         Application.Quit();
     }
@@ -65,7 +65,7 @@ public class RandomFunctions : MonoBehaviour
         };
     }
 
-    public float SpreadCalc(int index, int max, float spread, bool fix = false)
+    public static float SpreadCalc(int index, int max, float spread, bool fix = false)
     {
         // a spread calculation used to spread out objects over an angle
         int i = max;
@@ -77,7 +77,7 @@ public class RandomFunctions : MonoBehaviour
         p -= i * spread / 2;
         return p;
     }
-    public void SpreadCalcArc(int index, int max, float total_arc, int buffer = 2, bool fix = false)
+    public static void SpreadCalcArc(int index, int max, float total_arc, int buffer = 2, bool fix = false)
     {
         //untested, should allow for slightly more complex arcs
         // should work the same as SpreadCalc(), except that it expands up to a point first
@@ -88,7 +88,7 @@ public class RandomFunctions : MonoBehaviour
         SpreadCalc(index, max, spread, fix);
     }
 
-    public string CharPrepend(string input, int length, char nerd = '0')
+    public static string CharPrepend(string input, int length, char nerd = '0')
     {
         var e = length - input.Length;
         if(e <= 0)
@@ -101,23 +101,27 @@ public class RandomFunctions : MonoBehaviour
         }
     }
 
-    public Vector3 MousePositon(Camera cam)
+    public static Vector3 MousePositon(Camera cam)
     {
         return cam.ScreenToWorldPoint(Input.mousePosition);
     }
-    public List<T> RemoveDuplicates<T>(List<T> ti)
+    public static List<T> RemoveDuplicates<T>(List<T> tee)
     {
         var tea = new List<T>();
-        foreach(T t in ti)
+        foreach (T t in tee)
         {
-            if(!tea.Contains(t)) tea.Add(t);
+            if (!tea.Contains(t)) tea.Add(t);
         }
         return tea;
     }
-
-    public int ArrayWrap(int index, int length)
+    public static List<T> CombineLists<T>(List<T> ti, List<T> tee)
     {
-        return Mod(index, length);
+        var tea = new List<T>(ti);
+        foreach (T t in tee)
+        {
+            tea.Add(t);
+        }
+        return tea;
     }
 
     /*
@@ -173,7 +177,7 @@ public class RandomFunctions : MonoBehaviour
     {
         //NetworkManager.Singleton.Shutdown();
     }
-    public float Dist(Vector3 p1, Vector3 p2)
+    public static float Dist(Vector3 p1, Vector3 p2)
     {
         float distance = Mathf.Sqrt(
                 Mathf.Pow(p2.x - p1.x, 2f) +
@@ -181,17 +185,17 @@ public class RandomFunctions : MonoBehaviour
                 Mathf.Pow(p2.z - p1.z, 2f));
         return distance;
     }
-    public int Mod(int r, int max)
+    public static int Mod(int r, int max)
     {
         return ((r % max) + max) % max;
     }
-    private Quaternion PointAtPoint(Vector3 start_location, Vector3 location)
+    public static Quaternion PointAtPoint(Vector3 start_location, Vector3 location)
     {
         Quaternion _lookRotation =
             Quaternion.LookRotation((location - start_location).normalized);
         return _lookRotation;
     }
-    private Quaternion RotateLock(Quaternion start_rot, Quaternion target, float max_speed)
+    public static Quaternion RotateLock(Quaternion start_rot, Quaternion target, float max_speed)
     {
         return Quaternion.RotateTowards(start_rot, target, max_speed);
     }

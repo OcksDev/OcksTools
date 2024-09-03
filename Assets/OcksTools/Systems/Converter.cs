@@ -423,10 +423,11 @@ public class Converter : MonoBehaviour
 
     public static string EscapeString(string e, List<string> thingstoremove)
     {
-        e = e.Replace("+", "=+");
+        e = e.Replace("(", "=(");
+        e = e.Replace(")", "=)");
         for (int i = 0; i < thingstoremove.Count; i++)
         {
-            e = e.Replace($"{thingstoremove[i]}", $"{i}+");
+            e = e.Replace($"{thingstoremove[i]}", $"({i})");
         }
         return e;
     }
@@ -435,9 +436,10 @@ public class Converter : MonoBehaviour
         for (int i = 0; i < thingstoremove.Count; i++)
         {
             int j = (thingstoremove.Count - 1) - i;
-            e = e.Replace($"{j}+", $"{thingstoremove[j]}");
+            e = e.Replace($"({j})", $"{thingstoremove[j]}");
         }
-        e = e.Replace("=+","+");
+        e = e.Replace("=(", "(");
+        e = e.Replace("=)", ")");
         return e;
     }
 
