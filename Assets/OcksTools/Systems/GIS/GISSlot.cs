@@ -43,7 +43,14 @@ public class GISSlot : MonoBehaviour
 
     public void OnInteract()
     {
-        //code called whenever a slot if interacted with
+        switch (Name)
+        {
+            case "AbstractAdd":
+                var mitem = Held_Item;
+                Conte.AbstractAdd(mitem);
+                Held_Item = new GISItem();
+                break;
+        }
     }
 
     private void Update()
@@ -58,11 +65,6 @@ public class GISSlot : MonoBehaviour
         if (!IsHovering()) return;
         switch (Name)
         {
-            case "AbstractAdd":
-                var mitem = GISLol.Instance.Mouse_Held_Item;
-                Conte.AbstractAdd(mitem);
-                GISLol.Instance.Mouse_Held_Item = new GISItem();
-                break;
             default:
                 if (Conte.CanShiftClickItems && shift)
                 {

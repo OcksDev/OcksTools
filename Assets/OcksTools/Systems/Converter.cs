@@ -421,4 +421,25 @@ public class Converter : MonoBehaviour
         return outp;
     }
 
+    public static string EscapeString(string e, List<string> thingstoremove)
+    {
+        e = e.Replace("+", "=+");
+        for (int i = 0; i < thingstoremove.Count; i++)
+        {
+            e = e.Replace($"{thingstoremove[i]}", $"{i}+");
+        }
+        return e;
+    }
+    public static string UnescapeString(string e, List<string> thingstoremove)
+    {
+        for (int i = 0; i < thingstoremove.Count; i++)
+        {
+            int j = (thingstoremove.Count - 1) - i;
+            e = e.Replace($"{j}+", $"{thingstoremove[j]}");
+        }
+        e = e.Replace("=+","+");
+        return e;
+    }
+
+
 }

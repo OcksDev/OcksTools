@@ -276,6 +276,32 @@ public class ConsoleLol : MonoBehaviour
 
                                 ), "#bdbdbdff");
                             break;
+                        case "escape":
+                            string banana = "help0+eat1+cum<b|r>jj";
+                            List<string> escape = new List<string>() { "eat" , "cum", "|r>", "jj" };
+                            ConsoleLog((
+
+                                "input: " + banana
+
+                            ), "#bdbdbdff");
+                            ConsoleLog((
+
+                                $"remove: {escape[0]}, {escape[1]}, {escape[2]}, {escape[3]}"
+
+                            ), "#bdbdbdff");
+                            banana = Converter.EscapeString(banana, escape);
+                            ConsoleLog((
+
+                                "escaped: " + banana
+
+                            ), "#bdbdbdff");
+                            banana = Converter.UnescapeString(banana, escape);
+                            ConsoleLog((
+
+                                "result: " + banana
+
+                            ), "#bdbdbdff");
+                            break;
                         case "max":
                             ConsoleLog((
 

@@ -78,6 +78,7 @@
   - New StringToColor() to convert hex strings to color32
   - New Texture2DToSprite() which converts texture2ds to sprites
   - New StringToVector3() and StringToVector3Int(), converts strings in the format of (0, 0, 0) into a vector3 or vector3int respectively
+  - new EscapeString() and UnescapeString() which allow you to easily store/retrieve text without needing to worry about key characters
 - New InfiniGrid
   - A grid editor that has no restrictions on location, currently pretty bare bones but I have plans to add multi tile objects
 - New Profile Handler (very bare bones)
