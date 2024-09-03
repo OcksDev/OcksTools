@@ -20,7 +20,7 @@ public class ProfileHandler : MonoBehaviour
         s.GetDataFromFile("ox_profile");
         if(s.GetString("Username", "", "ox_profile") == "")
         {
-            s.SetString("Username", $"Guest{RandomFunctions.Instance.CharPrepend(Random.Range(0,1000000).ToString(), 6, '0')}", "ox_profile");
+            s.SetString("Username", $"Guest{RandomFunctions.CharPrepend(Random.Range(0,1000000).ToString(), 6, '0')}", "ox_profile");
         }
     }
 }
