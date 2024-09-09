@@ -19,6 +19,7 @@ public class ServerGamer : NetworkBehaviour
     {
         if (Instance == null) instance = this;
         ClientID = Tags.GenerateID();
+        Console.Log("My ID: " + ClientID);
     }
 
     /* working code, commented out to prevent error messages when importing oxtools*/
@@ -75,11 +76,13 @@ public class ServerGamer : NetworkBehaviour
 
     public void SendOcksVar(string poopid, string name, string data)
     {
+        //Console.Log($"Sending {ClientID} with {data}");
         OcksVarServerRpc(ClientID, poopid, name, data);
     }
     
     public void RequestOcksVar(string poopid, string name)
     {
+        //Console.Log($"Requesting {ClientID} at {name}");
         AquireOcksVarServerRpc(ClientID, poopid, name);
     }
 
@@ -87,6 +90,7 @@ public class ServerGamer : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void OcksVarServerRpc(string id, string poopid, string name, string data)
     {
+        //Console.Log($"(server) incoming request for set data");
         RecieveOcksVarClientRpc(id, poopid, name, data);
     }
 
@@ -94,6 +98,7 @@ public class ServerGamer : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void AquireOcksVarServerRpc(string id, string poopid, string name)
     {
+        //Console.Log($"(server) incoming request for aquire");
         CreateEmpty(poopid, name);
         RecieveOcksVarClientRpc("Host", poopid, name, ONVManager.OcksVars[poopid][name]);
     }
@@ -102,9 +107,11 @@ public class ServerGamer : NetworkBehaviour
     [ClientRpc]
     public void RecieveOcksVarClientRpc(string id, string NetID, string Name, string data)
     {
+        //Console.Log($"Recieved {id}, {data}");
         if (id == ClientID) return;
         if (id == "Host" && NetworkManager.Singleton.IsHost) return;
         CreateEmpty(NetID, Name);
+        //Console.Log($"Changed {NetID} to {data}");
         ONVManager.OcksVars[NetID][Name] = data;
     }
     public void CreateEmpty(string NetID, string Name)

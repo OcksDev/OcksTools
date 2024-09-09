@@ -16,11 +16,12 @@ public class OcksNetworkVar
     public event RandomFunctions.JustFuckingRunTheMethods OnInitialDataRecieved;
     public NetworkObject NetOb;
     string initdat = "";
-    public OcksNetworkVar(NetworkObject sexy, string data = "")
+    public OcksNetworkVar(NetworkObject sexy, string name, string data = "")
     {
         initdat = data;
         NetOb = sexy;
-        Name = Tags.GenerateID();
+        //Name = Tags.GenerateID();
+        Name = name;
         if(ONVManager.Instance != null)
         {
             ONVManager.Instance.StartCoroutine(ONVManager.Instance.Gaming(this));
