@@ -8,13 +8,13 @@
 </> <Name=Boner> <Voiceline=1>
 </> Yay!
 </> 
-</> <Name=Gamer> <Speed=69.69, -, 1> <Voiceline=2>
-</> banana
+</> <Speed=69.69, -, 1> <Voiceline=2>
+</> banana <Show=Sucky Toes>
 </> 
 </> <Name=Boner> <Voiceline=3>
-</> Smell my greasy balls <End=0>
+</> Smell my greasy balls <End=0> 
 </> 
-</> <Name=Boner> <Voiceline=3>
+</> <Name=God>
 </> You will literally never see this text in game because the previous dialog line escapes the sequence
 </> <End>
 

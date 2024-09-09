@@ -10,37 +10,43 @@ public class OcksNetworkVar : MonoBehaviour
     */
     public string Value;
     public string Name = "";
+    public string NetID = "";
     public bool HasRecievedData = false;
     public event RandomFunctions.JustFuckingRunTheMethods OnValueChanged;
     public event RandomFunctions.JustFuckingRunTheMethods OnInitialDataRecieved;
     public NetworkObject NetOb;
     public int index;
-    public OcksNetworkVar(NetworkObject sexy, string data)
+    public OcksNetworkVar(NetworkObject sexy, string data = "")
     {
         Value = data;
         NetOb = sexy;
-        if (ServerGamer.OcksVars2.ContainsKey(sexy))
+        Name = Tags.GenerateID();
+        if(ONVManager.Instance != null)
         {
-            index = ServerGamer.OcksVars2[sexy].Count;
-            ServerGamer.OcksVars2[sexy].Add(this);
+            ONVManager.Instance.StartCoroutine(ONVManager.Instance.Gaming(this));
         }
         else
         {
-            index = 0;
-            ServerGamer.OcksVars2.Add(sexy, new List<OcksNetworkVar>() { this });
-        }
-        ServerGamer.OcksVars.Add($"{NetOb.NetworkObjectId}_{index}", this);
-        if (NetOb.IsOwner)
-        {
-            HasRecievedData = true;
-            //transmit data to all other clients
-        }
-        else
-        {
-            //request data pull from host
+            ONVManager.UndefinedVars.Add(this);
         }
     }
-    public void SetData(string data)
+    public void FinishSetup()
+    {
+        NetID = NetOb.NetworkObjectId.ToString();
+        if (NetOb.IsOwner)
+        {
+            //send data
+        }
+        else
+        {
+            //recieve data
+        }
+    }
+    public void SetValue(string data)
+    {
+        Value = data;
+    }
+    public void ThisIsNotForYou_SetData(string data)
     {
         Value = data;
         if (!HasRecievedData)
@@ -54,7 +60,6 @@ public class OcksNetworkVar : MonoBehaviour
         }
         OnValueChanged?.Invoke();
     }
-
 
 }
 

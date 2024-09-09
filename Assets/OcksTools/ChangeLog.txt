@@ -3,12 +3,12 @@
    v1.1.0
 - Save System improvements!
   - HoldingData now is a dictionary of dictionaries, meaning multiple lines of saved data now can be held.
-    - You could do this with the old save system but it was clunky, new version is cleaner
+    - You could kinda do this with the old save system but it was clunky, new version is cleaner
   - Created new c# events which are called on save/load, so now other classes can safely save/load data easily
   - Fully moved away from old SaveFile index ideology, all systems in FileSystem and other related fields have been adjusted accordingly.
 - GIS improvements!
   - GISContainers now can be toggled into a mode called "Abstract" so they can work like a list of items. (untested)
-  - Completely reworked items to now be dictionary based instead of list based
+  - Completely reworked items to now be dictionary/name based instead of list/index based
   - new class GISItemBar/prefab AbstractDisplay
     - Works like an item bar similar to Risk Of Rain 2 where items are ordered in a bar
     - Inspired by Risk Of Rain 2's item system.
@@ -54,6 +54,7 @@
   - Dialog variables should be parsed slightly faster
     - normal variables are declared like "*fart", but now you can declare variables like "!fart" to instead look up the value in Language File System
   - Fixed a bug where no argument attributes were not being parsed properly midtext like <End> and <Skip>, previously requiring them to be written like <Skip=1> or something similar
+  - Fixed a bug where attributes at the end of dialog contents would throw an error
 - File System Improvements!
   - Downloading files from your computer is no longer a hassle, streamlined the process to flow through a single DownloadFile() method
   - Downloading images from computer no longer just saves them as textures, but also as sprites

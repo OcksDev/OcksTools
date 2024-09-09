@@ -277,8 +277,8 @@ public class ConsoleLol : MonoBehaviour
                                 ), "#bdbdbdff");
                             break;
                         case "escape":
-                            string banana = "help0+eat1+cum<b|r>jj";
-                            List<string> escape = new List<string>() { "eat" , "cum", "|r>", "jj" };
+                            string banana = "help(0)eat()cumjjragbanana your_welcum";
+                            List<string> escape = new List<string>() { "eat" , "cum", "rag", "jj" };
                             ConsoleLog((
 
                                 "input: " + banana

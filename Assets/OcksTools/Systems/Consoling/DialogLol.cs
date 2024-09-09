@@ -574,27 +574,43 @@ public class DialogLol : MonoBehaviour
                         if (jjj)
                         {
                             string mid = "";
-                            if (VariableParse(stuff[0]) == "Show")
+                            string voop = VariableParse(stuff[0]);
+                            if (voop == "Show")
                             {
                                 mid = VariableParse(stuff[1]);
                             }
-                            fulltext = fulltext.Substring(0, oldcharl) + mid + fulltext.Substring(charlpreatt);
+                            if (oldcharl < fulltext.Length)
+                            {
+                                fulltext = fulltext.Substring(0, oldcharl) + mid + fulltext.Substring(charlpreatt);
+                            }
+                            else
+                            {
+                                fulltext = fulltext + mid;
+                            }
                             var off = charl - charlpreatt;
                             charl = oldcharl + off;
                             e = fulltext;
-                            if (VariableParse(stuff[0]) == "Animate" && ta != null)
+                            if (voop == "Animate" && ta != null)
                             {
                                 ta.startindex = charl;
                                 ta.endindex = charl + ta.endindex;
                             }
-                            emu = VariableParse(stuff[0]);
+                            emu = voop;
                         }
                     }
                     
                 }
                 catch
                 {
-                    Debug.LogWarning("Something went fucked trying to parse a dialog attribute");
+                    try
+                    {
+                        var sh = e.Substring(oldcharl + 1, ii - 1);
+                        Debug.LogWarning($"Something went fucked trying to parse \"{sh}\"");
+                    }
+                    catch
+                    {
+                        Debug.LogWarning("Something went fucked trying to parse a dialog attribute");
+                    }
                 }
                 if(emu != "Wait")
                 {

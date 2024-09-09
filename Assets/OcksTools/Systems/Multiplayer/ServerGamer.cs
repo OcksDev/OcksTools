@@ -21,9 +21,6 @@ public class ServerGamer : NetworkBehaviour
         ClientID = Tags.GenerateID();
     }
 
-    public static Dictionary<string, OcksNetworkVar> OcksVars = new Dictionary<string, OcksNetworkVar>();
-    public static Dictionary<NetworkObject, List<OcksNetworkVar>> OcksVars2 = new Dictionary<NetworkObject, List<OcksNetworkVar>>();
-
     /* working code, commented out to prevent error messages when importing oxtools*/
     [ServerRpc(RequireOwnership = false)]
     public void SpawnObjectServerRpc(int refe, Vector3 pos, Quaternion rot, string id, string data, string hdata)
