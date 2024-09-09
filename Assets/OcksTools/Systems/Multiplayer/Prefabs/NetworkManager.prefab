@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5856764855215001397}
   - component: {fileID: 7616261651428151912}
   - component: {fileID: 6452671135146635083}
+  - component: {fileID: 8946709181452498364}
   - component: {fileID: 7616261651428151914}
   m_Layer: 0
   m_Name: NetworkManager
@@ -99,6 +100,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Join_Code: 
   ServerGamerObject: {fileID: 880589326191894371, guid: 85c57e8fe3c62394fbdaaad429dd5d0e, type: 3}
+  SignInState: 
 --- !u!114 &6452671135146635083
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -111,7 +113,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae4376f568938f14886d41f6e0e56131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gam: {fileID: 0}
+--- !u!114 &8946709181452498364
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7616261651428151895}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fef5b4032112461418c95848cea92b3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &7616261651428151914
 MonoBehaviour:
   m_ObjectHideFlags: 0

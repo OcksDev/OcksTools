@@ -35,6 +35,7 @@ public class PickThingymabob : MonoBehaviour
         if (i == 1)
         {
             NetworkManager.Singleton.StartClient();
+            if (relay.JoinCodeTextDick != null) relay.JoinCodeTextDick.text = relay.Join_Code;
         }
         else
         {
@@ -50,6 +51,7 @@ public class PickThingymabob : MonoBehaviour
             relay = RelayMoment.Instance;
             var p = Instantiate(relay.ServerGamerObject, relay.transform.position, relay.transform.rotation, relay.transform);
             p.GetComponent<NetworkObject>().Spawn();
+            if(relay.JoinCodeTextDick!=null) relay.JoinCodeTextDick.text = relay.Join_Code;
         }
     }
     public async Task<string> MakeGame2()

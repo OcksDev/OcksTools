@@ -73,28 +73,50 @@ public class ServerGamer : NetworkBehaviour
         ChatLol.Instance.WriteChat(message, hex);
     }
 
-    public void SendOcksVar(string name, string data)
+    public void SendOcksVar(string poopid, string name, string data)
     {
-        OcksVarServerRpc(ClientID, name, data);
+        OcksVarServerRpc(ClientID, poopid, name, data);
+    }
+    
+    public void RequestOcksVar(string poopid, string name)
+    {
+        AquireOcksVarServerRpc(ClientID, poopid, name);
     }
 
 
     [ServerRpc(RequireOwnership = false)]
-    public void OcksVarServerRpc(string id, string type, string data)
+    public void OcksVarServerRpc(string id, string poopid, string name, string data)
     {
-        RecieveOcksVarClientRpc(id, type, data);
+        RecieveOcksVarClientRpc(id, poopid, name, data);
+    }
+
+
+    [ServerRpc(RequireOwnership = false)]
+    public void AquireOcksVarServerRpc(string id, string poopid, string name)
+    {
+        CreateEmpty(poopid, name);
+        RecieveOcksVarClientRpc("Host", poopid, name, ONVManager.OcksVars[poopid][name]);
     }
 
     //chat related method
     [ClientRpc]
-    public void RecieveOcksVarClientRpc(string id, string type, string data)
+    public void RecieveOcksVarClientRpc(string id, string NetID, string Name, string data)
     {
         if (id == ClientID) return;
-        switch (type)
+        if (id == "Host" && NetworkManager.Singleton.IsHost) return;
+        CreateEmpty(NetID, Name);
+        ONVManager.OcksVars[NetID][Name] = data;
+    }
+    public void CreateEmpty(string NetID, string Name)
+    {
+
+        if (!ONVManager.OcksVars.ContainsKey(NetID))
         {
-            default:
-                break;
+            ONVManager.OcksVars.Add(NetID, new Dictionary<string, string>());
+        }
+        if (!ONVManager.OcksVars[NetID].ContainsKey(Name))
+        {
+            ONVManager.OcksVars[NetID].Add(Name, "");
         }
     }
-
 }

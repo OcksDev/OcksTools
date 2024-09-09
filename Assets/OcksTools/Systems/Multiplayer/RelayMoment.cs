@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using TMPro;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Networking.Transport.Relay;
@@ -15,7 +16,7 @@ public class RelayMoment : MonoBehaviour
     public string Join_Code = "";
     public GameObject ServerGamerObject;
     public string SignInState = "";
-
+    public TextMeshProUGUI JoinCodeTextDick;
     //Default setup to make this a singleton
     public static RelayMoment instance;
     public static RelayMoment Instance

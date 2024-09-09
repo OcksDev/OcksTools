@@ -6,7 +6,6 @@ public class ONVManager : MonoBehaviour
 {
 
     public static Dictionary<string, Dictionary<string, string>> OcksVars = new Dictionary<string, Dictionary<string, string>>();
-    public static Dictionary<string, Dictionary<string, OcksNetworkVar>> OcksVars2 = new Dictionary<string, Dictionary<string, OcksNetworkVar>>();
     public static List<OcksNetworkVar> UndefinedVars = new List<OcksNetworkVar>();
     public static ONVManager Instance;
     public void Awake()

@@ -2,23 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+
 [HideInInspector]
-public class OcksNetworkVar : MonoBehaviour
+public class OcksNetworkVar
 {
     /*
             heavily W.I.P idea of mine
     */
-    public string Value;
-    public string Name = "";
-    public string NetID = "";
+    public string Name = "Unassigned";
+    public string NetID = "Unassigned";
     public bool HasRecievedData = false;
     public event RandomFunctions.JustFuckingRunTheMethods OnValueChanged;
     public event RandomFunctions.JustFuckingRunTheMethods OnInitialDataRecieved;
     public NetworkObject NetOb;
-    public int index;
+    string initdat = "";
     public OcksNetworkVar(NetworkObject sexy, string data = "")
     {
-        Value = data;
+        initdat = data;
         NetOb = sexy;
         Name = Tags.GenerateID();
         if(ONVManager.Instance != null)
@@ -35,20 +35,26 @@ public class OcksNetworkVar : MonoBehaviour
         NetID = NetOb.NetworkObjectId.ToString();
         if (NetOb.IsOwner)
         {
-            //send data
+            SetValue(initdat);
         }
         else
         {
-            //recieve data
+            ServerGamer.Instance.RequestOcksVar(NetID, Name);
         }
     }
-    public void SetValue(string data)
+    public void SetValue(string data, bool SendToOthers = true)
     {
-        Value = data;
+        CreateDataHolder();
+        if (data == ONVManager.OcksVars[NetID][Name]) return;
+        ONVManager.OcksVars[NetID][Name] = data;
+        DataWasChanged();
+        if (SendToOthers)
+        {
+            ServerGamer.Instance.SendOcksVar(NetID, Name, data);
+        }
     }
-    public void ThisIsNotForYou_SetData(string data)
+    public void DataWasChanged()
     {
-        Value = data;
         if (!HasRecievedData)
         {
             HasRecievedData = true;
@@ -59,6 +65,23 @@ public class OcksNetworkVar : MonoBehaviour
             HasRecievedData = true;
         }
         OnValueChanged?.Invoke();
+    }
+    public string GetValue()
+    {
+        CreateDataHolder();
+        return ONVManager.OcksVars[NetID][Name];
+    }
+
+    public void CreateDataHolder()
+    {
+        if (!ONVManager.OcksVars.ContainsKey(NetID))
+        {
+            ONVManager.OcksVars.Add(NetID, new Dictionary<string, string>());
+        }
+        if (!ONVManager.OcksVars[NetID].ContainsKey(Name))
+        {
+            ONVManager.OcksVars[NetID].Add(Name, "");
+        }
     }
 
 }

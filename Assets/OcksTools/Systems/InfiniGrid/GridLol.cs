@@ -1,10 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Tilemaps;
-using UnityEngine.WSA;
-using UnityEngine.XR;
-
 public class GridLol : MonoBehaviour
 {
     public float GeneralScale = 1f;
