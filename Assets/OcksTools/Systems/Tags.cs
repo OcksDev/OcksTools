@@ -72,10 +72,8 @@ public class Tags : MonoBehaviour
             refs.Add(name, ob);
         }
     }
-    static ulong idcalls = 0;
     public static string GenerateID()
     {
-        idcalls++;
-        return idcalls.ToString();
+        return Guid.NewGuid().ToString();
     }
 }
