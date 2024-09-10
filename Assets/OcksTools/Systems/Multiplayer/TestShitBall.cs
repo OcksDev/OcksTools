@@ -24,6 +24,7 @@ public class TestShitBall : MonoBehaviour
         Ocky = new OcksNetworkVar(a, "Bobby", DataBalling);
         Ocky2 = new OcksNetworkVar(a, "TimmyA", DataBalling2);
         OckyGlobal = new OcksNetworkVar(null, "Wanker", "Shungite");
+        OckyGlobal.OnDataChanged += MethodCalledFromEvent;
         StartCoroutine(sex());
         if (NetworkManager.Singleton.IsHost && a.IsOwner) StartCoroutine(globalsex());
     }
@@ -47,7 +48,6 @@ public class TestShitBall : MonoBehaviour
             Ocky2.SetValue(DataBalling2);
             Display.text = Ocky.GetValue();
             Display2.text = Ocky2.GetValue();
-            Display3.text = OckyGlobal.GetValue();
         }
     }
 
@@ -60,6 +60,10 @@ public class TestShitBall : MonoBehaviour
             OckyGlobal.SetValue(DataBalling3);
         }
     }
-
+    public void MethodCalledFromEvent()
+    {
+        Console.Log("Visual C");
+        Display3.text = OckyGlobal.GetValue();
+    }
 
 }

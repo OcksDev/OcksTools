@@ -74,6 +74,10 @@ public class ServerGamer : NetworkBehaviour
         ChatLol.Instance.WriteChat(message, hex);
     }
 
+
+
+
+    //OcksNetworkVars
     public void SendOcksVar(string poopid, string name, string data)
     {
         //Console.Log($"Sending {ClientID}, {name}, {data}");
@@ -100,7 +104,7 @@ public class ServerGamer : NetworkBehaviour
     {
         //Console.Log($"(server) incoming request for aquire");
         CreateEmpty(poopid, name);
-        RecieveOcksVarClientRpc("Host", poopid, name, ONVManager.OcksVars[poopid][name]);
+        RecieveOcksVarClientRpc("Host", poopid, name, ONVManager.OcksVars[poopid][name].Data);
     }
 
     //chat related method
@@ -112,18 +116,26 @@ public class ServerGamer : NetworkBehaviour
         if (id == "Host" && NetworkManager.Singleton.IsHost) return;
         CreateEmpty(NetID, Name);
         //Console.Log($"Changed {NetID} to {data}");
-        ONVManager.OcksVars[NetID][Name] = data;
+        var a = ONVManager.OcksVars[NetID][Name];
+        a.Data = data;
+        PassAlongUpdate(a);
+    }
+    public void PassAlongUpdate(OcksNetworkVarData a)
+    {
+        foreach (var b in a.OcksNetworkVars)
+        {
+            if (b != null) b.DataWasChangedByServer();
+        }
     }
     public void CreateEmpty(string NetID, string Name)
     {
-
         if (!ONVManager.OcksVars.ContainsKey(NetID))
         {
-            ONVManager.OcksVars.Add(NetID, new Dictionary<string, string>());
+            ONVManager.OcksVars.Add(NetID, new Dictionary<string, OcksNetworkVarData>());
         }
         if (!ONVManager.OcksVars[NetID].ContainsKey(Name))
         {
-            ONVManager.OcksVars[NetID].Add(Name, "");
+            ONVManager.OcksVars[NetID].Add(Name, new OcksNetworkVarData());
         }
     }
 }

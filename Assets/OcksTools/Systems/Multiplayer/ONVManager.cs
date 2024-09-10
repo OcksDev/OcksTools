@@ -5,7 +5,7 @@ using UnityEngine;
 public class ONVManager : MonoBehaviour
 {
 
-    public static Dictionary<string, Dictionary<string, string>> OcksVars = new Dictionary<string, Dictionary<string, string>>();
+    public static Dictionary<string, Dictionary<string, OcksNetworkVarData>> OcksVars = new Dictionary<string, Dictionary<string, OcksNetworkVarData>>();
 
     public static List<OcksNetworkVar> UndefinedVars = new List<OcksNetworkVar>();
     public static ONVManager Instance;
@@ -23,4 +23,10 @@ public class ONVManager : MonoBehaviour
         yield return new WaitUntil(()=>ONV.NetOb.IsSpawned);
         ONV.FinishSetup();
     }
+}
+
+public class OcksNetworkVarData
+{
+    public string Data;
+    public List<OcksNetworkVar> OcksNetworkVars = new List<OcksNetworkVar>();
 }

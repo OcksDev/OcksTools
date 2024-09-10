@@ -14,6 +14,8 @@ public class OcksNetworkVar
     public bool HasRecievedData = false;
     public NetworkObject NetOb;
     string initdat = "";
+    public event RandomFunctions.JustFuckingRunTheMethods OnInitialDataLoad;
+    public event RandomFunctions.JustFuckingRunTheMethods OnDataChanged;
     public OcksNetworkVar(NetworkObject sexy, string name, string data = "")
     {
         initdat = data;
@@ -53,29 +55,44 @@ public class OcksNetworkVar
     public void SetValue(string data, bool SendToOthers = true)
     {
         CreateDataHolder();
-        if (data == ONVManager.OcksVars[NetID][Name]) return;
-        ONVManager.OcksVars[NetID][Name] = data;
-        HasRecievedData = true;
+        if (data == ONVManager.OcksVars[NetID][Name].Data) return;
+        ONVManager.OcksVars[NetID][Name].Data = data;
+        ServerGamer.Instance.PassAlongUpdate(ONVManager.OcksVars[NetID][Name]);
         if (SendToOthers)
         {
             ServerGamer.Instance.SendOcksVar(NetID, Name, data);
         }
     }
+
+    public void DataWasChangedByServer()
+    {
+        Console.Log("Data C");
+        if (!HasRecievedData)
+            OnInitialDataLoad?.Invoke();
+        HasRecievedData = true;
+        OnDataChanged?.Invoke();
+    }
+
     public string GetValue()
     {
         CreateDataHolder();
-        return ONVManager.OcksVars[NetID][Name];
+        return ONVManager.OcksVars[NetID][Name].Data;
     }
 
     public void CreateDataHolder()
     {
         if (!ONVManager.OcksVars.ContainsKey(NetID))
         {
-            ONVManager.OcksVars.Add(NetID, new Dictionary<string, string>());
+            ONVManager.OcksVars.Add(NetID, new Dictionary<string, OcksNetworkVarData>());
         }
         if (!ONVManager.OcksVars[NetID].ContainsKey(Name))
         {
-            ONVManager.OcksVars[NetID].Add(Name, "");
+            ONVManager.OcksVars[NetID].Add(Name, new OcksNetworkVarData());
+        }
+        var wank = ONVManager.OcksVars[NetID][Name];
+        if (!wank.OcksNetworkVars.Contains(this))
+        {
+            wank.OcksNetworkVars.Add(this);
         }
     }
 
