@@ -76,7 +76,7 @@ public class ServerGamer : NetworkBehaviour
 
     public void SendOcksVar(string poopid, string name, string data)
     {
-        //Console.Log($"Sending {ClientID} with {data}");
+        //Console.Log($"Sending {ClientID}, {name}, {data}");
         OcksVarServerRpc(ClientID, poopid, name, data);
     }
     
@@ -107,7 +107,7 @@ public class ServerGamer : NetworkBehaviour
     [ClientRpc]
     public void RecieveOcksVarClientRpc(string id, string NetID, string Name, string data)
     {
-        //Console.Log($"Recieved {id}, {data}");
+        //Console.Log($"Recieved {id}, {Name}, {data}");
         if (id == ClientID) return;
         if (id == "Host" && NetworkManager.Singleton.IsHost) return;
         CreateEmpty(NetID, Name);

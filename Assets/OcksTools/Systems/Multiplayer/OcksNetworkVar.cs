@@ -12,8 +12,6 @@ public class OcksNetworkVar
     public string Name = "Unassigned";
     public string NetID = "Unassigned";
     public bool HasRecievedData = false;
-    public event RandomFunctions.JustFuckingRunTheMethods OnValueChanged;
-    public event RandomFunctions.JustFuckingRunTheMethods OnInitialDataRecieved;
     public NetworkObject NetOb;
     string initdat = "";
     public OcksNetworkVar(NetworkObject sexy, string name, string data = "")
@@ -22,13 +20,22 @@ public class OcksNetworkVar
         NetOb = sexy;
         //Name = Tags.GenerateID();
         Name = name;
-        if(ONVManager.Instance != null)
+        if(sexy == null)
         {
-            ONVManager.Instance.StartCoroutine(ONVManager.Instance.Gaming(this));
+            NetID = "Global";
+            CreateDataHolder();
+            ServerGamer.Instance.RequestOcksVar(NetID, Name);
         }
         else
         {
-            ONVManager.UndefinedVars.Add(this);
+            if(ONVManager.Instance != null)
+            {
+                ONVManager.Instance.StartCoroutine(ONVManager.Instance.Gaming(this));
+            }
+            else
+            {
+                ONVManager.UndefinedVars.Add(this);
+            }
         }
     }
     public void FinishSetup()
@@ -48,24 +55,11 @@ public class OcksNetworkVar
         CreateDataHolder();
         if (data == ONVManager.OcksVars[NetID][Name]) return;
         ONVManager.OcksVars[NetID][Name] = data;
-        DataWasChanged();
+        HasRecievedData = true;
         if (SendToOthers)
         {
             ServerGamer.Instance.SendOcksVar(NetID, Name, data);
         }
-    }
-    public void DataWasChanged()
-    {
-        if (!HasRecievedData)
-        {
-            HasRecievedData = true;
-            OnInitialDataRecieved?.Invoke();
-        }
-        else
-        {
-            HasRecievedData = true;
-        }
-        OnValueChanged?.Invoke();
     }
     public string GetValue()
     {
@@ -86,4 +80,3 @@ public class OcksNetworkVar
     }
 
 }
-
