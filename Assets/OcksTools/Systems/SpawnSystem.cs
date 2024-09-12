@@ -5,13 +5,17 @@ using UnityEngine;
 
 public class SpawnSystem : MonoBehaviour
 {
-    public List<Pool> Pools = new List<Pool>();
+    public List<Pool> Spawnables = new List<Pool>();
     List<string> parentdata = new List<string>();
     public static SpawnSystem Instance;
-
+    public Dictionary<string, Pool> SpawnableDict = new Dictionary<string, Pool>();
     private void Awake()
     {
         Instance = this;
+        foreach(var a in Spawnables)
+        {
+            SpawnableDict.Add(a.Name, a);
+        }
     }
 
     private void Start()
@@ -23,23 +27,20 @@ public class SpawnSystem : MonoBehaviour
     {
         // dictates the amount of objects to spawn every 50th of a second, in other words spawning amount*50 objects per second.
         int simulateousspawns = 1;
-
-
-
         int sim = 0;
-        for (int i = 0; i < Pools.Count; i++)
+        for (int i = 0; i < Spawnables.Count; i++)
         {
-            if (!Pools[i].UsePoolForObject) continue;
-            for (int z = 0; z < Pools[i].PoolSize; z++)
+            if (!Spawnables[i].UsePoolForObject) continue;
+            for (int z = 0; z < Spawnables[i].PoolSize; z++)
             {
                 sim++;
                 if (sim >= simulateousspawns) { yield return new WaitForFixedUpdate(); sim = 0; }
-                SpawnPoolObject(Pools[i]);
+                SpawnPoolObject(Spawnables[i]);
             }
         }
     }
 
-    public GameObject SpawnObject(int refe, GameObject parent, Vector3 pos, Quaternion rot, bool SendToEveryone = false, string data = "", string hidden_data = "")
+    public GameObject SpawnObject(string name, GameObject parent, Vector3 pos, Quaternion rot, bool SendToEveryone = false, string data = "", string hidden_data = "")
     {
         //object parenting over multiplayer is untested
         List<string> dadalol = Converter.StringToList(data);
@@ -60,24 +61,24 @@ public class SpawnSystem : MonoBehaviour
         }
 
         //incase you want to run some stuff here based on the object that is going to be spawned
-        switch (refe)
+        switch (name)
         {
-            case 0:
+            case "":
                 break;
         }
 
         GameObject f; //Instantiate(Pools[refe].Object, pos, rot, parent.transform);
 
-        if (Pools[refe].UsePoolForObject)
+        if (SpawnableDict[name].UsePoolForObject)
         {
-            f = Pools[refe].PullObject();
+            f = SpawnableDict[name].PullObject();
             f.transform.position = pos;
             f.transform.rotation = rot;
             f.transform.parent = parent.transform;
         }
         else
         {
-            f = Instantiate(Pools[refe].Object, pos, rot, parent.transform);
+            f = Instantiate(SpawnableDict[name].Object, pos, rot, parent.transform);
         }
 
         var d = f.GetComponent<SpawnData>();
@@ -109,19 +110,19 @@ public class SpawnSystem : MonoBehaviour
         pp.PoolLol.Enqueue(e);
     }
 
-    public void ReturnObject(GameObject sex, int pool)
+    public void ReturnObject(GameObject sex, string pool)
     {
-        Pools[pool].ReturnObject(sex);
+        SpawnableDict[pool].ReturnObject(sex);
     }
-    public GameObject QuickSpawnObject(int i)
+    public GameObject QuickSpawnObject(string name)
     {
-        if (Pools[i].UsePoolForObject)
+        if (SpawnableDict[name].UsePoolForObject)
         {
-            return Pools[i].PullObject();
+            return SpawnableDict[name].PullObject();
         }
         else
         {
-            return Instantiate(Pools[i].Object);
+            return Instantiate(SpawnableDict[name].Object);
         }
     }
 }
@@ -129,6 +130,7 @@ public class SpawnSystem : MonoBehaviour
 [Serializable]
 public class Pool
 {
+    public string Name = "";
     public GameObject Object;
     public int PoolSize = 0;
     public bool UsePoolForObject = true;

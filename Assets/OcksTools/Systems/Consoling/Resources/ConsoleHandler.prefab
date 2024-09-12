@@ -139,7 +139,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d2fdd83fa9489f47a6e2ab74ad9c70a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Pools:
-  - Object: {fileID: 5021756888483024207, guid: d2fb6a7c474fbdc4a9627383260dbe4b, type: 3}
+  Spawnables:
+  - Name: Circle
+    Object: {fileID: 5021756888483024207, guid: d2fb6a7c474fbdc4a9627383260dbe4b, type: 3}
     PoolSize: 0
     UsePoolForObject: 0

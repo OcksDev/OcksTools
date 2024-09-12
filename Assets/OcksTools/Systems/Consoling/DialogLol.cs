@@ -66,6 +66,8 @@ public class DialogLol : MonoBehaviour
         //some testing variables for the dialog system
         SetVariable("TestVar", "*VarInSideAVar");
         SetVariable("VarInSideAVar", "Name");
+        SetVariable("Wank", "Wank");
+        SetVariable("AttributeInsideVar", "<Name=Bone Eater>");
 
     }
 

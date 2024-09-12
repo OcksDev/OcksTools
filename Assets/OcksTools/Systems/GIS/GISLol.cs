@@ -119,7 +119,7 @@ public class GISLol : MonoBehaviour
 }
 
 
-
+[System.Serializable]
 public class GISItem
 {
     /*

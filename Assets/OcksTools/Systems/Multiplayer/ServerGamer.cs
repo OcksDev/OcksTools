@@ -24,13 +24,13 @@ public class ServerGamer : NetworkBehaviour
 
     /* working code, commented out to prevent error messages when importing oxtools*/
     [ServerRpc(RequireOwnership = false)]
-    public void SpawnObjectServerRpc(int refe, Vector3 pos, Quaternion rot, string id, string data, string hdata)
+    public void SpawnObjectServerRpc(string refe, Vector3 pos, Quaternion rot, string id, string data, string hdata)
     {
         SpawnObjectClientRpc(refe, pos, rot, id, data, hdata);
     }
 
     [ClientRpc]
-    public void SpawnObjectClientRpc(int refe, Vector3 pos, Quaternion rot, string id, string data = "", string hdata = "")
+    public void SpawnObjectClientRpc(string refe, Vector3 pos, Quaternion rot, string id, string data = "", string hdata = "")
     {
         if (id == ClientID) return;
 

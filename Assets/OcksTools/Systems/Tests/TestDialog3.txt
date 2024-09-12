@@ -3,7 +3,7 @@
 </> Hait eating time!
 </> 
 </> <Speed=69.69, -, 1> <Voiceline=0> <Name=Gamer> 
-</> I guess I will join
+</> I guess I will join <*=*AttributeInsideVar>
 </> 
 </> <Name=Boner> <Voiceline=1>
 </> Yay!
