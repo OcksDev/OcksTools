@@ -8,8 +8,10 @@ public class TextAnimator : MonoBehaviour
     private TMP_Text sex;
     public List<TextAnim> anims = new List<TextAnim>();
     private List<List<Color32>> pp = new List<List<Color32>>();
+    float halfpi;
     private void Start()
     {
+        halfpi = Mathf.PI / 2;
         sex = GetComponent<TMP_Text>();
         pp = new List<List<Color32>>()
         {
@@ -35,6 +37,7 @@ public class TextAnimator : MonoBehaviour
     {
         if(anims.Count > 0)
         {
+            var delt = Time.deltaTime;
             sex.ForceMeshUpdate();
             var textinfo = sex.textInfo;
             var sexoff = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), 0);
@@ -50,8 +53,27 @@ public class TextAnimator : MonoBehaviour
                 {
                     if (i >= anims[g].startindex && i <= anims[g].endindex)
                     {
+                        var sp = anims[g].SpottedCharacters;
+
                         switch (anims[g].Type)
                         {
+                            case "ShakeIn":
+                            case "FloatDown":
+                                if (!sp.ContainsKey(i))
+                                {
+                                    sp.Add(i, 0);
+                                }
+                                else
+                                {
+                                    sp[i] += delt;
+                                }
+                                break;
+                        }
+                        switch (anims[g].Type)
+                        {
+                            // i = character #
+                            // j = vert #
+                            // anims[g] = current anim
                             case "Wave":
                                 for (int j = 0; j < 4; j++)
                                 {
@@ -81,6 +103,18 @@ public class TextAnimator : MonoBehaviour
                                     verts[charinfo.vertexIndex + j] = orig + (sexoff);
                                 }
                                 break;
+                            case "ShakeIn":
+                                sp[i] += delt * 2;
+                                if (sp[i] <= 1)
+                                {
+                                    sexoff = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), 0) * 3;
+                                    for (int j = 0; j < 4; j++)
+                                    {
+                                        var orig = verts[charinfo.vertexIndex + j];
+                                        verts[charinfo.vertexIndex + j] = orig + (sexoff) * (1 - sp[i]);
+                                    }
+                                }
+                                break;
                             case "Rainbow":
                                 e = pp[0];
                                 sex = (Time.time + (i * 0.1f)) % (e.Count - 1);
@@ -105,6 +139,17 @@ public class TextAnimator : MonoBehaviour
                                     coilo[charinfo.vertexIndex + j2] = Color32.Lerp(e[(int)sex], e[(int)sex + 1], sex % 1);
                                 }
                                 break;
+                            case "FloatDown":
+                                sp[i] += delt;
+                                if (sp[i] <= 1)
+                                {
+                                    for (int j = 0; j < 4; j++)
+                                    {
+                                        var orig = verts[charinfo.vertexIndex + j];
+                                        verts[charinfo.vertexIndex + j] = orig + new Vector3(0, 6 * (Mathf.Cos((halfpi * sp[i]) + halfpi) + 1));
+                                    }
+                                }
+                                break;
                         }
                     }
                 }
@@ -126,6 +171,7 @@ public class TextAnim
     public string Type;
     public int startindex;
     public int endindex;
+    public Dictionary<int, float> SpottedCharacters = new Dictionary<int, float>();
     public TextAnim() { }
     public TextAnim(string type, int start, int end)
     {

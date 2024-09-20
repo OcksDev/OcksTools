@@ -63,6 +63,7 @@ public class ConsoleLol : MonoBehaviour
             { "Message_StoppedDialog", "All dialog has been stopped" },
             { "Message_Help", "Available Commands:" },
             { "Message_HelpData", "Allows for the modification of saved game data" },
+            { "Message_HelpScreenshot", "Screenshots the current screen" },
             { "Message_HelpTest", "Runs some tests and stuff" },
             { "Message_HelpDialog", "General dialog manager" },
             { "Message_HelpTime", "Sets the scale of time" },
@@ -189,6 +190,14 @@ public class ConsoleLol : MonoBehaviour
 
                             ), "#bdbdbdff");
                             break;
+                        case "screenshot":
+                            ConsoleLog((
+
+                                lang.IndexValuePairs["Message_HelpScreenshot"] +
+                                "<br> - screenshot"
+
+                            ), "#bdbdbdff");
+                            break;
                         case "dialog":
                             ConsoleLog((
 
@@ -207,7 +216,8 @@ public class ConsoleLol : MonoBehaviour
                                 "<br> - test circle" +
                                 "<br> - test destroy" +
                                 "<br> - test garbage" +
-                                "<br> - test listall"
+                                "<br> - test listall" +
+                                "<br> - test escape"
 
                             ), "#bdbdbdff");
                             break;
@@ -238,6 +248,7 @@ public class ConsoleLol : MonoBehaviour
                                 "<br> - test" +
                                 "<br> - dialog" +
                                 "<br> - data" +
+                                "<br> - screenshot" +
                                 "<br> - clear"
 
                             ), "#bdbdbdff");

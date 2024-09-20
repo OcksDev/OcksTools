@@ -117,7 +117,10 @@ public class DialogLol : MonoBehaviour
                 if (cp3 <= 0)
                 {
                     string e = GetText();
-                    e = e.Substring(Math.Clamp(e.Length - 1, 0, e.Length));
+                    if(e.Length > 0)
+                    {
+                        e = e.Substring(e.Length-1,1);
+                    }
                     if (e == " " || e.Contains("\n"))
                     {
                         cp3 = e == " " ? cps2 : cps3;
@@ -161,6 +164,7 @@ public class DialogLol : MonoBehaviour
         string aaa = "";
         switch (key)
         {
+            case "br": //fallthrough case to make sure this works properly
             case "Show":
                 // Used to display text inside dialog, pretty much always used in conjucnction with dialog variables
                 succeeded = true;
@@ -214,13 +218,13 @@ public class DialogLol : MonoBehaviour
                 break;
             case "Speed":
                 //data should be formatted like    5, 1, 1
-                list = new List<string>(data.Split(", "));
+                list = new List<string>(data.Split(","));
                 // Characters per second
-                if (list.Count > 1 && list[0] != "-") cps = float.Parse(list[0]);
+                if (list.Count >= 1 && VariableParse(list[0]) != "-") cps = float.Parse(VariableParse(list[0]));
                 // Delay in seconds between each word
-                if (list.Count > 2 && list[1] != "-") cps2 = float.Parse(list[1]);
+                if (list.Count >= 2 && VariableParse(list[1]) != "-") cps2 = float.Parse(VariableParse(list[1]));
                 // Delay in seconds between each line
-                if (list.Count > 3 && list[2] != "-") cps3 = float.Parse(list[2]);
+                if (list.Count >= 3 && VariableParse(list[2]) != "-") cps3 = float.Parse(VariableParse(list[2]));
                 succeeded = true;
                 break;
             case "TitleColor":
@@ -371,6 +375,7 @@ public class DialogLol : MonoBehaviour
         //attribute variable format
         //*var_name
         if (data == "") return data;
+        if (data[0] == ' ') data = data.Substring(1);
         if (data[0] == '*' || data[0] == '!')
         {
             string p2 = "";
@@ -580,6 +585,10 @@ public class DialogLol : MonoBehaviour
                             if (voop == "Show")
                             {
                                 mid = VariableParse(stuff[1]);
+                            }
+                            else if(voop == "br")
+                            {
+                                mid = "\n";
                             }
                             if (oldcharl < fulltext.Length)
                             {

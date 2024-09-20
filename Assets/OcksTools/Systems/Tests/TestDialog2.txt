@@ -1,9 +1,10 @@
 -Test Dialog-
-</> <Name=Boner> <Speed=69.69, -, 1> <TitleColor=150,0,0,255> <TextColor=150,0,0,255> <BgColor=150,0,0,255> <SoundOnType=0>
-</> Want to eat hair with me?
+</> <Name=Boner> <Speed=10,-,1> <TitleColor=150,0,0,255> <TextColor=150,0,0,255> <BgColor=75,0,0,255> <SoundOnType=0>
+</> <Animate=Text,FloatDown>Want to eat hair with me?
+Its ok if no
 </> 
-</> <Speed=69.69, -, 1> <Voiceline=0> <Name=Gamer> <SoundOnType=0>
-</> No 
+</> <Speed=10, -, 1> <Voiceline=0> <Name=Gamer> <SoundOnType=0>
+</> <Animate=Text,ShakeIn>No, I dont think I will. <Wait=1.2><Speed=15,1,-><br>You Repell Me
 </> 
 </> <Name=Boner> <Voiceline=1> <SoundOnType=0>
 </> Why not?

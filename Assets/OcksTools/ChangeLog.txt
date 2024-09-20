@@ -38,6 +38,7 @@
     - Also stores write commands so that they can be used even when ConsoleLol.Instance hasn't been assigned yet.
   - Console now properly moves down to the bottom of the console when entering commands
   - Console command "data listall" now actually reads from the updated saving/load system
+  - Some new commands
 - Sound System Improvements!
   - Completely changed how audio sources are handled. Old method was to create a source for each audio clip, new method creates a few audio sources as needed and cycles through them to conserve space. The result is even during scenes where many sounds are playing simultaniously, only the needed amount of sources exist.
   - These changes also make it so now audio will not clip into itself when played repeatedly, so no more fear of clipping sounds!
@@ -55,6 +56,8 @@
     - normal variables are declared like "*fart", but now you can declare variables like "!fart" to instead look up the value in Language File System
   - Fixed a bug where no argument attributes were not being parsed properly midtext like <End> and <Skip>, previously requiring them to be written like <Skip=1> or something similar
   - Fixed a bug where attributes at the end of dialog contents would throw an error
+  - Fixed Speed attribute being horribly parsed
+    - Also fixed it partly not working
 - File System Improvements!
   - Downloading files from your computer is no longer a hassle, streamlined the process to flow through a single DownloadFile() method
   - Downloading images from computer no longer just saves them as textures, but also as sprites
@@ -65,9 +68,6 @@
 - Input Manager Improvements!
   - New random methods to GetAllCurrentlyPressedKeys() and/or GetArbitraryKeyPressed() 
   - Organization plus simplificaiton of some things
-- New Text Animator!
-  - Allows for the animating of text in a very cool way, animations can be stacked and mixed
-    - Comes with many example animations: Wave, WaveND, Rainbow, RainbowSnap, Shake, ShakeWhole, Halloween
 - New Object Creation System (core system)!
   - Here to replace the RandomFunctions.SpawnObject()
   - Creates new optional Object Pooling functionality for all spawnable objects
@@ -80,6 +80,9 @@
   - New Texture2DToSprite() which converts texture2ds to sprites
   - New StringToVector3() and StringToVector3Int(), converts strings in the format of (0, 0, 0) into a vector3 or vector3int respectively
   - new EscapeString() and UnescapeString() which allow you to easily store/retrieve text without needing to worry about key characters
+- New Text Animator!
+  - Allows for the animating of text in a very cool way, animations can be stacked and mixed
+    - Comes with many example animations: Wave, WaveND, Rainbow, RainbowSnap, Shake, ShakeWhole, Halloween, ShakeIn, and FloatDown
 - New InfiniGrid
   - A grid editor that has no restrictions on location, currently pretty bare bones but I have plans to add multi tile objects
 - New Profile Handler (very bare bones)
@@ -132,6 +135,7 @@
   - GenerateID has been updated and now resides in Tags
   - Got this project onto Github so now people can actually see what I am doing lol
   - Cleared out all the random warnings from unused variables n' stuff
+  - <br> is now considered a dialog attribute in order to let the <Speed> attribute work
 ------------
 
 ------------
