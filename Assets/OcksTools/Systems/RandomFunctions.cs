@@ -136,6 +136,28 @@ public class RandomFunctions : MonoBehaviour
         return Quaternion.RotateTowards(transform.rotation, b, max_angle_change);
     }
 
+    public static float EaseIn(float perc, float pow = 3)
+    {
+        return 1 - Mathf.Pow(1 - perc, pow);
+    }
+    public static float EaseOut(float perc, float pow = 3)
+    {
+        return Mathf.Pow(perc, pow);
+    }
+    public static float EaseInAndOut(float perc, float pow = 3)
+    {
+        //using values like 0.4 make it go fast at the start, slow down in the middle, then speed up again at the end
+        if(perc <= 0.5f)
+        {
+            return Mathf.Pow(2*perc, pow)/2;
+        }
+        else
+        {
+            return (2-Mathf.Pow(2 * (1-perc), pow)) / 2;
+        }
+    }
+
+
     public long GetUnixTime(int type = -1)
     {
         //returns the curret unix time

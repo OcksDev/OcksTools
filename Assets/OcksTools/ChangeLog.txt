@@ -112,6 +112,7 @@
   - New RemoveDuplicates<>() allows you to easily remove any duplicate elements in a list
   - New PointFromTo2D() allows greater rotation control other than just using the mouse pos
   - New CombineLists<>() allows you to easily combine the data of two lists into one
+  - New EaseIn(), EaseOut(), and EaseInAndOut(), which allow for smooth value interpolation in a hopefully not inefficent manner
 - Misc Changes
   - Renamed Tags "miscrefs" to "refs"
   - Save System now runs after all other classes
