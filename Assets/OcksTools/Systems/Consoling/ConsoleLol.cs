@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Unity.VisualScripting;
 using static System.Net.Mime.MediaTypeNames;
+using UnityEngine.EventSystems;
 
 public class ConsoleLol : MonoBehaviour
 {
@@ -107,10 +108,20 @@ public class ConsoleLol : MonoBehaviour
 
     private void Update()
     {
-        if (InputManager.IsKeyDown(InputManager.gamekeys["console"]))
+        if (InputManager.IsKeyDown(InputManager.gamekeys["console"], "def"))
         {
             ConsoleChange(!enable);
-        }else if(InputManager.IsKeyDown(InputManager.gamekeys["close_menu"]))
+        }
+        else if (InputManager.IsKeyDown(InputManager.gamekeys["console"], "Console"))
+        {
+            var impdaddy = ConsoleObject.GetComponent<ConsolRefs>();
+            if (EventSystem.current.currentSelectedGameObject == null || EventSystem.current.currentSelectedGameObject.name != impdaddy.input.gameObject.name)
+            {
+                impdaddy.fix.Select();
+                impdaddy.input.Select();
+            }
+        }
+        else if (InputManager.IsKeyDown(InputManager.gamekeys["close_menu"]))
         {
             ConsoleChange(false);
         }
@@ -146,7 +157,7 @@ public class ConsoleLol : MonoBehaviour
         }
     }
 
-    public void Submit()
+    public void Submit(string inputgaming)
     {
         if (InputManager.IsKeyDown(InputManager.gamekeys["console"]) || InputManager.IsKeyDown(InputManager.gamekeys["close_menu"]) || Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2)) return;
         balls = 3;
@@ -156,7 +167,7 @@ public class ConsoleLol : MonoBehaviour
         //this must be run when the text is finished editing
         try
         {
-            s = ConsoleObject.GetComponentInChildren<TMP_InputField>().text;
+            s = inputgaming;
             if (s != "" && (prev_commands.Count == 0 || prev_commands[prev_commands.Count - 1] != s)) prev_commands.Add(s);
             var s2 = s;
             if (s == "") return;
@@ -497,13 +508,15 @@ public class ConsoleLol : MonoBehaviour
         ConsoleObject.SetActive(e);
         if (e)
         {
-            var imp = ConsoleObject.GetComponentInChildren<TMP_InputField>();
-            var imp2 = ConsoleObject.GetComponentInChildren<Button>();
-            imp.text = "";
-            //stupid fucking selection fix I hate this.
-            //if I dont have this useless line of code it stops working and I dont know why
-            imp2.Select();
-            imp.Select();
+            InputManager.AddLockLevel("Console");
+            var impdaddy = ConsoleObject.GetComponent<ConsolRefs>();
+            impdaddy.fix.Select();
+            impdaddy.input.Select();
+            impdaddy.input.text = "";
+        }
+        else
+        {
+            InputManager.RemoveLockLevel("Console");
         }
     }
 }

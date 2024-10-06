@@ -38,11 +38,13 @@
     - Also stores write commands so that they can be used even when ConsoleLol.Instance hasn't been assigned yet.
   - Console now properly moves down to the bottom of the console when entering commands
   - Console command "data listall" now actually reads from the updated saving/load system
+  - Inputs are properly captured now, no more closing the menu by accident by pressing "/"
   - Some new commands
+  - Cleaned up some of the code
 - Sound System Improvements!
-  - Completely changed how audio sources are handled. Old method was to create a source for each audio clip, new method creates a few audio sources as needed and cycles through them to conserve space. The result is even during scenes where many sounds are playing simultaniously, only the needed amount of sources exist.
+  - Completely changed how audio sources are handled, should be much more efficient now.
   - These changes also make it so now audio will not clip into itself when played repeatedly, so no more fear of clipping sounds!
-    - If you still want to have clipped sounds when they overlap though, you can use PlaySoundWithClipping()
+    - If you still want to have clipped sounds when they overlap, you can use PlaySoundWithClipping()
 - Dialog Improvements!
   - New "SoundOnType" attribute allows for a sound to be played whenever a new character is displayed in the dialog box
   - New "Animate" attribute allows for the various texts in the Dialog System to be animated using the new Text Animator
@@ -67,6 +69,8 @@
   - Fixed bug so rooms should no longer spawn upside down (generation was good, spawning in the prefabs based on the generation was not)
 - Input Manager Improvements!
   - New random methods to GetAllCurrentlyPressedKeys() and/or GetArbitraryKeyPressed() 
+  - Remade the locklevel system to now use lists of strings instead of just one string
+    - Old code/method is still compatable and should work exactly the same as before, but now there is new functionality
   - Organization plus simplificaiton of some things
 - New Object Creation System (core system)!
   - Here to replace the RandomFunctions.SpawnObject()
@@ -111,7 +115,10 @@
   - New MousePosition() allows you to get the mouse position relative to a given camera
   - New RemoveDuplicates<>() allows you to easily remove any duplicate elements in a list
   - New PointFromTo2D() allows greater rotation control other than just using the mouse pos
-  - New CombineLists<>() allows you to easily combine the data of two lists into one
+  - New CombineLists<>() allows you to easily combine the data of two lists into ones
+  - New ListContainsItemFromList<>() checks for if any item of one list is within the other
+  - New ListMatchesList<>() checks for if two lists match
+  - New ListMatchesListOrderless<>() checks for if two lists contain the same data but regardless of order
   - New EaseIn(), EaseOut(), and EaseInAndOut(), which allow for smooth value interpolation in a hopefully not inefficent manner
 - Misc Changes
   - Renamed Tags "miscrefs" to "refs"

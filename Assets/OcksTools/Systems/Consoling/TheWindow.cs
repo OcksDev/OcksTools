@@ -45,7 +45,6 @@ public class ConsoleSetupWindow: EditorWindow
                     var t2 = Instantiate((GameObject)Resources.Load(f2), Vector3.zero, Quaternion.identity);
                     var a = t2.GetComponent<ConsoleLol>();
                     a.ConsoleObject = t1;
-                    t1.GetComponent<ConsolRefs>().input.onEndEdit.AddListener((value) => { a.Submit(); });
 
                     //ExecuteEvents.Execute(t1.GetComponent<ConsolRefs>().input.gameObject, null, ExecuteEvents.submitHandler);
 

@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class InputManager : MonoBehaviour
 {
-    public static string locklevel = "";
+    public static List<string> locklevel = new List<string>();
     public static Dictionary<KeyCode, string> keynames = new Dictionary<KeyCode, string>();
     public static Dictionary<string, KeyCode> namekeys = new Dictionary<string, KeyCode>();
     public static Dictionary<string, KeyCode> gamekeys = new Dictionary<string, KeyCode>();
@@ -144,28 +144,46 @@ public class InputManager : MonoBehaviour
     }
 
 
-    public static bool GetSelected(string ide)
+    public static bool GetSelected(List<string> ide)
     {
-        return locklevel == ide || locklevel == "" || ide == "";
+        return locklevel.Count==0 || ide.Count == 0 || ide[0] == "" || RandomFunctions.ListContainsItemFromList(locklevel, ide);
     }
 
     public static void ResetLockLevel()
     {
-        locklevel = "";
+        locklevel.Clear();
     }
 
-    public static void SetLockLevel(string e)
+    public static void SetLockLevel(List<string> e)
     {
         locklevel = e;
     }
 
-    public static bool IsDie(string b2 = "")
+    public static bool AddLockLevel(string e)
     {
-        //return true for making the input fail
-        bool a = false;
+        if (!locklevel.Contains(e))
+        {
+            locklevel.Add(e);
+            return true;
+        }
+        return false;
+    }
+    public static bool RemoveLockLevel(string e)
+    {
+        if (locklevel.Contains(e))
+        {
+            locklevel.Remove(e);
+            return true;
+        }
+        return false;
+    }
 
-        //add code to change boolean to true if the input is denied
-        if(!a) a = !GetSelected(b2);
+    public static bool IsDie(List<string> ide)
+    {
+        //set a = false to deny inputs
+        bool a = true;
+
+
 
         return a;
     }
@@ -173,60 +191,105 @@ public class InputManager : MonoBehaviour
 
     public static bool CheckAvailability(string ide = "")
     {
-        if (IsDie(ide)) return false;
+        return CheckAvailability(new List<string>() { ide });
+    }
+    public static bool CheckAvailability(List<string> ide)
+    {
+        if (!IsDie(ide)) return false;
+        if (!GetSelected(ide)) return false;
         return true;
     }
 
     public static bool IsKeyDown(KeyCode baller, string ide = "")
     {
-        if (IsDie(ide)) return false;
-        return Input.GetKeyDown(baller) && GetSelected(ide);
+        return IsKeyDown(baller, new List<string>() { ide });
     }
     public static bool IsKey(KeyCode baller, string ide = "")
     {
-        if (IsDie(ide)) return false;
-        return Input.GetKey(baller) && GetSelected(ide);
+        return IsKey(baller, new List<string>() { ide });
     }
     public static bool IsKeyUp(KeyCode baller, string ide = "")
     {
-        if (IsDie(ide)) return false;
-        return Input.GetKeyUp(baller) && GetSelected(ide);
+        return IsKeyUp(baller, new List<string>() { ide });
     }
     public static bool IsMouseDown(int baller, string ide = "")
     {
-        if (IsDie(ide))
-            return false;
-        return Input.GetMouseButtonDown(baller) && GetSelected(ide);
+        return IsMouseDown(baller, new List<string>() { ide });
     }
     public static bool IsMouse(int baller, string ide = "")
     {
-        if (IsDie(ide))
-            return false;
-        return Input.GetMouseButton(baller) && GetSelected(ide);
+        return IsMouse(baller, new List<string>() { ide });
     }
     public static bool IsMouseUp(int baller, string ide = "")
     {
-        if (IsDie(ide))
-            return false;
-        return Input.GetMouseButtonUp(baller) && GetSelected(ide);
+        return IsMouseUp(baller, new List<string>() { ide });
     }
     public static bool IsButtonDown(string baller, string ide = "")
     {
-        if (IsDie(ide))
-            return false;
-        return Input.GetButtonDown(baller) && GetSelected(ide);
+        return IsButtonDown(baller, new List<string>() { ide });
     }
     public static bool IsButton(string baller, string ide = "")
     {
-        if (IsDie(ide))
-            return false;
-        return Input.GetButton(baller) && GetSelected(ide);
+        return IsButton(baller, new List<string>() { ide });
     }
     public static bool IsButtonUp(string baller, string ide = "")
     {
-        if (IsDie(ide))
-            return false;
-        return Input.GetButtonUp(baller) && GetSelected(ide);
+        return IsButtonUp(baller, new List<string>() { ide});
+    }
+
+    public static bool IsKeyDown(KeyCode baller, List<string> ide)
+    {
+        if (!IsDie(ide)) return false;
+        if (!GetSelected(ide)) return false;
+        return Input.GetKeyDown(baller);
+    }
+    public static bool IsKey(KeyCode baller, List<string> ide)
+    {
+        if (!IsDie(ide)) return false;
+        if (!GetSelected(ide)) return false;
+        return Input.GetKey(baller);
+    }
+    public static bool IsKeyUp(KeyCode baller, List<string> ide)
+    {
+        if (!IsDie(ide)) return false;
+        if (!GetSelected(ide)) return false;
+        return Input.GetKeyUp(baller);
+    }
+    public static bool IsMouseDown(int baller, List<string> ide)
+    {
+        if (!IsDie(ide)) return false;
+        if (!GetSelected(ide)) return false;
+        return Input.GetMouseButtonDown(baller);
+    }
+    public static bool IsMouse(int baller, List<string> ide)
+    {
+        if (!IsDie(ide)) return false;
+        if (!GetSelected(ide)) return false;
+        return Input.GetMouseButton(baller);
+    }
+    public static bool IsMouseUp(int baller, List<string> ide)
+    {
+        if (!IsDie(ide)) return false;
+        if (!GetSelected(ide)) return false;
+        return Input.GetMouseButtonUp(baller);
+    }
+    public static bool IsButtonDown(string baller, List<string> ide)
+    {
+        if (!IsDie(ide)) return false;
+        if (!GetSelected(ide)) return false;
+        return Input.GetButtonDown(baller);
+    }
+    public static bool IsButton(string baller, List<string> ide)
+    {
+        if (!IsDie(ide)) return false;
+        if (!GetSelected(ide)) return false;
+        return Input.GetButton(baller);
+    }
+    public static bool IsButtonUp(string baller, List<string> ide)
+    {
+        if (!IsDie(ide)) return false;
+        if (!GetSelected(ide)) return false;
+        return Input.GetButtonUp(baller);
     }
 
     public static void SetGameKeys()
