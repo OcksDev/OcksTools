@@ -36,6 +36,7 @@
 - Console Improvements!
   - new class Console to act as a shorthand for ConsoleLol.Instance, makes life easier as a dev
     - Also stores write commands so that they can be used even when ConsoleLol.Instance hasn't been assigned yet.
+  - You should no longer need to mess around with the console after using the window to set it up
   - Console now properly moves down to the bottom of the console when entering commands
   - Console command "data listall" now actually reads from the updated saving/load system
   - Inputs are properly captured now, no more closing the menu by accident by pressing "/"
@@ -143,7 +144,8 @@
   - GenerateID has been updated and now resides in Tags
   - Got this project onto Github so now people can actually see what I am doing lol
   - Cleared out all the random warnings from unused variables n' stuff
-  - <br> is now considered a dialog attribute in order to let the <Speed> attribute work
+  - Console util setup buttons now more accurately place the objects they instantiate
+  - <br> is now considered a dialog attribute in order to let the <Speed> attribute work. (dont ask)
 ------------
 
 ------------

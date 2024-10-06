@@ -27,11 +27,8 @@ public class ConsoleLol : MonoBehaviour
     /* the setup process!
      * 
      * 1. Use the ockstools window found at the top of the unity editor in the path OcksTools/Console/Utils
-     * 2. Place the console object parent in the given field and click the setup button
-     * 3. Navigate to the newly spawned console object and go to the input field within it
-     * 4. in the "On End Edit" section, set the object to be run to the ConsoleHandler object that was also spawned \
-     * 5. Set the method to be ConsoleLol.Submit()
-     * 6. You are done
+     * 2. Place the console object parent (canvas) in the given field and click the setup button
+     * 3. You are done
      */
 
 

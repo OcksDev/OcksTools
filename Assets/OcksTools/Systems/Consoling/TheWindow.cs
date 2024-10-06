@@ -41,7 +41,7 @@ public class ConsoleSetupWindow: EditorWindow
                     var f2 = "ConsoleHandler";
 
                     var f = (GameObject)Resources.Load(f1);
-                    var t1 = Instantiate(f, new Vector3(-5.23749303817749f, -2.491374969482422f, 0), Quaternion.identity, s.transform);
+                    var t1 = Instantiate(f, new Vector3(-5.23749303817749f, -2.491374969482422f, 0) + s.transform.position, Quaternion.identity, s.transform);
                     var t2 = Instantiate((GameObject)Resources.Load(f2), Vector3.zero, Quaternion.identity);
                     var a = t2.GetComponent<ConsoleLol>();
                     a.ConsoleObject = t1;
@@ -59,7 +59,7 @@ public class ConsoleSetupWindow: EditorWindow
                     var f2 = "DialogManager";
 
                     var f = (GameObject)Resources.Load(f1);
-                    var t1 = Instantiate(f, new Vector3(0f, -2.783632516860962f, 0), Quaternion.identity, s.transform);
+                    var t1 = Instantiate(f, new Vector3(0f, -2.783632516860962f, 0) + s.transform.position, Quaternion.identity, s.transform);
                     var t2 = Instantiate((GameObject)Resources.Load(f2), Vector3.zero, Quaternion.identity);
 
                     t2.GetComponent<DialogLol>().DialogBoxObject = t1;
@@ -74,7 +74,7 @@ public class ConsoleSetupWindow: EditorWindow
                     var f2 = "ChatHandler";
 
                     var f = (GameObject)Resources.Load(f1);
-                    var t1 = Instantiate(f, new Vector3(-5.310166358947754f, -2.5500009059906008f, 0), Quaternion.identity, s.transform);
+                    var t1 = Instantiate(f, new Vector3(-5.310166358947754f, -2.5500009059906008f, 0) + s.transform.position, Quaternion.identity, s.transform);
                     var t2 = Instantiate((GameObject)Resources.Load(f2), Vector3.zero, Quaternion.identity);
                     var g = t2.GetComponent<ChatLol>();
                     g.ChatLog = t1;
