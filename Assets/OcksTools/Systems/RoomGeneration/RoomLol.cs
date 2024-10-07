@@ -297,37 +297,22 @@ public class RoomLol : MonoBehaviour
 public class Room
 {
     public GameObject RoomObject;
-    public Vector2 RoomSize = new Vector2(1, 1);
-    public Vector2 LeftDoor = new Vector2(-6969, -6969);
-    public Vector2 RightDoor = new Vector2(-6969, -6969);
-    public Vector2 TopDoor = new Vector2(-6969, -6969);
-    public Vector2 BottomDoor = new Vector2(-6969, -6969);
     public bool IsEndpoint = false;
-    [HideInInspector]
+    public Vector2 RoomSize = new Vector2(1, 1);
     public bool HasLeftDoor = false;
-    [HideInInspector]
+    public Vector2 LeftDoor = new Vector2(0, 0);
     public bool HasRightDoor = false;
-    [HideInInspector]
+    public Vector2 RightDoor = new Vector2(0, 0);
     public bool HasTopDoor = false;
-    [HideInInspector]
+    public Vector2 TopDoor = new Vector2(0, 0);
     public bool HasBottomDoor = false;
+    public Vector2 BottomDoor = new Vector2(0, 0);
     [HideInInspector]
     public int RoomID = -1;
 
     public void SetData(int index)
     {
         RoomID= index;
-        HasLeftDoor = LeftDoor != new Vector2(-6969, -6969);
-        HasRightDoor = RightDoor != new Vector2(-6969, -6969);
-        HasTopDoor = TopDoor != new Vector2(-6969, -6969);
-        HasBottomDoor = BottomDoor != new Vector2(-6969, -6969);
-    }
-    public Room()
-    {
-        LeftDoor = new Vector2(-6969, -6969);
-        RightDoor = new Vector2(-6969, -6969);
-        TopDoor = new Vector2(-6969, -6969);
-        BottomDoor = new Vector2(-6969, -6969);
     }
 
     /*

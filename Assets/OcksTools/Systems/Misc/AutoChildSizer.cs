@@ -22,7 +22,11 @@ public class AutoChildSizer : MonoBehaviour
         if (!OverrideParent)
         {
             ss = transform.parent.GetComponent<RectTransform>();
-        } 
+        }
+        else
+        {
+            ss = Objecty;
+        }
         yeet = GetComponent<RectTransform>();
     }
 
@@ -43,7 +47,17 @@ public class AutoChildSizer : MonoBehaviour
     }
     private void segs()
     {
-        if (AxisOfChange != 0) yeet.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, ss.rect.size.y - (BorderAmount * 2));
-        if (AxisOfChange != 1) yeet.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, ss.rect.size.x - (BorderAmount * 2));
+        switch (AxisOfChange)
+        {
+            case 0:
+                yeet.sizeDelta = new Vector2(ss.sizeDelta.x + BorderAmount * 2, yeet.sizeDelta.y);
+                break;
+            case 1:
+                yeet.sizeDelta = new Vector2(yeet.sizeDelta.x, ss.sizeDelta.y + BorderAmount * 2);
+                break;
+            default:
+                yeet.sizeDelta = ss.sizeDelta + new Vector2(BorderAmount * 2, BorderAmount * 2);
+                break;
+        }
     }
 }

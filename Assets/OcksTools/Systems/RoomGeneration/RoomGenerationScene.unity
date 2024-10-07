@@ -218,6 +218,7 @@ GameObject:
   - component: {fileID: 1405635658}
   - component: {fileID: 1405635657}
   - component: {fileID: 1405635656}
+  - component: {fileID: 1405635659}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -291,6 +292,39 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1405635659
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1405635655}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_Version: 2
 --- !u!1001 &4198499363557141781
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -383,6 +417,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
+      propertyPath: RoomNerds.Array.data[0].IsEndpoint
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
       propertyPath: RoomNerds.Array.data[0].RoomObject
       value: 
       objectReference: {fileID: 7492567958466505728, guid: 2e8c1080c4bacc44e900694ebc97221c, type: 3}
@@ -392,6 +430,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
       propertyPath: RoomNerds.Array.data[0].RoomSize.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
+      propertyPath: RoomNerds.Array.data[1].HasTopDoor
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
@@ -415,6 +457,10 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
+      propertyPath: RoomNerds.Array.data[2].HasTopDoor
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
       propertyPath: RoomNerds.Array.data[2].LeftDoor.x
       value: 0
       objectReference: {fileID: 0}
@@ -435,6 +481,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
+      propertyPath: RoomNerds.Array.data[3].HasTopDoor
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
       propertyPath: RoomNerds.Array.data[3].IsEndpoint
       value: 1
       objectReference: {fileID: 0}
@@ -448,6 +498,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
       propertyPath: RoomNerds.Array.data[3].RoomSize.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
+      propertyPath: RoomNerds.Array.data[4].HasTopDoor
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
@@ -499,6 +553,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
+      propertyPath: RoomNerds.Array.data[7].HasTopDoor
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
       propertyPath: RoomNerds.Array.data[7].LeftDoor.x
       value: -6969
       objectReference: {fileID: 0}
@@ -519,6 +577,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
+      propertyPath: RoomNerds.Array.data[0].HasLeftDoor
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
       propertyPath: RoomNerds.Array.data[0].RightDoor.x
       value: 1
       objectReference: {fileID: 0}
@@ -535,6 +597,10 @@ PrefabInstance:
       value: -6969
       objectReference: {fileID: 0}
     - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
+      propertyPath: RoomNerds.Array.data[2].HasLeftDoor
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
       propertyPath: RoomNerds.Array.data[2].RightDoor.x
       value: 0
       objectReference: {fileID: 0}
@@ -543,12 +609,24 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
+      propertyPath: RoomNerds.Array.data[3].HasLeftDoor
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
+      propertyPath: RoomNerds.Array.data[4].HasLeftDoor
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
       propertyPath: RoomNerds.Array.data[4].RightDoor.x
       value: -6969
       objectReference: {fileID: 0}
     - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
       propertyPath: RoomNerds.Array.data[4].RightDoor.y
       value: -6969
+      objectReference: {fileID: 0}
+    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
+      propertyPath: RoomNerds.Array.data[5].HasLeftDoor
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
       propertyPath: RoomNerds.Array.data[5].RightDoor.x
@@ -575,6 +653,10 @@ PrefabInstance:
       value: -6969
       objectReference: {fileID: 0}
     - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
+      propertyPath: RoomNerds.Array.data[0].HasRightDoor
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
       propertyPath: RoomNerds.Array.data[1].BottomDoor.x
       value: 0
       objectReference: {fileID: 0}
@@ -585,6 +667,14 @@ PrefabInstance:
     - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
       propertyPath: RoomNerds.Array.data[2].BottomDoor.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
+      propertyPath: RoomNerds.Array.data[2].HasRightDoor
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
+      propertyPath: RoomNerds.Array.data[3].HasRightDoor
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
       propertyPath: RoomNerds.Array.data[4].BottomDoor.x
@@ -603,12 +693,40 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
+      propertyPath: RoomNerds.Array.data[6].HasRightDoor
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
       propertyPath: RoomNerds.Array.data[7].BottomDoor.x
       value: -6969
       objectReference: {fileID: 0}
     - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
       propertyPath: RoomNerds.Array.data[7].BottomDoor.y
       value: -6969
+      objectReference: {fileID: 0}
+    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
+      propertyPath: RoomNerds.Array.data[7].HasRightDoor
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
+      propertyPath: RoomNerds.Array.data[1].HasBottomDoor
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
+      propertyPath: RoomNerds.Array.data[2].HasBottomDoor
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
+      propertyPath: RoomNerds.Array.data[3].HasBottomDoor
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
+      propertyPath: RoomNerds.Array.data[5].HasBottomDoor
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
+      propertyPath: RoomNerds.Array.data[6].HasBottomDoor
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2820689779679550378, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
       propertyPath: m_RootOrder

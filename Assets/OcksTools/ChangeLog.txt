@@ -111,6 +111,7 @@
   - Created new folder of useful shaders and materials I have made.
   - Added a few more fonts
   - Fixed some random typos I found around random classes
+- Fixed AutoChildSizer (idk what was up before, now it actually works)
 - New Random Functions
   - New CharPrepend() allows you to do things like converting 1, 10, 100 into 001, 010, 100.
   - New MousePosition() allows you to get the mouse position relative to a given camera

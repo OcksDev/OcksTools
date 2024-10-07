@@ -11,6 +11,7 @@ public class GISContainer : MonoBehaviour
     [Tooltip("Uses the GISItems however doesn't use slots")]
     public bool IsAbstract = false;
     public bool CanShiftClickItems = true;
+    public bool AutomaticallyAddChildren = true;
     public bool GenerateRandomItems = false;
     public bool GenerateSlotObjects = true;
     public int GenerateXSlots = 20;
@@ -29,14 +30,15 @@ public class GISContainer : MonoBehaviour
         {
             if (GenerateSlotObjects)
             {
-                foreach (var pp in myass)
-                {
-                    Destroy(pp.gameObject);
-                }
+                if(AutomaticallyAddChildren)
+                    foreach (var pp in myass)
+                    {
+                        Destroy(pp.gameObject);
+                    }
 
                 GenerateSlots(GenerateXSlots);
             }
-            else
+            else if(AutomaticallyAddChildren)
             {
                 foreach (var pp in myass)
                 {
@@ -349,7 +351,8 @@ public class GISContainer : MonoBehaviour
     {
         foreach( var ns in slots)
         {
-            Destroy(ns.gameObject);
+            if(ns != null && ns.gameObject != null)
+                Destroy(ns.gameObject);
         }
         slots.Clear();
     }
