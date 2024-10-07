@@ -12,7 +12,7 @@ public class SaveSystem : MonoBehaviour
     //idk how needed this is tbh
     private string UniqueGamePrefix = "oxt";
     public int test = 0;
-
+    public bool TestBool = false;
 
     public delegate void JustFuckingRunTheMethods();
     public static event JustFuckingRunTheMethods SaveAllData;
@@ -79,6 +79,7 @@ public class SaveSystem : MonoBehaviour
         }
 
         test = int.Parse(GetString("test_num", "0", dict));
+        TestBool = bool.Parse(GetString("test_bool", "False", dict));
         //ConsoleLol.Instance.ConsoleLog(Prefix(i) + "test_num");
 
         LoadAllData?.Invoke();
@@ -105,6 +106,7 @@ public class SaveSystem : MonoBehaviour
         }
 
         SetString("test_num", test.ToString(), dict);
+        SetString("test_bool", TestBool.ToString(), dict);
 
         SaveAllData?.Invoke();
 
