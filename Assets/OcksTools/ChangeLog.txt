@@ -40,6 +40,7 @@
   - Console now properly moves down to the bottom of the console when entering commands
   - Console command "data listall" now actually reads from the updated saving/load system
   - Inputs are properly captured now, no more closing the menu by accident by pressing "/"
+  - Optimized code to display text, much better than before
   - Some new commands
   - Cleaned up some of the code
 - Sound System Improvements!
@@ -90,11 +91,14 @@
     - Comes with many example animations: Wave, WaveND, Rainbow, RainbowSnap, Shake, ShakeWhole, Halloween, ShakeIn, and FloatDown
 - New InfiniGrid
   - A grid editor that has no restrictions on location, currently pretty bare bones but I have plans to add multi tile objects
+- New Easy Settings Folder
+  - The basic outline of some things to make the creation of game settings menus easier.
 - New Profile Handler (very bare bones)
   - Allows for basic interaction with Ocks Universal Profile
 - New Tags Refs
   - A quick script you can slap on any gameobject to create a reference to it using Tags
   - default values are the name and gameobject of the attached script, can be manually changed to new values
+  - Tags System now also has an inspector list to make refs within itself
 - New Input Buffer!
   - Allows the buffering of inputs so that they can be checked more leniently
 - New Screenshot System!

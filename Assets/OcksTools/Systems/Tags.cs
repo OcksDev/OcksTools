@@ -15,7 +15,7 @@ public class Tags : MonoBehaviour
     [HideInInspector]
     [DoNotSerialize]
     public static Dictionary<string, GameObject> refs = new Dictionary<string, GameObject>();
-
+    public List<OXTagRefThing> RefedObjects = new List<OXTagRefThing>();
     /*
      * Tags Help:
      * To check if a gameobject has a certain tag: see if the tag list contains the string ID of the gameobject(s)
@@ -28,6 +28,10 @@ public class Tags : MonoBehaviour
     public void Awake()
     {
         if(Instance == null) Instance= this;
+        foreach(var a in RefedObjects)
+        {
+            a.Zoink();
+        }
     }
 
 
@@ -75,5 +79,17 @@ public class Tags : MonoBehaviour
     public static string GenerateID()
     {
         return Guid.NewGuid().ToString();
+    }
+}
+
+[System.Serializable]
+public class OXTagRefThing
+{
+    public string Name;
+    public GameObject Object;
+    public void Zoink()
+    {
+        if (Name == "") Name = Object.name;
+        Tags.SetRef(Name, Object);
     }
 }

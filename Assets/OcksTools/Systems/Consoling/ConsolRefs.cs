@@ -8,6 +8,7 @@ public class ConsolRefs : MonoBehaviour
 {
     public TMP_InputField input;
     public Button fix;
+    public Scrollbar scrollbar;
     public void Submit()
     {
         ConsoleLol.Instance.Submit(input.text);

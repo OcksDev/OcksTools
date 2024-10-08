@@ -12,6 +12,7 @@ using UnityEngine.EventSystems;
 public class ConsoleLol : MonoBehaviour
 {
     public GameObject ConsoleObject;
+    public ConsolRefs ConsoleObjectRef;
     private static ConsoleLol instance;
 
     public bool enable = false;
@@ -49,6 +50,7 @@ public class ConsoleLol : MonoBehaviour
     {
         prev_commands.Clear();
         BackLog = "";
+        ConsoleObjectRef = ConsoleObject.GetComponent<ConsolRefs>();
         ConsoleChange(false);
         if (Instance == null) instance = this;
     }
@@ -110,12 +112,11 @@ public class ConsoleLol : MonoBehaviour
             ConsoleChange(!enable);
         }
         else if (InputManager.IsKeyDown(InputManager.gamekeys["console"], "Console"))
-        {
-            var impdaddy = ConsoleObject.GetComponent<ConsolRefs>();
-            if (EventSystem.current.currentSelectedGameObject == null || EventSystem.current.currentSelectedGameObject.name != impdaddy.input.gameObject.name)
+        {;
+            if (EventSystem.current.currentSelectedGameObject == null || EventSystem.current.currentSelectedGameObject.name != ConsoleObjectRef.input.gameObject.name)
             {
-                impdaddy.fix.Select();
-                impdaddy.input.Select();
+                ConsoleObjectRef.fix.Select();
+                ConsoleObjectRef.input.Select();
             }
         }
         else if (InputManager.IsKeyDown(InputManager.gamekeys["close_menu"]))
@@ -138,14 +139,14 @@ public class ConsoleLol : MonoBehaviour
         if (balls > 0)
         {
             balls--;
-            var pp = ConsoleObject.GetComponentInChildren<Scrollbar>();
+            var pp = ConsoleObjectRef.scrollbar;
             if (pp != null) pp.value = 1;
         }
     }
 
     public void CommandChange(int i)
     {
-        var sp = ConsoleObject.GetComponentInChildren<TMP_InputField>();
+        var sp = ConsoleObjectRef.input;
         if(prev_commands.Count > 0)
         {
             comm += i;
@@ -158,7 +159,7 @@ public class ConsoleLol : MonoBehaviour
     {
         if (InputManager.IsKeyDown(InputManager.gamekeys["console"]) || InputManager.IsKeyDown(InputManager.gamekeys["close_menu"]) || Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2)) return;
         balls = 3;
-        var pp = ConsoleObject.GetComponentInChildren<Scrollbar>();
+        var pp = ConsoleObjectRef.scrollbar;
         if (pp != null) pp.value = 1;
         var lang = LanguageFileSystem.Instance;
         //this must be run when the text is finished editing
@@ -490,6 +491,7 @@ public class ConsoleLol : MonoBehaviour
         comm = prev_commands.Count;
     }
 
+
     public void ConsoleLog(string text = "Logged", string hex = "\"white\"")
     {
         BackLog = BackLog + "<br><color=" + hex + ">" + text;
@@ -506,10 +508,9 @@ public class ConsoleLol : MonoBehaviour
         if (e)
         {
             InputManager.AddLockLevel("Console");
-            var impdaddy = ConsoleObject.GetComponent<ConsolRefs>();
-            impdaddy.fix.Select();
-            impdaddy.input.Select();
-            impdaddy.input.text = "";
+            ConsoleObjectRef.fix.Select();
+            ConsoleObjectRef.input.Select();
+            ConsoleObjectRef.input.text = "";
         }
         else
         {
