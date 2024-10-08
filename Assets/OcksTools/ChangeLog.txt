@@ -125,7 +125,7 @@
   - New ListContainsItemFromList<>() checks for if any item of one list is within the other
   - New ListMatchesList<>() checks for if two lists match
   - New ListMatchesListOrderless<>() checks for if two lists contain the same data but regardless of order
-  - New EaseIn(), EaseOut(), and EaseInAndOut(), which allow for smooth value interpolation in a hopefully not inefficent manner
+  - New EaseIn(), EaseOut(), and EaseInAndOut(), which allow for smooth and adjustable value interpolation
 - Misc Changes
   - Renamed Tags "miscrefs" to "refs"
   - Save System now runs after all other classes

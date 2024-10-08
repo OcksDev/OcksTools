@@ -8,15 +8,14 @@ public class ProfileHandler : MonoBehaviour
 
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        StartCoroutine(WaitForSaveData());
+        SaveSystem.LoadAllData += LockIn;
     }
 
-    public IEnumerator WaitForSaveData()
+    public void LockIn()
     {
         var s = SaveSystem.Instance;
-        yield return new WaitUntil(() => { return s.LoadedData; });
         s.GetDataFromFile("ox_profile");
         if(s.GetString("Username", "", "ox_profile") == "")
         {
