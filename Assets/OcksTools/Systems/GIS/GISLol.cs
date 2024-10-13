@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static UnityEditor.Progress;
 
 public class GISLol : MonoBehaviour
 {
@@ -17,18 +19,20 @@ public class GISLol : MonoBehaviour
 
 
     public Dictionary<string,GISContainer> All_Containers = new Dictionary<string, GISContainer>();
-
-
+    [HideInInspector]
+    public bool CanHover = false;
     public static GISLol Instance
     {
         get { return instance; }
     }
-
+    bool nono = false;
     public void LoadTempForAll()
     {
+        if (nono) return;
+        nono = true;
         foreach(var con in All_Containers)
         {
-            if (con.Value != null) con.Value.LoadTempContents();
+            if (con.Value != null && !con.Value.IsAbstract) con.Value.LoadTempContents();
         }
     }
 
@@ -87,7 +91,7 @@ public class GISLol : MonoBehaviour
         var za = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         za.z = 0;
         MouseFollower.transform.position = za;
-
+        CanHover = true;
         if (InputManager.IsKeyDown(InputManager.gamekeys["reload"]))
         {
             LoadTempForAll();
@@ -96,6 +100,7 @@ public class GISLol : MonoBehaviour
         {
             Mouse_Held_Item = new GISItem();
         }
+        nono = false;
     }
 
     public void SaveAll()
@@ -108,8 +113,17 @@ public class GISLol : MonoBehaviour
             }
         }
     }
-
-
+    [HideInInspector]
+    public List<RaycastResult> rcl = new List<RaycastResult>();
+    public void HoverDataCooler()
+    {
+        if (!CanHover) return;
+        CanHover = false;
+        PointerEventData ped = new PointerEventData(EventSystem.current);
+        ped.position = Input.mousePosition;
+        rcl.Clear();
+        EventSystem.current.RaycastAll(ped, rcl);
+    }
     public string SaltName(string e)
     {
         e = e.Replace(" ", "");
@@ -291,5 +305,18 @@ public class GISItem_Data
         Name = data.Name;
         Description = data.Description;
         MaxAmount = data.MaxAmount;
+    }
+}
+
+
+public class GISDisplayData
+{
+    public Sprite[] Images;
+    public string Count;
+
+    public GISDisplayData(GISItem gissy)
+    {
+        Images = new Sprite[1] { GISLol.Instance.ItemDict[gissy.ItemIndex].Sprite };
+        Count = gissy.Amount > 0 ? "x" + gissy.Amount : "";
     }
 }

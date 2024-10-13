@@ -225,6 +225,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43a48cf3c2a66264a962010007cb9ab4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  display: {fileID: 2447900575301242726}
+  item:
+    ItemIndex: Empty
+    Amount: 0
+    Container: {fileID: 0}
+    Interacted_Containers: []
+  displays:
+  - {fileID: 4872199720306466169}
   amnt: {fileID: 4123612273451348509}
+  IsPhysical: 0
   UpdateOnFixedUpdate: 1

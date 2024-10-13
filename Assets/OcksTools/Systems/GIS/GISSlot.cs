@@ -273,7 +273,7 @@ public class GISSlot : MonoBehaviour
 
     }
 
-    public bool IsHovering2()
+    public bool IsHoveringBaldVersion()
     {
         //deprecated mouse hovering code, only keeping it incase anyone wants to use it because im like 95% certain its faster than the new method, it just works less well
         var size = 1f;
@@ -288,11 +288,8 @@ public class GISSlot : MonoBehaviour
     }
     public bool IsHovering()
     {
-        PointerEventData ped = new PointerEventData(EventSystem.current);
-        ped.position = Input.mousePosition;
-        List<RaycastResult> rcl = new List<RaycastResult>();
-        EventSystem.current.RaycastAll(ped, rcl);
-        foreach (var ray in rcl)
+        GISLol.Instance.HoverDataCooler();
+        foreach (var ray in GISLol.Instance.rcl)
         {
             if(ray.gameObject == this.gameObject)
             {

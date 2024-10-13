@@ -101,10 +101,6 @@ public class GISContainer : MonoBehaviour
         }*/
     }
 
-    private void OnApplicationQuit()
-    {
-        SaveContents();
-    }
 
     public bool SaveTempContents()
     {
@@ -164,7 +160,7 @@ public class GISContainer : MonoBehaviour
     {
         if (SaveLoadData)
         {
-            if(!IsAbstract) GISLol.Instance.LoadTempForAll();
+            GISLol.Instance.LoadTempForAll();
             List<string> a = new List<string>();
             List<string> b = new List<string>();
 
@@ -176,8 +172,14 @@ public class GISContainer : MonoBehaviour
             SaveSystem.Instance.SetString("cnt_" + Name, ListToString(a, "+=+"));
         }
     }
-    
 
+    private void Awake()
+    {
+        if (SaveLoadData)
+        {
+            SaveSystem.SaveAllData += SaveContents;
+        }
+    }
     public void LoadContents()
     {
         if (SaveLoadData)

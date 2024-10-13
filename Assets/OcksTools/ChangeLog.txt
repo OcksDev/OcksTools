@@ -7,7 +7,7 @@
   - Created new c# events which are called on save/load, so now other classes can safely save/load data easily
   - Fully moved away from old SaveFile index ideology, all systems in FileSystem and other related fields have been adjusted accordingly.
 - GIS improvements!
-  - GISContainers now can be toggled into a mode called "Abstract" so they can work like a list of items. (untested)
+  - GISContainers now can be toggled into a mode called "Abstract" so they can work like a list of items.
   - Completely reworked items to now be dictionary/name based instead of list/index based
   - new class GISItemBar/prefab AbstractDisplay
     - Works like an item bar similar to Risk Of Rain 2 where items are ordered in a bar
@@ -25,7 +25,10 @@
   - Revamped how GISItems are saved/loaded in text, now much more modular and easy to update
   - Revamped how saving of GISContainers is handled, should now be much more reliable.
     - Now integrated with the new save event from SaveSystem
-  - Reworked hover logic, should be much less prone to not detecting clicks.
+  - Created new GISDisplayData class which lets you easily retrieve data about how an item is supposed to render. (images, count text)
+  - GISDisplay now allows for multiple display objects, although I dont currently use it
+  - new PhysicalItemDisply (uses sprite renderer instead of ui image renderer)
+  - Reworked hover logic, should be much less prone to not detecting clicks, also should be better in general.
 - Entity has some much needed improvements
   - Damage and Effects now have their own custom classes
   - Completely reworked effect adding, new combining methods have been created and effects should actually have a timer now
