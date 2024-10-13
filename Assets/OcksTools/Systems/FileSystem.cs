@@ -87,7 +87,7 @@ public class FileSystem : MonoBehaviour
     {
         //string fullpath = //Path.Combine(DirectoryLol, FileName);
         bool e = File.Exists(FileName);
-        if ((!e && !CanOverride) || (CanOverride))
+        if (CanOverride || !e)
         {
             File.WriteAllText(FileName, data);
         }
