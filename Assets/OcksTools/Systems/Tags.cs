@@ -33,12 +33,23 @@ public class Tags : MonoBehaviour
             a.Zoink();
         }
     }
-
-
+    /*
+     * Component Store things
+     */
+    /*
+     * end of component store things
+     */
     public static void ClearAllOf(string key)
     {
         //should go and clear any instance of the ID found in any tag
-        if (dict.ContainsKey(key) && gameobject_dict.ContainsKey(dict[key])) gameobject_dict.Remove(dict[key]);
+        if (dict.ContainsKey(key))
+        {
+            OXComponent.ClearOf(dict[key]);
+            if (gameobject_dict.ContainsKey(dict[key]))
+            {
+                gameobject_dict.Remove(dict[key]);
+            }
+        }
         if (dict.ContainsKey(key)) dict.Remove(key);
         if (SDs.ContainsKey(key)) SDs.Remove(key);
         if (tag1.Contains(key)) tag1.Remove(key);

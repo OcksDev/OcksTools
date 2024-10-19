@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: -3996071173823086169}
   - component: {fileID: 7640229323480038865}
   - component: {fileID: 3013524816954814183}
+  - component: {fileID: 3711809495655014994}
+  - component: {fileID: 2292091035292460572}
   - component: {fileID: 6514279531858226045}
   m_Layer: 0
   m_Name: Single Player
@@ -48,6 +50,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   move_speed: 2
+  decay: 0.8
 --- !u!212 &7640229323480038865
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -126,6 +129,36 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &3711809495655014994
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4868548265477744919}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e55510bffaddb9458f70575bb8e3ba6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Type: 
+  Data: []
+  Hidden_Data: []
+  IsReal: 0
+--- !u!114 &2292091035292460572
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4868548265477744919}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80dd92a81b396d0448a19fdbda9e9cd2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Components:
+  - SpawnData
 --- !u!50 &6514279531858226045
 Rigidbody2D:
   serializedVersion: 4

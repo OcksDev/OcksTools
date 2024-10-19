@@ -355,6 +355,23 @@ public class Converter : MonoBehaviour
         return n;
     }
 
+    public static Dictionary<T,int> ListToDictionary<T>(List<T> input)
+    {
+        var output = new Dictionary<T,int>();
+        foreach (var item in input)
+        {
+            if (output.ContainsKey(item))
+            {
+                output[item]++;
+            }
+            else
+            {
+                output.Add(item, 1);    
+            }
+        }
+        return output;
+    }
+
     public static string TimeToRead(System.Numerics.BigInteger ine, int type = 0)
     {
         //converts a time (in whole seconds) into a readable format

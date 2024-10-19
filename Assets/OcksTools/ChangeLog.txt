@@ -77,6 +77,8 @@
   - Remade the locklevel system to now use lists of strings instead of just one string
     - Old code/method is still compatable and should work exactly the same as before, but now there is new functionality
   - Organization plus simplificaiton of some things
+- New OXComponent System (core system)!
+  - Allows for the removal of constant GetComponent calls. This system does it once, stores the value, and can be arbitrarily retrieved.
 - New Object Creation System (core system)!
   - Here to replace the RandomFunctions.SpawnObject()
   - Creates new optional Object Pooling functionality for all spawnable objects
@@ -89,6 +91,7 @@
   - New Texture2DToSprite() which converts texture2ds to sprites
   - New StringToVector3() and StringToVector3Int(), converts strings in the format of (0, 0, 0) into a vector3 or vector3int respectively
   - new EscapeString() and UnescapeString() which allow you to easily store/retrieve text without needing to worry about key characters
+  - new ListToDictionary<>() converts any list into a dictionary
 - New Text Animator!
   - Allows for the animating of text in a very cool way, animations can be stacked and mixed
     - Comes with many example animations: Wave, WaveND, Rainbow, RainbowSnap, Shake, ShakeWhole, Halloween, ShakeIn, and FloatDown
