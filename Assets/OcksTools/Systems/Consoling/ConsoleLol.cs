@@ -489,6 +489,8 @@ public class ConsoleLol : MonoBehaviour
 
         balls = 3;
         comm = prev_commands.Count;
+        ConsoleObjectRef.fix.Select();
+        ConsoleObjectRef.input.Select();
     }
 
 

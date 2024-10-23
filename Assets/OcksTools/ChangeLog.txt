@@ -120,6 +120,7 @@
   - Scenes for systems have been moved out of a dedicated folder into their respective component folders
   - Created new folder of useful shaders and materials I have made.
   - Added a few more fonts
+  - Added a few new basic images
   - Fixed some random typos I found around random classes
 - Fixed AutoChildSizer (idk what was up before, now it actually works)
 - New Random Functions

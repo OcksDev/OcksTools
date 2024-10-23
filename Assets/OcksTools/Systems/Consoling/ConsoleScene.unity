@@ -130,6 +130,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 242595958527456812, guid: d2fb6a7c474fbdc4a9627383260dbe4b, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: eef92c1887648cf42a6b081131cbe41c, type: 3}
+    - target: {fileID: 242595958527456812, guid: d2fb6a7c474fbdc4a9627383260dbe4b, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: c86ddbef228e44644926062d1d2b023b, type: 2}
     - target: {fileID: 1505490298665701488, guid: d2fb6a7c474fbdc4a9627383260dbe4b, type: 3}
       propertyPath: m_RootOrder
       value: 6
@@ -5518,7 +5526,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4007473491773129349, guid: 32aa07c1d97c2ed4cac286e0d66c9ab0, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -35.65007
+      value: -30.894083
       objectReference: {fileID: 0}
     - target: {fileID: 6736140656960667405, guid: 32aa07c1d97c2ed4cac286e0d66c9ab0, type: 3}
       propertyPath: m_AnchoredPosition.x
