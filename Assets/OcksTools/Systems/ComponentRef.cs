@@ -33,15 +33,19 @@ public class OXComponent
 
     public static void StoreComponent<T>(GameObject sus) where T : Component
     {
-        if (!StoredComps.ContainsKey(sus))
+        StoreComponent(sus.GetComponent<T>());
+        
+    }
+    public static void StoreComponent<T>(T sus) where T : Component
+    {
+        if (!StoredComps.ContainsKey(sus.gameObject))
         {
-            StoredComps.Add(sus, new Dictionary<string, Component>());
+            StoredComps.Add(sus.gameObject, new Dictionary<string, Component>());
         }
         string name = typeof(T).Name;
-        if (!StoredComps[sus].ContainsKey(name))
+        if (!StoredComps[sus.gameObject].ContainsKey(name))
         {
-            var comp = sus.GetComponent<T>();
-            if(comp != null) StoredComps[sus].Add(name, comp);
+            if(sus != null) StoredComps[sus.gameObject].Add(name, sus);
         }
     }
     public static void StoreComponentsInChildren<T>(GameObject sus) where T : Component
