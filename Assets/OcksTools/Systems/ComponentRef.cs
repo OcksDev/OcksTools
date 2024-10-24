@@ -55,6 +55,47 @@ public class OXComponent
         }
         return null;
     }
+    public static List<T> GetComponentsInChildren<T>(GameObject sussy) where T : MonoBehaviour
+    {
+        List<T> founds = new List<T>();
+        var e = sussy.transform.childCount;
+        T comp;
+        comp = GetComponent<T>(sussy);
+        if (comp != null)
+            founds.Add(comp);
+        for (int i = 0; i < e; i++)
+        {
+            comp = GetComponent<T>(sussy.transform.GetChild(i).gameObject);
+            if (comp != null)
+                founds.Add(comp);
+        }
+        return null;
+    }
+    public static List<T> GetComponentsInChildrenRecursive<T>(GameObject sussy) where T : MonoBehaviour
+    {
+        List<T> founds = new List<T>();
+        var e = sussy.transform.childCount;
+        T comp;
+        int amnt = 0;
+        GameObject held;
+        comp = GetComponent<T>(sussy);
+        if (comp != null)
+            founds.Add(comp);
+        for (int i = 0; i < e; i++)
+        {
+            held = sussy.transform.GetChild(i).gameObject;
+            amnt = held.transform.childCount;
+            comp = GetComponent<T>(held);
+            if (comp != null)
+                founds.Add(comp);
+            if(amnt > 0)
+            {
+                var weenis = GetComponentsInChildrenRecursive<T>(held);
+                founds = RandomFunctions.CombineLists(founds, weenis);
+            }
+        }
+        return null;
+    }
     public static void CleanUp()
     {
         for(int i = 0; i < StoredComps.Count; i++)
