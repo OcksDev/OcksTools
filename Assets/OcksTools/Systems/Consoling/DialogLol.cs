@@ -74,7 +74,7 @@ public class DialogLol : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (InputManager.IsKeyDown(InputManager.gamekeys["dialog_skip"]) || InputManager.IsKeyDown(InputManager.gamekeys["dialog_skip_mouse"]))
+        if (InputManager.IsKeyDown("dialog_skip") || InputManager.IsKeyDown("dialog_skip_mouse"))
         {
             if(datatype != "Choose")
             {
@@ -93,7 +93,7 @@ public class DialogLol : MonoBehaviour
             cp = 0;
             NextLine();
         }
-        if (CanEscape && InputManager.IsKeyDown(InputManager.gamekeys["close_menu"]))
+        if (CanEscape && InputManager.IsKeyDown("close_menu"))
         {
             ResetDialog();
         }

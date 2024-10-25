@@ -49,7 +49,7 @@ public class GridLol : MonoBehaviour
                 }
             }
         }
-        if (InputManager.IsKeyDown(InputManager.gamekeys["shoot"]))
+        if (InputManager.IsKeyDown("shoot"))
         {
             if (!antiplace)
             {

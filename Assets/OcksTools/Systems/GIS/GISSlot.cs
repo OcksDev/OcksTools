@@ -56,9 +56,9 @@ public class GISSlot : MonoBehaviour
     private void Update()
     {
         var g = GISLol.Instance;
-        bool shift = InputManager.IsKey(InputManager.gamekeys["item_alt"]);
-        bool left = InputManager.IsKeyDown(InputManager.gamekeys["item_select"]);
-        bool right = InputManager.IsKeyDown(InputManager.gamekeys["item_half"]);
+        bool shift = InputManager.IsKey("item_alt");
+        bool left = InputManager.IsKeyDown("item_select");
+        bool right = InputManager.IsKeyDown("item_half");
 
         if (!(left || right)) return;
         if (FailToClick()) return;
@@ -288,17 +288,7 @@ public class GISSlot : MonoBehaviour
     }
     public bool IsHovering()
     {
-        GISLol.Instance.HoverDataCooler();
-        foreach (var ray in GISLol.Instance.rcl)
-        {
-            if(ray.gameObject == this.gameObject)
-            {
-                return true;
-            }
-        }
-
-
-        return false;
+        return GISLol.Instance.IsHovering(gameObject);
     }
 
     public GISSlot HoverCheckerData()

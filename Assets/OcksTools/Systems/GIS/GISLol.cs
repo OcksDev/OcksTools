@@ -92,7 +92,7 @@ public class GISLol : MonoBehaviour
         za.z = 0;
         MouseFollower.transform.position = za;
         CanHover = true;
-        if (InputManager.IsKeyDown(InputManager.gamekeys["reload"]))
+        if (InputManager.IsKeyDown("reload"))
         {
             LoadTempForAll();
         }
@@ -123,6 +123,18 @@ public class GISLol : MonoBehaviour
         ped.position = Input.mousePosition;
         rcl.Clear();
         EventSystem.current.RaycastAll(ped, rcl);
+    }
+    public bool IsHovering(GameObject sussy)
+    {
+        GISLol.Instance.HoverDataCooler();
+        foreach (var ray in GISLol.Instance.rcl)
+        {
+            if (ray.gameObject == sussy)
+            {
+                return true;
+            }
+        }
+        return false;
     }
     public string SaltName(string e)
     {

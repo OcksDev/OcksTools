@@ -16,10 +16,10 @@ public class PlayerController : MonoBehaviour
     {
         move *= decay;
         Vector3 dir = new Vector3(0, 0, 0);
-        if (InputManager.IsKey(InputManager.gamekeys["move_forward"])) dir += Vector3.up;
-        if (InputManager.IsKey(InputManager.gamekeys["move_back"])) dir += Vector3.down;
-        if (InputManager.IsKey(InputManager.gamekeys["move_right"])) dir += Vector3.right;
-        if (InputManager.IsKey(InputManager.gamekeys["move_left"])) dir += Vector3.left;
+        if (InputManager.IsKey("move_forward")) dir += Vector3.up;
+        if (InputManager.IsKey("move_back")) dir += Vector3.down;
+        if (InputManager.IsKey("move_right")) dir += Vector3.right;
+        if (InputManager.IsKey("move_left")) dir += Vector3.left;
         if(dir.magnitude > 0.5f)
         {
             dir.Normalize();

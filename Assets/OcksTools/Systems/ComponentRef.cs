@@ -51,7 +51,6 @@ public class OXComponent
     public static void StoreComponentsInChildren<T>(GameObject sus) where T : Component
     {
         var e = sus.transform.childCount;
-        T comp;
         for (int i = 0; i < e; i++)
         {
             StoreComponent<T>(sus.transform.GetChild(i).gameObject);
@@ -61,7 +60,6 @@ public class OXComponent
     public static void StoreComponentsInChildrenRecursive<T>(GameObject sus) where T : Component
     {
         var e = sus.transform.childCount;
-        T comp;
         for (int i = 0; i < e; i++)
         {
             StoreComponentsInChildrenRecursive<T>(sus.transform.GetChild(i).gameObject);

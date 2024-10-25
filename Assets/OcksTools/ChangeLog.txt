@@ -74,6 +74,8 @@
   - Fixed bug so rooms should no longer spawn upside down (generation was good, spawning in the prefabs based on the generation was not)
 - Input Manager Improvements!
   - New random methods to GetAllCurrentlyPressedKeys() and/or GetArbitraryKeyPressed() 
+  - Completely reworked internals to allow for lists of keybinds on the same "input"
+    - Marked some older methods as obselete
   - Remade the locklevel system to now use lists of strings instead of just one string
     - Old code/method is still compatable and should work exactly the same as before, but now there is new functionality
   - Organization plus simplificaiton of some things

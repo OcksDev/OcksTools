@@ -107,11 +107,11 @@ public class ConsoleLol : MonoBehaviour
 
     private void Update()
     {
-        if (InputManager.IsKeyDown(InputManager.gamekeys["console"], "def"))
+        if (InputManager.IsKeyDown("console", "def"))
         {
             ConsoleChange(!enable);
         }
-        else if (InputManager.IsKeyDown(InputManager.gamekeys["console"], "Console"))
+        else if (InputManager.IsKeyDown("console", "Console"))
         {;
             if (EventSystem.current.currentSelectedGameObject == null || EventSystem.current.currentSelectedGameObject.name != ConsoleObjectRef.input.gameObject.name)
             {
@@ -119,17 +119,17 @@ public class ConsoleLol : MonoBehaviour
                 ConsoleObjectRef.input.Select();
             }
         }
-        else if (InputManager.IsKeyDown(InputManager.gamekeys["close_menu"]))
+        else if (InputManager.IsKeyDown("close_menu"))
         {
             ConsoleChange(false);
         }
 
 
-        if (enable && InputManager.IsKeyDown(InputManager.gamekeys["console_up"]))
+        if (enable && InputManager.IsKeyDown("console_up"))
         {
             CommandChange(-1);
         }
-        if (enable && InputManager.IsKeyDown(InputManager.gamekeys["console_down"]))
+        if (enable && InputManager.IsKeyDown("console_down"))
         {
             CommandChange(1);
         }
@@ -157,7 +157,7 @@ public class ConsoleLol : MonoBehaviour
 
     public void Submit(string inputgaming)
     {
-        if (InputManager.IsKeyDown(InputManager.gamekeys["console"]) || InputManager.IsKeyDown(InputManager.gamekeys["close_menu"]) || Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2)) return;
+        if (InputManager.IsKeyDown("console") || InputManager.IsKeyDown("close_menu") || Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2)) return;
         balls = 3;
         var pp = ConsoleObjectRef.scrollbar;
         if (pp != null) pp.value = 1;

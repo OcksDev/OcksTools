@@ -48,28 +48,26 @@ public class SaveSystem : MonoBehaviour
         List<string> list = new List<string>();
         Dictionary<string,string> dic = new Dictionary<string, string>();
 
-        int x = 0;
 
 
         GetDataFromFile(dict);
 
         var ghghgg = GetString("keybinds", "fuck", dict);
         dic = Converter.StringToDictionary(ghghgg);
+        List<KeyCode> shungite = new List<KeyCode>();
         if (ghghgg != "fuck")
         {
             foreach (var a in dic)
             {
-                try
+                list = Converter.StringToList(a.Value);
+                shungite.Clear();
+                foreach(var key in list)
                 {
-                    InputManager.gamekeys[a.Key] = InputManager.namekeys[a.Value];
-                    x++;
+                    shungite.Add(InputManager.namekeys[key]);
                 }
-                catch
-                {
-                }
+                InputManager.gamekeys[a.Key] = new List<KeyCode>(shungite);
             }
         }
-        x = 0;
 
         if(s != null)
         {
@@ -93,7 +91,12 @@ public class SaveSystem : MonoBehaviour
         dic.Clear();
         foreach (var a in InputManager.gamekeys)
         {
-            dic.Add(a.Key,InputManager.keynames[a.Value]);
+            list.Clear();
+            foreach(var b in a.Value)
+            {
+                list.Add(InputManager.keynames[b]);
+            }
+            dic.Add(a.Key,Converter.ListToString(list));
         }
         SetString("keybinds", Converter.DictionaryToString(dic), dict);
         //PlayerPrefs.SetInt("UnitySelectMonitor", index); // sets the monitor that unity uses

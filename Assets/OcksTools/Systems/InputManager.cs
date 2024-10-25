@@ -8,8 +8,8 @@ public class InputManager : MonoBehaviour
     public static List<string> locklevel = new List<string>();
     public static Dictionary<KeyCode, string> keynames = new Dictionary<KeyCode, string>();
     public static Dictionary<string, KeyCode> namekeys = new Dictionary<string, KeyCode>();
-    public static Dictionary<string, KeyCode> gamekeys = new Dictionary<string, KeyCode>();
-    public static Dictionary<string, KeyCode> gamedefkeys = new Dictionary<string, KeyCode>();
+    public static Dictionary<string, List<KeyCode>> gamekeys = new Dictionary<string, List<KeyCode>>();
+    public static Dictionary<string, List<KeyCode>> defaultgamekeys = new Dictionary<string, List<KeyCode>>();
     public static Dictionary<string, string> gamekeynames = new Dictionary<string, string>();
     // Start is called before the first frame update
     void Start()
@@ -26,7 +26,7 @@ public class InputManager : MonoBehaviour
     {
         namekeys.Clear();
         gamekeys.Clear();
-        gamedefkeys.Clear();
+        defaultgamekeys.Clear();
         gamekeynames.Clear();
 
         SetGameKeys();
@@ -39,58 +39,26 @@ public class InputManager : MonoBehaviour
 
 
         //create custom key allocations
-        gamekeys.Add("shoot", KeyCode.Mouse0);
-        gamekeys.Add("move_forward", KeyCode.W);
-        gamekeys.Add("move_back", KeyCode.S);
-        gamekeys.Add("move_left", KeyCode.A);
-        gamekeys.Add("move_right", KeyCode.D);
-        gamekeys.Add("jump", KeyCode.Space);
-        gamekeys.Add("reload", KeyCode.R);
-        gamekeys.Add("close_menu", KeyCode.Escape);
-        gamekeys.Add("tab_menu", KeyCode.Tab);
-        gamekeys.Add("item_select", KeyCode.Mouse0);
-        gamekeys.Add("item_half", KeyCode.Mouse1);
-        gamekeys.Add("item_pick", KeyCode.Mouse2);
-        gamekeys.Add("item_alt", KeyCode.LeftShift);
-        gamekeys.Add("console", KeyCode.Slash);
-        gamekeys.Add("console_up", KeyCode.UpArrow);
-        gamekeys.Add("console_down", KeyCode.DownArrow);
-        gamekeys.Add("console_autofill", KeyCode.Tab);
-        gamekeys.Add("dialog_skip", KeyCode.Space);
-        gamekeys.Add("dialog_skip_mouse", KeyCode.Mouse0);
+        CreateKeyAllocation("shoot", KeyCode.Mouse0);
+        CreateKeyAllocation("move_forward", KeyCode.W);
+        CreateKeyAllocation("move_back", KeyCode.S);
+        CreateKeyAllocation("move_left", KeyCode.A);
+        CreateKeyAllocation("move_right", KeyCode.D);
+        CreateKeyAllocation("jump", KeyCode.Space);
+        CreateKeyAllocation("reload", KeyCode.R);
+        CreateKeyAllocation("close_menu", KeyCode.Escape);
+        CreateKeyAllocation("tab_menu", KeyCode.Tab);
+        CreateKeyAllocation("item_select", KeyCode.Mouse0);
+        CreateKeyAllocation("item_half", KeyCode.Mouse1);
+        CreateKeyAllocation("item_pick", KeyCode.Mouse2);
+        CreateKeyAllocation("item_alt", KeyCode.LeftShift);
+        CreateKeyAllocation("console", KeyCode.Slash);
+        CreateKeyAllocation("console_up", KeyCode.UpArrow);
+        CreateKeyAllocation("console_down", KeyCode.DownArrow);
+        CreateKeyAllocation("console_autofill", KeyCode.Tab);
+        CreateKeyAllocation("dialog_skip", KeyCode.Space);
+        CreateKeyAllocation("dialog_skip_mouse", KeyCode.Mouse0);
 
-        //assign default game keys
-        foreach (var a in gamekeys)
-        {
-            gamedefkeys.Add(a.Key, a.Value);
-        }
-    }
-
-    public bool CheckNewBind(string keyname)
-    {
-        //run this every frame until a new keybind is selected
-
-        if (Input.anyKeyDown)
-        {
-            bool goodboi = false;
-            KeyCode boi = KeyCode.Mouse0;
-            foreach (var kb in keynames)
-            {
-                if (Input.GetKeyDown(kb.Key))
-                {
-                    boi = kb.Key;
-                    goodboi = true;
-                    break;
-                }
-            }
-            if (goodboi)
-            {
-                gamekeys[keyname] = boi;
-                //code here will run when you have pressed a valid key
-                return true;
-            }
-        }
-        return false;
     }
 
     public KeyCode GetArbitraryKeyPressed()
@@ -137,10 +105,10 @@ public class InputManager : MonoBehaviour
         return new List<KeyCode>();
     }
 
-    public void ReseBind(string keyname)
+    public void ResetBind(string keyname)
     {
         //this is ResetBind but misspelled, I cant be bothered to fix this
-        gamekeys[keyname] = gamedefkeys[keyname];
+        gamekeys[keyname] = defaultgamekeys[keyname];
     }
 
 
@@ -157,6 +125,11 @@ public class InputManager : MonoBehaviour
     public static void SetLockLevel(List<string> e)
     {
         locklevel = e;
+    }
+
+    public static void SetLockLevel(string e)
+    {
+        locklevel = new List<string>() {e};
     }
 
     public static bool AddLockLevel(string e)
@@ -200,43 +173,6 @@ public class InputManager : MonoBehaviour
         return true;
     }
 
-    public static bool IsKeyDown(KeyCode baller, string ide = "")
-    {
-        return IsKeyDown(baller, new List<string>() { ide });
-    }
-    public static bool IsKey(KeyCode baller, string ide = "")
-    {
-        return IsKey(baller, new List<string>() { ide });
-    }
-    public static bool IsKeyUp(KeyCode baller, string ide = "")
-    {
-        return IsKeyUp(baller, new List<string>() { ide });
-    }
-    public static bool IsMouseDown(int baller, string ide = "")
-    {
-        return IsMouseDown(baller, new List<string>() { ide });
-    }
-    public static bool IsMouse(int baller, string ide = "")
-    {
-        return IsMouse(baller, new List<string>() { ide });
-    }
-    public static bool IsMouseUp(int baller, string ide = "")
-    {
-        return IsMouseUp(baller, new List<string>() { ide });
-    }
-    public static bool IsButtonDown(string baller, string ide = "")
-    {
-        return IsButtonDown(baller, new List<string>() { ide });
-    }
-    public static bool IsButton(string baller, string ide = "")
-    {
-        return IsButton(baller, new List<string>() { ide });
-    }
-    public static bool IsButtonUp(string baller, string ide = "")
-    {
-        return IsButtonUp(baller, new List<string>() { ide});
-    }
-
     public static bool IsKeyDown(KeyCode baller, List<string> ide)
     {
         if (!IsDie(ide)) return false;
@@ -255,41 +191,134 @@ public class InputManager : MonoBehaviour
         if (!GetSelected(ide)) return false;
         return Input.GetKeyUp(baller);
     }
+    public static bool IsKeyDown(string baller, List<string> ide)
+    {
+        if (!IsDie(ide)) return false;
+        if (!GetSelected(ide)) return false;
+        var keys = gamekeys[baller];
+        foreach(var key in keys)
+        {
+            if (Input.GetKeyDown(key)) return true;
+        }
+        return false;
+    }
+    public static bool IsKey(string baller, List<string> ide)
+    {
+        if (!IsDie(ide)) return false;
+        if (!GetSelected(ide)) return false;
+        var keys = gamekeys[baller];
+        foreach (var key in keys)
+        {
+            if (Input.GetKey(key)) return true;
+        }
+        return false;
+    }
+    public static bool IsKeyUp(string baller, List<string> ide)
+    {
+        if (!IsDie(ide)) return false;
+        if (!GetSelected(ide)) return false;
+        var keys = gamekeys[baller];
+        foreach (var key in keys)
+        {
+            if (Input.GetKeyUp(key)) return true;
+        }
+        return false;
+    }
+    public static bool IsKeyDown(string baller, string a = "")
+    {
+        return IsKeyDown(baller, new List<string>() { a});
+    }
+    public static bool IsKey(string baller, string a = "")
+    {
+        return IsKey(baller, new List<string>() { a });
+    }
+    public static bool IsKeyUp(string baller, string a = "")
+    {
+        return IsKeyUp(baller, new List<string>() { a });
+    }
+    [Obsolete]
     public static bool IsMouseDown(int baller, List<string> ide)
     {
         if (!IsDie(ide)) return false;
         if (!GetSelected(ide)) return false;
         return Input.GetMouseButtonDown(baller);
     }
+    [Obsolete]
     public static bool IsMouse(int baller, List<string> ide)
     {
         if (!IsDie(ide)) return false;
         if (!GetSelected(ide)) return false;
         return Input.GetMouseButton(baller);
     }
+    [Obsolete]
     public static bool IsMouseUp(int baller, List<string> ide)
     {
         if (!IsDie(ide)) return false;
         if (!GetSelected(ide)) return false;
         return Input.GetMouseButtonUp(baller);
     }
+    [Obsolete]
     public static bool IsButtonDown(string baller, List<string> ide)
     {
         if (!IsDie(ide)) return false;
         if (!GetSelected(ide)) return false;
         return Input.GetButtonDown(baller);
     }
+    [Obsolete]
     public static bool IsButton(string baller, List<string> ide)
     {
         if (!IsDie(ide)) return false;
         if (!GetSelected(ide)) return false;
         return Input.GetButton(baller);
     }
+    [Obsolete]
     public static bool IsButtonUp(string baller, List<string> ide)
     {
         if (!IsDie(ide)) return false;
         if (!GetSelected(ide)) return false;
         return Input.GetButtonUp(baller);
+    }
+    public static bool IsKeyDown(KeyCode baller, string ide = "")
+    {
+        return IsKeyDown(baller, new List<string>() { ide });
+    }
+    public static bool IsKey(KeyCode baller, string ide = "")
+    {
+        return IsKey(baller, new List<string>() { ide });
+    }
+    public static bool IsKeyUp(KeyCode baller, string ide = "")
+    {
+        return IsKeyUp(baller, new List<string>() { ide });
+    }
+    [Obsolete]
+    public static bool IsMouseDown(int baller, string ide = "")
+    {
+        return IsMouseDown(baller, new List<string>() { ide });
+    }
+    [Obsolete]
+    public static bool IsMouse(int baller, string ide = "")
+    {
+        return IsMouse(baller, new List<string>() { ide });
+    }
+    [Obsolete]
+    public static bool IsMouseUp(int baller, string ide = "")
+    {
+        return IsMouseUp(baller, new List<string>() { ide });
+    }
+    [Obsolete]
+    public static bool IsButtonDown(string baller, string ide = "")
+    {
+        return IsButtonDown(baller, new List<string>() { ide });
+    }
+    [Obsolete]
+    public static bool IsButton(string baller, string ide = "")
+    {
+        return IsButton(baller, new List<string>() { ide });
+    }
+    [Obsolete]
+    public static bool IsButtonUp(string baller, string ide = "")
+    {
+        return IsButtonUp(baller, new List<string>() { ide });
     }
 
     public static void SetGameKeys()
@@ -408,5 +437,13 @@ public class InputManager : MonoBehaviour
         keynames.Add(KeyCode.KeypadEnter, "nENT");
     }
 
-
+    public static void CreateKeyAllocation(string name, KeyCode key)
+    {
+        CreateKeyAllocation(name, new List<KeyCode>() { key });
+    }
+    public static void CreateKeyAllocation(string name, List<KeyCode> keys)
+    {
+        gamekeys.Add(name, keys);
+        defaultgamekeys.Add(name, keys);
+    }
 }
