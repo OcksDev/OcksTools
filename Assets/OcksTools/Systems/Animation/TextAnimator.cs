@@ -5,14 +5,14 @@ using UnityEngine;
 
 public class TextAnimator : MonoBehaviour
 {
-    private TMP_Text sex;
+    private TMP_Text sexy;
     public List<TextAnim> anims = new List<TextAnim>();
     private List<List<Color32>> pp = new List<List<Color32>>();
     float halfpi;
     private void Start()
     {
         halfpi = Mathf.PI / 2;
-        sex = GetComponent<TMP_Text>();
+        sexy = GetComponent<TMP_Text>();
         pp = new List<List<Color32>>()
         {
             new List<Color32>()
@@ -38,8 +38,8 @@ public class TextAnimator : MonoBehaviour
         if(anims.Count > 0)
         {
             var delt = Time.deltaTime;
-            sex.ForceMeshUpdate();
-            var textinfo = sex.textInfo;
+            sexy.ForceMeshUpdate();
+            var textinfo = sexy.textInfo;
             var sexoff = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), 0);
             for (int i = 0; i < textinfo.characterCount; i++)
             {
@@ -53,10 +53,14 @@ public class TextAnimator : MonoBehaviour
                 {
                     if (i >= anims[g].startindex && i <= anims[g].endindex)
                     {
-                        var sp = anims[g].SpottedCharacters;
 
+
+                        //Animations that play based on the time since a character has been visable use this
+                        var sp = anims[g].SpottedCharacters;
                         switch (anims[g].Type)
                         {
+                            case "FadeIn":
+                            case "Gravity":
                             case "ShakeIn":
                             case "FloatDown":
                                 if (!sp.ContainsKey(i))
@@ -69,6 +73,8 @@ public class TextAnimator : MonoBehaviour
                                 }
                                 break;
                         }
+
+                        //general animation behavior
                         switch (anims[g].Type)
                         {
                             // i = character #
@@ -150,6 +156,23 @@ public class TextAnimator : MonoBehaviour
                                     }
                                 }
                                 break;
+                            case "FadeIn":
+                                sp[i] += delt*3;
+                                for (int j2 = 0; j2 < 4; j2++)
+                                {
+                                    var ween = (Color)coilo[charinfo.vertexIndex + j2];
+                                    ween.a = sp[i];
+                                    coilo[charinfo.vertexIndex + j2] = ween;
+                                }
+                                break;
+                            case "Gravity":
+                                sp[i] += delt;
+                                for (int j = 0; j < 4; j++)
+                                {
+                                    var orig = verts[charinfo.vertexIndex + j];
+                                    verts[charinfo.vertexIndex + j] = orig + new Vector3(0, -(sp[i] * sp[i])*90, 0);
+                                }
+                                break;
                         }
                     }
                 }
@@ -159,7 +182,7 @@ public class TextAnimator : MonoBehaviour
                 var mi = textinfo.meshInfo[i];
                 mi.mesh.vertices = mi.vertices;
                 mi.mesh.colors32 = mi.colors32;
-                sex.UpdateGeometry(mi.mesh, i);
+                sexy.UpdateGeometry(mi.mesh, i);
             }
         }
     }

@@ -8,8 +8,11 @@
 </> <Name=Boner> <Voiceline=1>
 </> Yay!
 </> 
-</> <Speed=69.69, -, 1> <Voiceline=2>
-</> banana <Show=Sucky Toes>
+</> <Speed=15, -, 1> <Voiceline=2>
+</> <Animate=Text,Gravity,6969>banana <Show=Sucky Toes>
+</> 
+</> <Speed=15, -, 1> <Voiceline=2>
+</> <Animate=Text,FadeIn,6969>this text fades in from the spooky dimension!<br><Animate=Text,Rainbow,6969>Animations are order dependant,<Animate=Text,FadeIn,6969> so this text will fade with cool colors, how amazing!!!!!!
 </> 
 </> <Name=Boner> <Voiceline=3>
 </> Smell my greasy balls <End=0> 
