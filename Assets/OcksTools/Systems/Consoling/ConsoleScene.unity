@@ -199,6 +199,7 @@ GameObject:
   - component: {fileID: 464091838}
   - component: {fileID: 464091837}
   - component: {fileID: 464091839}
+  - component: {fileID: 464091840}
   m_Layer: 0
   m_Name: Testi
   m_TagString: Untagged
@@ -247,6 +248,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   namer: 
   nerd: {fileID: 0}
+--- !u!114 &464091840
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 464091836}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21f4ba270a5693041a8778472c77b88c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wank:
+    hidden_value: 
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -5526,7 +5541,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4007473491773129349, guid: 32aa07c1d97c2ed4cac286e0d66c9ab0, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -35.649982
+      value: -35.650032
       objectReference: {fileID: 0}
     - target: {fileID: 6736140656960667405, guid: 32aa07c1d97c2ed4cac286e0d66c9ab0, type: 3}
       propertyPath: m_AnchoredPosition.x
