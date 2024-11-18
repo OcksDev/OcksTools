@@ -94,6 +94,8 @@
   - New StringToVector3() and StringToVector3Int(), converts strings in the format of (0, 0, 0) into a vector3 or vector3int respectively
   - new EscapeString() and UnescapeString() which allow you to easily store/retrieve text without needing to worry about key characters
   - new ListToDictionary<>() converts any list into a dictionary
+  - new varients of methods known as EscapedListToString(), EscapedStringToList(), EscapedDictionaryToString(), and EscapedStringToDictionary()
+    - Automatically escapes the inputted data for safer data storage/retrieval, is slower because of this
 - New Text Animator!
   - Allows for the animating of text in a very cool way, animations can be stacked and mixed
     - Comes with many example animations: Wave, WaveND, Rainbow, RainbowSnap, Shake, ShakeWhole, Halloween, Gravity, ShakeIn, FadeIn, and FloatDown
@@ -137,6 +139,7 @@
   - New EaseIn(), EaseOut(), and EaseInAndOut(), which allow for smooth and adjustable value interpolation
 - Misc Changes
   - Renamed Tags "miscrefs" to "refs"
+  - RandomFunctions.GetUnixTime() now uses double instead of long, and is coded slightly better
   - Save System now runs after all other classes
   - File System now creates the Ocks Universal folder on awake to match other created directories
   - Multiplayer systems should no longer throw an error on start when failing to connect to the internet

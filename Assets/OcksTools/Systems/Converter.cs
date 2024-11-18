@@ -64,6 +64,68 @@ public class Converter : MonoBehaviour
         }
         return dic;
     }
+    public static string EscapedListToString(List<string> eee, string split = ", ")
+    {
+        List<string> dupe = new List<string>(eee);
+        List<string> esc = new List<string>() { split};
+        for(int i = 0; i < dupe.Count;i++)
+        {
+            dupe[i] = EscapeString(dupe[i], esc);
+        }
+        return String.Join(split, dupe);
+    }
+
+    public static List<string> EscapedStringToList(string eee, string split = ", ")
+    {
+        var dupe = eee.Split(split).ToList();
+        List<string> esc = new List<string>() { split };
+        for (int i = 0; i < dupe.Count; i++)
+        {
+            dupe[i] = UnescapeString(dupe[i], esc);
+        }
+        return dupe;
+    }
+
+    public static string EscapedDictionaryToString(Dictionary<string, string> dic, string splitter = "<K>", string splitter2 = "<->")
+    {
+        List<string> list = new List<string>();
+        List<string> esc = new List<string>() { splitter, splitter2 };
+        foreach (var a in dic)
+        {
+            list.Add(EscapeString(a.Key, esc) + splitter2 + EscapeString(a.Value, esc));
+        }
+        return ListToString(list, splitter);
+    }
+    public static Dictionary<string, string> EscapedStringToDictionary(string e, string splitter = "<K>", string splitter2 = "<->")
+    {
+        var dic = new Dictionary<string, string>();
+        List<string> esc = new List<string>() { splitter, splitter2 };
+        var list = StringToList(e, splitter);
+        foreach (var a in list)
+        {
+            try
+            {
+                int i = a.IndexOf(splitter2);
+                List<string> sseexx = new List<string>()
+                {
+                    UnescapeString(a.Substring(0, i), esc),
+                    UnescapeString(a.Substring(i + splitter2.Length), esc),
+                };
+                if (dic.ContainsKey(sseexx[0]))
+                {
+                    dic[sseexx[0]] = dic[sseexx[1]];
+                }
+                else
+                {
+                    dic.Add(sseexx[0], sseexx[1]);
+                }
+            }
+            catch
+            {
+            }
+        }
+        return dic;
+    }
 
     public static Vector3Int StringToVector3Int(string e)
     {

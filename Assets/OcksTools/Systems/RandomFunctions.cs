@@ -194,7 +194,7 @@ public class RandomFunctions : MonoBehaviour
     }
 
 
-    public long GetUnixTime(int type = -1)
+    public double GetUnixTime(int type = -1)
     {
         //returns the curret unix time
         /* Type values:
@@ -207,27 +207,20 @@ public class RandomFunctions : MonoBehaviour
          */
         System.DateTime epochStart = new System.DateTime(1970, 1, 1, 0, 0, 0, System.DateTimeKind.Utc);
         var ah = (System.DateTime.UtcNow - epochStart);
-        long cur_time = -1;
         switch (type)
         {
             case 0:
-                cur_time = (long)ah.TotalMilliseconds;
-                break;
+                return ah.TotalMilliseconds;
             default:
             case 1:
-                cur_time = (long)ah.TotalSeconds;
-                break;
+                return ah.TotalSeconds;
             case 2:
-                cur_time = (long)ah.TotalMinutes;
-                break;
+                return ah.TotalMinutes;
             case 3:
-                cur_time = (long)ah.TotalHours;
-                break;
+                return ah.TotalHours;
             case 4:
-                cur_time = (long)ah.TotalDays;
-                break;
+                return ah.TotalDays;
         }
-        return cur_time;
     }
 
 

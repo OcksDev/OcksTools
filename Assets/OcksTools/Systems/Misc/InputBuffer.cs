@@ -26,14 +26,31 @@ public class InputBuffer : MonoBehaviour
         if (buffer.ContainsKey(name)) buffer.Remove(name);
     }
 
-    public void BufferListen(KeyCode key, string name, float time, bool isdown = true)
+    public void BufferListen(string key, string ide, string name, float time, bool isdown = true)
     {
         //would be run every frame
-        if(isdown? InputManager.IsKeyDown(key, name) : InputManager.IsKey(key, name))
+        if(isdown? InputManager.IsKeyDown(key, ide) : InputManager.IsKey(key, ide))
         {
             var b = new BufferedInput();
             b.Name = name;
-            b.Key = key;
+            b.Time = time;
+            if (buffer.ContainsKey(name))
+            {
+                buffer[name] = b;
+            }
+            else
+            {
+                buffer.Add(name, b);
+            }
+        }
+    }
+    public void BufferListen(KeyCode key, string ide, string name, float time, bool isdown = true)
+    {
+        //would be run every frame
+        if(isdown? InputManager.IsKeyDown(key, ide) : InputManager.IsKey(key, ide))
+        {
+            var b = new BufferedInput();
+            b.Name = name;
             b.Time = time;
             if (buffer.ContainsKey(name))
             {
@@ -68,6 +85,5 @@ public class BufferedInput
 {
     //just a data holding class
     public float Time;
-    public KeyCode Key;
     public string Name;
 }

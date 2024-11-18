@@ -191,6 +191,30 @@ public class InputManager : MonoBehaviour
         if (!GetSelected(ide)) return false;
         return Input.GetKeyUp(baller);
     }
+    public static bool IsKeyDown(KeyCode baller, string ide)
+    {
+        return IsKeyDown(baller, new List<string>() { ide});
+    }
+    public static bool IsKey(KeyCode baller, string ide)
+    {
+        return IsKey(baller, new List<string>() { ide });
+    }
+    public static bool IsKeyUp(KeyCode baller, string ide)
+    {
+        return IsKeyUp(baller, new List<string>() { ide });
+    }
+    public static bool IsKeyDown(KeyCode baller)
+    {
+        return IsKeyDown(baller, new List<string>() { });
+    }
+    public static bool IsKey(KeyCode baller)
+    {
+        return IsKey(baller, new List<string>() { });
+    }
+    public static bool IsKeyUp(KeyCode baller)
+    {
+        return IsKeyUp(baller, new List<string>() { });
+    }
     public static bool IsKeyDown(string baller, List<string> ide)
     {
         if (!IsDie(ide)) return false;
@@ -277,18 +301,6 @@ public class InputManager : MonoBehaviour
         if (!IsDie(ide)) return false;
         if (!GetSelected(ide)) return false;
         return Input.GetButtonUp(baller);
-    }
-    public static bool IsKeyDown(KeyCode baller, string ide = "")
-    {
-        return IsKeyDown(baller, new List<string>() { ide });
-    }
-    public static bool IsKey(KeyCode baller, string ide = "")
-    {
-        return IsKey(baller, new List<string>() { ide });
-    }
-    public static bool IsKeyUp(KeyCode baller, string ide = "")
-    {
-        return IsKeyUp(baller, new List<string>() { ide });
     }
     [Obsolete]
     public static bool IsMouseDown(int baller, string ide = "")
