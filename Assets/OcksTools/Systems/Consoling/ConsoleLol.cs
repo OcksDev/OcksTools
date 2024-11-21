@@ -351,6 +351,20 @@ public class ConsoleLol : MonoBehaviour
                         case "garbage":
                             Tags.GarbageCleanup();
                             break;
+                        case "events":
+                            var weenor = new OXEvent();
+                            var banan = new OXEvent<string, string>();
+                            weenor.Append("test1", TestMethod);
+                            weenor.Invoke();
+                            banan.Append("logger", Console.Log);
+                            banan.Invoke("Hello World", "\"green\"");
+                            weenor.Remove("test1");
+                            weenor.Invoke();
+                            banan.Invoke("Removed test log", "\"yellow\"");
+                            banan.Append("logger2", Console.Log);
+                            banan.Append("logger3", Console.Log);
+                            banan.Invoke("multiple calls?", "\"orange\"");
+                            break;
                         default:
                             ConsoleLog((
 
@@ -503,6 +517,14 @@ public class ConsoleLol : MonoBehaviour
     {
         ConsoleChange(false);
     }
+
+
+    public void TestMethod()
+    {
+        Console.Log("Test Log");
+    }
+
+
     void ConsoleChange(bool e = false)
     {
         enable = e;

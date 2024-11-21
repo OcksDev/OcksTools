@@ -81,6 +81,7 @@
   - Organization plus simplificaiton of some things
 - New OXComponent System (core system)!
   - Allows for the storing of GetComponent. This system does it once, stores the value, and can be arbitrarily retrieved.
+- New OXEvent System (core system)
 - New Object Creation System (core system)!
   - Here to replace the RandomFunctions.SpawnObject()
   - Creates new optional Object Pooling functionality for all spawnable objects
