@@ -46,6 +46,12 @@
   - Optimized code to display text, much better than before
   - Some new commands
   - Cleaned up some of the code
+- Tags Improvements!
+  - Completely overhauled how tags are handled. 
+  - New Tags Refs
+    - A quick script you can slap on any gameobject to create a reference to it using Tags
+    - default values are the name and gameobject of the attached script, can be manually changed to new values
+    - Tags System now also has an inspector list to make refs within itself
 - Sound System Improvements!
   - Completely changed how audio sources are handled, should be much more efficient now.
   - These changes also make it so now audio will not clip into itself when played repeatedly, so no more fear of clipping sounds!
@@ -106,10 +112,6 @@
   - The basic outline of some things to make the creation of game settings menus easier.
 - New Profile Handler (very bare bones)
   - Allows for basic interaction with Ocks Universal Profile
-- New Tags Refs
-  - A quick script you can slap on any gameobject to create a reference to it using Tags
-  - default values are the name and gameobject of the attached script, can be manually changed to new values
-  - Tags System now also has an inspector list to make refs within itself
 - New Input Buffer!
   - Allows the buffering of inputs so that they can be checked more leniently
 - New Screenshot System!

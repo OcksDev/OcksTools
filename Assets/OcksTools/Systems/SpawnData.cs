@@ -12,7 +12,7 @@ public class SpawnData : MonoBehaviour
     {
         if (Hidden_Data.Count == 0) Hidden_Data = RandomFunctions.Instance.GenerateBlankHiddenData();
 
-        Tags.DefineReference(gameObject, Hidden_Data[0]);
+        Tags.DefineTagReference(gameObject, Hidden_Data[0]);
     }
 
     private void OnDestroy()

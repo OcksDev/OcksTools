@@ -51,13 +51,13 @@ public class SpawnSystem : MonoBehaviour
         }
 
         //object parenting using Tags, should work over multiplayer, untested
-        if (hidden_dadalol[2] != "-" && Tags.dict.ContainsKey(hidden_dadalol[2]))
+        if (hidden_dadalol[2] != "-" && Tags.AllTags["Exist"].ContainsKey(hidden_dadalol[2]))
         {
-            parent = Tags.dict[hidden_dadalol[2]];
+            parent = (GameObject)Tags.AllTags["Exist"][hidden_dadalol[2]];
         }
-        if (Tags.gameobject_dict.ContainsKey(parent))
+        if (Tags.AllTagsReverse["Exist"].ContainsKey(parent))
         {
-            hidden_dadalol[2] = Tags.gameobject_dict[parent];
+            hidden_dadalol[2] = Tags.AllTagsReverse["Exist"][parent];
         }
 
         //incase you want to run some stuff here based on the object that is going to be spawned

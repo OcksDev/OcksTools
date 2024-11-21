@@ -8,10 +8,14 @@ using UnityEngine;
 [System.Serializable]
 public class Tags : MonoBehaviour
 {
-    public static Dictionary<string, GameObject> dict = new Dictionary<string, GameObject>();
-    public static Dictionary<GameObject, string> gameobject_dict = new Dictionary<GameObject, string>();
-    public static Dictionary<string, SpawnData> SDs = new Dictionary<string, SpawnData>();
-    public static List<string> tag1 = new List<string>();
+    public static Dictionary<string, Dictionary<string, UnityEngine.Object>> AllTags = new Dictionary<string, Dictionary<string, UnityEngine.Object>>()
+    {
+        {"Exist", new Dictionary<string, UnityEngine.Object>()}
+    };
+    public static Dictionary<string, Dictionary<UnityEngine.Object, string>> AllTagsReverse = new Dictionary<string, Dictionary<UnityEngine.Object, string>>()
+    {
+        {"Exist", new Dictionary<UnityEngine.Object, string>()}
+    };
     [HideInInspector]
     [DoNotSerialize]
     public static Dictionary<string, GameObject> refs = new Dictionary<string, GameObject>();
@@ -33,47 +37,48 @@ public class Tags : MonoBehaviour
             a.Zoink();
         }
     }
-    /*
-     * Component Store things
-     */
-    /*
-     * end of component store things
-     */
+
+    public static void CreateTag(string tag)
+    {
+        AllTags.Add(tag, new Dictionary<string, UnityEngine.Object>());
+        AllTagsReverse.Add(tag, new Dictionary<UnityEngine.Object, string>());
+    }
+    public static string GetIDOf(UnityEngine.Object a)
+    {
+        var aa = AllTagsReverse["Exist"];
+        return aa.ContainsKey(a) ? aa[a] :"";
+    }
+    public static void AddObjectToTag(UnityEngine.Object a, string namee, string tag)
+    {
+        if(!AllTags.ContainsKey(tag) || !AllTagsReverse.ContainsKey(tag)) CreateTag(tag);
+        AllTags[tag].Add(namee, a);
+        AllTagsReverse[tag].Add(a, namee);
+    }
+
     public static void ClearAllOf(string key)
     {
         //should go and clear any instance of the ID found in any tag
-        if (dict.ContainsKey(key))
-        {
-            OXComponent.ClearOf(dict[key]);
-            if (gameobject_dict.ContainsKey(dict[key]))
-            {
-                gameobject_dict.Remove(dict[key]);
-            }
-        }
-        if (dict.ContainsKey(key)) dict.Remove(key);
-        if (SDs.ContainsKey(key)) SDs.Remove(key);
-        if (tag1.Contains(key)) tag1.Remove(key);
-    }
-    public static void GarbageCleanup()
-    {
-        //should locate any null gameobject references and remove them.
-        int i = 0;
-        while(i < dict.Count)
-        {
-            var d = dict.ElementAt(i);
-            if (d.Value == null)
-            {
-                ClearAllOf(d.Key);
-                i--;
-            }
-            i++;
-        }
-    }
+        GameObject gm = null;
 
-    public static void DefineReference(GameObject boner, string id)
+        if (AllTags["Exist"].ContainsKey(key))
+        {
+            gm = (GameObject)AllTags["Exist"][key];
+            OXComponent.ClearOf(gm);
+        }
+        foreach(var a in AllTags)
+        {
+            if (AllTags[a.Key].ContainsKey(key)) AllTags[a.Key].Remove(key);
+        }
+        foreach(var a in AllTagsReverse)
+        {
+            if (AllTagsReverse[a.Key].ContainsKey(gm)) AllTagsReverse[a.Key].Remove(gm);
+        }
+
+    }
+    public static void DefineTagReference(GameObject boner, string id)
     {
-        if (!dict.ContainsKey(id)) dict.Add(id, boner);
-        if (!gameobject_dict.ContainsKey(boner)) gameobject_dict.Add(boner, id);
+        if (!AllTags["Exist"].ContainsKey(id)) AllTags["Exist"].Add(id, boner);
+        if (!AllTagsReverse["Exist"].ContainsKey(boner)) AllTagsReverse["Exist"].Add(boner, id);
     }
 
     public static void SetRef(string name, GameObject ob)

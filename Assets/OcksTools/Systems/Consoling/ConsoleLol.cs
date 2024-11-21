@@ -224,8 +224,8 @@ public class ConsoleLol : MonoBehaviour
                                 "<br> - test tag" +
                                 "<br> - test circle" +
                                 "<br> - test destroy" +
-                                "<br> - test garbage" +
                                 "<br> - test listall" +
+                                "<br> - test events" +
                                 "<br> - test escape"
 
                             ), "#bdbdbdff");
@@ -270,11 +270,11 @@ public class ConsoleLol : MonoBehaviour
                     switch (command[1])
                     {
                         case "tag":
-                            Tags.dict.Add("penis", gameObject);
+                            Tags.AllTags["Exist"].Add("penis", gameObject);
 
                             ConsoleLog((
 
-                                "test result: " + Tags.dict["penis"].name
+                                "test result: " + Tags.AllTags["Exist"]["penis"].name
 
                             ), "#bdbdbdff");
                             Tags.ClearAllOf("penis");
@@ -289,7 +289,7 @@ public class ConsoleLol : MonoBehaviour
                             }
                             break;
                         case "listall":
-                            foreach (var d in Tags.dict)
+                            foreach (var d in Tags.AllTags["Exist"])
                                 ConsoleLog((
 
                                     "test result: " + d
@@ -345,11 +345,8 @@ public class ConsoleLol : MonoBehaviour
                             ), "#bdbdbdff");
                             break;
                         case "destroy":
-                            foreach (var d in Tags.dict)
+                            foreach (var d in Tags.AllTags["Exist"])
                                 Destroy(d.Value);
-                            break;
-                        case "garbage":
-                            Tags.GarbageCleanup();
                             break;
                         case "events":
                             var weenor = new OXEvent();

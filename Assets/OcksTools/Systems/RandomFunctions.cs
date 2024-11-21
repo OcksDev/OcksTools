@@ -290,7 +290,7 @@ public class RandomFunctions : MonoBehaviour
             hidden_dadalol = GenerateBlankHiddenData();
         }
 
-        //object parenting using Tags, should work over multiplayer, untested
+        /* this code used to work, but I revamped the tags code, and can't be fucked to update this deprecated one. Oh well.
         if (hidden_dadalol[2] != "-" && Tags.dict.ContainsKey(hidden_dadalol[2]))
         {
             parent = Tags.dict[hidden_dadalol[2]];
@@ -298,7 +298,7 @@ public class RandomFunctions : MonoBehaviour
         if (Tags.gameobject_dict.ContainsKey(parent))
         {
             hidden_dadalol[2] = Tags.gameobject_dict[parent];
-        }
+        }*/
 
         //incase you want to run some stuff here based on the object that is going to be spawned
         switch (refe)
