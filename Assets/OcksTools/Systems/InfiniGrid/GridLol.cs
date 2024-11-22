@@ -6,6 +6,7 @@ public class GridLol : MonoBehaviour
     public float GeneralScale = 1f;
     public int XPlaceSize = 1;
     public int YPlaceSize = 1;
+    public int LayerPlace = 0;
     public static GridLol Instance;
     public GameObject Highligher;
     public Color32[] HighligherColors;
@@ -24,9 +25,9 @@ public class GridLol : MonoBehaviour
     {
         var z = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         z /= GeneralScale;
-        var zi = new Vector3Int(Mathf.RoundToInt(z.x - ((XPlaceSize - 1) / 2f)), Mathf.RoundToInt(z.y - ((YPlaceSize - 1) / 2f)), 0);
+        var zi = new Vector3Int(Mathf.RoundToInt(z.x - ((XPlaceSize - 1) / 2f)), Mathf.RoundToInt(z.y - ((YPlaceSize - 1) / 2f)), LayerPlace);
 
-        var zi2 = new Vector3Int(Mathf.RoundToInt(z.x), Mathf.RoundToInt(z.y), 0);
+        var zi2 = new Vector3Int(Mathf.RoundToInt(z.x), Mathf.RoundToInt(z.y), LayerPlace);
         bool destroya = false;
         bool antiplace = false;
         OcksTileData x = GetTile(zi2);
@@ -88,7 +89,9 @@ public class GridLol : MonoBehaviour
 
     Vector3 GetPosOfScaled(OcksTileData zi)
     {
-        return (zi.pos + new Vector3((zi.size.x - 1) / 2f, (zi.size.y - 1) / 2f, 1)) * GeneralScale;
+        var aa = (zi.pos + new Vector3((zi.size.x - 1) / 2f, (zi.size.y - 1) / 2f, 1)) * GeneralScale;
+        aa.z *= -1;
+        return aa;
     }
     Vector3 GetScaleOfScaled(OcksTileData zi)
     {
@@ -163,7 +166,7 @@ public class OcksTileData
         {
             for (int j = 0; j < size.y; j++)
             {
-                e[(i * size.y) + j] = new Vector3Int(pos.x + i, pos.y + j, 0);
+                e[(i * size.y) + j] = new Vector3Int(pos.x + i, pos.y + j, pos.z);
             }
         }
         return e;
@@ -201,7 +204,7 @@ public class OcksTileData
             }
         }
 
-        pos = SpecializedStringToVector3Int(data["pos"]);
+        pos = Converter.StringToVector3Int(data["pos"]);
         size = Converter.StringToVector2Int(data["size"]);
         TileType = int.Parse(data["type"]);
     }
@@ -214,13 +217,6 @@ public class OcksTileData
             {"size","(1, 1)"},
             {"type","0"},
         };
-    }
-
-    public Vector3Int SpecializedStringToVector3Int(string e)
-    {
-        //dont mind this method
-        var s = Converter.StringToList(e.Substring(1, e.Length - 2));
-        return new Vector3Int(int.Parse(s[0]), int.Parse(s[1]), 0);
     }
 
 
