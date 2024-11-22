@@ -285,9 +285,13 @@ public class RoomLol : MonoBehaviour
         aaaaaaaaa.y *= -1;
         var gm = Instantiate(sp, CenterSpawn + aaaaaaaaa + new Vector3(((cr.room.RoomSize.x*DistanceScaler)/2) - 0.5f, ((cr.room.RoomSize.y * -DistanceScaler) / 2) - 0.5f, 0), parent.transform.rotation, parent.transform);
         SpawnedRooms.Add(gm);
+        cr.iroom = gm.GetComponent<I_Room>();
+        if (cr.daddy != null) cr.iroom.RelatedRooms.Add(cr.daddy.iroom);
         foreach (var c in cr.comlpetedRooms)
         {
+            c.daddy = cr;
             PlaceFromCoolRoom(c, parent);
+            cr.iroom.RelatedRooms.Add(c.iroom);
         }
     }
 }
@@ -421,6 +425,8 @@ public class CoolRoom
 {
     public bool WasChill;
     public Room room;
+    public CoolRoom daddy;
+    public I_Room iroom;
     public Vector2 pos;
     public List<CoolRoom> comlpetedRooms = new List<CoolRoom>();
 }

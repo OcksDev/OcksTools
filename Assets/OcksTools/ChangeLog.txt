@@ -81,6 +81,7 @@
   - Completely changed how new rooms are defined, now you make them in the inspector instead of being hardcoded.
   - Changed room spawner to not rely on the local scale of the spawned object
   - Fixed bug so rooms should no longer spawn upside down (generation was good, spawning in the prefabs based on the generation was not)
+  - Added a script on room objects called I_Room, which stores references to the rooms connecting itself
 - Input Manager Improvements!
   - New random methods to GetAllCurrentlyPressedKeys() and/or GetArbitraryKeyPressed() 
   - Completely reworked internals to allow for lists of keybinds on the same "input"
