@@ -16,8 +16,8 @@ public class GridLol : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        SaveSystem.SaveAllData += SaveAllTiles;
-        SaveSystem.LoadAllData += LoadAllTiles;
+        SaveSystem.SaveAllData.Append("SaveAllTiles", SaveAllTiles);
+        SaveSystem.LoadAllData.Append("LoadAllTiles", LoadAllTiles);
         highlighrt = Instantiate(Highligher, transform).GetComponent<SpriteRenderer>();
     }
     private SpriteRenderer highlighrt;

@@ -44,7 +44,7 @@ public class GISLol : MonoBehaviour
         {
             ItemDict.Add(item.Name, item);
         }
-        SaveSystem.SaveAllData += SaveAll;
+        SaveSystem.SaveAllData.Append(SaveAll);
     }
 
 
@@ -260,7 +260,6 @@ public class GISItem
         if (bb.ContainsKey("Count") && bb["Count"] == "1") bb.Remove("Count");
 
         e = Converter.DictionaryToString(bb, "~|~", "~o~");
-
         return e;
     }
     public void StringToItem(string e)
@@ -304,12 +303,14 @@ public class GISItem_Data
     public Sprite Sprite;
     public string Description;
     public int MaxAmount;
+    public ItemType Type = ItemType.None;
     public GISItem_Data()
     {
         Sprite = null;
         Name = "Void";
         Description = "Nothing";
         MaxAmount = 0;
+        Type = ItemType.None;
     }
     public GISItem_Data(GISItem_Data data)
     {
@@ -317,6 +318,15 @@ public class GISItem_Data
         Name = data.Name;
         Description = data.Description;
         MaxAmount = data.MaxAmount;
+    }
+    public enum ItemType
+    {
+        None,
+        Weapon,
+        Food,
+        CraftingMaterial,
+        Ammo,
+        Gem,
     }
 }
 

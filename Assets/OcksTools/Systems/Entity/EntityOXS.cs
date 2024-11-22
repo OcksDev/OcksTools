@@ -1,13 +1,15 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class EntityOXS : MonoBehaviour
 {
+    public EntityType Type = EntityType.Enemy;
     public double Health = 100;
     public double Shield = 100;
     public double Max_Health = 100;
-    public double Max_Shield = 100;
+    public double Max_Shield = 100; 
     public List<EffectProfile> Effects = new List<EffectProfile>();
     public void Hit(DamageProfile hit)
     {
@@ -44,21 +46,24 @@ public class EntityOXS : MonoBehaviour
         }
     }
 
+    public EffectProfile GetEffect(string name)
+    {
+        foreach (var ef in Effects)
+        {
+            if (name == ef.Name)
+            {
+                return ef;
+            }
+        }
+        return null;
+    }
+
+
     public void AddEffect(EffectProfile eff)
     {
         eff.TimeRemaining = eff.Duration;
-        bool alreadyhaseffect = false;
-        EffectProfile s = null;
-        foreach(var ef in Effects)
-        {
-            if (eff.Type == ef.Type)
-            {
-                s = ef;
-                alreadyhaseffect = true;
-                break;
-            }
-        }
-        if (alreadyhaseffect)
+        EffectProfile s = GetEffect(eff.Name);
+        if (s != null)
         {
             switch (eff.CombineMethod)
             {
@@ -110,33 +115,45 @@ public class EntityOXS : MonoBehaviour
 
     }
 
+    public enum EntityType
+    {
+        Enemy,
+        Player,
+        NPC,
+    }
 
 }
 
 
 public class DamageProfile
 {
-    public string Name = "";
+    public UnityEngine.Object SourceObject;
+    public DamageType HowDamageWasDealt;
     public double Damage;
     public List<EffectProfile> Effects = new List<EffectProfile>();
-    public List<string> Procs = new List<string>();
-    public DamageProfile(string name, float damage)
+    public Dictionary<string, int> Procs = new Dictionary<string, int>();
+    public DamageProfile(UnityEngine.Object OB, DamageType How, float damage)
     {
+        SourceObject = OB;
+        HowDamageWasDealt = How;
         Damage = damage;
-        Name = name;
-    }
-    public List<string> GiveProcs()
-    {
-        var e = new List<string>(Procs);
-        e.Add(Name);
-        return e;
     }
     public DamageProfile(DamageProfile pp)
     {
-        Name = pp.Name;
+        SourceObject = pp.SourceObject;
+        HowDamageWasDealt = pp.HowDamageWasDealt;
         Damage = pp.Damage;
-        Procs = new List<string>(pp.Procs);
+        Procs = new Dictionary<string, int>(pp.Procs);
         Effects = new List<EffectProfile>(pp.Effects);
+    }
+    public enum DamageType
+    {
+        Magic,
+        Melee,
+        Ranged,
+        Trap,
+        Fall,
+        World,
     }
 
 }
@@ -144,18 +161,17 @@ public class DamageProfile
 public class EffectProfile
 {
     //data you pass in
-    public int Type;
+    public string Name;
     public float Duration;
     public int CombineMethod;
     //other data
     public int Stack = 1;
     public float TimeRemaining;
     public int MaxStack;
-    public string Name;
-    public EffectProfile(int type, float time, int add_method, int stacks = 1)
+    public EffectProfile(string type, float time, int add_method, int stacks = 1)
     {
         SetData();
-        Type = type;
+        Name = type;
         Duration = time;
         CombineMethod = add_method;
         Stack =stacks;
@@ -168,22 +184,17 @@ public class EffectProfile
     public void SetData()
     {
         MaxStack = 0;
-        Name = "Error";
-        switch (Type)
+        switch (Name)
         {
             //some example effects
-            case 0:
-                Name = "Burning";
-                break;
-            case 1:
-                Name = "Healing Energy";
+            case "Boner Juice":
                 MaxStack = 6;
                 break;
         }
     }
     public EffectProfile(EffectProfile pp)
     {
-        Type = pp.Type;
+        Name = pp.Name;
         Duration = pp.Duration;
         CombineMethod = pp.CombineMethod;
         Stack = pp.Stack;

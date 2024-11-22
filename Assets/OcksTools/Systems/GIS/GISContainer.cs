@@ -169,15 +169,20 @@ public class GISContainer : MonoBehaviour
                 a.Add(p.Held_Item.ItemToString());
             }
 
-            SaveSystem.Instance.SetString("cnt_" + Name, ListToString(a, "+=+"));
+            SaveSystem.Instance.SetString(GetName(), ListToString(a, "+=+"));
         }
+    }
+
+    public string GetName()
+    {
+        return "cnt_" + Name;
     }
 
     private void Awake()
     {
         if (SaveLoadData)
         {
-            SaveSystem.SaveAllData += SaveContents;
+            SaveSystem.SaveAllData.Append($"{GetName()}_save", SaveContents);
         }
     }
     public void LoadContents()

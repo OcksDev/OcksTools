@@ -13,6 +13,13 @@ public class OXEvent
             StoredMethods.Add(name, method);
         }
     }
+    public void Append(Action method)
+    {
+        if (!StoredMethods.ContainsKey(method.Method.Name))
+        {
+            StoredMethods.Add(method.Method.Name, method);
+        }
+    }
     public void Remove(string name)
     {
         if (StoredMethods.ContainsKey(name))
@@ -46,6 +53,13 @@ public class OXEvent<T>
             StoredMethods.Add(name, method);
         }
     }
+    public void Append(Action<T> method)
+    {
+        if (!StoredMethods.ContainsKey(method.Method.Name))
+        {
+            StoredMethods.Add(method.Method.Name, method);
+        }
+    }
     public void Remove(string name)
     {
         if (StoredMethods.ContainsKey(name))
@@ -76,6 +90,13 @@ public class OXEvent<T, T2>
         if (!StoredMethods.ContainsKey(name))
         {
             StoredMethods.Add(name, method);
+        }
+    }
+    public void Append(Action<T, T2> method)
+    {
+        if (!StoredMethods.ContainsKey(method.Method.Name))
+        {
+            StoredMethods.Add(method.Method.Name, method);
         }
     }
     public void Remove(string name)
@@ -111,6 +132,13 @@ public class OXEvent<T, T2, T3>
             StoredMethods.Add(name, method);
         }
     }
+    public void Append(Action<T, T2, T3> method)
+    {
+        if (!StoredMethods.ContainsKey(method.Method.Name))
+        {
+            StoredMethods.Add(method.Method.Name, method);
+        }
+    }
     public void Remove(string name)
     {
         if (StoredMethods.ContainsKey(name))
@@ -144,6 +172,13 @@ public class OXEvent<T, T2, T3, T4>
             StoredMethods.Add(name, method);
         }
     }
+    public void Append(Action<T, T2, T3, T4> method)
+    {
+        if (!StoredMethods.ContainsKey(method.Method.Name))
+        {
+            StoredMethods.Add(method.Method.Name, method);
+        }
+    }
     public void Remove(string name)
     {
         if (StoredMethods.ContainsKey(name))
@@ -175,6 +210,13 @@ public class OXEvent<T, T2, T3, T4, T5>
         if (!StoredMethods.ContainsKey(name))
         {
             StoredMethods.Add(name, method);
+        }
+    }
+    public void Append(Action<T, T2, T3, T4, T5> method)
+    {
+        if (!StoredMethods.ContainsKey(method.Method.Name))
+        {
+            StoredMethods.Add(method.Method.Name, method);
         }
     }
     public void Remove(string name)

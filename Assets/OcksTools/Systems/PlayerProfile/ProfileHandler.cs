@@ -10,7 +10,7 @@ public class ProfileHandler : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        SaveSystem.LoadAllData += LockIn;
+        SaveSystem.LoadAllData.Append(LockIn);
     }
 
     public void LockIn()

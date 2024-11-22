@@ -18,7 +18,7 @@ public class SettingInput : MonoBehaviour
         if (!hasattached)
         {
             hasattached = true;
-            SaveSystem.LoadAllData += ReadValue;
+            SaveSystem.LoadAllData.Append(Tags.GenerateID(), ReadValue);
         }
     }
     public void ToggleVal()

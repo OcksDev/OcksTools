@@ -31,11 +31,13 @@
   - Reworked hover logic, should be much less prone to not detecting clicks, also should be better in general.
 - Entity has some much needed improvements
   - Damage and Effects now have their own custom classes
+    - Damage profile also tracks source object and damage type
   - Completely reworked effect adding, new combining methods have been created and effects should actually have a timer now
     - Currently 8 default ways to combine effects
   - Effects are now in one list instead of being spread across 3.
   - Damage now contains data for procs, although no code exists to utilize the procs
   - All health and damage values have been changes from floats to doubles
+  - Entities now have a Type property which is an enum
 - Console Improvements!
   - new class Console to act as a shorthand for ConsoleLol.Instance, makes life easier as a dev
     - Also stores write commands so that they can be used even when ConsoleLol.Instance hasn't been assigned yet.
@@ -162,6 +164,7 @@
   - Removed ArrayWrap(), what the fuck was the point of it
   - RotateTowards() now uses a Vector3 input instead of GameObject
   - Tags now has a singleton, although nothing currently uses it
+  - GISItems now have a Type property, this is currently unused
   - GenerateID has been updated and now resides in Tags
   - Got this project onto Github so now people can actually see what I am doing lol
   - Cleared out all the random warnings from unused variables n' stuff
