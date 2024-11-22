@@ -48,6 +48,7 @@
   - Cleaned up some of the code
 - Tags Improvements!
   - Completely overhauled how tags are handled. 
+  - Many new helper methods to improve tag usage
   - New Tags Refs
     - A quick script you can slap on any gameobject to create a reference to it using Tags
     - default values are the name and gameobject of the attached script, can be manually changed to new values

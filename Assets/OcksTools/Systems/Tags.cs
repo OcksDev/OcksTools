@@ -48,6 +48,20 @@ public class Tags : MonoBehaviour
         var aa = AllTagsReverse["Exist"];
         return aa.ContainsKey(a) ? aa[a] :"";
     }
+
+    public static bool ObjectHasTag(UnityEngine.Object objecty, string tag)
+    {
+        return AllTagsReverse[tag].ContainsKey(objecty);
+    }
+
+    public static bool ObjectHasTag(string objecty, string tag)
+    {
+        return AllTags[tag].ContainsKey(objecty);
+    }
+    public static T GetFromTag<T>(string tag, string name) where T : UnityEngine.Object
+    {
+        return (T)AllTags[tag][name];
+    }
     public static void AddObjectToTag(UnityEngine.Object a, string namee, string tag)
     {
         if(!AllTags.ContainsKey(tag) || !AllTagsReverse.ContainsKey(tag)) CreateTag(tag);
