@@ -22,19 +22,23 @@ public class TreeHandler : MonoBehaviour
     }
     public void LoadAllTree(string dict)
     {
-        //phase 1 - load all the values into the nodes
-
+        //phase 1 - load all the values
         CurrentOwnerships = Converter.StringToDictionary(SaveSystem.Instance.GetString("TreeData", "", dict));
+        //phase 2 - the canvas partner objects
         SpawnPartners.Invoke();
+        //phase 3 - set the state of the things
         LoadCurrentState.Invoke();
-        foreach(var node in Nodes)
+        //phase 4 - all nodes know about their related nodes
+        foreach (var node in Nodes)
         {
             foreach (var n in node.Value.Prerequisites)
             {
                 Nodes[n].RelatedNerds.Add(node.Key);
             }
         }
+        //phase 5 - spawn every line object
         SpawnLines.Invoke();
+        //phase 6 - set the state of every line object
         UpdateLines.Invoke();
     }
     public void SaveAllTree(string dict)
