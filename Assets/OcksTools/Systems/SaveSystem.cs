@@ -14,8 +14,8 @@ public class SaveSystem : MonoBehaviour
     public int test = 0;
     public bool TestBool = false;
 
-    public static OXEvent SaveAllData = new OXEvent();
-    public static OXEvent LoadAllData = new OXEvent();
+    public static OXEvent<string> SaveAllData = new OXEvent<string>();
+    public static OXEvent<string> LoadAllData = new OXEvent<string>();
 
     public Dictionary<string, Dictionary<string, string>> HoldingData = new Dictionary<string, Dictionary<string, string>>();
 
@@ -79,7 +79,7 @@ public class SaveSystem : MonoBehaviour
         TestBool = bool.Parse(GetString("test_bool", "False", dict));
         //ConsoleLol.Instance.ConsoleLog(Prefix(i) + "test_num");
 
-        LoadAllData.Invoke();
+        LoadAllData.Invoke(dict);
     }
     public void SaveGame(string dict = "def")
     {
@@ -110,7 +110,7 @@ public class SaveSystem : MonoBehaviour
         SetString("test_num", test.ToString(), dict);
         SetString("test_bool", TestBool.ToString(), dict);
 
-        SaveAllData.Invoke();
+        SaveAllData.Invoke(dict);
 
         SaveDataToFile(dict);
     }

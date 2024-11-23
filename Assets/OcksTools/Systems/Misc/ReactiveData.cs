@@ -40,7 +40,7 @@ public class OXData<T>
     }
 
     public delegate void die1();
-    public delegate void die2<T>(T val);
+    public delegate void die2<T2>(T2 val);
     public event die1 OnValueChanged;
     public event die2<T> OnValueChanged_GetValue;
 

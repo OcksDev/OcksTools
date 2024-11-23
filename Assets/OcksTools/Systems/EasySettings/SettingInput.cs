@@ -47,7 +47,7 @@ public class SettingInput : MonoBehaviour
         }
     }
 
-    public void ReadValue()
+    public void ReadValue(string dict)
     {
         switch (Type)
         {

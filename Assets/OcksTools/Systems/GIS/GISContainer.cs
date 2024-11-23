@@ -156,7 +156,7 @@ public class GISContainer : MonoBehaviour
         return i;
     }
 
-    public void SaveContents()
+    public void SaveContents(string dict)
     {
         if (SaveLoadData)
         {
@@ -169,7 +169,7 @@ public class GISContainer : MonoBehaviour
                 a.Add(p.Held_Item.ItemToString());
             }
 
-            SaveSystem.Instance.SetString(GetName(), ListToString(a, "+=+"));
+            SaveSystem.Instance.SetString(GetName(), ListToString(a, "+=+"), dict);
         }
     }
 

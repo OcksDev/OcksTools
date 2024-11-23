@@ -13,7 +13,7 @@ public class ProfileHandler : MonoBehaviour
         SaveSystem.LoadAllData.Append(LockIn);
     }
 
-    public void LockIn()
+    public void LockIn(string dict)
     {
         var s = SaveSystem.Instance;
         s.GetDataFromFile("ox_profile");

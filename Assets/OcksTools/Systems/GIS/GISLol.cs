@@ -103,13 +103,13 @@ public class GISLol : MonoBehaviour
         nono = false;
     }
 
-    public void SaveAll()
+    public void SaveAll(string dict)
     {
         foreach (var c in All_Containers)
         {
             if (c.Value != null && c.Value.SaveLoadData)
             {
-                c.Value.SaveContents();
+                c.Value.SaveContents(dict);
             }
         }
     }

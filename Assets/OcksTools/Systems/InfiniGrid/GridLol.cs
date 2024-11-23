@@ -112,7 +112,7 @@ public class GridLol : MonoBehaviour
         return a;
     }
 
-    public void SaveAllTiles()
+    public void SaveAllTiles(string dict)
     {
         Dictionary<OcksTileData, int> fuckyou = new Dictionary<OcksTileData, int>();
         List<string> boners = new List<string>();
@@ -122,11 +122,11 @@ public class GridLol : MonoBehaviour
             fuckyou.Add(tile.Value, 0);
             boners.Add(tile.Value.TileToString());
         }
-        SaveSystem.Instance.SetString("InfiniGrid", Converter.ListToString(boners, "-=-"));
+        SaveSystem.Instance.SetString("InfiniGrid", Converter.ListToString(boners, "-=-"), dict);
     }
-    public void LoadAllTiles()
+    public void LoadAllTiles(string dict)
     {
-        var a = Converter.StringToList(SaveSystem.Instance.GetString("InfiniGrid", ""),"-=-");
+        var a = Converter.StringToList(SaveSystem.Instance.GetString("InfiniGrid", "", dict),"-=-");
         foreach(var b in a)
         {
             if (b == "") continue;

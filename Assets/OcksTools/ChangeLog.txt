@@ -110,8 +110,12 @@
 - New Text Animator!
   - Allows for the animating of text in a very cool way, animations can be stacked and mixed
     - Comes with many example animations: Wave, WaveND, Rainbow, RainbowSnap, Shake, ShakeWhole, Halloween, Gravity, ShakeIn, FadeIn, and FloatDown
-- New InfiniGrid
-  - A grid editor that has no restrictions on location, currently pretty bare bones but I have plans to add multi tile objects
+- New InfiniGrid!
+  - A grid editor that has no restrictions on location
+  - Includes save/load support
+- New Tree System
+  - A basis for which to build upgrade tree or similar systems
+  - Includes save/load support
 - New Easy Settings Folder
   - The basic outline of some things to make the creation of game settings menus easier.
 - New Profile Handler (very bare bones)
