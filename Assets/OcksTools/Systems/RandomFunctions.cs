@@ -260,9 +260,8 @@ public class RandomFunctions : MonoBehaviour
         var sex = Quaternion.Euler(0f, 0f, rotation_z + offset2);
         return sex;
     }
-    private Quaternion PointFromTo2D(Vector3 from_pos, Vector3 to_pos, float offset2)
+    public static Quaternion PointAtPoint2D(Vector3 from_pos, Vector3 to_pos, float offset2)
     {
-        //returns the rotation required to make the current gameobject point at the mouse, this method is 2D only.
         Vector3 difference = from_pos - to_pos;
         difference.Normalize();
         float rotation_z = Mathf.Atan2(difference.y, difference.x) * Mathf.Rad2Deg;

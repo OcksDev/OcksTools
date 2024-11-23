@@ -6,14 +6,16 @@ public class TreeNode : MonoBehaviour
 {
     public string Name;
     public List<string> Prerequisites = new List<string>();
-    //[HideInInspector]
+    [HideInInspector]
     public List<string> RelatedNerds;
     public ViewReq ViewRequirement = ViewReq.AtLeastOne;
     public ViewStates StartState = ViewStates.Hidden;
-    //[HideInInspector]
+    [HideInInspector]
     public ViewStates ViewState = ViewStates.Hidden;
     public GameObject CanvasPartner;
+    public GameObject LineObject;
     private PartnerScrpt prntr;
+    public Dictionary<string, Transform> lines = new Dictionary<string, Transform>();
     private void Awake()
     {
         TreeHandler.Nodes.Add(Name, this);
@@ -21,6 +23,8 @@ public class TreeNode : MonoBehaviour
         RelatedNerds = new List<string>(Prerequisites);
         TreeHandler.SpawnPartners.Append(Name, SpawnPartner);
         TreeHandler.LoadCurrentState.Append(Name, UpdateState);
+        TreeHandler.SpawnLines.Append(Name, SpawnLines);
+        TreeHandler.UpdateLines.Append(Name, UpdateAllLines);
     }
     public void UpdateState()
     {
@@ -45,17 +49,20 @@ public class TreeNode : MonoBehaviour
         {
             ViewState = StartState;
         }
+         canseeme = false;
         switch (ViewState)
         {
             case ViewStates.Available:
             case ViewStates.Obtained:
-                gameObject.SetActive(true);
+                canseeme = true;
                 break;
             case ViewStates.Hidden:
-                gameObject.SetActive(false);
                 break;
         }
+        gameObject.SetActive(canseeme);
     }
+    [HideInInspector]
+    public bool canseeme = false;
 
     public void PropogatedUpdate()
     {
@@ -64,8 +71,29 @@ public class TreeNode : MonoBehaviour
         {
             TreeHandler.Nodes[a].UpdateState();
         }
+        UpdateAllLines();
+        foreach(var a in RelatedNerds)
+        {
+            if (Prerequisites.Contains(a)) continue;
+            TreeHandler.Nodes[a].UpdateAllLines();
+            TreeHandler.Nodes[a].UpdatePrereqLines(Name);
+        }
     }
-
+    public void UpdateAllLines()
+    {
+        foreach (var a in lines)
+        {
+            UpdateLineStatus(a);
+        }
+    }
+    public void UpdatePrereqLines(string exludeme)
+    {
+        foreach (var a in Prerequisites)
+        {
+            if (a == exludeme) continue;
+            TreeHandler.Nodes[a].UpdateAllLines();
+        }
+    }
     public void Click()
     {
         var t = TreeHandler.Instance;
@@ -91,6 +119,42 @@ public class TreeNode : MonoBehaviour
         prntr = CanvasPartner.GetComponent<PartnerScrpt>();
         prntr.Partner = this;
     }
+    public void SpawnLines()
+    {
+        foreach(var a in RelatedNerds)
+        {
+            if (Prerequisites.Contains(a)) continue;
+            var li = Instantiate(LineObject, transform.position, Quaternion.identity, TreeHandler.Instance.LineParent.transform);
+            lines.Add(a, li.transform);
+        }
+        foreach (var a in lines)
+        {
+            UpdateLinePos(a);
+        }
+    }
+
+    public void UpdateLinePos(KeyValuePair<string, Transform> s)
+    {
+        var targ = TreeHandler.Nodes[s.Key].transform.position;
+        s.Value.position = Vector3.Lerp(transform.position, targ, 0.5f);
+        s.Value.rotation = RandomFunctions.PointAtPoint2D(transform.position, targ, 0);
+        s.Value.localScale = new Vector3(RandomFunctions.Dist(transform.position, targ), 1, 1);
+    }
+    public void UpdateLineStatus(KeyValuePair<string, Transform> s)
+    {
+        if (!TreeHandler .CurrentOwnerships.ContainsKey(Name))
+        {
+            s.Value.gameObject.SetActive(false);
+            return;
+        }
+        if (TreeHandler.Nodes[s.Key].canseeme)
+        {
+            s.Value.gameObject.SetActive(true);
+            return;
+        }
+        s.Value.gameObject.SetActive(false);
+    }
+
     private void OnEnable()
     {
         CanvasPartner.SetActive(true);
@@ -117,4 +181,5 @@ public class TreeNode : MonoBehaviour
         Available,
         Obtained,
     }
+
 }

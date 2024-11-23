@@ -9,8 +9,11 @@ public class TreeHandler : MonoBehaviour
     public static Dictionary<string, string> CurrentOwnerships = new Dictionary<string, string>();
     public static OXEvent LoadCurrentState = new OXEvent();
     public static OXEvent SpawnPartners = new OXEvent();
+    public static OXEvent SpawnLines = new OXEvent();
+    public static OXEvent UpdateLines = new OXEvent();
     public static TreeHandler Instance;
     public Transform PartnerParent;
+    public Transform LineParent;
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -31,6 +34,8 @@ public class TreeHandler : MonoBehaviour
                 Nodes[n].RelatedNerds.Add(node.Key);
             }
         }
+        SpawnLines.Invoke();
+        UpdateLines.Invoke();
     }
     public void SaveAllTree(string dict)
     {
