@@ -14,7 +14,10 @@
 </> <Speed=15, -, 1> <Voiceline=2>
 </> <Animate=Text,FadeIn,6969>this text fades in from the spooky dimension!<br><Animate=Text,Rainbow,6969>Animations are order dependant,<Animate=Text,FadeIn,6969> so this text will fade with cool colors, how amazing!!!!!!
 </> 
-</> <Name=Boner> <Voiceline=3>
+</> <Speed=15, -, 1> <Name=Ball Sucker> <Voiceline=3>
+</> <Animate=Text,ZoomIn> Will this text zoomies? God I mother fucking hope it does.
+</> 
+</> <Name=Boner> <Voiceline=4>
 </> Smell my greasy balls <End=0> 
 </> 
 </> <Name=God>

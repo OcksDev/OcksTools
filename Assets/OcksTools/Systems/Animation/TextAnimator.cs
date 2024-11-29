@@ -61,6 +61,7 @@ public class TextAnimator : MonoBehaviour
                         {
                             case "FadeIn":
                             case "Gravity":
+                            case "ZoomIn":
                             case "ShakeIn":
                             case "FloatDown":
                                 if (!sp.ContainsKey(i))
@@ -80,6 +81,7 @@ public class TextAnimator : MonoBehaviour
                             // i = character #
                             // j = vert #
                             // anims[g] = current anim
+                            // sp[i] = percent loaded in on type
                             case "Wave":
                                 for (int j = 0; j < 4; j++)
                                 {
@@ -153,6 +155,18 @@ public class TextAnimator : MonoBehaviour
                                     {
                                         var orig = verts[charinfo.vertexIndex + j];
                                         verts[charinfo.vertexIndex + j] = orig + new Vector3(0, 6 * (Mathf.Cos((halfpi * sp[i]) + halfpi) + 1));
+                                    }
+                                }
+                                break;
+                            case "ZoomIn":
+                                sp[i] += delt*2;
+                                if (sp[i] <= 1)
+                                {
+                                    var avg = Vector3.Lerp(verts[charinfo.vertexIndex + 0], verts[charinfo.vertexIndex + 2], 0.5f);
+                                    for (int j = 0; j < 4; j++)
+                                    {
+                                        var orig = verts[charinfo.vertexIndex + j];
+                                        verts[charinfo.vertexIndex + j] = avg + ((orig - avg) * sp[i]);
                                     }
                                 }
                                 break;
