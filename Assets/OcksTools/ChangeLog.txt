@@ -113,6 +113,7 @@
 - New InfiniGrid!
   - A grid editor that has no restrictions on location
   - Includes save/load support
+  - Includes extension for Tilemap support
 - New Tree System
   - A basis for which to build upgrade tree or similar systems
   - Includes save/load support
