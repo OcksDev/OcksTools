@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 public class GridLol : MonoBehaviour
 {
+    public bool UseTilemapExtension = false;
     public float GeneralScale = 1f;
     public int XPlaceSize = 1;
     public int YPlaceSize = 1;
@@ -13,12 +14,14 @@ public class GridLol : MonoBehaviour
     public Dictionary<Vector3Int, OcksTileData> Tiles = new Dictionary<Vector3Int, OcksTileData>();
     public GameObject TileToSpawn;
     public List<Color32> colors = new List<Color32>();
+    private GridTileMapExtension tileextend;
     private void Awake()
     {
         Instance = this;
         SaveSystem.SaveAllData.Append("SaveAllTiles", SaveAllTiles);
         SaveSystem.LoadAllData.Append("LoadAllTiles", LoadAllTiles);
         highlighrt = Instantiate(Highligher, transform).GetComponent<SpriteRenderer>();
+        if(UseTilemapExtension) tileextend = GetComponent<GridTileMapExtension>();
     }
     private SpriteRenderer highlighrt;
     public void Update()
@@ -60,7 +63,15 @@ public class GridLol : MonoBehaviour
                     {
                         Tiles.Remove(b);
                     }
-                    Destroy(x.tob.gameObject);
+                    if (UseTilemapExtension)
+                    {
+
+                        tileextend.TileMap.SetTile(x.pos, null);
+                    }
+                    else
+                    {
+                        Destroy(x.tob.gameObject);
+                    }
                 }
                 else
                 {
@@ -98,18 +109,30 @@ public class GridLol : MonoBehaviour
         return new Vector3(zi.size.x, zi.size.y, 1) * GeneralScale;
     }
 
-    public TileObject SpawnTile(OcksTileData zi)
+    public void SpawnTile(OcksTileData zi)
     {
-        var a = Instantiate(TileToSpawn, GetPosOfScaled(zi), Quaternion.identity, transform).GetComponent<TileObject>();
-        a.data = zi;
-        a.data.tob = a;
-        foreach(var b in zi.GetUsedTiles())
+        if (UseTilemapExtension)
         {
-            Tiles.Add(b, zi);
+            tileextend.TileMap.SetTile(zi.pos, tileextend.TileToSpawn);
+            tileextend.TileMap.SetTileFlags(zi.pos, UnityEngine.Tilemaps.TileFlags.None);
+            tileextend.TileMap.SetColor(zi.pos, colors[zi.TileType]);
+            foreach (var b in zi.GetUsedTiles())
+            {
+                Tiles.Add(b, zi);
+            }
         }
-        a.spriteRenderer.color = colors[zi.TileType];
-        a.transform.localScale = GetScaleOfScaled(zi);
-        return a;
+        else
+        {
+            var a = Instantiate(TileToSpawn, GetPosOfScaled(zi), Quaternion.identity, transform).GetComponent<TileObject>();
+            a.data = zi;
+            a.data.tob = a;
+            foreach (var b in zi.GetUsedTiles())
+            {
+                Tiles.Add(b, zi);
+            }
+            a.spriteRenderer.color = colors[zi.TileType];
+            a.transform.localScale = GetScaleOfScaled(zi);
+        }
     }
 
     public void SaveAllTiles(string dict)
