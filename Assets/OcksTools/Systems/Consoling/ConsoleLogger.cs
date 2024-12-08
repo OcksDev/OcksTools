@@ -11,10 +11,14 @@ public class ConsoleLogger : MonoBehaviour
     {
         p = GetComponent<TextMeshProUGUI>();
     }
-
+    float tim = 0;
     // Update is called once per frame
     void Update()
     {
-        p.text = ConsoleLol.Instance.BackLog;
+        if((tim += Time.deltaTime) >= 0.04f)
+        {
+            tim = 0;
+            p.text = ConsoleLol.Instance.BackLog;
+        }
     }
 }

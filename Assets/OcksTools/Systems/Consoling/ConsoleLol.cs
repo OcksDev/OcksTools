@@ -21,7 +21,8 @@ public class ConsoleLol : MonoBehaviour
     private List<string> command = new List<string>();
     private List<string> command_caps = new List<string>();
     public string BackLog = "";
-    private int balls = 0;
+    [HideInInspector]
+    public int balls = 0;
     private int comm = 0;
 
 
@@ -508,6 +509,11 @@ public class ConsoleLol : MonoBehaviour
     public void ConsoleLog(string text = "Logged", string hex = "\"white\"")
     {
         BackLog = BackLog + "<br><color=" + hex + ">" + text;
+        if(BackLog.Length > 10000)
+        {
+            var pp = BackLog.IndexOf("<br>");
+            BackLog = BackLog.Substring(pp+4);
+        }
         balls = 1;
     }
     public void CloseConsole()
@@ -540,7 +546,7 @@ public class ConsoleLol : MonoBehaviour
     }
 }
 
-public class Console : MonoBehaviour
+public class Console
 {
     public static List<string> texts = new List<string>();
     public static List<string> hexes = new List<string>();

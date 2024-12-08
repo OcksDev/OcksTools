@@ -45,7 +45,7 @@
   - Console now properly moves down to the bottom of the console when entering commands
   - Console command "data listall" now actually reads from the updated saving/load system
   - Inputs are properly captured now, no more closing the menu by accident by pressing "/"
-  - Optimized code to display text, much better than before
+  - Optimized code to display text, vastly better than before
   - Some new commands
   - Cleaned up some of the code
 - Tags Improvements!
