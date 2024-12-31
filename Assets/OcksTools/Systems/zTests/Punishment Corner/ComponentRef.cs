@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
-/*
+
 public class ComponentRef : MonoBehaviour
 {
     public List<string> Components = new List<string>();
@@ -85,22 +85,22 @@ public class OXComponent
         StoreComponents(sus, pred);
     }
 
-    public static T GetComponent<T>(GameObject sussy, string name, bool storeifnull = true) where T : Component
+    public static T GetComponent<T>(GameObject sussy, bool storeifnull = true) where T : Component
     {
         try
         {
-            return (T)StoredComps[sussy][name];
+            return (T)StoredComps[sussy][typeof(T).Name];
         }
         catch
         {
-
+            return null;
         }
         /*
         if (StoredComps.TryGetValue(sussy, out Dictionary<string, Component> comps))
         {
             if(comps.TryGetValue(typeof(T).Name, out Component thin))
             {
-                return thin;
+                return (T)thin;
             }
         }
         if (storeifnull)
@@ -115,36 +115,36 @@ public class OXComponent
                 }
             }
         }
-        return null;
+        return null;*/
     }
-    public static List<T> GetComponentsInChildren<T>(GameObject sussy, string name, bool storeifnull = true) where T : Component
+    public static List<T> GetComponentsInChildren<T>(GameObject sussy, bool storeifnull = true) where T : Component
     {
         List<T> founds = new List<T>();
         var e = sussy.transform.childCount;
         T comp;
-        comp = GetComponent<T>(sussy, name, storeifnull);
+        comp = GetComponent<T>(sussy, storeifnull);
         if (comp != null)
             founds.Add(comp);
         for (int i = 0; i < e; i++)
         {
-            comp = GetComponent<T>(sussy.transform.GetChild(i).gameObject, name, storeifnull);
+            comp = GetComponent<T>(sussy.transform.GetChild(i).gameObject, storeifnull);
             if (comp != null)
                 founds.Add(comp);
         }
         return founds;
     }
-    public static List<T> GetComponentsInChildrenRecursive<T>(GameObject sussy, string name, bool storeifnull = true) where T : Component
+    public static List<T> GetComponentsInChildrenRecursive<T>(GameObject sussy, bool storeifnull = true) where T : Component
     {
         List<T> founds = new List<T>();
         var e = sussy.transform.childCount;
         T comp;
         for (int i = 0; i < e; i++)
         {
-            var weenis = GetComponentsInChildrenRecursive<T>(sussy.transform.GetChild(i).gameObject, name, storeifnull);
+            var weenis = GetComponentsInChildrenRecursive<T>(sussy.transform.GetChild(i).gameObject, storeifnull);
             if(weenis.Count > 0)
             founds = RandomFunctions.CombineLists(founds, weenis);
         }
-        comp = GetComponent<T>(sussy, name, storeifnull);
+        comp = GetComponent<T>(sussy, storeifnull);
         if (comp != null)
             founds.Add(comp);
         return founds;
@@ -192,4 +192,3 @@ public class OXComponent
         if (StoredComps.ContainsKey(sus)) StoredComps.Remove(sus);
     }
 }
-*/
