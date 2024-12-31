@@ -75,7 +75,6 @@
   - Fixed a bug where attributes at the end of dialog contents would throw an error
   - Fixed Speed attribute being horribly parsed
     - Also fixed it partly not working
-  - Ported to using OXComponent instead of base unity GetComponent
 - File System Improvements!
   - Downloading files from your computer is no longer a hassle, streamlined the process to flow through a single DownloadFile() method
   - Downloading images from computer no longer just saves them as textures, but also as sprites
@@ -91,8 +90,6 @@
   - Remade the locklevel system to now use lists of strings instead of just one string
     - Old code/method is still compatable and should work exactly the same as before, but now there is new functionality
   - Organization plus simplificaiton of some things
-- New OXComponent System (core system)!
-  - Allows for the storing of GetComponent. This system does it once, stores the value, and can be arbitrarily retrieved.
 - New OXEvent System (core system)
 - New Object Creation System (core system)!
   - Here to replace the RandomFunctions.SpawnObject()
@@ -180,6 +177,9 @@
   - Console util setup buttons now more accurately place the objects they instantiate
   - <br> is now considered a dialog attribute in order to let the <Speed> attribute work. (dont ask)
   - Dialog now splits with "</>" instead of "</> "
+- New OXComponent Test System
+  - Allows for the storing of GetComponent.
+  - Doesn't actually help performance and is just kinda worse, so its binned until I can make it better
 ------------
 
 ------------

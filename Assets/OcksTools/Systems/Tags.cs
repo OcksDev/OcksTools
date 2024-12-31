@@ -77,7 +77,6 @@ public class Tags : MonoBehaviour
         if (AllTags["Exist"].ContainsKey(key))
         {
             gm = (GameObject)AllTags["Exist"][key];
-            OXComponent.ClearOf(gm);
         }
         foreach(var a in AllTags)
         {
