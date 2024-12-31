@@ -81,7 +81,7 @@ public class SpawnSystem : MonoBehaviour
             f = Instantiate(SpawnableDict[name].Object, pos, rot, parent.transform);
         }
 
-        var d = f.GetComponent<SpawnData>();
+        var d = OXComponent.GetComponent<SpawnData>(f);
         if (d != null)
         {
             //Requires objects to have SpawnData.cs to allow for data sending

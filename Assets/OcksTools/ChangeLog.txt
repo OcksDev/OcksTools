@@ -75,6 +75,7 @@
   - Fixed a bug where attributes at the end of dialog contents would throw an error
   - Fixed Speed attribute being horribly parsed
     - Also fixed it partly not working
+  - Ported to using OXComponent instead of base unity GetComponent
 - File System Improvements!
   - Downloading files from your computer is no longer a hassle, streamlined the process to flow through a single DownloadFile() method
   - Downloading images from computer no longer just saves them as textures, but also as sprites

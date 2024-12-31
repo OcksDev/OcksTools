@@ -70,7 +70,7 @@ public class DialogLol : MonoBehaviour
     void Start()
     {
         ResetDialog();
-        pp = DialogBoxObject.GetComponent<DialogBoxL>();
+        pp = OXComponent.GetComponent<DialogBoxL>(DialogBoxObject);
         //lets you write <*=*Var> as shorthand to insert a variable into the dialog
         SetVariable("", "Show");
         //some testing variables for the dialog system
@@ -311,7 +311,7 @@ public class DialogLol : MonoBehaviour
                         default: return pp.TextObject; 
                     } 
                 })();
-                var animat = (e).GetComponent<TextAnimator>();
+                var animat = OXComponent.GetComponent<TextAnimator>(e);
                 string h = "";
                 try
                 {
@@ -699,8 +699,8 @@ public class DialogLol : MonoBehaviour
                     if (charl >= fulltext.Length)
                     {
                         cp3 = 0;
-                        pp.TitleObject.GetComponent<TextAnimator>().anims.Clear();
-                        pp.TextObject.GetComponent<TextAnimator>().anims.Clear();
+                        OXComponent.GetComponent<TextAnimator>(pp.TitleObject).anims.Clear();
+                        OXComponent.GetComponent<TextAnimator>(pp.TextObject).anims.Clear();
                         linenum += 3;
                         charl = -1;
                         int ln = Math.Clamp(linenum-2, 0, str.Count);
@@ -746,12 +746,12 @@ public class DialogLol : MonoBehaviour
                     }
                     break;
                 case "Choose":
-                    pp.q_gameobjects[0].GetComponent<TextAnimator>().anims.Clear();
-                    pp.q_gameobjects[1].GetComponent<TextAnimator>().anims.Clear();
-                    pp.q_gameobjects[2].GetComponent<TextAnimator>().anims.Clear();
-                    pp.q_gameobjects[3].GetComponent<TextAnimator>().anims.Clear();
-                    pp.TitleObject.GetComponent<TextAnimator>().anims.Clear();
-                    pp.TextObject.GetComponent<TextAnimator>().anims.Clear();
+                    OXComponent.GetComponent<TextAnimator>(pp.q_gameobjects[0]).anims.Clear();
+                    OXComponent.GetComponent<TextAnimator>(pp.q_gameobjects[1]).anims.Clear();
+                    OXComponent.GetComponent<TextAnimator>(pp.q_gameobjects[2]).anims.Clear();
+                    OXComponent.GetComponent<TextAnimator>(pp.q_gameobjects[3]).anims.Clear();
+                    OXComponent.GetComponent<TextAnimator>(pp.TitleObject).anims.Clear();
+                    OXComponent.GetComponent<TextAnimator>(pp.TextObject).anims.Clear();
 
                     List<string> list23a = new List<string>(str[1].Split("<"));
                     
