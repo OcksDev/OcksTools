@@ -485,9 +485,13 @@ public class DialogLol : MonoBehaviour
         switch (datat)
         {
             case "Dialog":
-                str = new List<string>(files[filenum].text.Split("</> "));
+                str = new List<string>(files[filenum].text.Split("</>"));
                 string d1 = str[0];
                 str.RemoveAt(0);
+                for(int i = 0; i < str.Count; i++)
+                {
+                    if (str[0] == " ") str[i] = str[i].Substring(1);
+                }
                 ActiveFileName = d1.Split(Environment.NewLine)[0];
                 ConsoleLol.Instance.ConsoleLog(datatype + ": " + ActiveFileName, "#bdbdbdff");
                 NextLine();

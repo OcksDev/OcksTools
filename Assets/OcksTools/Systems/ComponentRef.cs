@@ -85,7 +85,7 @@ public class OXComponent
         StoreComponents(sus, pred);
     }
 
-    public static T GetComponent<T>(GameObject sussy) where T : Component
+    public static T GetComponent<T>(GameObject sussy, bool storeifnull = true) where T : Component
     {
         if (StoredComps.TryGetValue(sussy, out Dictionary<string, Component> comps))
         {
@@ -94,36 +94,48 @@ public class OXComponent
                 return (T)thin;
             }
         }
+        if (storeifnull)
+        {
+            StoreComponent(sussy.GetComponent<T>());
+
+            if (StoredComps.TryGetValue(sussy, out Dictionary<string, Component> comps2))
+            {
+                if (comps2.TryGetValue(typeof(T).Name, out Component thin))
+                {
+                    return (T)thin;
+                }
+            }
+        }
         return null;
     }
-    public static List<T> GetComponentsInChildren<T>(GameObject sussy) where T : Component
+    public static List<T> GetComponentsInChildren<T>(GameObject sussy, bool storeifnull = true) where T : Component
     {
         List<T> founds = new List<T>();
         var e = sussy.transform.childCount;
         T comp;
-        comp = GetComponent<T>(sussy);
+        comp = GetComponent<T>(sussy, storeifnull);
         if (comp != null)
             founds.Add(comp);
         for (int i = 0; i < e; i++)
         {
-            comp = GetComponent<T>(sussy.transform.GetChild(i).gameObject);
+            comp = GetComponent<T>(sussy.transform.GetChild(i).gameObject, storeifnull);
             if (comp != null)
                 founds.Add(comp);
         }
         return founds;
     }
-    public static List<T> GetComponentsInChildrenRecursive<T>(GameObject sussy) where T : Component
+    public static List<T> GetComponentsInChildrenRecursive<T>(GameObject sussy, bool storeifnull = true) where T : Component
     {
         List<T> founds = new List<T>();
         var e = sussy.transform.childCount;
         T comp;
         for (int i = 0; i < e; i++)
         {
-            var weenis = GetComponentsInChildrenRecursive<T>(sussy.transform.GetChild(i).gameObject);
+            var weenis = GetComponentsInChildrenRecursive<T>(sussy.transform.GetChild(i).gameObject, storeifnull);
             if(weenis.Count > 0)
             founds = RandomFunctions.CombineLists(founds, weenis);
         }
-        comp = GetComponent<T>(sussy);
+        comp = GetComponent<T>(sussy, storeifnull);
         if (comp != null)
             founds.Add(comp);
         return founds;

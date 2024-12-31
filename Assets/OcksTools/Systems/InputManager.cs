@@ -61,7 +61,7 @@ public class InputManager : MonoBehaviour
 
     }
 
-    public KeyCode GetArbitraryKeyPressed()
+    public static KeyCode GetArbitraryKeyPressed()
     {
         if (Input.anyKeyDown)
         {
@@ -83,7 +83,7 @@ public class InputManager : MonoBehaviour
         }
         return KeyCode.None;
     }
-    public List<KeyCode> GetAllCurrentlyPressedKeys()
+    public static List<KeyCode> GetAllCurrentlyPressedKeys()
     {
         if (Input.anyKeyDown)
         {
@@ -105,7 +105,7 @@ public class InputManager : MonoBehaviour
         return new List<KeyCode>();
     }
 
-    public void ResetBind(string keyname)
+    public static void ResetBind(string keyname)
     {
         //this is ResetBind but misspelled, I cant be bothered to fix this
         gamekeys[keyname] = defaultgamekeys[keyname];

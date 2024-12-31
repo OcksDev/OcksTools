@@ -149,6 +149,7 @@
   - New ListMatchesList<>() checks for if two lists match
   - New ListMatchesListOrderless<>() checks for if two lists contain the same data but regardless of order
   - New EaseIn(), EaseOut(), and EaseInAndOut(), which allow for smooth and adjustable value interpolation
+  - New ReflectVector() allows you to reflect an input vector across a certain axis vector.
 - Misc Changes
   - Renamed Tags "miscrefs" to "refs"
   - RandomFunctions.GetUnixTime() now uses double instead of long, and is coded slightly better
@@ -176,6 +177,7 @@
   - Cleared out all the random warnings from unused variables n' stuff
   - Console util setup buttons now more accurately place the objects they instantiate
   - <br> is now considered a dialog attribute in order to let the <Speed> attribute work. (dont ask)
+  - Dialog now splits with "</>" instead of "</> "
 ------------
 
 ------------

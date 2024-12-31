@@ -54,7 +54,10 @@ public class RandomFunctions : MonoBehaviour
         }
         return f;
     }
-
+    public static Vector3 ReflectVector(Vector3 incoming, Vector3 axis)
+    {
+        return incoming - 2 * Vector3.Dot(incoming, axis) * axis;
+    }
     public List<string> GenerateBlankHiddenData()
     {
         return new List<string>()

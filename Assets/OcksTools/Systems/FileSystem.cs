@@ -34,7 +34,7 @@ public class FileSystem : MonoBehaviour
     [HideInInspector]
     public string GameDirectory = "";
     [HideInInspector]
-    public List<string> FileLocations = new List<string>();
+    public Dictionary<string, string> FileLocations = new Dictionary<string, string>();
     public static FileSystem Instance
     {
         get { return instance; }
@@ -47,13 +47,13 @@ public class FileSystem : MonoBehaviour
         CreateFolder(GameDirectory);
         CreateFolder(UniversalDirectory);
 
-        WriteFile(FileLocations[0], "", false);
+        WriteFile(FileLocations["OcksGames"], "", false);
         GameName = $"Ocks Tools {GameVer}";
-        var s = ReadFile(FileLocations[0]);
+        var s = ReadFile(FileLocations["OcksGames"]);
         if (!s.Contains(GameName))
         {
             s += $"{GameName}\n";
-            WriteFile(FileLocations[0], s, true);
+            WriteFile(FileLocations["OcksGames"], s, true);
         }
         var pp = new bool[37];
         for(int i = 0; i < pp.Length; i++)
@@ -78,9 +78,9 @@ public class FileSystem : MonoBehaviour
         UniversalDirectory = OcksDirectry + "\\Universal";
 
         //this feature might be deprecated soon
-        FileLocations = new List<string>()
+        FileLocations = new Dictionary<string, string>()
         {
-            $"{OcksDirectry}\\Ocks_Games_Owned.txt",
+            {"OcksGames",$"{OcksDirectry}\\Ocks_Games_Owned.txt"},
         };
     }
     public void WriteFile(string FileName, string data, bool CanOverride)
