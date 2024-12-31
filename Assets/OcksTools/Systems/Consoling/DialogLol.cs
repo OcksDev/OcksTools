@@ -12,10 +12,12 @@ public class DialogLol : MonoBehaviour
 {
     public GameObject DialogBoxObject;
     private DialogBoxL pp;
-    public TextAsset[] files = new TextAsset[1];
-    public TextAsset[] chooses = new TextAsset[1];
+    public List<DialogHolder> DialogFiles = new List<DialogHolder>();
+    public List<DialogHolder> ChooseFiles = new List<DialogHolder>();
+    public Dictionary<string, DialogHolder> DialogFilesDict = new Dictionary<string, DialogHolder>();
+    public Dictionary<string, DialogHolder> ChooseFilesDict = new Dictionary<string, DialogHolder>();
     public bool dialogmode = false;
-    public int filenum = -1;
+    public string filename = "";
     public int linenum = 0;
     public int charnum = -1;
     public float cps = -1;
@@ -54,6 +56,14 @@ public class DialogLol : MonoBehaviour
     {
         if (Instance == null) instance = this;
         DialogBoxObject.SetActive(true);
+        foreach(var a in DialogFiles)
+        {
+            DialogFilesDict.Add(a.Name, a);
+        }
+        foreach(var a in ChooseFiles)
+        {
+            ChooseFilesDict.Add(a.Name, a);
+        }
     }
 
 
@@ -253,13 +263,13 @@ public class DialogLol : MonoBehaviour
                 break;
             case "Scene":
                 //Starts a new dialog file
-                StartDialog(int.Parse(data));
+                StartDialog(data);
                 foundendcall = true;
                 succeeded = true;
                 break;
             case "Choose":
                 //Starts a new choose file
-                StartDialog(int.Parse(data), "Choose");
+                StartDialog(data, "Choose");
                 foundendcall = true;
                 succeeded = true;
                 break;
@@ -461,7 +471,7 @@ public class DialogLol : MonoBehaviour
 
     public void ResetDialog()
     {
-        filenum = -1;
+        filename = "";
         charnum = 0;
         fulltext = "?";
         charl = 1;
@@ -471,12 +481,12 @@ public class DialogLol : MonoBehaviour
         datatype = "Dialog";
         SetDefaultParams();
     }
-    public void StartDialog(int dialog, string datat = "Dialog")
+    public void StartDialog(string dialog, string datat = "Dialog")
     {
         ResetDialog();
         dialogmode = true;
         DialogBoxObject.SetActive(true);
-        filenum = dialog;
+        filename = dialog;
         datatype = datat;
 
         //just closes the OcksTools Console when opening any dialog.
@@ -485,30 +495,39 @@ public class DialogLol : MonoBehaviour
         switch (datat)
         {
             case "Dialog":
-                str = new List<string>(files[filenum].text.Split("</>"));
-                string d1 = str[0];
-                str.RemoveAt(0);
-                for(int i = 0; i < str.Count; i++)
-                {
-                    if (str[0] == " ") str[i] = str[i].Substring(1);
-                }
-                ActiveFileName = d1.Split(Environment.NewLine)[0];
+                str = GetFormattedFromFile(filename);
                 ConsoleLol.Instance.ConsoleLog(datatype + ": " + ActiveFileName, "#bdbdbdff");
                 NextLine();
                 break;
             case "Choose":
-                str = new List<string>(chooses[filenum].text.Split("</>"));
-                string d2 = str[0];
-                ActiveFileName = d2.Split(Environment.NewLine)[0];
+                str = GetFormattedFromFile(filename, datat);
                 ConsoleLol.Instance.ConsoleLog(datatype + ": " + ActiveFileName, "#bdbdbdff");
                 NextLine();
                 break;
         }
     }
 
+    public List<string> GetFormattedFromFile(string filename, string datat = "Dialog")
+    {
+        var cd = DialogFilesDict;
+        switch (datat)
+        {
+            case "Choose":
+                cd = ChooseFilesDict;
+                break;
+        }
+        var str = new List<string>(cd[filename].File.text.Split("</>"));
+        string d1 = str[0];
+        ActiveFileName = d1.Split(Environment.NewLine)[0];
+        if(datat != "Choose")str.RemoveAt(0);
+        for (int i = 0; i < str.Count; i++)
+        {
+            if (str[i][0] == ' ') str[i] = str[i].Substring(1);
+        }
+        return str;
+    }
 
-
-    public void StartDialogFromLine(int dialog, int line)
+    public void StartDialogFromLine(string dialog, int line)
     {
         // linenum/3 = line
         // lines start at 0 and go up from there jus like arrays
@@ -516,19 +535,13 @@ public class DialogLol : MonoBehaviour
         ResetDialog();
         dialogmode = true;
         DialogBoxObject.SetActive(true);
-        filenum = dialog;
+        filename = dialog;
         datatype = "Dialog";
 
         //just closes the OcksTools Console when opening any dialog.
         ConsoleLol.Instance.CloseConsole();
 
-        str = new List<string>(files[filenum].text.Split("</> "));
-        string d1 = str[0];
-
-        linenum += 3*line;
-
-        str.RemoveAt(0);
-        ActiveFileName = d1.Split(Environment.NewLine)[0];
+        str = GetFormattedFromFile(filename);
         ConsoleLol.Instance.ConsoleLog(datatype + ": " + ActiveFileName, "#bdbdbdff");
         NextLine();
     }
@@ -659,16 +672,16 @@ public class DialogLol : MonoBehaviour
 
 
 
-    public string GetLineFrom(int index, int line, string boner = "Dialog")
+    public string GetLineFrom(string index, int line, string boner = "Dialog")
     {
         var str = new List<string>();
         switch (boner)
         {
             case "Dialog":
-                str = new List<string>(files[index].text.Split("</> "));
+                str = new List<string>(DialogFilesDict[index].File.text.Split("</> "));
                 break;
             case "Choose":
-                str = new List<string>(chooses[index].text.Split("</>"));
+                str = new List<string>(ChooseFilesDict[index].File.text.Split("</>"));
                 break;
         }
         return str[line];
@@ -678,7 +691,7 @@ public class DialogLol : MonoBehaviour
 
     public void NextLine()
     {
-        if (filenum != -1)
+        if (filename != "")
         {
             switch (datatype)
             {
@@ -781,4 +794,10 @@ public class DialogLol : MonoBehaviour
         UseEnding(list2[index]);
 
     }
+}
+[System.Serializable]
+public class DialogHolder
+{
+    public string Name;
+    public TextAsset File; 
 }

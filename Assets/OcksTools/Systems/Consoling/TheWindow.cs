@@ -15,7 +15,7 @@ public class ConsoleSetupWindow: EditorWindow
     string s4 = "s";
     int c = 0;
     int c2 = 0;
-    int s_d = 0;
+    string s_d = "";
     bool gaming = false;
     Color32 ba;
     [MenuItem("OcksTools/Console/Utils")]
@@ -97,7 +97,7 @@ public class ConsoleSetupWindow: EditorWindow
                 switch (c2)
                 {
                     case 0:
-                        s_d = EditorGUILayout.IntField(new GUIContent("Select Dialog", "The index of the dialog file within the Dialog Manager"), s_d);
+                        s_d = EditorGUILayout.TextField(new GUIContent("Select Dialog", "The index of the dialog file within the Dialog Manager"), s_d);
                         var gg = (gaming ? s3.GetComponent<DialogLol>() : DialogLol.Instance);
                         string ss = "";
                         try
@@ -127,7 +127,7 @@ public class ConsoleSetupWindow: EditorWindow
                         }
                         break;
                     case 1:
-                        s_d = EditorGUILayout.IntField(new GUIContent("Select Choice", "The index of the choice file within the Dialog Manager"), s_d);
+                        s_d = EditorGUILayout.TextField(new GUIContent("Select Choice", "The index of the choice file within the Dialog Manager"), s_d);
                         var gg2 = (gaming ? s3.GetComponent<DialogLol>() : DialogLol.Instance);
                         string ss2 = "";
                         try

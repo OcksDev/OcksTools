@@ -60,6 +60,7 @@
   - These changes also make it so now audio will not clip into itself when played repeatedly, so no more fear of clipping sounds!
     - If you still want to have clipped sounds when they overlap, you can use PlaySoundWithClipping()
 - Dialog Improvements!
+  - Entire system reworked to use Dictionaries instead of Lists
   - New "SoundOnType" attribute allows for a sound to be played whenever a new character is displayed in the dialog box
   - New "Animate" attribute allows for the various texts in the Dialog System to be animated using the new Text Animator
   - New "Shutdown" attribute is kind of a joke, literally just closes the application

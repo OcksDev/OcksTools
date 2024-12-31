@@ -74,6 +74,7 @@ public class ConsoleLol : MonoBehaviour
             { "Error_NoDataDump", "Game not configured to allow for mass data viewing" },
             { "Error_NoReg", "No registry inputted" },
             { "Error_NoData", "- No Data -" },
+            { "Error_NoDialogWithName", "No Dialog or Choose file is defined with the name: " },
             { "Error_InvalidTime", "Invalid time scale input" },
             { "Error_InvalidData", "Invalid data modification selected" },
             { "Error_NoScreenshot", "No screenshot component is loaded in the scene" }
@@ -404,8 +405,19 @@ public class ConsoleLol : MonoBehaviour
                             ), "#bdbdbdff");
                             break;
                         default:
-                            DialogLol.Instance.StartDialog(int.Parse(command[1]));
-                            CloseConsole();
+                            if (DialogLol.Instance.DialogFilesDict.ContainsKey(command_caps[1]) || DialogLol.Instance.ChooseFilesDict.ContainsKey(command_caps[1]))
+                            {
+                                DialogLol.Instance.StartDialog(command_caps[1]);
+                                CloseConsole();
+                            }
+                            else
+                            {
+                                ConsoleLog((
+
+                                    lang.IndexValuePairs["Error_NoDialogWithName"] + $"\"{command_caps[1]}\""
+
+                                ), "#ff0000ff");
+                            }
                             break;
                     }
                     break;
@@ -494,6 +506,7 @@ public class ConsoleLol : MonoBehaviour
                     break;
             }
         }
+        
         catch
         {
             ConsoleLog(lang.IndexValuePairs["Error_InvalidCommand"], "#ff0000ff");

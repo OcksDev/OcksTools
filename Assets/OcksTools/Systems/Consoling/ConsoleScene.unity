@@ -200,7 +200,6 @@ GameObject:
   - component: {fileID: 464091837}
   - component: {fileID: 464091839}
   - component: {fileID: 464091840}
-  - component: {fileID: 464091841}
   m_Layer: 0
   m_Name: Testi
   m_TagString: Untagged
@@ -263,21 +262,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   wank:
     hidden_value: 
---- !u!114 &464091841
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 464091836}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 051ed26a1839df044a21c577dad4d58e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  amnt: 1
-  weewee: 0
-  textMeshProUGUI: {fileID: 1265448092}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -5558,7 +5542,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4007473491773129349, guid: 32aa07c1d97c2ed4cac286e0d66c9ab0, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -35.64998
+      value: -35.65
       objectReference: {fileID: 0}
     - target: {fileID: 6736140656960667405, guid: 32aa07c1d97c2ed4cac286e0d66c9ab0, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -11377,6 +11361,46 @@ PrefabInstance:
       propertyPath: chooses.Array.data[0]
       value: 
       objectReference: {fileID: 4900000, guid: 3c594fbc940fc8543ac46e05ed5914d6, type: 3}
+    - target: {fileID: 6167858925768747828, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
+      propertyPath: ChooseFiles.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6167858925768747828, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
+      propertyPath: DialogFiles.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6167858925768747828, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
+      propertyPath: ChooseFiles.Array.data[0].File
+      value: 
+      objectReference: {fileID: 4900000, guid: 3c594fbc940fc8543ac46e05ed5914d6, type: 3}
+    - target: {fileID: 6167858925768747828, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
+      propertyPath: ChooseFiles.Array.data[0].Name
+      value: Test1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6167858925768747828, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
+      propertyPath: DialogFiles.Array.data[0].File
+      value: 
+      objectReference: {fileID: 4900000, guid: 3f6f739fade369144b5676f2797ade03, type: 3}
+    - target: {fileID: 6167858925768747828, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
+      propertyPath: DialogFiles.Array.data[0].Name
+      value: Test1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6167858925768747828, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
+      propertyPath: DialogFiles.Array.data[1].File
+      value: 
+      objectReference: {fileID: 4900000, guid: 1b6e7448726c9f148bf3aafb46127126, type: 3}
+    - target: {fileID: 6167858925768747828, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
+      propertyPath: DialogFiles.Array.data[1].Name
+      value: Test2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6167858925768747828, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
+      propertyPath: DialogFiles.Array.data[2].File
+      value: 
+      objectReference: {fileID: 4900000, guid: c23a6e8e1e0f6e340b36ae24df447192, type: 3}
+    - target: {fileID: 6167858925768747828, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
+      propertyPath: DialogFiles.Array.data[2].Name
+      value: Test3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
 --- !u!1 &1919323273

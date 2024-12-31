@@ -16,5 +16,5 @@
 </> 
 </> <Name=Gamer> <TextColor=150,0,0,255> <Voiceline=3> <Escape=True> <SoundOnType=0>
 </> cool....  fuck<Jump=-4>
-</> <Scene=1>
+</> <Scene=Test2>
 
