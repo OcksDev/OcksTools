@@ -182,6 +182,22 @@ public class OXFileData
     {
         return Encoding.UTF8.GetString(DataRaw);
     }
+    public int Get_Int()
+    {
+        return BitConverter.ToInt32(DataRaw,0);
+    }
+    public long Get_Long()
+    {
+        return BitConverter.ToInt64(DataRaw,0);
+    }
+    public float Get_Float()
+    {
+        return BitConverter.ToSingle(DataRaw,0);
+    }
+    public double Get_Double()
+    {
+        return BitConverter.ToDouble(DataRaw,0);
+    }
     public Dictionary<string, OXFileData> Get_OXFileData()
     {
         var ret = new Dictionary<string, OXFileData>();
@@ -209,6 +225,10 @@ public class OXFileData
         String,
         OXFileData,
         Int,
+        Float,
+        Long,
+        Double,
+        Byte,
     }
 }
 

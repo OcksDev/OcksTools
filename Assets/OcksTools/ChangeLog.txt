@@ -109,6 +109,8 @@
 - New Text Animator!
   - Allows for the animating of text in a very cool way, animations can be stacked and mixed
     - Comes with many example animations: Wave, WaveND, Rainbow, RainbowSnap, Shake, ShakeWhole, Halloween, Gravity, ShakeIn, FadeIn, and FloatDown
+- New OXFile
+  - Not to be confused with the FileSystem, this is an experimental first step into making my own file format (.ox)
 - New InfiniGrid!
   - A grid editor that has no restrictions on location
   - Includes save/load support
