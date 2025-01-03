@@ -59,6 +59,10 @@ public class OXFileData
     public string Name = "";
     public OXFileType Type;
     public string DataString;
+    public float DataFloat;
+    public double DataDouble;
+    public long DataLong;
+    public byte DataByte;
     public int DataInt;
     public Dictionary<string, OXFileData> DataOXFiles = new Dictionary<string, OXFileData>();
     public byte[] DataRaw;
@@ -109,6 +113,42 @@ public class OXFileData
         dat.DataString = DataIn;
         dat.DataRaw = Encoding.UTF8.GetBytes(DataIn);
         dat.Type = OXFileData.OXFileType.String;
+        DataOXFiles.Add(Name, dat);
+    }
+    public void Add(string Name, int DataIn)
+    {
+        var dat = new OXFileData();
+        dat.Name = Name;
+        dat.DataInt = DataIn;
+        dat.DataRaw = BitConverter.GetBytes(DataIn);
+        dat.Type = OXFileData.OXFileType.Int;
+        DataOXFiles.Add(Name, dat);
+    }
+    public void Add(string Name, float DataIn)
+    {
+        var dat = new OXFileData();
+        dat.Name = Name;
+        dat.DataFloat = DataIn;
+        dat.DataRaw = BitConverter.GetBytes(DataIn);
+        dat.Type = OXFileData.OXFileType.Float;
+        DataOXFiles.Add(Name, dat);
+    }
+    public void Add(string Name, double DataIn)
+    {
+        var dat = new OXFileData();
+        dat.Name = Name;
+        dat.DataDouble = DataIn;
+        dat.DataRaw = BitConverter.GetBytes(DataIn);
+        dat.Type = OXFileData.OXFileType.Double;
+        DataOXFiles.Add(Name, dat);
+    }
+    public void Add(string Name, long DataIn)
+    {
+        var dat = new OXFileData();
+        dat.Name = Name;
+        dat.DataLong = DataIn;
+        dat.DataRaw = BitConverter.GetBytes(DataIn);
+        dat.Type = OXFileData.OXFileType.Long;
         DataOXFiles.Add(Name, dat);
     }
     public void Add(string Name, OXFileData DataIn)
@@ -228,7 +268,6 @@ public class OXFileData
         Float,
         Long,
         Double,
-        Byte,
     }
 }
 
