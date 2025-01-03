@@ -81,6 +81,7 @@ public class FileSystem : MonoBehaviour
         FileLocations = new Dictionary<string, string>()
         {
             {"OcksGames",$"{OcksDirectry}\\Ocks_Games_Owned.txt"},
+            {"OXFileTest",$"{GameDirectory}\\Testing.ox"},
         };
     }
     public void WriteFile(string FileName, string data, bool CanOverride)
