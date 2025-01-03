@@ -9,55 +9,30 @@ using UnityEngine.UIElements;
 
 public class OXFile
 {
-    private static List<byte> databytes = new List<byte>();
-    private static byte[] data;
-    public static Dictionary<string, OXFileData> Data = new Dictionary<string, OXFileData>();
+    public OXFileData Data = new OXFileData(OXFileData.OXFileType.OXFileData);
     public string ReadFile(string str)
     {
         //var data= File.ReadAllBytes(str); 
-        data = File.ReadAllBytes(str);
-        Data.Clear();
-        int index = 0;
-        while(index+7 < data.Length)
-        {
-            var cd = GetOXData(index);
-            index += cd.Length;
-        }
-        
+        Data = new OXFileData();
 
-        databytes = data.ToList();
+        Data.DataRaw = File.ReadAllBytes(str);
+
+        Data.DataOXFiles = Data.Get_OXFileData();
+        
         return "";
     }
+    /*
 
-    public FileRetData GetOXData(int index)
+    public void AddData_String(string Name, string DataIn)
     {
-        int lengthret = 0;
-        OXFileData ban = null;
-
-        var length = BitConverter.ToInt32(data, index);
-        var bodylength = BitConverter.ToInt32(data, index + 4);
-        lengthret += 8;
-        index += 8;
-        if (length == 0) goto end;
-        ban = new OXFileData(WankFuckYou(data, index, length), WankFuckYou(data, index + length, bodylength));
-        Data.Add(ban.Name, ban);
-        lengthret += length + bodylength;
-        index += length + bodylength;
-
-
-end:
-        var ret = new FileRetData();
-        ret.me = ban;
-        ret.Length = lengthret;
-        return ret;
+        AppendDataToData(dat);
+    }
+    public void AddData_OXFile(string Name,  DataIn)
+    {
+        AppendDataToData(dat);
     }
 
-    public void AppendData_String()
-    {
-
-    }
-
-
+    */
     public byte[] WankFuckYou(byte[] array, int offset, int length)
     {
         byte[] result = new byte[length];
@@ -71,25 +46,11 @@ end:
 
         if (CanOverride || !e)
         {
-            databytes.Clear();
-            foreach (var a in Data)
-            {
-                AppendAll(a.Value.ToByte());
-            }
-
-            File.WriteAllBytes(FileName, databytes.ToArray());
+            File.WriteAllBytes(FileName, Data.ByteSizeOfData().ToArray());
         }
 
 
         //Environment.NewLine
-    }
-
-    public void AppendAll(List<byte> arr)
-    {
-        foreach(var a in arr)
-        {
-            databytes.Add(a);
-        }
     }
 }
 
@@ -97,14 +58,66 @@ public class OXFileData
 {
     public string Name = "";
     public OXFileType Type;
+    public string DataString;
+    public int DataInt;
+    public Dictionary<string, OXFileData> DataOXFiles = new Dictionary<string, OXFileData>();
     public byte[] DataRaw;
     //public string Data = "";
-
+    public int LengthOffset;
     public OXFileData() { }
-    public OXFileData(byte[] Name2, byte[] Data2) 
+    public OXFileData(OXFileType tp)
     {
-        Name = Encoding.UTF8.GetString(Name2);
-        DataRaw = Data2;
+        Type = tp;
+        Name = "Mother";
+    }
+    public OXFileData(byte[] dat, int index)
+    {
+        int initiniex = index;
+        var length = BitConverter.ToInt32(dat, index);
+        var bodylength = BitConverter.ToInt32(dat, index + 4);
+        if (length == 0) goto end;
+        index += 8;
+        Name = Encoding.UTF8.GetString(WankFuckYou(dat, index, length));
+        index += length;
+        Type = (OXFileType)BitConverter.ToInt32(dat, index);
+        index += 4;
+        DataRaw = WankFuckYou(dat, index, bodylength);
+        index += bodylength;
+        switch (Type)
+        {
+            case OXFileType.String:
+                DataString = Get_String();
+                break;
+            case OXFileType.Int:
+                DataString = Get_String();
+                break;
+            case OXFileType.OXFileData:
+                DataOXFiles = Get_OXFileData();
+                break;
+            default: break;
+        }
+
+
+        end:
+        LengthOffset = index-initiniex;
+    }
+
+    public void Add(string Name, string DataIn)
+    {
+        var dat = new OXFileData();
+        dat.Name = Name;
+        dat.DataString = DataIn;
+        dat.DataRaw = Encoding.UTF8.GetBytes(DataIn);
+        dat.Type = OXFileData.OXFileType.String;
+        DataOXFiles.Add(Name, dat);
+    }
+    public void Add(string Name, OXFileData DataIn)
+    {
+        var dat = new OXFileData();
+        dat.Name = Name;
+        dat.DataRaw = DataIn.ByteSizeOfData().ToArray();
+        dat.Type = OXFileData.OXFileType.OXFileData;
+        DataOXFiles.Add(Name, dat);
     }
 
 
@@ -124,9 +137,67 @@ public class OXFileData
         AppendAll(BitConverter.GetBytes(w.Length));
         AppendAll(BitConverter.GetBytes(w2.Length));
         AppendAll(w);
+        AppendAll(BitConverter.GetBytes((int)Type));
         AppendAll(w2);
         return ret;
     }
+    public List<byte> ByteSizeOfData()
+    {
+        List<byte> ret = new List<byte>();
+        List<byte> bytes = new List<byte>();
+        byte[] bytez;
+        switch (Type)
+        {
+            case OXFileType.OXFileData:
+                foreach(var a in DataOXFiles)
+                {
+                    if(a.Value.DataRaw != null && a.Value.DataRaw.Length > 0)
+                    {
+                        bytes = a.Value.ToByte();
+                    }
+                    else
+                    {
+                        a.Value.DataRaw = a.Value.ByteSizeOfData().ToArray();
+                        bytes = a.Value.ToByte();
+                    }
+                    foreach(var b in bytes)
+                    {
+                        ret.Add(b);
+                    }
+                }
+                break;
+            case OXFileType.String:
+                FileSystem.WEE("A: " + DataString);
+                bytez = Encoding.UTF8.GetBytes(DataString);
+                foreach (var b in bytez)
+                {
+                    ret.Add(b);
+                }
+                break;
+        }
+        return ret;
+    }
+
+    public string Get_String()
+    {
+        return Encoding.UTF8.GetString(DataRaw);
+    }
+    public Dictionary<string, OXFileData> Get_OXFileData()
+    {
+        var ret = new Dictionary<string, OXFileData>();
+
+        int index = 0;
+        while (index + 7 < DataRaw.Length)
+        {
+            var cd = new OXFileData(DataRaw, index);
+            ret.Add(cd.Name, cd);
+            index += cd.LengthOffset;
+        }
+
+        return ret;
+    }
+
+
     public byte[] WankFuckYou(byte[] array, int offset, int length)
     {
         byte[] result = new byte[length];

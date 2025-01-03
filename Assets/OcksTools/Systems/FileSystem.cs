@@ -177,6 +177,10 @@ public class FileSystem : MonoBehaviour
         DDH.CompletedDownload = true;
     }
 
+    public static void WEE(string a)
+    {
+        Debug.Log(a);
+    }
 }
 
 
