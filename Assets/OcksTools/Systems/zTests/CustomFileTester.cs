@@ -14,15 +14,17 @@ public class CustomFileTester : MonoBehaviour
         {
             file.ReadFile(FileSystem.Instance.FileLocations["OXFileTest"]);
             Debug.Log("Version Detected: " + file.FileVersion);
+
+
             foreach(var a in file.Data.DataOXFiles)
             {
                 switch (a.Value.Type)
                 {
                     case OXFileData.OXFileType.String:
-                        Debug.Log($"Dat: {a.Value.Name} - {a.Value.Get_String()}");
+                        Debug.Log($"Dat: {a.Value.Name} - {a.Value.DataString}");
                         break;
                     case OXFileData.OXFileType.Bool:
-                        Debug.Log($"Dat: {a.Value.Name} - {a.Value.Get_Bool()}");
+                        Debug.Log($"Dat: {a.Value.Name} - {a.Value.DataBool}");
                         break;
                     case OXFileData.OXFileType.OXFileData:
                         Debug.Log($"Dat: {a.Value.Name} - SUBDATAMODULE");
@@ -36,10 +38,16 @@ public class CustomFileTester : MonoBehaviour
                             }
                         }
                         break;
-                    case OXFileData.OXFileType.DictStringString:
-                        foreach (var b in a.Value.DataDictStringString)
+                    case OXFileData.OXFileType.ListOXFileData:
+                        Debug.Log($"Dat: {a.Value.Name} - SUBLIST");
+                        foreach (var b in a.Value.DataListOXFiles)
                         {
-                            Debug.Log($"DICT: {b.Key} - {b.Value}");
+                            switch (b.Type)
+                            {
+                                case OXFileData.OXFileType.String:
+                                    Debug.Log($"SubDat: {b.Name} - {b.DataString}");
+                                    break;
+                            }
                         }
                         break;
                 }
@@ -60,7 +68,13 @@ public class CustomFileTester : MonoBehaviour
             subdata.Add("Apple", "Pen");
             subdata.Add("Ugh", "Penpineappleapplepen");
 
-            file.Data.Add("PPAP", subdata);
+            var subdata2 = new OXFileData();
+            subdata2.Type = OXFileData.OXFileType.ListOXFileData;
+            subdata2.Add("Pineapple", "Apple");
+            subdata2.Add("Pineapple", "Pen");
+            subdata2.Add("Pineapple", "Penpineappleapplepen");
+
+            file.Data.Add("PPAP", subdata2);
 
             file.WriteFile(FileSystem.Instance.FileLocations["OXFileTest"], true);
         }
