@@ -13,12 +13,16 @@ public class CustomFileTester : MonoBehaviour
         if (File.Exists(FileSystem.Instance.FileLocations["OXFileTest"]))
         {
             file.ReadFile(FileSystem.Instance.FileLocations["OXFileTest"]);
+            Debug.Log("Version Detected: " + file.FileVersion);
             foreach(var a in file.Data.DataOXFiles)
             {
                 switch (a.Value.Type)
                 {
                     case OXFileData.OXFileType.String:
                         Debug.Log($"Dat: {a.Value.Name} - {a.Value.Get_String()}");
+                        break;
+                    case OXFileData.OXFileType.Bool:
+                        Debug.Log($"Dat: {a.Value.Name} - {a.Value.Get_Bool()}");
                         break;
                     case OXFileData.OXFileType.OXFileData:
                         Debug.Log($"Dat: {a.Value.Name} - SUBDATAMODULE");
@@ -27,9 +31,15 @@ public class CustomFileTester : MonoBehaviour
                             switch (b.Value.Type)
                             {
                                 case OXFileData.OXFileType.String:
-                                    Debug.Log($"SubDat: {b.Value.Name} - {b.Value.Get_String()}");
+                                    //Debug.Log($"SubDat: {b.Value.Name} - {b.Value.Get_String()}");
                                     break;
                             }
+                        }
+                        break;
+                    case OXFileData.OXFileType.DictStringString:
+                        foreach (var b in a.Value.DataDictStringString)
+                        {
+                            Debug.Log($"DICT: {b.Key} - {b.Value}");
                         }
                         break;
                 }
@@ -39,6 +49,10 @@ public class CustomFileTester : MonoBehaviour
         {
             file.Data.Add("Cum", "Wankfuck");
             file.Data.Add("Bitch", "DINGLEBERRY");
+            file.Data.Add("Hariy", true);
+            file.Data.Add("Stinky", false);
+            file.Data.Add("pps", new List<string>() { "cum1","banana","cum2", "cum2", "cum2" });
+            file.Data.Add("dick", new Dictionary<string,string>() { { "Test1", "Cum" }, { "Test2", "WEEE" } });
 
             var subdata = new OXFileData();
             subdata.Type = OXFileData.OXFileType.OXFileData;
