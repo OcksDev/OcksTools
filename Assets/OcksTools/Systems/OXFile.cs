@@ -465,6 +465,7 @@ public class OXFileData
         while (index + 7 < DataRaw.Length)
         {
             var cd = new OXFileData(DataRaw, index);
+            cd.pVersion = pVersion;
             ret.Add(cd.Name, cd);
             index += cd.LengthOffset;
         }
@@ -479,6 +480,7 @@ public class OXFileData
         while (index + 7 < DataRaw.Length)
         {
             var cd = new OXFileData(DataRaw, index);
+            cd.pVersion = pVersion;
             ret.Add(cd);
             index += cd.LengthOffset;
         }
