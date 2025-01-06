@@ -278,7 +278,14 @@ public class OXFileData
                 DataListOXFiles.Add(dat);
                 break;
             default:
-                DataOXFiles.Add(Name, dat);
+                if (ContainsKey(Name))
+                {
+                    DataOXFiles[Name]= dat;
+                }
+                else
+                {
+                    DataOXFiles.Add(Name, dat);
+                }
                 break;
         }
     }
@@ -545,6 +552,7 @@ public class OXFileData
     }
     public bool ContainsKey(string name)
     {
+        if (Type != OXFileType.OXFileData) return false;
         return DataOXFiles.ContainsKey(name);
     }
     public int Count()

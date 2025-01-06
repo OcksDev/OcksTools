@@ -22,7 +22,26 @@ public class EntityOXS : MonoBehaviour
         {
             Health += Shield;
         }
+        Shield = System.Math.Clamp(Shield, 0, Max_Shield);
     }
+
+    public void Heal(double amount)
+    {
+        var oldh = Health;
+        Health = System.Math.Clamp(Health + amount, 0, Max_Health);
+        var change = amount - (Health - oldh);
+        var olds = Shield;
+        Shield = System.Math.Clamp(Shield + change, 0, Max_Shield);
+        var change2 = change - (Shield - olds);
+
+        // Amount Healed: RandomFunctions.Instance.NumToRead(((System.Numerics.BigInteger)System.Math.Round(amount - change2)).ToString())
+
+        if (Health != oldh || Shield != olds)
+        {
+            //runs if heal was successful
+        }
+    }
+
     public void Kill()
     {
         Destroy(gameObject);
@@ -46,11 +65,23 @@ public class EntityOXS : MonoBehaviour
         }
     }
 
+
     public EffectProfile GetEffect(string name)
     {
         foreach (var ef in Effects)
         {
             if (name == ef.Name)
+            {
+                return ef;
+            }
+        }
+        return null;
+    }
+    public EffectProfile GetEffect(EffectProfile eff)
+    {
+        foreach (var ef in Effects)
+        {
+            if (eff.Name == ef.Name)
             {
                 return ef;
             }
@@ -78,16 +109,16 @@ public class EntityOXS : MonoBehaviour
                     break;
                 case 2:
                     //increase stack count
-                    s.Stack++;
+                    s.Stack += eff.Stack;
                     break;
                 case 3:
                     //increase stack count, up to maximum value
-                    s.Stack++;
+                    s.Stack += eff.Stack;
                     if (s.Stack > s.MaxStack) s.Stack = s.MaxStack;
                     break;
                 case 4:
                     //increase stack count, up to maximum value, refresh duration
-                    s.Stack++;
+                    s.Stack += eff.Stack;
                     s.TimeRemaining = eff.Duration;
                     if (s.Stack > s.MaxStack) s.Stack = s.MaxStack;
                     break;
@@ -98,11 +129,11 @@ public class EntityOXS : MonoBehaviour
                 case 6:
                     //add old time remaining with new time (2s + 5s = 7s), also increase stack count
                     s.TimeRemaining += eff.Duration;
-                    s.Stack++;
+                    s.Stack += eff.Stack;
                     break;
                 case 7:
                     //increase stack count, refresh time remaining
-                    s.Stack++;
+                    s.Stack += eff.Stack;
                     s.TimeRemaining = eff.Duration;
                     break;
             }
@@ -120,6 +151,7 @@ public class EntityOXS : MonoBehaviour
         Enemy,
         Player,
         NPC,
+        World,
     }
 
 }
@@ -167,6 +199,7 @@ public class EffectProfile
     //other data
     public int Stack = 1;
     public float TimeRemaining;
+    //non-transferable data
     public int MaxStack;
     public EffectProfile(string type, float time, int add_method, int stacks = 1)
     {
@@ -202,4 +235,10 @@ public class EffectProfile
         SetData();
     }
 
+}
+
+public class ret_cum_shenan
+{
+    public bool hasthing;
+    public EffectProfile susser;
 }

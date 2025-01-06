@@ -38,6 +38,8 @@
   - Damage now contains data for procs, although no code exists to utilize the procs
   - All health and damage values have been changes from floats to doubles
   - Entities now have a Type property which is an enum
+  - New methods to GetEffect() if it exists
+  - Fixed bugs relating to effect combining
 - Console Improvements!
   - new class Console to act as a shorthand for ConsoleLol.Instance, makes life easier as a dev
     - Also stores write commands so that they can be used even when ConsoleLol.Instance hasn't been assigned yet.

@@ -3,17 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class SaveSystem : MonoBehaviour
 {
     private static SaveSystem instance;
     public bool UseFileSystem = true;
-    //idk how needed this is tbh
-    private string UniqueGamePrefix = "oxt";
+    public SaveMethod SaveMethod_ = SaveMethod.TXTFile;
     public int test = 0;
     public bool TestBool = false;
-
+    private OXFile oxfile;
     public static OXEvent<string> SaveAllData = new OXEvent<string>();
     public static OXEvent<string> LoadAllData = new OXEvent<string>();
 
@@ -30,6 +30,7 @@ public class SaveSystem : MonoBehaviour
     private void Awake()
     {
         if (Instance == null) instance = this;
+        oxfile = new OXFile();
     }
     private void Start()
     {
@@ -117,12 +118,17 @@ public class SaveSystem : MonoBehaviour
 
     public string DictNameToFilePath(string e)
     {
+        string str = ".txt";
+        switch(SaveMethod_)
+        {
+            case SaveMethod.OXFile: str = ".ox"; break;
+        }
         var f = FileSystem.Instance;
         switch (e)
         {
-            case "def": return $"{f.GameDirectory}\\Game_Data.txt";
+            case "def": return $"{f.GameDirectory}\\Game_Data{str}";
             case "ox_profile": return $"{f.UniversalDirectory}\\Player_Data.txt";
-            default: return $"{f.GameDirectory}\\Data_{e}.txt";
+            default: return $"{f.GameDirectory}\\Data_{e}{str}";
         }
     }
 
@@ -170,7 +176,20 @@ public class SaveSystem : MonoBehaviour
     {
         var f = FileSystem.Instance;
         f.AssembleFilePaths();
-        f.WriteFile(DictNameToFilePath(dict), Converter.DictionaryToString(GetDict(dict), Environment.NewLine, ": "), true);
+        switch (SaveMethod_)
+        {
+            case SaveMethod.TXTFile:
+                f.WriteFile(DictNameToFilePath(dict), Converter.DictionaryToString(GetDict(dict), Environment.NewLine, ": "), true);
+                break;
+            case SaveMethod.OXFile:
+                oxfile.Data.DataOXFiles.Clear();
+                foreach(var a in GetDict(dict))
+                {
+                    oxfile.Data.Add(a.Key, a.Value);
+                }
+                oxfile.WriteFile(DictNameToFilePath(dict), true);
+                break;
+        }
     }
 
 
@@ -186,21 +205,34 @@ public class SaveSystem : MonoBehaviour
             f.WriteFile(fp, "", false);
             return;
         }
-        var s = Converter.StringToList(f.ReadFile(fp), Environment.NewLine);
-        foreach (var d in s)
+        switch (SaveMethod_)
         {
-            if (d.IndexOf(": ") > -1)
-            {
-                des.Add(d.Substring(0, d.IndexOf(": ")), d.Substring(d.IndexOf(": ") + 2));
-            }
+            case SaveMethod.TXTFile:
+                var s = Converter.StringToList(f.ReadFile(fp), Environment.NewLine);
+                foreach (var d in s)
+                {
+                    if (d.IndexOf(": ") > -1)
+                    {
+                        des.Add(d.Substring(0, d.IndexOf(": ")), d.Substring(d.IndexOf(": ") + 2));
+                    }
+                }
+                break;
+            case SaveMethod.OXFile:
+                oxfile.ReadFile(fp);
+                foreach(var a in oxfile.Data.DataOXFiles)
+                {
+                    des.Add(a.Key, a.Value.DataString);
+                }
+                break;
         }
     }
 
 
-    public string Prefix(int file)
+    public enum SaveMethod
     {
-        return UniqueGamePrefix + "_";
+        TXTFile,
+        OXFile,
+        PlayerPrefs,
     }
-
 
 }
