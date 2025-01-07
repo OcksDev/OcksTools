@@ -169,7 +169,7 @@ public class GISContainer : MonoBehaviour
                 a.Add(p.Held_Item.ItemToString());
             }
 
-            SaveSystem.Instance.SetString(GetName(), ListToString(a, "+=+"), dict);
+            SaveSystem.Instance.SetList(GetName(), a, dict);
         }
     }
 
@@ -195,13 +195,12 @@ public class GISContainer : MonoBehaviour
             }
             List<string> a = new List<string>();
             List<string> b = new List<string>();
-            var gg = SaveSystem.Instance.GetString("cnt_" + Name, "fuck");
-            if (gg != "fuck")
+            var gg = SaveSystem.Instance.GetList("cnt_" + Name, new List<string>());
+            if (gg.Count > 0)
             {
-                a = StringToList(gg, "+=+");
                 int i = 0;
                 GISItem ghj = null;
-                foreach (var st in a)
+                foreach (var st in gg)
                 {
                     ghj = new GISItem();
                     ghj.StringToItem(st);

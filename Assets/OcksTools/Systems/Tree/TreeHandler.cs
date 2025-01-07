@@ -23,7 +23,7 @@ public class TreeHandler : MonoBehaviour
     public void LoadAllTree(string dict)
     {
         //phase 1 - load all the values
-        CurrentOwnerships = Converter.StringToDictionary(SaveSystem.Instance.GetString("TreeData", "", dict));
+        CurrentOwnerships = SaveSystem.Instance.GetDict("TreeData", new Dictionary<string, string>(), dict);
         //phase 2 - the canvas partner objects
         SpawnPartners.Invoke();
         //phase 3 - set the state of the things
@@ -43,7 +43,7 @@ public class TreeHandler : MonoBehaviour
     }
     public void SaveAllTree(string dict)
     {
-        SaveSystem.Instance.SetString("TreeData", Converter.DictionaryToString(CurrentOwnerships), dict);
+        SaveSystem.Instance.SetDict("TreeData", CurrentOwnerships, dict);
     }
 
     public bool MeetsReqs(List<string> Prerequisites, TreeNode.ViewReq ViewRequirement)

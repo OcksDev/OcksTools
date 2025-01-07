@@ -32,7 +32,6 @@ public class LanguageFileSystem : MonoBehaviour
         FileGet();
     }
 
-    // Update is called once per frame
     public void UpdateGameFromFile()
     {
         FileGet();

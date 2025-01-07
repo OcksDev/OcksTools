@@ -6,6 +6,8 @@
     - You could kinda do this with the old save system but it was clunky, new version is cleaner
   - Created new c# events which are called on save/load, so now other classes can safely save/load data easily
   - Fully moved away from old SaveFile index ideology, all systems in FileSystem and other related fields have been adjusted accordingly.
+  - Added new methods to directly store/query lists and dictionaries (when they only use strings).
+  - Added full compatability with PlayerPrefs (and the new OXFile system)
 - GIS improvements!
   - GISContainers now can be toggled into a mode called "Abstract" so they can work like a list of items.
   - Completely reworked items to now be dictionary/name based instead of list/index based

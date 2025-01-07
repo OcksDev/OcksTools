@@ -63,7 +63,7 @@ public class ConsoleLol : MonoBehaviour
             { "Message_ChangeTime", "Time scale changed to " },
             { "Message_StoppedDialog", "All dialog has been stopped" },
             { "Message_Help", "Available Commands:" },
-            { "Message_HelpData", "Allows for the modification of saved game data" },
+            { "Message_HelpData", "Allows for the modification of saved game data<br>Warning: this was only designed to be used with TXTFile saving method" },
             { "Message_HelpScreenshot", "Screenshots the current screen" },
             { "Message_HelpTest", "Runs some tests and stuff" },
             { "Message_HelpDialog", "General dialog manager" },

@@ -27,7 +27,7 @@ public class OXFile
     public double FileVersion = 0;
     public bool ReadFile(string str)
     {
-        var oxconfirm = Encoding.Unicode.GetBytes("OXFile");
+        var oxconfirm = Encoding.UTF8.GetBytes("OXFile");
 
 
         var cd = File.ReadAllBytes(str);
@@ -59,7 +59,7 @@ public class OXFile
             var wank = Data.ByteSizeOfData();
             SmallObscure(wank, 6969420);
             List<byte> bytes = new List<byte>();
-            var oxconfirm = Encoding.Unicode.GetBytes("OXFile");
+            var oxconfirm = Encoding.UTF8.GetBytes("OXFile");
             foreach(byte b in oxconfirm) { bytes.Add(b); }
             var ver = BitConverter.GetBytes(ParserVersion);
             foreach(byte b in ver) { bytes.Add(b); }
@@ -143,7 +143,7 @@ public class OXFileData
         var bodylength = BitConverter.ToInt32(dat, index + 4);
         if (length == 0) goto end;
         index += 8;
-        Name = Encoding.Unicode.GetString(WankFuckYou(dat, index, length));
+        Name = Encoding.UTF8.GetString(WankFuckYou(dat, index, length));
         index += length;
         Type = (OXFileType)BitConverter.ToInt32(dat, index);
         index += 4;
@@ -293,7 +293,7 @@ public class OXFileData
     public List<byte> ToByte()
     {
         List<byte> ret = new List<byte>();
-        var w = Encoding.Unicode.GetBytes(Name);
+        var w = Encoding.UTF8.GetBytes(Name);
         var w2 = DataRaw;
         Func<byte[], int> AppendAll = (x) =>
         {
@@ -354,7 +354,7 @@ public class OXFileData
                 }
                 break;
             case OXFileType.String:
-                bytez = Encoding.Unicode.GetBytes(DataString);
+                bytez = Encoding.UTF8.GetBytes(DataString);
                 foreach (var b in bytez)
                 {
                     ret.Add(b);
@@ -393,7 +393,7 @@ public class OXFileData
             case OXFileType.ListString:
                 foreach(var li in DataListString)
                 {
-                    var ccc = Encoding.Unicode.GetBytes(li);
+                    var ccc = Encoding.UTF8.GetBytes(li);
                     bytez = BitConverter.GetBytes(ccc.Length);
                     foreach (var b in bytez)
                     {
@@ -409,8 +409,8 @@ public class OXFileData
             case OXFileType.DictStringString:
                 foreach(var li in DataDictStringString)
                 {
-                    var ccc = Encoding.Unicode.GetBytes(li.Key);
-                    var ccc2 = Encoding.Unicode.GetBytes(li.Value);
+                    var ccc = Encoding.UTF8.GetBytes(li.Key);
+                    var ccc2 = Encoding.UTF8.GetBytes(li.Value);
                     bytez = BitConverter.GetBytes(ccc.Length);
                     foreach (var b in bytez)
                     {
@@ -442,7 +442,7 @@ public class OXFileData
 
     private string Get_String()
     {
-        return Encoding.Unicode.GetString(DataRaw);
+        return Encoding.UTF8.GetString(DataRaw);
     }
     private int Get_Int()
     {
@@ -504,7 +504,7 @@ public class OXFileData
         {
             var length = BitConverter.ToInt32(DataRaw, index);
             index += 4;
-            ret.Add(Encoding.Unicode.GetString(WankFuckYou(DataRaw, index, length)));
+            ret.Add(Encoding.UTF8.GetString(WankFuckYou(DataRaw, index, length)));
             index += length;
         }
 
@@ -522,7 +522,7 @@ public class OXFileData
             index += 4;
             var length2 = BitConverter.ToInt32(DataRaw, index);
             index += 4;
-            ret.Add(Encoding.Unicode.GetString(WankFuckYou(DataRaw, index, length)), Encoding.Unicode.GetString(WankFuckYou(DataRaw, index+length, length2)));
+            ret.Add(Encoding.UTF8.GetString(WankFuckYou(DataRaw, index, length)), Encoding.UTF8.GetString(WankFuckYou(DataRaw, index+length, length2)));
             index += length + length2;
         }
 

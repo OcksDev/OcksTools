@@ -145,11 +145,11 @@ public class GridLol : MonoBehaviour
             fuckyou.Add(tile.Value, 0);
             boners.Add(tile.Value.TileToString());
         }
-        SaveSystem.Instance.SetString("InfiniGrid", Converter.ListToString(boners, "-=-"), dict);
+        SaveSystem.Instance.SetList("InfiniGrid", boners, dict);
     }
     public void LoadAllTiles(string dict)
     {
-        var a = Converter.StringToList(SaveSystem.Instance.GetString("InfiniGrid", "", dict),"-=-");
+        var a = SaveSystem.Instance.GetList("InfiniGrid", new List<string>(), dict);
         foreach(var b in a)
         {
             if (b == "") continue;
