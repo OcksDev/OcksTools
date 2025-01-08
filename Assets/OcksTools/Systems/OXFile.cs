@@ -1,3 +1,4 @@
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -561,6 +562,21 @@ public class OXFileData
         {
             case OXFileType.ListOXFileData: return DataListOXFiles.Count;
             default: return DataOXFiles.Count;
+        }
+    }
+    public override string ToString()
+    {
+        switch (Type)
+        {
+            case OXFileType.String: return DataString;
+            case OXFileType.Int: return DataInt.ToString();
+            case OXFileType.Float: return DataFloat.ToString();
+            case OXFileType.Long: return DataLong.ToString();
+            case OXFileType.Double: return DataDouble.ToString();
+            case OXFileType.Bool: return DataBool.ToString();
+            case OXFileType.ListString: return Converter.ListToString(DataListString);
+            case OXFileType.DictStringString: return Converter.DictionaryToString(DataDictStringString);
+            default: return "Error";
         }
     }
 }

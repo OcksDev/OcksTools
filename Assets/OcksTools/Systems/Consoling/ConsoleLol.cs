@@ -63,7 +63,7 @@ public class ConsoleLol : MonoBehaviour
             { "Message_ChangeTime", "Time scale changed to " },
             { "Message_StoppedDialog", "All dialog has been stopped" },
             { "Message_Help", "Available Commands:" },
-            { "Message_HelpData", "Allows for the modification of saved game data<br>Warning: this was only designed to be used with TXTFile saving method" },
+            { "Message_HelpData", "Allows for the modification of saved game data" },
             { "Message_HelpScreenshot", "Screenshots the current screen" },
             { "Message_HelpTest", "Runs some tests and stuff" },
             { "Message_HelpDialog", "General dialog manager" },
@@ -486,13 +486,24 @@ public class ConsoleLol : MonoBehaviour
                             }
                             break;
                         case "listall":
-                            if (SaveSystem.Instance.UseFileSystem)
+                            switch (SaveSystem.Instance.SaveMethod_)
                             {
-                                ConsoleLol.Instance.ConsoleLog($"{Converter.DictionaryToString( SaveSystem.Instance.GetDict(), Environment.NewLine, ": ")}");
-                            }
-                            else
-                            {
-                                ConsoleLol.Instance.ConsoleLog(lang.IndexValuePairs["Error_NoDataDump"], "#ff0000ff");
+                                case SaveSystem.SaveMethod.PlayerPrefs:
+                                    ConsoleLol.Instance.ConsoleLog(lang.IndexValuePairs["Error_NoDataDump"], "#ff0000ff");
+                                    break;
+                                case SaveSystem.SaveMethod.TXTFile:
+                                    ConsoleLol.Instance.ConsoleLog($"{Converter.DictionaryToString(SaveSystem.Instance.GetDict(), Environment.NewLine, ": ")}");
+                                    break;
+                                case SaveSystem.SaveMethod.OXFile:
+
+                                    string combined = "";
+                                    foreach(var a in SaveSystem.Instance.GetDictOX().Data.DataOXFiles)
+                                    {
+                                        if(combined != "") combined += "<br>";
+                                        combined += a.Key + ": " + a.Value.ToString();
+                                    }
+                                    ConsoleLol.Instance.ConsoleLog(combined);
+                                    break;
                             }
                             break;
                         default:

@@ -9,7 +9,6 @@ using UnityEngine;
 public class SaveSystem : MonoBehaviour
 {
     private static SaveSystem instance;
-    public bool UseFileSystem = true;
     public SaveMethod SaveMethod_ = SaveMethod.TXTFile;
     public int test = 0;
     public bool TestBool = false;
