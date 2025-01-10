@@ -399,7 +399,7 @@ public class DialogLol : MonoBehaviour
                 }
                 else
                 {
-                    newdat = LanguageFileSystem.Instance.IndexValuePairs[p2];
+                    newdat = LanguageFileSystem.Instance.GetString("unknown", p2);
                 }
             }
             catch

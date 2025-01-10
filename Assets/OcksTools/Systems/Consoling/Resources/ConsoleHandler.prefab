@@ -51,8 +51,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ConsoleObject: {fileID: 0}
+  ConsoleObjectRef: {fileID: 0}
+  LanguageFileIndex:
+    FileName: Console
+    DefaultFile: {fileID: 4900000, guid: 25015236349d55346a8f8b131555a53e, type: 3}
   enable: 0
   BackLog: 
+  balls: 0
 --- !u!114 &8019270817284996207
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -65,8 +70,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e079614b067d2db4faf31eb5e5f87b5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UseFileSystem: 1
+  SaveMethod_: 0
   test: 0
+  TestBool: 0
   LoadedData: 0
 --- !u!114 &8019270817284996206
 MonoBehaviour:
@@ -80,12 +86,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac1cfc2e71f50cf4496bb3866b830a15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GameVer: v1.1.0
   DirectoryLol: 
   OcksDirectry: 
   UniversalDirectory: 
   GameDirectory: 
-  FileLocations: []
 --- !u!114 &5761330745494254821
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -98,6 +102,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dfed571d7c7a93f4cabe84a58c72588c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Files: []
 --- !u!114 &3407270551088992073
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -127,6 +132,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 820fdd71ad50cf042a0310df6a48ea01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  RefedObjects: []
 --- !u!114 &-1114879185048792904
 MonoBehaviour:
   m_ObjectHideFlags: 0

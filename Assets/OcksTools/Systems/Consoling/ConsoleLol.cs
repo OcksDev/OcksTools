@@ -13,6 +13,7 @@ public class ConsoleLol : MonoBehaviour
 {
     public GameObject ConsoleObject;
     public ConsolRefs ConsoleObjectRef;
+    public OXLanguageFileIndex LanguageFileIndex;
     private static ConsoleLol instance;
 
     public bool enable = false;
@@ -57,43 +58,9 @@ public class ConsoleLol : MonoBehaviour
     }
     public void Start()
     {
-        //console data
-        var f = new Dictionary<string, string>
-        {
-            { "Message_ChangeTime", "Time scale changed to " },
-            { "Message_StoppedDialog", "All dialog has been stopped" },
-            { "Message_Help", "Available Commands:" },
-            { "Message_HelpData", "Allows for the modification of saved game data" },
-            { "Message_HelpScreenshot", "Screenshots the current screen" },
-            { "Message_HelpTest", "Runs some tests and stuff" },
-            { "Message_HelpDialog", "General dialog manager" },
-            { "Message_HelpTime", "Sets the scale of time" },
-            { "Message_HelpClear", "Clears the console of all messages" },
-            { "Error_InvalidCommand", "Invalid command" },
-            { "Error_UnknownCommand", "Unknown Command: " },
-            { "Error_NoDataDump", "Game not configured to allow for mass data viewing" },
-            { "Error_NoReg", "No registry inputted" },
-            { "Error_NoData", "- No Data -" },
-            { "Error_NoDialogWithName", "No Dialog or Choose file is defined with the name: " },
-            { "Error_InvalidTime", "Invalid time scale input" },
-            { "Error_InvalidData", "Invalid data modification selected" },
-            { "Error_NoScreenshot", "No screenshot component is loaded in the scene" }
-        };
 
         var l = LanguageFileSystem.Instance;
-        bool changed = false;
-        foreach(var item in f)
-        {
-            if (!l.IndexValuePairs.ContainsKey(item.Key))
-            {
-                changed = true;
-                l.IndexValuePairs.Add(item.Key, item.Value);
-            }
-        }
-        if (changed)
-        {
-            l.UpdateTextFile();
-        }
+        l.AddFile(LanguageFileIndex);
 
         if(Console.texts.Count > 0)
         {
@@ -196,7 +163,7 @@ public class ConsoleLol : MonoBehaviour
                         case "settimescale":
                             ConsoleLog((
 
-                                lang.IndexValuePairs["Message_HelpTime"] +
+                                lang.GetString("Console", "Message_HelpTime") +
                                 "<br> - settimescale <time scale>"
 
                             ), "#bdbdbdff");
@@ -204,7 +171,7 @@ public class ConsoleLol : MonoBehaviour
                         case "screenshot":
                             ConsoleLog((
 
-                                lang.IndexValuePairs["Message_HelpScreenshot"] +
+                                lang.GetString("Console", "Message_HelpScreenshot") +
                                 "<br> - screenshot"
 
                             ), "#bdbdbdff");
@@ -212,7 +179,7 @@ public class ConsoleLol : MonoBehaviour
                         case "dialog":
                             ConsoleLog((
 
-                                lang.IndexValuePairs["Message_HelpDialog"] +
+                                lang.GetString("Console", "Message_HelpDialog") +
                                 "<br> - dialog <#>" + 
                                 "<br> - dialog stop"
 
@@ -221,7 +188,7 @@ public class ConsoleLol : MonoBehaviour
                         case "test":
                             ConsoleLog((
 
-                                lang.IndexValuePairs["Message_HelpTest"] +
+                                lang.GetString("Console", "Message_HelpTest") +
                                 "<br> - test chat" +
                                 "<br> - test tag" +
                                 "<br> - test circle" +
@@ -235,7 +202,7 @@ public class ConsoleLol : MonoBehaviour
                         case "data":
                             ConsoleLog((
 
-                                lang.IndexValuePairs["Message_HelpData"] +
+                                lang.GetString("Console", "Message_HelpData") +
                                 "<br> - data edit <key> <value>" +
                                 "<br> - data read <key>" +
                                 "<br> - data listall"
@@ -245,7 +212,7 @@ public class ConsoleLol : MonoBehaviour
                         case "clear":
                             ConsoleLog((
 
-                                lang.IndexValuePairs["Message_HelpClear"] +
+                                lang.GetString("Console", "Message_HelpClear") +
                                 "<br> - clear"
 
                             ), "#bdbdbdff");
@@ -253,7 +220,7 @@ public class ConsoleLol : MonoBehaviour
                         default:
                             ConsoleLog((
 
-                                lang.IndexValuePairs["Message_Help"] +
+                                lang.GetString("Console", "Message_Help") +
                                 "<br> - joe" +
                                 "<br> - settimescale" +
                                 "<br> - test" +
@@ -400,7 +367,7 @@ public class ConsoleLol : MonoBehaviour
                             DialogLol.Instance.ResetDialog();
                             ConsoleLog((
 
-                                lang.IndexValuePairs["Message_StoppedDialog"]
+                                lang.GetString("Console", "Message_StoppedDialog")
 
                             ), "#bdbdbdff");
                             break;
@@ -414,7 +381,7 @@ public class ConsoleLol : MonoBehaviour
                             {
                                 ConsoleLog((
 
-                                    lang.IndexValuePairs["Error_NoDialogWithName"] + $"\"{command_caps[1]}\""
+                                    lang.GetString("Console", "Error_NoDialogWithName") + $"\"{command_caps[1]}\""
 
                                 ), "#ff0000ff");
                             }
@@ -432,7 +399,7 @@ public class ConsoleLol : MonoBehaviour
                     {
                         ConsoleLog((
 
-                            lang.IndexValuePairs["Error_NoScreenshot"]
+                            lang.GetString("Console", "Error_NoScreenshot")
 
                         ), "#bdbdbdff");
                     }
@@ -444,7 +411,7 @@ public class ConsoleLol : MonoBehaviour
                         Time.timeScale = f;
                         ConsoleLog((
 
-                            lang.IndexValuePairs["Message_ChangeTime"] + f
+                            lang.GetString("Console", "Message_ChangeTime") + f
 
                         ), "#bdbdbdff");
                     }
@@ -452,7 +419,7 @@ public class ConsoleLol : MonoBehaviour
                     {
                         ConsoleLog((
 
-                            lang.IndexValuePairs["Error_InvalidTime"]
+                            lang.GetString("Console", "Error_InvalidTime")
 
                         ), "#bdbdbdff");
                     }
@@ -472,24 +439,24 @@ public class ConsoleLol : MonoBehaviour
                             }
                             else
                             {
-                                ConsoleLol.Instance.ConsoleLog(lang.IndexValuePairs["Error_NoReg"], "#ff0000ff");
+                                ConsoleLol.Instance.ConsoleLog(lang.GetString("Console", "Error_NoReg"), "#ff0000ff");
                             }
                             break;
                         case "read":
                             if (command[2] != "")
                             {
-                                ConsoleLol.Instance.ConsoleLog($"{SaveSystem.Instance.GetString(command_caps[2], lang.IndexValuePairs["Error_NoData"])}");
+                                ConsoleLol.Instance.ConsoleLog($"{SaveSystem.Instance.GetString(command_caps[2], lang.GetString("Console", "Error_NoData"))}");
                             }
                             else
                             {
-                                ConsoleLol.Instance.ConsoleLog(lang.IndexValuePairs["Error_NoReg"], "#ff0000ff");
+                                ConsoleLol.Instance.ConsoleLog(lang.GetString("Console", "Error_NoReg"), "#ff0000ff");
                             }
                             break;
                         case "listall":
                             switch (SaveSystem.Instance.SaveMethod_)
                             {
                                 case SaveSystem.SaveMethod.PlayerPrefs:
-                                    ConsoleLol.Instance.ConsoleLog(lang.IndexValuePairs["Error_NoDataDump"], "#ff0000ff");
+                                    ConsoleLol.Instance.ConsoleLog(lang.GetString("Console", "Error_NoDataDump"), "#ff0000ff");
                                     break;
                                 case SaveSystem.SaveMethod.TXTFile:
                                     ConsoleLol.Instance.ConsoleLog($"{Converter.DictionaryToString(SaveSystem.Instance.GetDict(), Environment.NewLine, ": ")}");
@@ -507,12 +474,12 @@ public class ConsoleLol : MonoBehaviour
                             }
                             break;
                         default:
-                            ConsoleLol.Instance.ConsoleLog(lang.IndexValuePairs["Error_InvalidData"], "#ff0000ff");
+                            ConsoleLol.Instance.ConsoleLog(lang.GetString("Console", "Error_InvalidData"), "#ff0000ff");
                             break;
                     }
                     break;
                 default:
-                    ConsoleLog(lang.IndexValuePairs["Error_UnknownCommand"] + command[0], "#ff0000ff");
+                    ConsoleLog(lang.GetString("Console", "Error_UnknownCommand") + command[0], "#ff0000ff");
 
                     break;
             }
@@ -520,7 +487,7 @@ public class ConsoleLol : MonoBehaviour
         
         catch
         {
-            ConsoleLog(lang.IndexValuePairs["Error_InvalidCommand"], "#ff0000ff");
+            ConsoleLog(lang.GetString("Console", "Error_InvalidCommand"), "#ff0000ff");
         }
 
         balls = 3;

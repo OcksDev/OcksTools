@@ -54,7 +54,7 @@ public class GISLol : MonoBehaviour
 
         if (UseLanguageFile)
         {
-            
+            /*
             var l = LanguageFileSystem.Instance;
             bool changed = false;
             for (int i = 0; i < Items.Count; i++)
@@ -81,7 +81,7 @@ public class GISLol : MonoBehaviour
                 }
             }
             if (changed) l.UpdateTextFile();
-            
+            */
         }
     }
 
