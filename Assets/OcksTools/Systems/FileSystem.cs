@@ -24,7 +24,7 @@ public class FileSystem : MonoBehaviour
     private static FileSystem instance;
     private string GameFolderName = "OcksTools";
     private string GameName = "Ocks Tools v?";
-    public string GameVer = "v1.1.0";
+    public const string GameVer = "v1.1.0";
     [HideInInspector]
     public string DirectoryLol = "";
     [HideInInspector]
@@ -82,6 +82,7 @@ public class FileSystem : MonoBehaviour
         {
             {"OcksGames",$"{OcksDirectry}\\Ocks_Games_Owned.txt"},
             {"OXFileTest",$"{GameDirectory}\\Testing.ox"},
+            {"Lang",$"{GameDirectory}\\Language"},
         };
     }
     public void WriteFile(string FileName, string data, bool CanOverride)

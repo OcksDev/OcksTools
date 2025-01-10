@@ -30,7 +30,7 @@
   - Created new GISDisplayData class which lets you easily retrieve data about how an item is supposed to render. (images, count text)
   - GISDisplay now allows for multiple display objects, although I dont currently use it
   - new PhysicalItemDisply (uses sprite renderer instead of ui image renderer)
-  - Reworked hover logic, should be much less prone to not detecting clicks, also should be better in general.
+  - Reworked hover logic, should be detecting clicks better, also should be better in general.
 - Entity has some much needed improvements
   - Damage and Effects now have their own custom classes
     - Damage profile also tracks source object and damage type
@@ -122,7 +122,7 @@
 - New Tree System
   - A basis for which to build upgrade tree or similar systems
   - Includes save/load support
-- New Easy Settings Folder
+- New Easy Settings
   - The basic outline of some things to make the creation of game settings menus easier.
 - New Profile Handler (very bare bones)
   - Allows for basic interaction with Ocks Universal Profile
@@ -183,9 +183,10 @@
   - Console util setup buttons now more accurately place the objects they instantiate
   - <br> is now considered a dialog attribute in order to let the <Speed> attribute work. (dont ask)
   - Dialog now splits with "</>" instead of "</> "
-- New OXComponent Test System
+- New OXComponent Unstable System
   - Allows for the storing of GetComponent.
   - Doesn't actually help performance and is just kinda worse, so its binned until I can make it better
+- And more.. (I added/changed so much that I missed writing some of it down)
 ------------
 
 ------------
