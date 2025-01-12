@@ -61,13 +61,15 @@
     - Tags System now also has an inspector list to make refs within itself
 - Sound System Improvements!
   - Completely changed how audio sources are handled, should be much more efficient now.
+    - also clips are now stored using a dictionary
   - These changes also make it so now audio will not clip into itself when played repeatedly, so no more fear of clipping sounds!
     - If you still want to have clipped sounds when they overlap, you can use PlaySoundWithClipping()
 - Dialog Improvements!
   - Entire system reworked to use Dictionaries instead of Lists
   - New "SoundOnType" attribute allows for a sound to be played whenever a new character is displayed in the dialog box
   - New "Animate" attribute allows for the various texts in the Dialog System to be animated using the new Text Animator
-  - New "Shutdown" attribute is kind of a joke, literally just closes the application
+  - Quite a few more extra attributes too like Shutdown, SkipBack, or AutoSkip
+  - Dialog now shows the text "Click To Continue" when a dialog segment has finished
   - Fixed strange bug where it tried to get the text at index -1
   - New method to StartDialogFromLine(), lets you go to a specific line of dialog from a specific dialog file (does not work for choose)
   - Changed more things to use VariableParse()

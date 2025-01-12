@@ -8,7 +8,7 @@
 </> <Name=Boner>
 </> Yay!
 </> 
-</> <Speed=15, -, 1>
+</> <Speed=15, -, 1> <AutoSkip=1>
 </> <Animate=Text,Gravity,6969>banana <Show=Sucky Toes>
 </> 
 </> <Speed=15, -, 1>

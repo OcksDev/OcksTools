@@ -27,6 +27,7 @@ public class DialogLol : MonoBehaviour
     private float cp2 = -1;
     private float cp = -1;
     private float cp3 = -1;
+    public float AutoSkip = -1;
     public string speaker = "";
     public string fulltext = "";
     public string color = "";
@@ -84,10 +85,18 @@ public class DialogLol : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (InputManager.IsKeyDown("dialog_skip") || InputManager.IsKeyDown("dialog_skip_mouse"))
+        if (InputManager.IsKeyDown("dialog_skip"))
         {
             if(datatype != "Choose")
             {
+                attemptskip = true;
+            }
+        }
+        if (InputManager.IsKeyDown("dialog_skip_back"))
+        {
+            if(datatype != "Choose")
+            {
+                backwardskip = true;
                 attemptskip = true;
             }
         }
@@ -97,12 +106,28 @@ public class DialogLol : MonoBehaviour
             {
                 charl = fulltext.Length;
             }
-            attemptskip = false;
+            else
+            {
+                if(!CanSkip && charl < fulltext.Length)
+                {
+                    goto ex;
+                }
+            }
             godlyattemptskip = false;
             //Debug.Log("Skip registered");
             cp = 0;
-            NextLine();
+            if (backwardskip)
+            {
+                PrevLine();
+            }
+            else
+            {
+                NextLine();
+            }
         }
+        ex:
+        attemptskip = false;
+        backwardskip = false;
         if (CanEscape && InputManager.IsKeyDown("close_menu"))
         {
             ResetDialog();
@@ -146,8 +171,26 @@ public class DialogLol : MonoBehaviour
         {
             cp3 -= Time.deltaTime;
         }
+        if(AutoSkip >= 0 && !isautoproc && charl >= fulltext.Length && datatype != "Choose")
+        {
+            banna = StartCoroutine(AutoSkipe());
+        }
     }
-
+    Coroutine banna;
+    public IEnumerator AutoSkipe()
+    {
+        isautoproc = true;
+        if(AutoSkip > 0) yield return new WaitForSeconds(AutoSkip);
+        cp = 0;
+        NextLine();
+        isautoproc = false;
+    }
+    public void EndBanna()
+    {
+        isautoproc = false;
+        if (banna != null) StopCoroutine(banna);
+    }
+    bool isautoproc = false;
     public void PlaySoundPreset(string index)
     {
         switch (index)
@@ -164,6 +207,7 @@ public class DialogLol : MonoBehaviour
     public bool foundendcall = false;
     public bool attemptskip = false;
     public bool godlyattemptskip = false;
+    public bool backwardskip = false;
     public bool ApplyAttribute(string key, string data, bool ignorewarning = false)
     {
         foundendcall = false;
@@ -188,6 +232,18 @@ public class DialogLol : MonoBehaviour
                 // Forces a skip
                 attemptskip = true;
                 godlyattemptskip = true;
+                succeeded = true;
+                break;
+            case "SkipBack":
+                // Forces a skip backward
+                attemptskip = true;
+                godlyattemptskip = true;
+                backwardskip = true;
+                succeeded = true;
+                break;
+            case "AutoSkip":
+                // Automatically jumps to the next dialog line when available after x seconds
+                AutoSkip = float.Parse(data);
                 succeeded = true;
                 break;
             case "Jump":
@@ -290,7 +346,7 @@ public class DialogLol : MonoBehaviour
             case "Set":
                 data = data.Replace(" ", "");
                 list = new List<string>(data.Split(","));
-                // closes the application
+                //sets a variable
                 variables[VariableParse(list[0])] = VariableParse(list[1]);
                 succeeded = true;
                 break;
@@ -456,6 +512,8 @@ public class DialogLol : MonoBehaviour
         RichTextEnabled = true;
         CanSkip = true;
         CanEscape = false;
+        AutoSkip = -1;
+        EndBanna();
         PlaySoundOnType = "";
         if (pp != null)
         {
@@ -479,6 +537,7 @@ public class DialogLol : MonoBehaviour
         cp = 0;
         dialogmode = false;
         datatype = "Dialog";
+        EndBanna();
         SetDefaultParams();
     }
     public void StartDialog(string dialog, string datat = "Dialog")
@@ -551,6 +610,17 @@ public class DialogLol : MonoBehaviour
     public void FixedUpdate()
     {
         DialogBoxObject.SetActive(dialogmode);
+        if (dialogmode)
+        {
+            if(charl >= fulltext.Length && AutoSkip < 0)
+            {
+                pp.clikctoskpo.text = "Click To Continue";
+            }
+            else
+            {
+                pp.clikctoskpo.text = "";
+            }
+        }
     }
 
     public void upt()
@@ -689,21 +759,23 @@ public class DialogLol : MonoBehaviour
 
 
 
-    public void NextLine()
+    public void NextLine(bool wank = false)
     {
         if (filename != "")
         {
             switch (datatype)
             {
                 case "Dialog":
-                    if (charl >= fulltext.Length)
+                    if (charl >= fulltext.Length || backwardskip)
                     {
+                        EndBanna();
                         cp3 = 0;
+                        if (wank) linenum -= 3;
+                        else linenum += 3;
                         pp.TitleObject.GetComponent<TextAnimator>().anims.Clear();
                         pp.TextObject.GetComponent<TextAnimator>().anims.Clear();
-                        linenum += 3;
                         charl = -1;
-                        int ln = Math.Clamp(linenum-2, 0, str.Count);
+                        int ln = Math.Clamp(linenum - 2, 0, str.Count);
                         string r = str[ln];
                         if (ln == 0 || !UseEnding(r))
                         {
@@ -754,7 +826,7 @@ public class DialogLol : MonoBehaviour
                     pp.TextObject.GetComponent<TextAnimator>().anims.Clear();
 
                     List<string> list23a = new List<string>(str[1].Split("<"));
-                    
+
                     foreach (var attribute in list23a)
                     {
                         if (attribute.Contains(">"))
@@ -784,7 +856,10 @@ public class DialogLol : MonoBehaviour
             }
         }
     }
-
+    public void PrevLine()
+    {
+        NextLine(true);
+    }
     public void Choose(int index)
     {
         //deprecated function

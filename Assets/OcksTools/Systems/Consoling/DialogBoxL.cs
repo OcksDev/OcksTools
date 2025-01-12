@@ -9,6 +9,7 @@ public class DialogBoxL : MonoBehaviour
     public GameObject TextObject;
     public GameObject TitleObject;
     private Image img;
+    public TextMeshProUGUI clikctoskpo;
     public List<GameObject> q_gameobjects = new List<GameObject>();
     private TextMeshProUGUI b1;
     private TextMeshProUGUI b2;

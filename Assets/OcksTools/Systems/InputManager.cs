@@ -56,8 +56,8 @@ public class InputManager : MonoBehaviour
         CreateKeyAllocation("console_up", KeyCode.UpArrow);
         CreateKeyAllocation("console_down", KeyCode.DownArrow);
         CreateKeyAllocation("console_autofill", KeyCode.Tab);
-        CreateKeyAllocation("dialog_skip", KeyCode.Space);
-        CreateKeyAllocation("dialog_skip_mouse", KeyCode.Mouse0);
+        CreateKeyAllocation("dialog_skip", new List<KeyCode>() {KeyCode.Space, KeyCode.Mouse0, KeyCode.RightArrow});
+        CreateKeyAllocation("dialog_skip_back", KeyCode.LeftArrow);
 
     }
 
