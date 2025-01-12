@@ -12,6 +12,7 @@ public class LanguageFileSystem : MonoBehaviour
      *  Random Functions
      */
     public bool EditorAuthorityOnFile = true;
+    public bool AllowPublicAccess = true;
     public List<OXLanguageFileIndex> Files = new List<OXLanguageFileIndex>();
     Dictionary<string, Dictionary<string, string>> Data = new Dictionary<string, Dictionary<string, string>>();
 
@@ -22,8 +23,11 @@ public class LanguageFileSystem : MonoBehaviour
     }
     private void Awake()
     {
-        FileSystem.Instance.CreateFolder(FileSystem.Instance.FileLocations["Lang"]);
-        FileSystem.Instance.CreateFolder($"{FileSystem.Instance.FileLocations["Lang"]}\\{FileSystem.GameVer}");
+        if (AllowPublicAccess)
+        {
+            FileSystem.Instance.CreateFolder(FileSystem.Instance.FileLocations["Lang"]);
+            FileSystem.Instance.CreateFolder($"{FileSystem.Instance.FileLocations["Lang"]}\\{FileSystem.GameVer}");
+        }
         foreach(var file in Files)
         {
             ReadFile(file);
@@ -46,6 +50,7 @@ public class LanguageFileSystem : MonoBehaviour
     }
     public void WriteAllFiles()
     {
+        if (!AllowPublicAccess) return;
         var f = FileSystem.Instance;
         string meme = $"{f.FileLocations["Lang"]}\\{FileSystem.GameVer}";
         foreach (var file in Files)
@@ -101,9 +106,9 @@ public class LanguageFileSystem : MonoBehaviour
         var des = GetDict(file.FileName);
         des.Clear();
 
-        if (EditorAuthorityOnFile)
+        if (EditorAuthorityOnFile || !AllowPublicAccess)
         {
-            FileSystem.Instance.WriteFile(realme, file.GetDefaultData(), true);
+            if(AllowPublicAccess)FileSystem.Instance.WriteFile(realme, file.GetDefaultData(), true);
             var ss = Converter.StringToList(file.GetDefaultData(), Environment.NewLine);
             foreach (var d in ss)
             {
@@ -117,7 +122,7 @@ public class LanguageFileSystem : MonoBehaviour
 
         if (!File.Exists(realme))
         {
-            FileSystem.Instance.WriteFile(realme, file.GetDefaultData(), true);
+            if (AllowPublicAccess) FileSystem.Instance.WriteFile(realme, file.GetDefaultData(), true);
             goto d9;
         }
         var s = Converter.StringToList(f.ReadFile(realme), Environment.NewLine);
