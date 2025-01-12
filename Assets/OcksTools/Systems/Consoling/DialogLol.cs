@@ -858,6 +858,14 @@ public class DialogLol : MonoBehaviour
     }
     public void PrevLine()
     {
+        try
+        {
+            var ficl = str[linenum - 1 - 3];
+        }
+        catch
+        {
+            return;
+        }
         NextLine(true);
     }
     public void Choose(int index)
