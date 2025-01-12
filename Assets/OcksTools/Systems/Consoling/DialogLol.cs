@@ -36,7 +36,7 @@ public class DialogLol : MonoBehaviour
     public bool RichTextEnabled = true;
     public bool CanSkip = true;
     public bool CanEscape = false;
-    public int PlaySoundOnType = -1;
+    public string PlaySoundOnType = "";
     private List<string> str = new List<string>();
     private string ActiveFileName = "";
     private string baldcharacters = " \n\t";
@@ -135,7 +135,7 @@ public class DialogLol : MonoBehaviour
                     {
                         cp3 = e == " " ? cps2 : cps3;
                     }
-                    if (PlaySoundOnType != -1 && !baldcharacters.Contains(e))
+                    if (PlaySoundOnType != "" && !baldcharacters.Contains(e))
                     {
                         PlaySoundPreset(PlaySoundOnType);
                     }
@@ -148,12 +148,12 @@ public class DialogLol : MonoBehaviour
         }
     }
 
-    public void PlaySoundPreset(int index)
+    public void PlaySoundPreset(string index)
     {
         switch (index)
         {
-            case 0:
-                SoundSystem.Instance.PlaySoundWithClipping(0, false, 0.2f, 0.5f);
+            case "A":
+                SoundSystem.Instance.PlaySoundWithClipping("A", false, 0.2f, 0.5f);
                 break;
             default:
                 Debug.LogWarning("Failed to find a sound preset with the index of " + index);
@@ -198,7 +198,7 @@ public class DialogLol : MonoBehaviour
                 break;
             case "SoundOnType":
                 // Choses a sound preset from PlaySoundPreset() to play when a new character is displayd
-                PlaySoundOnType = int.Parse(data);
+                PlaySoundOnType = data;
                 succeeded = true;
                 break;
             case "Wait":
@@ -208,7 +208,7 @@ public class DialogLol : MonoBehaviour
                 break;
             case "PlaySound":
                 // Waits x seconds before moving forward
-                PlaySoundPreset(int.Parse(data));
+                PlaySoundPreset(data);
                 succeeded = true;
                 break;
             case "Escape":
@@ -456,7 +456,7 @@ public class DialogLol : MonoBehaviour
         RichTextEnabled = true;
         CanSkip = true;
         CanEscape = false;
-        PlaySoundOnType = -1;
+        PlaySoundOnType = "";
         if (pp != null)
         {
             int i = 0;
@@ -522,7 +522,7 @@ public class DialogLol : MonoBehaviour
         if(datat != "Choose")str.RemoveAt(0);
         for (int i = 0; i < str.Count; i++)
         {
-            if (str[i][0] == ' ') str[i] = str[i].Substring(1);
+            if (str[i].Length > 0 && str[i][0] == ' ') str[i] = str[i].Substring(1);
         }
         return str;
     }

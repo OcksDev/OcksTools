@@ -46,12 +46,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DialogBoxObject: {fileID: 0}
-  files:
-  - {fileID: 0}
-  chooses:
-  - {fileID: 0}
+  DialogFiles: []
+  ChooseFiles: []
   dialogmode: 0
-  filenum: -1
+  filename: 
   linenum: 0
   charnum: -1
   cps: -1
@@ -86,4 +84,5 @@ MonoBehaviour:
   SFXVolume: 1
   MusicVolume: 1
   AudioClips:
-  - {fileID: 8300000, guid: 522e0ab1154379347bc7522ac29bd19b, type: 3}
+  - Name: A
+    Clip: {fileID: 8300000, guid: 522e0ab1154379347bc7522ac29bd19b, type: 3}

@@ -16,7 +16,8 @@ public class SoundSystem : MonoBehaviour
     public float MasterVolume = 1;
     public float SFXVolume = 1;
     public float MusicVolume = 1;
-    public List<AudioClip> AudioClips = new List<AudioClip>();
+    public List<OXSoundData> AudioClips = new List<OXSoundData>();
+    public Dictionary<string, OXSoundData> AudioClipDict = new Dictionary<string, OXSoundData>();
     private List<AudioSource> AudioSources = new List<AudioSource>();
     public static SoundSystem Instance
     {
@@ -25,6 +26,10 @@ public class SoundSystem : MonoBehaviour
 
     private void Awake()
     {
+        foreach (var s in AudioClips)
+        {
+            AudioClipDict.Add(s.Name, s);
+        }
         if (Instance == null) instance = this;
     }
     private void Start()
@@ -32,13 +37,13 @@ public class SoundSystem : MonoBehaviour
 
     }
 
-    public void ModSound(int sound, bool findexisting = false)
+    public void ModSound(string sound, bool findexisting = false)
     {
         pvolume = 1;
-        int the_sound = sound;
+        string the_sound = sound;
         switch (sound)
         {
-            case 0:
+            case "sound":
                 pvolume = SFXVolume;
                 /*
                 var k = Random.Range(0, 2);
@@ -46,20 +51,19 @@ public class SoundSystem : MonoBehaviour
                 {
                     case 0:
                         pvolume *= 1.2f;
-                        the_sound = 0;
                         break;
                     case 1:
-                        the_sound = 1;
+                        the_sound = "new sound";
                         break;
                     case 2:
-                        the_sound = 2;
+                        the_sound = "new sound AGAIN";
                         break;
                 }*/
                 break;
-            case 3:
+            case "A":
                 pvolume = SFXVolume * 1.2f;
                 break;
-            case 4:
+            case "B":
                 pvolume = SFXVolume * 1.5f;
                 break;
         }
@@ -67,15 +71,15 @@ public class SoundSystem : MonoBehaviour
         psource = FindOpenSource(the_sound, findexisting);
     }
 
-    public AudioSource FindOpenSource(int index, bool findexisting = false)
+    public AudioSource FindOpenSource(string index, bool findexisting = false)
     {
         if (findexisting)
         {
             foreach (var penis in AudioSources)
             {
-                if (penis.clip == AudioClips[index])
+                if (penis.clip == AudioClipDict[index].Clip)
                 {
-                    penis.clip = AudioClips[index];
+                    penis.clip = AudioClipDict[index].Clip;
                     return penis;
                 }
             }
@@ -84,12 +88,12 @@ public class SoundSystem : MonoBehaviour
         {
             if (!penis.isPlaying)
             {
-                penis.clip = AudioClips[index];
+                penis.clip = AudioClipDict[index].Clip;
                 return penis;
             }
         }
         var sex = gameObject.AddComponent<AudioSource>();
-        sex.clip = AudioClips[index];
+        sex.clip = AudioClipDict[index].Clip;
         AudioSources.Add(sex);
         return sex;
     }
@@ -98,7 +102,7 @@ public class SoundSystem : MonoBehaviour
     private AudioSource psource;
     private float pvolume;
 
-    public void PlaySound(int sound, bool randompitch = false, float volumes = 1f, float pitchmod = 1f)
+    public void PlaySound(string sound, bool randompitch = false, float volumes = 1f, float pitchmod = 1f)
     {
         ModSound(sound);
         var volume = pvolume;
@@ -115,7 +119,7 @@ public class SoundSystem : MonoBehaviour
         p.Play();
     }
 
-    public void PlaySoundWithClipping(int sound, bool randompitch = false, float volumes = 1f, float pitchmod = 1f)
+    public void PlaySoundWithClipping(string sound, bool randompitch = false, float volumes = 1f, float pitchmod = 1f)
     {
         ModSound(sound, true);
         var volume = pvolume;
@@ -131,7 +135,7 @@ public class SoundSystem : MonoBehaviour
         p.volume = volume;
         p.Play();
     }
-    public void PlaySound(int sound, Vector3 pos, bool randompitch = false, float volume = 1f, float pitchmod = 1f)
+    public void PlaySound(string sound, Vector3 pos, bool randompitch = false, float volume = 1f, float pitchmod = 1f)
     {
         //for 2d games MAKE SURE THE [z] CORDINATE IS SET TO THE SAME AS THE CAMERA
         ModSound(sound);
@@ -148,3 +152,10 @@ public class SoundSystem : MonoBehaviour
     }
 
 }
+[System.Serializable]
+public class OXSoundData
+{
+    public string Name;
+    public AudioClip Clip;
+}
+
