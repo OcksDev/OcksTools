@@ -94,6 +94,9 @@
   - Remade the locklevel system to now use lists of strings instead of just one string
     - Old code/method is still compatable and should work exactly the same as before, but now there is new functionality
   - Organization plus simplificaiton of some things
+- Complete Lanugage File System Overhaul!
+  - Reworked the system from the ground up, now works so much better
+  - New LangSetText (in the Misc folder), allows for simple integration of LFS
 - New OXEvent System (core system)
 - New Object Creation System (core system)!
   - Here to replace the RandomFunctions.SpawnObject()

@@ -54,34 +54,21 @@ public class GISLol : MonoBehaviour
 
         if (UseLanguageFile)
         {
-            /*
             var l = LanguageFileSystem.Instance;
-            bool changed = false;
-            for (int i = 0; i < Items.Count; i++)
+            var file = new OXLanguageFileIndex();
+            file.FileName = "Items";
+            Dictionary<string, string> dat = new Dictionary<string, string>();
+            foreach (var item in Items)
             {
-                var s = "Item_" + SaltName(Items[i].Name);
-                var s2 = "ItemDesc_" + Items[i].Description;
-                if (l.IndexValuePairs.ContainsKey(s))
-                {
-                    Items[i].Name = l.IndexValuePairs[s];
-                }
-                else
-                {
-                    changed = true;
-                    l.IndexValuePairs.Add(s, Items[i].Name);
-                }
-                if (l.IndexValuePairs.ContainsKey(s2))
-                {
-                    Items[i].Description = l.IndexValuePairs[s2];
-                }
-                else
-                {
-                    changed = true;
-                    l.IndexValuePairs.Add(s2, Items[i].Description);
-                }
+                dat.Add(item.Name, item.GetLangData());
             }
-            if (changed) l.UpdateTextFile();
-            */
+            file.DefaultString = Converter.EscapedDictionaryToString(dat, Environment.NewLine, ": ");
+            l.ReadFile(file);
+            foreach(var a in l.GetDict("Items"))
+            {
+                ItemDict[a.Key].SetLangData(a.Value);
+                Debug.Log(ItemDict[a.Key].DisplayName + ": " + ItemDict[a.Key].Description);
+            }
         }
     }
 
@@ -135,12 +122,6 @@ public class GISLol : MonoBehaviour
             }
         }
         return false;
-    }
-    public string SaltName(string e)
-    {
-        e = e.Replace(" ", "");
-        e = e.Replace(":", ";");
-        return e;
     }
 }
 
@@ -300,6 +281,7 @@ public class GISItem_Data
     //this is what holds all of the base data for a general item of it's type.
     //EX: All "coal" items refer back to this for things like icon and name
     public string Name;
+    public string DisplayName;
     public Sprite Sprite;
     public string Description;
     public int MaxAmount;
@@ -327,6 +309,22 @@ public class GISItem_Data
         CraftingMaterial,
         Ammo,
         Gem,
+    }
+    public string GetLangData()
+    {
+        List<string> d = new List<string>() 
+        { 
+            DisplayName,
+            Description,
+        };
+
+        return Converter.EscapedListToString(d, "<->");
+    }
+    public void SetLangData(string d)
+    {
+        var dat = Converter.EscapedStringToList(d, "<->");
+        DisplayName = dat[0];
+        Description = dat[1];
     }
 }
 

@@ -11,7 +11,7 @@ public class LanguageFileSystem : MonoBehaviour
      *  File System
      *  Random Functions
      */
-
+    public bool EditorAuthorityOnFile = true;
     public List<OXLanguageFileIndex> Files = new List<OXLanguageFileIndex>();
     Dictionary<string, Dictionary<string, string>> Data = new Dictionary<string, Dictionary<string, string>>();
 
@@ -58,7 +58,7 @@ public class LanguageFileSystem : MonoBehaviour
 
     public string GetString(string namespac, string key2)
     {
-        if (namespac == "unknown")
+        if (namespac == "unknown" || namespac == "")
         {
             foreach(var f in Data)
             {
@@ -66,6 +66,19 @@ public class LanguageFileSystem : MonoBehaviour
             }
         }
         return Data[namespac][key2];
+    }
+    public void SetString(string namespac, string key2, string str)
+    {
+        if(!Data.ContainsKey(namespac)) return;
+        if (!Data[namespac].ContainsKey(key2))
+        {
+            Data[namespac].Add(key2, str);
+        }
+        else
+        {
+            Data[namespac][key2] = str;
+        }
+
     }
 
     public Dictionary<string, string> GetDict(string name)
@@ -85,14 +98,30 @@ public class LanguageFileSystem : MonoBehaviour
         var f = FileSystem.Instance;
         string meme = $"{f.FileLocations["Lang"]}\\{FileSystem.GameVer}";
         string realme = $"{meme}\\{file.FileName}.txt";
-        if (!File.Exists(realme))
-        {
-            FileSystem.Instance.WriteFile(realme, file.DefaultFile.text, true);
-            return;
-        }
         var des = GetDict(file.FileName);
         des.Clear();
+
+        if (EditorAuthorityOnFile)
+        {
+            FileSystem.Instance.WriteFile(realme, file.GetDefaultData(), true);
+            var ss = Converter.StringToList(file.GetDefaultData(), Environment.NewLine);
+            foreach (var d in ss)
+            {
+                if (d.IndexOf(": ") > -1 && !des.ContainsKey(d.Substring(0, d.IndexOf(": "))))
+                {
+                    des.Add(d.Substring(0, d.IndexOf(": ")), d.Substring(d.IndexOf(": ") + 2));
+                }
+            }
+            return;
+        }
+
+        if (!File.Exists(realme))
+        {
+            FileSystem.Instance.WriteFile(realme, file.GetDefaultData(), true);
+            goto d9;
+        }
         var s = Converter.StringToList(f.ReadFile(realme), Environment.NewLine);
+        Debug.Log("Penis: " + s.Count);
         foreach (var d in s)
         {
             if (d.IndexOf(": ") > -1)
@@ -100,7 +129,8 @@ public class LanguageFileSystem : MonoBehaviour
                 des.Add(d.Substring(0, d.IndexOf(": ")), d.Substring(d.IndexOf(": ") + 2));
             }
         }
-        s = Converter.StringToList(file.DefaultFile.text, Environment.NewLine);
+        d9:
+        s = Converter.StringToList(file.GetDefaultData(), Environment.NewLine);
         foreach (var d in s)
         {
             if (d.IndexOf(": ") > -1 && !des.ContainsKey(d.Substring(0, d.IndexOf(": "))))
@@ -116,4 +146,16 @@ public class OXLanguageFileIndex
 {
     public string FileName;
     public TextAsset DefaultFile;
+    public string DefaultString = "";
+    public string GetDefaultData()
+    {
+        if(DefaultFile != null)
+        {
+            return DefaultFile.text;
+        }
+        else
+        {
+            return DefaultString;
+        }
+    }
 }

@@ -50,29 +50,45 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   UseLanguageFile: 1
+  Mouse_Held_Item:
+    ItemIndex: Empty
+    Amount: 0
+    Container: {fileID: 0}
+    Interacted_Containers: []
   Mouse_Displayer: {fileID: 0}
   MouseFollower: {fileID: 0}
   Items:
   - Name: Empty
+    DisplayName: Empty
     Sprite: {fileID: 21300000, guid: 85723baf3a25a534aa78fc87435dd36b, type: 3}
     Description: Nothing
     MaxAmount: 0
+    Type: 0
   - Name: Banana
+    DisplayName: Holy Banana
     Sprite: {fileID: 21300000, guid: f10dcfa5a64722e4fab1eef72583f731, type: 3}
     Description: Ban ananing lol
     MaxAmount: 0
+    Type: 0
   - Name: Holy Shield
+    DisplayName: Unholy Ward
     Sprite: {fileID: 21300000, guid: f37b7fab93d27f8469e2557fb821e16f, type: 3}
     Description: Licking my balls
     MaxAmount: 0
+    Type: 0
   - Name: Drugs
+    DisplayName: DRUGS!!
     Sprite: {fileID: 21300000, guid: 773793f07231daa46913610b00efaaf7, type: 3}
-    Description: EEEEEE
+    Description: EEEEEE, fuck you
     MaxAmount: 150
+    Type: 0
   - Name: Shield Of Balls
+    DisplayName: Ball Shield Lol
     Sprite: {fileID: 21300000, guid: e36690a6e6d5eec4b949f2403daa9e33, type: 3}
     Description: EEEEEE 69 2
     MaxAmount: 0
+    Type: 0
+  CanHover: 0
 --- !u!114 &324499805810810536
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -85,6 +101,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dfed571d7c7a93f4cabe84a58c72588c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  EditorAuthorityOnFile: 1
+  Files: []
 --- !u!114 &324499805810810534
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -97,12 +115,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac1cfc2e71f50cf4496bb3866b830a15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GameVer: v1.1.0
   DirectoryLol: 
   OcksDirectry: 
   UniversalDirectory: 
   GameDirectory: 
-  FileLocations: []
 --- !u!114 &324499805810810537
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -144,6 +160,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e079614b067d2db4faf31eb5e5f87b5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UseFileSystem: 1
+  SaveMethod_: 0
   test: 0
+  TestBool: 0
   LoadedData: 0
