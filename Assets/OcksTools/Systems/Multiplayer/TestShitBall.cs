@@ -30,7 +30,7 @@ public class TestShitBall : MonoBehaviour
     }
     public IEnumerator sex()
     {
-        yield return new WaitForSeconds(1f);
+        //yield return new WaitForSeconds(1f);
         if (!Ocky.NetOb.IsOwner)
         {
             while (true)

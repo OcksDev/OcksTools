@@ -13,11 +13,12 @@ public class EntityOXS : MonoBehaviour
     public List<EffectProfile> Effects = new List<EffectProfile>();
     public void Hit(DamageProfile hit)
     {
+        var dmg = hit.Damage;
         foreach (var effect in hit.Effects)
         {
             AddEffect(effect);
         }
-        Shield -= hit.Damage;
+        Shield -= dmg;
         if (Shield < 0)
         {
             Health += Shield;
@@ -160,7 +161,7 @@ public class EntityOXS : MonoBehaviour
 public class DamageProfile
 {
     public UnityEngine.Object SourceObject;
-    public DamageType HowDamageWasDealt;
+    public DamageType HowDamageWasDealt = DamageType.Unknown;
     public double Damage;
     public List<EffectProfile> Effects = new List<EffectProfile>();
     public Dictionary<string, int> Procs = new Dictionary<string, int>();
@@ -178,8 +179,17 @@ public class DamageProfile
         Procs = new Dictionary<string, int>(pp.Procs);
         Effects = new List<EffectProfile>(pp.Effects);
     }
+    public double CalcDamage()
+    {
+        var x = Damage;
+
+        //do some damage calculaations
+
+        return x;
+    }
     public enum DamageType
     {
+        Unknown,
         Magic,
         Melee,
         Ranged,

@@ -1,5 +1,11 @@
 
 ------------
+   v1.1.1
+- Misc Changes
+  - EntityOXS now has a *slightly* different method of damage application
+------------
+
+------------
    v1.1.0
 - Save System improvements!
   - HoldingData now is a dictionary of dictionaries, meaning multiple lines of saved data now can be held.
