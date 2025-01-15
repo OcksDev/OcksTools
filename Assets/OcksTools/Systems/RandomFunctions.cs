@@ -233,11 +233,17 @@ public class RandomFunctions : MonoBehaviour
     }
     public static float Dist(Vector3 p1, Vector3 p2)
     {
-        float distance = Mathf.Sqrt(
-                Mathf.Pow(p2.x - p1.x, 2f) +
-                Mathf.Pow(p2.y - p1.y, 2f) +
-                Mathf.Pow(p2.z - p1.z, 2f));
-        return distance;
+        var x = p2.x - p1.x;
+        var y = p2.y - p1.y;
+        var z = p2.z - p1.z;
+        return MathF.Sqrt((x * x) + (y * y) + (z * z));
+    }
+    public static float DistNoSQRT(Vector3 p1, Vector3 p2)
+    {
+        var x = p2.x - p1.x;
+        var y = p2.y - p1.y;
+        var z = p2.z - p1.z;
+        return (x * x) + (y * y) + (z * z);
     }
     public static int Mod(int r, int max)
     {
