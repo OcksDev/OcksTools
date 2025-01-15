@@ -3,7 +3,8 @@
    v1.1.1
 - Misc Changes
   - EntityOXS now has a *slightly* different method of damage application
-  - changed RandomFunctions.Dist slightly, and also added DistNoSQRT()
+  - Changed RandomFunctions.Dist slightly, and also added DistNoSQRT()
+  - Two new easing functions, EaseBounce and EaseOvershoot
 ------------
 
 ------------

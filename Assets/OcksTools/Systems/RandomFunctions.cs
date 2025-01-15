@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Unity.Mathematics;
+
 
 //using Unity.Netcode;
 using UnityEngine;
@@ -195,6 +197,22 @@ public class RandomFunctions : MonoBehaviour
             return (2-Mathf.Pow(2 * (1-perc), pow)) / 2;
         }
     }
+    public static float EaseBounce(float perc, int bounces = 4, float pow = 5)
+    {
+        var a = perc * (bounces+0.5f);
+        var x = Mathf.Abs(Mathf.Cos(Mathf.PI * a));
+        x /= Mathf.Pow(pow + 1, Mathf.Floor(a + 0.5f));
+        return 1-x;
+    }
+    public static float EaseOvershoot(float perc, float quantity = 4, float pow = 1)
+    {
+        pow *= 5;
+        var x = Mathf.Cos(Mathf.PI * perc * quantity);
+        x *= 1 - perc;
+        x /= (pow * perc) + 1;
+        return 1-x;
+    }
+
 
 
     public double GetUnixTime(int type = -1)
