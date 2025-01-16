@@ -373,6 +373,12 @@ public class GISContainer : MonoBehaviour
             slots.Add(h2);
         }
     }
+    public void RegenerateAndLoadSlots(int amount)
+    {
+        ClearSlots();
+        GenerateSlots(amount);
+        LoadContents();
+    }
 
     public int IndexOf(GISItem item, bool truecompare = false)
     {
