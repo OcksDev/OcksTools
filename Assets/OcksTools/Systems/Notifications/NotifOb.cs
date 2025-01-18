@@ -9,12 +9,17 @@ public class NotifOb : MonoBehaviour
     public Image Background1;
     public Image Background2;
     public Image Icon;
+    public RectTransform SubObjectParent;
     public List<TextMeshProUGUI> CalcSizeOfTexts = new List<TextMeshProUGUI>();
     public List<RectTransform> CalcSizeOf = new List<RectTransform>();
+    public RectTransform self;
+
+
     private void Start()
     {
-        Debug.Log(CalcSizeDelta());
+        CalcSizeDelta();
     }
+
     public void SetTitle(string st)
     {
         CalcSizeOfTexts[0].text = st;
@@ -23,7 +28,7 @@ public class NotifOb : MonoBehaviour
     {
         CalcSizeOfTexts[1].text = st;
     }
-    public Vector2 CalcSizeDelta()
+    public BANNA CalcSizeDelta()
     {
         float bordersize = 10;
 
@@ -42,32 +47,56 @@ public class NotifOb : MonoBehaviour
         for(int i = 1; i < CalcSizeOf.Count; i++)
         {
             var relativepos = CalcSizeOf[i].anchoredPosition - initpos;
-            Debug.Log("pos" + relativepos);
             var nerdsize = CalcSizeOf[i].sizeDelta;
-            Debug.Log(nerdsize.x);
+
             var dd = relativepos.x + (nerdsize.x / 2);
-            Debug.Log(dd);
             if (dd > (size.x/2))
             {
-                var ff = (dd - (size.x / 2))/2;
-                Debug.Log(ff);
+                var ff = (dd - (size.x / 2));
                 size.x += ff;
-                initpos.x += ff;
+                initpos.x += ff/2;
+                relativepos = CalcSizeOf[i].anchoredPosition - initpos;
             }
-            relativepos = CalcSizeOf[i].anchoredPosition - initpos;
-            Debug.Log("pos" + relativepos);
-
-           /* dd = relativepos.x - (nerdsize.x / 2);
+            dd = relativepos.x - (nerdsize.x / 2);
             if (-dd > (size.x/2))
             {
-                var ff = (dd + (size.x / 2))/2;
+                var ff = (dd + (size.x / 2));
                 size.x -= ff;
-                initpos.x += ff;
-            }*/
+                initpos.x += ff/2;
+                relativepos = CalcSizeOf[i].anchoredPosition - initpos;
+            }
+            dd = relativepos.y + (nerdsize.y / 2);
+            if (dd > (size.y/2))
+            {
+                var ff = (dd - (size.y / 2));
+                size.y += ff;
+                initpos.y += ff/2;
+                relativepos = CalcSizeOf[i].anchoredPosition - initpos;
+            }
+            dd = relativepos.y - (nerdsize.y / 2);
+            if (-dd > (size.y /2))
+            {
+                var ff = (dd + (size.y / 2));
+                size.y -= ff;
+                initpos.y += ff/2;
+                relativepos = CalcSizeOf[i].anchoredPosition - initpos;
+            }
         }
+        bordersize += 5;
+        size.x += bordersize*2;
+        size.y += bordersize*2;
+        var ba = new BANNA();
+        ba.size = size;
+        ba.pos = initpos;
 
-        //size.x += bordersize*2;
-        //size.y += bordersize*2;
-        return size;
+        self.sizeDelta = ba.size;
+        SubObjectParent.anchoredPosition = -ba.pos;
+
+        return ba;
     }
+}
+public class BANNA
+{
+    public Vector2 size;
+    public Vector2 pos;
 }
