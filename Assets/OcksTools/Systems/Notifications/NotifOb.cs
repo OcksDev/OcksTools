@@ -15,11 +15,6 @@ public class NotifOb : MonoBehaviour
     public RectTransform self;
 
 
-    private void Start()
-    {
-        CalcSizeDelta();
-    }
-
     public void SetTitle(string st)
     {
         CalcSizeOfTexts[0].text = st;
@@ -27,6 +22,13 @@ public class NotifOb : MonoBehaviour
     public void SetDesc(string st)
     {
         CalcSizeOfTexts[1].text = st;
+    }
+    bool imageset = false;
+    public void SetIMG(Sprite st)
+    {
+        if (st == null) return;
+        imageset = true;
+        Icon.sprite = st;
     }
     public BANNA CalcSizeDelta()
     {
@@ -42,10 +44,17 @@ public class NotifOb : MonoBehaviour
             w2.SetLayoutHorizontal();
             w2.SetLayoutVertical();
         }
+
+
+        Icon.gameObject.SetActive(imageset);
+
         initpos = CalcSizeOf[0].anchoredPosition;
         size = CalcSizeOf[0].sizeDelta;
         for(int i = 1; i < CalcSizeOf.Count; i++)
         {
+            if (CalcSizeOf[i] == null) continue;
+            if (!CalcSizeOf[i].gameObject.activeSelf) continue;
+
             var relativepos = CalcSizeOf[i].anchoredPosition - initpos;
             var nerdsize = CalcSizeOf[i].sizeDelta;
 
