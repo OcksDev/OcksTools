@@ -138,7 +138,7 @@ public class GISItem
      * GISContainer.LoadContents()
      */
 
-    public string ItemIndex;
+    public string Name;
     public int Amount;
     public GISContainer Container;
     public List<GISContainer> Interacted_Containers = new List<GISContainer>();
@@ -150,20 +150,21 @@ public class GISItem
     public GISItem(string base_type)
     {
         setdefaultvals();
-        ItemIndex = base_type;
+        Amount = 1;
+        Name = base_type;
     }
     public GISItem(GISItem sexnut)
     {
         setdefaultvals();
         Amount = sexnut.Amount;
-        ItemIndex = sexnut.ItemIndex;
+        Name = sexnut.Name;
         Container = sexnut.Container;
     }
     private void setdefaultvals()
     {
         Data = GetDefaultData();
         Amount = 0;
-        ItemIndex = "Empty";
+        Name = "Empty";
         Container = null;
     }
     public void Solidify()
@@ -183,7 +184,7 @@ public class GISItem
          */
         bool comp = false;
 
-        if (ItemIndex == sexnut.ItemIndex) comp = true;
+        if (Name == sexnut.Name) comp = true;
         if (!usebase && !comp)
         {
             //code to further compare goes here
@@ -224,7 +225,7 @@ public class GISItem
         string e = "";
         var def = GetDefaultData();
 
-        Data["Index"] = ItemIndex.ToString();
+        Data["Index"] = Name.ToString();
         Data["Count"] = Amount.ToString();
 
 
@@ -259,14 +260,14 @@ public class GISItem
             }
         }
 
-        ItemIndex = Data["Index"];
+        Name = Data["Index"];
         if (wanker.ContainsKey("Count"))
         {
             Amount = int.Parse(Data["Count"]);
         }
         else
         {
-            Amount = ItemIndex != "Empty" ? 1 : 0;
+            Amount = Name != "Empty" ? 1 : 0;
         }
 
 
@@ -308,6 +309,7 @@ public class GISItem_Data
         CraftingMaterial,
         Ammo,
         Gem,
+        Key,
     }
     public string GetLangData()
     {
@@ -335,7 +337,7 @@ public class GISDisplayData
 
     public GISDisplayData(GISItem gissy)
     {
-        Images = new Sprite[1] { GISLol.Instance.ItemDict[gissy.ItemIndex].Sprite };
+        Images = new Sprite[1] { GISLol.Instance.ItemDict[gissy.Name].Sprite };
         Count = gissy.Amount > 0 ? "x" + gissy.Amount : "";
     }
 }

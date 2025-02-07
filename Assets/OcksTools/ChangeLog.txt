@@ -2,10 +2,18 @@
 ------------
    v1.1.1
 - New Notification System
-- Misc Changes
-  - EntityOXS now has a *slightly* different method of damage application
+- GIS Improvements
+  - Added new method for getting total amount of items in container
+  - Added event that is called when a slot is interacted with
+- Random Functions Improvements
   - Changed RandomFunctions.Dist slightly, and also added DistNoSQRT()
   - Two new easing functions, EaseBounce and EaseOvershoot (and new testing scene for all easing functions)
+  - Officially removed support for old RandomFunctions.SpawnObject
+  - SpawnParticle no longer uses an inbuilt list for particle references.
+- SpawnData Improvements
+  - Uses Dictionaries instead of Lists for data handling
+- Misc Changes
+  - EntityOXS now has a *slightly* different method of damage application
 ------------
 
 ------------

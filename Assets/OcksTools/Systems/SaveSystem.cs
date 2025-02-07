@@ -8,7 +8,6 @@ using UnityEngine;
 
 public class SaveSystem : MonoBehaviour
 {
-    private static SaveSystem instance;
     public SaveMethod SaveMethod_ = SaveMethod.TXTFile;
     public int test = 0;
     public bool TestBool = false;
@@ -18,17 +17,14 @@ public class SaveSystem : MonoBehaviour
 
     public Dictionary<string, Dictionary<string, string>> HoldingData = new Dictionary<string, Dictionary<string, string>>();
 
-    public static SaveSystem Instance
-    {
-        get { return instance; }
-    }
+    public static SaveSystem Instance;
     private void OnApplicationQuit()
     {
         SaveGame();
     }
     private void Awake()
     {
-        if (Instance == null) instance = this;
+        if (Instance == null) Instance = this;
         
     }
     private void Start()

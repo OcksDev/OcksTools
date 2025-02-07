@@ -12,11 +12,6 @@ using static UnityEngine.GraphicsBuffer;
 
 public class RandomFunctions : MonoBehaviour
 {
-    [HideInInspector]
-    public GameObject[] SpawnRefs = new GameObject[1];
-    public GameObject[] ParticleSpawnRefs = new GameObject[1];
-    [HideInInspector]
-    public GameObject ParticleSpawnObject;
     public delegate void JustFuckingRunTheMethods();
 
     /* Welcome to Random Functions, your one stop shop of random functions
@@ -44,10 +39,10 @@ public class RandomFunctions : MonoBehaviour
     {
         Application.Quit();
     }
-    public GameObject SpawnParticle(int refe, GameObject parent, Vector3 pos, Quaternion rot)
+    public GameObject SpawnParticle(GameObject particle, GameObject parent, Vector3 pos, Quaternion rot)
     {
         // this is a watered down version of SpawnObject which is specialized for particles
-        var f = Instantiate(ParticleSpawnRefs[refe], pos, rot, parent.transform);
+        var f = Instantiate(particle, pos, rot, parent.transform);
 
         var d = f.GetComponent<ParticleSystem>();
         if (d != null && !d.isPlaying)
@@ -60,13 +55,13 @@ public class RandomFunctions : MonoBehaviour
     {
         return incoming - 2 * Vector3.Dot(incoming, axis) * axis;
     }
-    public List<string> GenerateBlankHiddenData()
+    public static Dictionary<string,string> GenerateBlankHiddenData()
     {
-        return new List<string>()
+        return new Dictionary<string, string>()
         {
-            /*Object ID, Tags*/ Tags.GenerateID(),
-            /*Is Real (multiplayer object handling)*/ "false",
-            /*Parent ID, Tags*/ "-",
+            /*Object ID, Tags*/ {"ID", Tags.GenerateID()},
+            /*Is Real (multiplayer object handling)*/ {"IsReal", "false"},
+            /*Parent ID, Tags*/ {"ParentID", "-"},
         };
     }
 
@@ -215,7 +210,7 @@ public class RandomFunctions : MonoBehaviour
 
 
 
-    public double GetUnixTime(int type = -1)
+    public static double GetUnixTime(int type = -1)
     {
         //returns the curret unix time
         /* Type values:
@@ -303,59 +298,6 @@ public class RandomFunctions : MonoBehaviour
         return Mathf.Lerp(0, 1, sex);
     }
 
-
-    List<string> parentdata = new List<string>();
-    [Obsolete("Use SpawnSystem.Instance.SpawnObject() instead.")]
-    public GameObject SpawnObject(int refe, GameObject parent, Vector3 pos, Quaternion rot, bool SendToEveryone = false, string data = "", string hidden_data = "")
-    {
-        //object parenting over multiplayer is untested
-        List<string> dadalol = Converter.StringToList(data);
-        List<string> hidden_dadalol = Converter.StringToList(hidden_data);
-        if (hidden_data == "")
-        {
-            hidden_dadalol = GenerateBlankHiddenData();
-        }
-
-        /* this code used to work, but I revamped the tags code, and can't be fucked to update this deprecated one. Oh well.
-        if (hidden_dadalol[2] != "-" && Tags.dict.ContainsKey(hidden_dadalol[2]))
-        {
-            parent = Tags.dict[hidden_dadalol[2]];
-        }
-        if (Tags.gameobject_dict.ContainsKey(parent))
-        {
-            hidden_dadalol[2] = Tags.gameobject_dict[parent];
-        }*/
-
-        //incase you want to run some stuff here based on the object that is going to be spawned
-        switch (refe)
-        {
-            case 0:
-                break;
-        }
-
-        var f = Instantiate(SpawnRefs[refe], pos, rot, parent.transform);
-
-        var d = f.GetComponent<SpawnData>();
-        if (d != null)
-        {
-            //Requires objects to have SpawnData.cs to allow for data sending
-            d.Data = dadalol;
-            d.Hidden_Data = hidden_dadalol;
-            d.IsReal = hidden_dadalol[1] == "true";
-        }
-
-        if (SendToEveryone)
-        {
-            // This code works, its just commented out by default because it requires Ocks Tools Multiplayer to be added
-            //used for syncing the spawn of a local gameobject over the network instead of being a networked object
-
-            //known issue: object parent is not preserved when spawning a local object over multiplayer
-
-
-            //ServerGamer.Instance.SpawnObjectServerRpc(refe, pos, rot, ClientID, ListToString(dadalol), ListToString(hidden_dadalol));
-        }
-        return f;
-    }
 
 
 }

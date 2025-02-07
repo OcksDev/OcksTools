@@ -43,21 +43,21 @@ public class SpawnSystem : MonoBehaviour
     public GameObject SpawnObject(string name, GameObject parent, Vector3 pos, Quaternion rot, bool SendToEveryone = false, string data = "", string hidden_data = "")
     {
         //object parenting over multiplayer is untested
-        List<string> dadalol = Converter.StringToList(data);
-        List<string> hidden_dadalol = Converter.StringToList(hidden_data);
+        Dictionary<string,string> dadalol = Converter.StringToDictionary(data);
+        Dictionary<string,string> hidden_dadalol = Converter.StringToDictionary(hidden_data);
         if (hidden_data == "")
         {
-            hidden_dadalol = RandomFunctions.Instance.GenerateBlankHiddenData();
+            hidden_dadalol = RandomFunctions.GenerateBlankHiddenData();
         }
 
         //object parenting using Tags, should work over multiplayer, untested
-        if (hidden_dadalol[2] != "-" && Tags.AllTags["Exist"].ContainsKey(hidden_dadalol[2]))
+        if (hidden_dadalol["ParentID"] != "-" && Tags.AllTags["Exist"].ContainsKey(hidden_dadalol["ParentID"]))
         {
-            parent = (GameObject)Tags.AllTags["Exist"][hidden_dadalol[2]];
+            parent = (GameObject)Tags.AllTags["Exist"][hidden_dadalol["ParentID"]];
         }
         if (Tags.AllTagsReverse["Exist"].ContainsKey(parent))
         {
-            hidden_dadalol[2] = Tags.AllTagsReverse["Exist"][parent];
+            hidden_dadalol["ParentID"] = Tags.AllTagsReverse["Exist"][parent];
         }
 
         //incase you want to run some stuff here based on the object that is going to be spawned
@@ -87,7 +87,7 @@ public class SpawnSystem : MonoBehaviour
             //Requires objects to have SpawnData.cs to allow for data sending
             d.Data = dadalol;
             d.Hidden_Data = hidden_dadalol;
-            d.IsReal = hidden_dadalol[1] == "true";
+            d.IsReal = hidden_dadalol["IsReal"] == "true";
             d.Start();
         }
 
@@ -96,10 +96,10 @@ public class SpawnSystem : MonoBehaviour
             // This code works, its just commented out by default because it requires Ocks Tools Multiplayer to be added
             //used for syncing the spawn of a local gameobject over the network instead of being a networked object
 
-            //known issue: object parent is not preserved when spawning a local object over multiplayer
+            // Object parenting should work with internet connections, provided the IDs of the parents are synced across gamestates
 
 
-            //ServerGamer.Instance.SpawnObjectServerRpc(refe, pos, rot, ClientID, RandomFunctions.Instance.ListToString(dadalol), RandomFunctions.Instance.ListToString(hidden_dadalol));
+            //ServerGamer.Instance.SpawnObjectServerRpc(name, pos, rot, ServerGamer.Instance.ClientID, Converter.DictionaryToString(dadalol), Converter.DictionaryToString(hidden_dadalol));
         }
         return f;
     }

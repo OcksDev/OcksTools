@@ -5,19 +5,14 @@ using UnityEngine;
 
 public class ServerGamer : NetworkBehaviour
 {
-    private static ServerGamer instance;
     public string ClientID;
 
     // public NetworkVariable<int> PlayerNum = new NetworkVariable<int>(100, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     // FixedString128Bytes
-    public static ServerGamer Instance
-    {
-        get { return instance; }
-    }
-
+    public static ServerGamer Instance;
     private void Awake()
     {
-        if (Instance == null) instance = this;
+        if (Instance == null) Instance = this;
         ClientID = Tags.GenerateID();
         Console.Log("My ID: " + ClientID);
     }
@@ -107,7 +102,6 @@ public class ServerGamer : NetworkBehaviour
         RecieveOcksVarClientRpc("Host", poopid, name, ONVManager.OcksVars[poopid][name].Data);
     }
 
-    //chat related method
     [ClientRpc]
     public void RecieveOcksVarClientRpc(string id, string NetID, string Name, string data)
     {

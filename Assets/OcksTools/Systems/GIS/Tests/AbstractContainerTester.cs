@@ -31,7 +31,7 @@ public class AbstractContainerTester : MonoBehaviour
         string e = "";
         foreach (var s in pp.slots)
         {
-            e += GISLol.Instance.ItemDict[s.Held_Item.ItemIndex].Name + ": " + s.Held_Item.Amount + Environment.NewLine;
+            e += GISLol.Instance.ItemDict[s.Held_Item.Name].Name + ": " + s.Held_Item.Amount + Environment.NewLine;
         }
     }
 

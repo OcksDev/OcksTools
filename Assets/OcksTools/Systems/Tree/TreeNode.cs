@@ -177,7 +177,6 @@ public class TreeNode : MonoBehaviour
     {
         Hidden,
         Locked, // unused
-        ShownButDisabled, // unused
         Available,
         Obtained,
     }

@@ -4,19 +4,18 @@ using UnityEngine;
 
 public class SpawnData : MonoBehaviour
 {
-    public string Type = "";
-    public List<string> Data= new List<string>();
-    public List<string> Hidden_Data= new List<string>();
+    public Dictionary<string,string> Data= new Dictionary<string, string>();
+    public Dictionary<string, string> Hidden_Data = new Dictionary<string, string>();
     public bool IsReal; // a boolean for the ages
     public void Start()
     {
-        if (Hidden_Data.Count == 0) Hidden_Data = RandomFunctions.Instance.GenerateBlankHiddenData();
+        if (Hidden_Data.Count == 0) Hidden_Data = RandomFunctions.GenerateBlankHiddenData();
 
-        Tags.DefineTagReference(gameObject, Hidden_Data[0]);
+        Tags.DefineTagReference(gameObject, Hidden_Data["ID"]);
     }
 
     private void OnDestroy()
     {
-        Tags.ClearAllOf(Hidden_Data[0]);
+        Tags.ClearAllOf(Hidden_Data["ID"]);
     }
 }

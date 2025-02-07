@@ -66,7 +66,7 @@ public class GISContainer : MonoBehaviour
                 s.Held_Item = new GISItem(GISLol.Instance.Items[UnityEngine.Random.Range(0, GISLol.Instance.Items.Count)].Name);
                 s.Held_Item.Amount = 69;
                 s.Held_Item.Container = this;
-                if (s.Held_Item.ItemIndex == "Empty")
+                if (s.Held_Item.Name == "Empty")
                 {
                     s.Held_Item.Amount = 0;
                 }
@@ -104,7 +104,7 @@ public class GISContainer : MonoBehaviour
 
     public bool SaveTempContents()
     {
-        if(GISLol.Instance.Mouse_Held_Item.ItemIndex == "Empty")
+        if(GISLol.Instance.Mouse_Held_Item.Name == "Empty")
         {
             saved_items.Clear();
             foreach(var h in slots)
@@ -145,7 +145,7 @@ public class GISContainer : MonoBehaviour
         int k = 0;
         foreach (var j in slots)
         {
-            if (j.Held_Item.ItemIndex == "Empty")
+            if (j.Held_Item.Name == "Empty")
             {
                 i = k;
                 break;
@@ -238,6 +238,19 @@ public class GISContainer : MonoBehaviour
         return amnt;
     }
 
+    public int TotalAmountOfItems()
+    {
+        int total = 0;
+        foreach (var t in slots)
+        {
+            if(t.Held_Item != null && t.Held_Item.Name != "Empty")
+            {
+                total += t.Held_Item.Amount;
+            }
+        }
+        return total;
+    }
+
     public bool ReturnItem(GISItem Held_Item)
     {
         bool left = true;
@@ -249,7 +262,7 @@ public class GISContainer : MonoBehaviour
             var x = slots[i].Held_Item;
             if (x.Compare(a))
             {
-                int max = GISLol.Instance.ItemDict[a.ItemIndex].MaxAmount;
+                int max = GISLol.Instance.ItemDict[a.Name].MaxAmount;
                 int t = x.Amount + a.Amount;
                 if (max <= 0)
                 {
@@ -269,7 +282,7 @@ public class GISContainer : MonoBehaviour
                     }
                 }
             }
-            else if (x.ItemIndex == "Empty")
+            else if (x.Name == "Empty")
             {
                 found = true;
                 slots[i].Held_Item = a;
@@ -290,7 +303,7 @@ public class GISContainer : MonoBehaviour
     //any method prefixed with "Abstract" should only be used if the container is abstract.
     public void AbstractAdd(GISItem item)
     {
-        var f = GISLol.Instance.ItemDict[item.ItemIndex].MaxAmount;
+        var f = GISLol.Instance.ItemDict[item.Name].MaxAmount;
         foreach (var s in slots)
         {
             if (item.Compare(s.Held_Item))
