@@ -19,12 +19,14 @@ public class FileSystem : MonoBehaviour
 
 
 
+    //change these to match your game
+    public const string GameVer = "v1.1.1";
+    private const string GameFolderName = "OcksTools";
+    private const string GameTrueName = "Ocks Tools";
 
 
     private static FileSystem instance;
-    private string GameFolderName = "OcksTools";
-    private string GameName = "Ocks Tools v?";
-    public const string GameVer = "v1.1.0";
+    private string GameName = "?";
     [HideInInspector]
     public string DirectoryLol = "";
     [HideInInspector]
@@ -48,7 +50,7 @@ public class FileSystem : MonoBehaviour
         CreateFolder(UniversalDirectory);
 
         WriteFile(FileLocations["OcksGames"], "", false);
-        GameName = $"Ocks Tools {GameVer}";
+        GameName = $"{GameTrueName} {GameVer}";
         var s = ReadFile(FileLocations["OcksGames"]);
         if (!s.Contains(GameName))
         {
