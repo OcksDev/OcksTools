@@ -10,6 +10,8 @@
   - Two new easing functions, EaseBounce and EaseOvershoot (and new testing scene for all easing functions)
   - Officially removed support for old RandomFunctions.SpawnObject
   - SpawnParticle no longer uses an inbuilt list for particle references.
+- Tree Improvements
+  - "Locked" state now has functionality
 - SpawnData Improvements
   - Uses Dictionaries instead of Lists for data handling
 - Misc Changes

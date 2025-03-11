@@ -7,8 +7,12 @@ public class TreeNode : MonoBehaviour
     public string Name;
     public List<string> Prerequisites = new List<string>();
     [HideInInspector]
-    public List<string> RelatedNerds;
+    public List<string> RelateNodes;
+    [HideInInspector]
+    public List<string> RelatedUpdates;
     public ViewReq ViewRequirement = ViewReq.AtLeastOne;
+    public List<string> LockPrerequisites = new List<string>();
+    public ViewReq UnlockRequirement = ViewReq.AtLeastOne;
     public ViewStates StartState = ViewStates.Hidden;
     [HideInInspector]
     public ViewStates ViewState = ViewStates.Hidden;
@@ -20,7 +24,7 @@ public class TreeNode : MonoBehaviour
     {
         TreeHandler.Nodes.Add(Name, this);
         ViewState = StartState;
-        RelatedNerds = new List<string>(Prerequisites);
+        RelateNodes = new List<string>(Prerequisites);
         TreeHandler.SpawnPartners.Append(Name, SpawnPartner);
         TreeHandler.LoadCurrentState.Append(Name, UpdateState);
         TreeHandler.SpawnLines.Append(Name, SpawnLines);
@@ -29,10 +33,19 @@ public class TreeNode : MonoBehaviour
     public void UpdateState()
     {
         var t = TreeHandler.Instance;
+        bool lockedview = false;
         if (t.MeetsReqs(Prerequisites, ViewRequirement))
         {
             switch (ViewState)
             {
+                case ViewStates.Locked:
+                    lockedview = true;
+                    if(t.MeetsReqs(LockPrerequisites, UnlockRequirement))
+                    {
+                        ViewState = ViewStates.Available;
+                        goto Ragg;
+                    }
+                    break;
                 case ViewStates.Hidden:
                     ViewState = ViewStates.Available;
                     goto Ragg;
@@ -52,6 +65,9 @@ public class TreeNode : MonoBehaviour
          canseeme = false;
         switch (ViewState)
         {
+            case ViewStates.Locked:
+                canseeme = lockedview;
+                break;
             case ViewStates.Available:
             case ViewStates.Obtained:
                 canseeme = true;
@@ -67,12 +83,16 @@ public class TreeNode : MonoBehaviour
     public void PropogatedUpdate()
     {
         UpdateState();
-        foreach(var a in RelatedNerds)
+        foreach(var a in RelateNodes)
+        {
+            TreeHandler.Nodes[a].UpdateState();
+        }
+        foreach(var a in RelatedUpdates)
         {
             TreeHandler.Nodes[a].UpdateState();
         }
         UpdateAllLines();
-        foreach(var a in RelatedNerds)
+        foreach(var a in RelateNodes)
         {
             if (Prerequisites.Contains(a)) continue;
             TreeHandler.Nodes[a].UpdateAllLines();
@@ -106,6 +126,9 @@ public class TreeNode : MonoBehaviour
             case ViewStates.Obtained:
                 //clicked an already obtained thing
                 break;
+            case ViewStates.Locked:
+                //clicked something that is locked
+                break;
             case ViewStates.Available:
                 TreeHandler.CurrentOwnerships.Add(Name, "");
                 PropogatedUpdate();
@@ -121,7 +144,7 @@ public class TreeNode : MonoBehaviour
     }
     public void SpawnLines()
     {
-        foreach(var a in RelatedNerds)
+        foreach(var a in RelateNodes)
         {
             if (Prerequisites.Contains(a)) continue;
             var li = Instantiate(LineObject, transform.position, Quaternion.identity, TreeHandler.Instance.LineParent.transform);
@@ -176,7 +199,7 @@ public class TreeNode : MonoBehaviour
     public enum ViewStates
     {
         Hidden,
-        Locked, // unused
+        Locked,
         Available,
         Obtained,
     }

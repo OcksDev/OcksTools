@@ -33,6 +33,7 @@ public class TreeExtraObject : MonoBehaviour
                     ViewState = ViewStates.Available;
                     goto Ragg;
                 case ViewStates.Available:
+                case ViewStates.Locked:
                 Ragg:
                     ViewState = ViewStates.Obtained;
                     break;
@@ -46,6 +47,7 @@ public class TreeExtraObject : MonoBehaviour
         switch (ViewState)
         {
             case ViewStates.Available:
+            case ViewStates.Locked:
             case ViewStates.Obtained:
                 canseeme = true;
                 break;

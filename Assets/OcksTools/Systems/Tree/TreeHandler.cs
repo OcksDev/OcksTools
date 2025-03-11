@@ -33,7 +33,11 @@ public class TreeHandler : MonoBehaviour
         {
             foreach (var n in node.Value.Prerequisites)
             {
-                Nodes[n].RelatedNerds.Add(node.Key);
+                Nodes[n].RelateNodes.Add(node.Key);
+            }
+            foreach (var n in node.Value.LockPrerequisites)
+            {
+                Nodes[n].RelatedUpdates.Add(node.Key);
             }
         }
         //phase 5 - spawn every line object
