@@ -7,9 +7,10 @@ public class StoredRandom : MonoBehaviour
 {
     public bool AutoSaveAndLoad = true;
     public Dictionary<string, OXRandStore> randoms = new Dictionary<string, OXRandStore>();
-
+    public static StoredRandom Instance;
     private void Awake()
     {
+        Instance = this;
         if (AutoSaveAndLoad)
         {
             SaveSystem.SaveAllData.Append(SS_SaveRandData);
@@ -17,7 +18,7 @@ public class StoredRandom : MonoBehaviour
         }
     }
 
-    public void DefineRandom(string name, int start)
+    public void DefineRandom(string name, int start = -1)
     {
         if (randoms.ContainsKey(name))
         {
@@ -33,7 +34,11 @@ public class StoredRandom : MonoBehaviour
         randoms.Remove(name);
     }
 
-    public System.Random GetRand(string a) { return randoms[a].Rand; }
+    public System.Random GetRand(string a) 
+    {
+        randoms[a].Hits++;
+        return randoms[a].Rand; 
+    }   
 
     public string ExportToString()
     {
@@ -42,6 +47,7 @@ public class StoredRandom : MonoBehaviour
         {
             list.Add(a.Value.ConvertToString());
         }
+        Debug.Log("S: " + Converter.ListToString(list, "||"));
         return Converter.ListToString(list, "||");
 
     }
@@ -80,7 +86,15 @@ public class OXRandStore
     public string Name = "";
     public OXRandStore(int start, string name)
     {
-        Rand = new System.Random(start);
+        if (start != -1)
+        {
+            Rand = new System.Random(start);
+        }
+        else
+        {
+            start = new System.Random().Next(int.MinValue, int.MaxValue);
+            Rand = new System.Random(start);
+        }
         Initial = start;
         Name = name;
     }
@@ -90,12 +104,14 @@ public class OXRandStore
     }
     public string ConvertToString()
     {
-        return Converter.ListToString(new List<string>()
+        var aa = Converter.ListToString(new List<string>()
         {
             Name,
             Hits.ToString(),
             Initial.ToString(),
         }, ";;");
+        Debug.Log(aa);
+        return aa;
     }
     public void StringToData(string data)
     {

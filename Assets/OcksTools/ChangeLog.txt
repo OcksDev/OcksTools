@@ -2,7 +2,7 @@
 ------------
    v1.1.1
 - New Notification System
-- New Stored Random script
+- New Stored Random script (plus testing scene/script)
 - GIS Improvements
   - Added new method for getting total amount of items in container
   - Added event that is called when a slot is interacted with
