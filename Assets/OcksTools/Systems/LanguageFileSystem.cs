@@ -11,8 +11,8 @@ public class LanguageFileSystem : MonoBehaviour
      *  File System
      *  Random Functions
      */
-    public bool EditorAuthorityOnFile = true;
-    public bool AllowPublicAccess = true;
+    public bool EditorAuthorityOnFile = true; //while you are in the editor it will overwrite the lang files on the local machine
+    public bool AllowPublicAccess = true; //puts the lang files in a publically readable/modifiable location
     public List<OXLanguageFileIndex> Files = new List<OXLanguageFileIndex>();
     Dictionary<string, Dictionary<string, string>> Data = new Dictionary<string, Dictionary<string, string>>();
 
@@ -126,7 +126,7 @@ public class LanguageFileSystem : MonoBehaviour
             goto d9;
         }
         var s = Converter.StringToList(f.ReadFile(realme), Environment.NewLine);
-        Debug.Log("Penis: " + s.Count);
+
         foreach (var d in s)
         {
             if (d.IndexOf(": ") > -1)
