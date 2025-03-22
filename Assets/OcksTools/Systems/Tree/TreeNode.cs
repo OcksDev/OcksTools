@@ -22,6 +22,13 @@ public class TreeNode : MonoBehaviour
     public Dictionary<string, Transform> lines = new Dictionary<string, Transform>();
     private void Awake()
     {
+        InitializeNode();
+    }
+    bool hasinit = false;
+    public void InitializeNode()
+    {
+        if (hasinit) return;
+        hasinit = true;
         TreeHandler.Nodes.Add(Name, this);
         ViewState = StartState;
         RelateNodes = new List<string>(Prerequisites);
@@ -30,6 +37,8 @@ public class TreeNode : MonoBehaviour
         TreeHandler.SpawnLines.Append(Name, SpawnLines);
         TreeHandler.UpdateLines.Append(Name, UpdateAllLines);
     }
+
+
     public void UpdateState()
     {
         var t = TreeHandler.Instance;
