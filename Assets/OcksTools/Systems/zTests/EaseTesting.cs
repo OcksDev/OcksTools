@@ -20,8 +20,10 @@ public class EaseTesting : MonoBehaviour
         //yield return StartCoroutine(OXLerp.Anim((x) => { Debug.Log("1s: " + x); }));
 
         var pp = peb.transform.position;
+        var col = peb.GetComponent<SpriteRenderer>();
+        var c = col.color;
         StartCoroutine(OXLerp.Anim(3, (x) => {
-            peb.transform.position = Vector3.Lerp(pp, Vector3.zero, RandomFunctions.EaseInAndOut(x));
+            peb.transform.position = Vector3.LerpUnclamped(pp, Vector3.zero, RandomFunctions.EaseInAndOut(x));
         }));
 
         // StartCoroutine(OXLerp.Anim(3, (x) => { Debug.Log("3s: " + x); }));
