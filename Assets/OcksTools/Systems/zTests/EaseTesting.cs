@@ -17,16 +17,15 @@ public class EaseTesting : MonoBehaviour
     {
         yield return new WaitForSeconds(1f);
 
-        //yield return StartCoroutine(OXLerp.Anim((x) => { Debug.Log("1s: " + x); }));
 
         var pp = peb.transform.position;
-        var col = peb.GetComponent<SpriteRenderer>();
-        var c = col.color;
-        StartCoroutine(OXLerp.Anim(3, (x) => {
+        yield return StartCoroutine(OXLerp.Bounce(4, 0.25f, (x) => {
+            peb.transform.position = Vector3.LerpUnclamped(pp, Vector3.zero, RandomFunctions.EaseInAndOut(x));
+        }));
+        StartCoroutine(OXLerp.BounceInfinite(1f, (x) => {
             peb.transform.position = Vector3.LerpUnclamped(pp, Vector3.zero, RandomFunctions.EaseInAndOut(x));
         }));
 
-        // StartCoroutine(OXLerp.Anim(3, (x) => { Debug.Log("3s: " + x); }));
     }
 
     void Update()
