@@ -8,6 +8,25 @@ public class EaseTesting : MonoBehaviour
     public float timer = 0;
     public List<GameObject> gameObjects;
     // Update is called once per frame
+    public GameObject peb;
+    public void Start()
+    {
+        StartCoroutine(Begin());
+    }
+    public IEnumerator Begin()
+    {
+        yield return new WaitForSeconds(1f);
+
+        //yield return StartCoroutine(OXLerp.Anim((x) => { Debug.Log("1s: " + x); }));
+
+        var pp = peb.transform.position;
+        StartCoroutine(OXLerp.Anim(3, (x) => {
+            peb.transform.position = Vector3.Lerp(pp, Vector3.zero, RandomFunctions.EaseInAndOut(x));
+        }));
+
+        // StartCoroutine(OXLerp.Anim(3, (x) => { Debug.Log("3s: " + x); }));
+    }
+
     void Update()
     {
         timer = timer + Time.deltaTime * speed;
