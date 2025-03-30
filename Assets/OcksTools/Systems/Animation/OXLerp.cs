@@ -5,17 +5,7 @@ using UnityEngine;
 
 public class OXLerp : MonoBehaviour
 {
-    public static IEnumerator Linear(Action<float> method)
-    {
-        float x = 0f;
-        while (x < 1)
-        {
-            x = Mathf.Clamp01(x+Time.deltaTime);
-            method(x);
-            yield return null;
-        }
-    }
-    public static IEnumerator Linear(float time, Action<float> method)
+    public static IEnumerator Linear(Action<float> method, float time = 1f)
     {
         float x = 0f;
         float f = 1 / time;
@@ -26,33 +16,34 @@ public class OXLerp : MonoBehaviour
             yield return null;
         }
     }
-
-    //bounces back and forth linearly between 0-1
-    public static IEnumerator Bounce(int bounces, Action<float> method)
+    //infinitely progresses from 0-1, when it reaches 1 it jumps back to 0
+    public static IEnumerator LinearInfniteLooped(Action<float> method, float time = 1f)
     {
         float x = 0f;
-        int i = 0;
-        while(i < bounces)
+        float f = 1 / time;
+        while (true)
         {
-            while (x < 1)
-            {
-                x = Mathf.Clamp01(x + Time.deltaTime);
-                method(x);
-                yield return null;
-            }
-            i++;
-            if(i >= bounces) yield break;
-            while (x > 0)
-            {
-                x = Mathf.Clamp01(x - Time.deltaTime);
-                method(x);
-                yield return null;
-            }
-            i++;
-            if (i >= bounces) yield break;
+            x = (x+Time.deltaTime*f)%1;
+            method(x);
+            yield return null;
         }
     }
-    public static IEnumerator Bounce(int bounces, float time, Action<float> method)
+
+    //infinitely progresses from 0-infinity, never stops increasing
+    public static IEnumerator LinearInfniteUncapped(Action<float> method, float time = 1f)
+    {
+        float x = 0f;
+        float f = 1 / time;
+        while (true)
+        {
+            x = x+Time.deltaTime*f;
+            method(x);
+            yield return null;
+        }
+    }
+
+    //bounces back and forth linearly between 0-1
+    public static IEnumerator Bounce(Action<float> method, int bounces, float time = 1f)
     {
         float x = 0f;
         float f = 1 / time;
@@ -77,26 +68,7 @@ public class OXLerp : MonoBehaviour
             if (i >= bounces) yield break;
         }
     }
-    public static IEnumerator BounceInfinite(Action<float> method)
-    {
-        float x = 0f;
-        while (true)
-        {
-            while (x < 1)
-            {
-                x = Mathf.Clamp01(x + Time.deltaTime);
-                method(x);
-                yield return null;
-            }
-            while (x > 0)
-            {
-                x = Mathf.Clamp01(x - Time.deltaTime);
-                method(x);
-                yield return null;
-            }
-        }
-    }
-    public static IEnumerator BounceInfinite(float time, Action<float> method)
+    public static IEnumerator BounceInfinite(Action<float> method, float time = 1f)
     {
         float x = 0f;
         float f = 1 / time;

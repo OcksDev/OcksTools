@@ -9,6 +9,7 @@ public class EaseTesting : MonoBehaviour
     public List<GameObject> gameObjects;
     // Update is called once per frame
     public GameObject peb;
+    public GameObject peb2;
     public void Start()
     {
         StartCoroutine(Begin());
@@ -19,12 +20,17 @@ public class EaseTesting : MonoBehaviour
 
 
         var pp = peb.transform.position;
-        yield return StartCoroutine(OXLerp.Bounce(4, 0.25f, (x) => {
+        yield return StartCoroutine(OXLerp.Bounce((x) => {
+            peb.transform.position = Vector3.LerpUnclamped(pp, Vector3.zero, RandomFunctions.EaseInAndOut(x));
+        }, 4, 1));
+        StartCoroutine(OXLerp.BounceInfinite((x) => 
+        {
             peb.transform.position = Vector3.LerpUnclamped(pp, Vector3.zero, RandomFunctions.EaseInAndOut(x));
         }));
-        StartCoroutine(OXLerp.BounceInfinite(1f, (x) => {
-            peb.transform.position = Vector3.LerpUnclamped(pp, Vector3.zero, RandomFunctions.EaseInAndOut(x));
-        }));
+        StartCoroutine(OXLerp.LinearInfniteLooped((x) =>
+        {
+            peb2.transform.position = (Quaternion.Euler(0, 0, RandomFunctions.EaseInAndOut(x)*360) * Vector3.right) * 2.5f;
+        }, 3f));
 
     }
 
