@@ -18,6 +18,7 @@
   - New Node Initializer script to better deal with nodes first being defined
 - SpawnData Improvements
   - Uses Dictionaries instead of Lists for data handling
+- New FunnyMultiCall (Its very niche)
 - Misc Changes
   - Some new default assets
   - EntityOXS now has a *slightly* different method of damage application
