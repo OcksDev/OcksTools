@@ -74,14 +74,14 @@ public class RoomLol : MonoBehaviour
         //whichs rooms are chosen for certain directions
         foreach (var room in AllRooms)
         {
-            if (room.HasLeftDoor && !room.IsEndpoint) LeftRooms.Add(room);
-            if (room.HasRightDoor && !room.IsEndpoint) RightRooms.Add(room);
-            if (room.HasTopDoor && !room.IsEndpoint) UpRooms.Add(room);
-            if (room.HasBottomDoor && !room.IsEndpoint) DownRooms.Add(room);
-            if (room.HasLeftDoor && room.IsEndpoint) EndLeftRooms.Add(room);
-            if (room.HasRightDoor && room.IsEndpoint) EndRightRooms.Add(room);
-            if (room.HasTopDoor && room.IsEndpoint) EndUpRooms.Add(room);
-            if (room.HasBottomDoor && room.IsEndpoint) EndDownRooms.Add(room);
+            if (room.LeftDoors.Count > 0 && !room.IsEndpoint) LeftRooms.Add(room);
+            if (room.RightDoors.Count > 0 && !room.IsEndpoint) RightRooms.Add(room);
+            if (room.TopDoors.Count > 0 && !room.IsEndpoint) UpRooms.Add(room);
+            if (room.BottomDoors.Count > 0 && !room.IsEndpoint) DownRooms.Add(room);
+            if (room.LeftDoors.Count > 0 && room.IsEndpoint) EndLeftRooms.Add(room);
+            if (room.RightDoors.Count > 0 && room.IsEndpoint) EndRightRooms.Add(room);
+            if (room.TopDoors.Count > 0 && room.IsEndpoint) EndUpRooms.Add(room);
+            if (room.BottomDoors.Count > 0 && room.IsEndpoint) EndDownRooms.Add(room);
         }
     }
     public CoolRoom GenerateFromRooms(int lvl, int[,] roomcol, int dir, Vector2 pos)
@@ -129,131 +129,190 @@ public class RoomLol : MonoBehaviour
         //Debug.Log("Fuck dawg " + lvl + ", " + dir);
         while (available_rooms.Count > 0)
         {
-            cycles++;
             int index = UnityEngine.Random.Range(0, available_rooms.Count);
             Room rom = available_rooms[index];
-            bool keepgoing = true;
-            ret.room = rom;
-            var pos2 = pos;
-            switch (dir)
-            {
-                case 0:
-                    pos2 -= rom.BottomDoor;
-                    pos2 -= new Vector2(0, 1);
-                    break;
-                case 1:
-                    pos2 -= rom.TopDoor;
-                    pos2 += new Vector2(0, 1);
-                    break;
-                case 2:
-                    pos2 -= rom.RightDoor;
-                    pos2 -= new Vector2(1, 0);
-                    break;
-                case 3:
-                    pos2 -= rom.LeftDoor;
-                    pos2 += new Vector2(1, 0);
-                    break;
-            }
-            ret.pos = pos2;
-            for (int i = 0; i < rom.RoomSize.x && keepgoing; i++)
-            {
-                for (int j = 0; j < rom.RoomSize.y && keepgoing; j++)
-                {
-                    if (roomcol[i + (int)pos2.x, j + (int)pos2.y]>0)
-                    {
-                        keepgoing = false;
-                    }
-                }
-            }
-            if (keepgoing)
+            Func<int, int> getamnt = (x) =>
             {
 
-                if (dir != 1 && rom.HasTopDoor)
+                switch (x)
                 {
-                    var v = pos2 + rom.TopDoor - new Vector2(0, 1);
-                    if (roomcol[(int)v.x, (int)v.y] > 0) keepgoing = false;
+                    case 0:
+                        return rom.BottomDoors.Count;
+                    case 1:
+                        return rom.TopDoors.Count;
+                    case 2:
+                        return rom.RightDoors.Count;
+                    case 3:
+                        return rom.LeftDoors.Count;
+                    default:
+                        return 1;
                 }
-                if (dir != 0 && rom.HasBottomDoor)
-                {
-                    var v = pos2 + rom.BottomDoor + new Vector2(0, 1);
-                    if (roomcol[(int)v.x, (int)v.y] > 0) keepgoing = false;
-                }
-                if (dir != 3 && rom.HasLeftDoor)
-                {
-                    var v = pos2 + rom.LeftDoor - new Vector2(1, 0);
-                    if (roomcol[(int)v.x, (int)v.y] > 0) keepgoing = false;
-                }
-                if (dir != 2 && rom.HasRightDoor)
-                {
-                    var v = pos2 + rom.RightDoor + new Vector2(1, 0);
-                    if (roomcol[(int)v.x, (int)v.y] > 0) keepgoing = false;
-                }
-            }
 
-            if (keepgoing)
+            };
+            var aaa = getamnt(dir);
+            for(int doorindexlol = 0; doorindexlol < aaa; doorindexlol++)
             {
+                cycles++;
+                bool keepgoing = true;
+                ret.room = rom;
+                var pos2 = pos;
+                switch (dir)
+                {
+                    case 0:
+                        pos2 -= rom.BottomDoors[doorindexlol];
+                        pos2 -= new Vector2(0, 1);
+                        break;
+                    case 1:
+                        pos2 -= rom.TopDoors[doorindexlol];
+                        pos2 += new Vector2(0, 1);
+                        break;
+                    case 2:
+                        pos2 -= rom.RightDoors[doorindexlol];
+                        pos2 -= new Vector2(1, 0);
+                        break;
+                    case 3:
+                        pos2 -= rom.LeftDoors[doorindexlol];
+                        pos2 += new Vector2(1, 0);
+                        break;
+                }
+
+                ret.pos = pos2; // ???
+
                 for (int i = 0; i < rom.RoomSize.x && keepgoing; i++)
                 {
                     for (int j = 0; j < rom.RoomSize.y && keepgoing; j++)
                     {
-                        roomcol[i + (int)pos2.x, j + (int)pos2.y]++;
+                        if (roomcol[i + (int)pos2.x, j + (int)pos2.y] > 0)
+                        {
+                            keepgoing = false;
+                        }
                     }
                 }
-                bool good = true;
-                if (good && dir != 1 && rom.HasTopDoor)
+                if (keepgoing)
                 {
-                    var a = GenerateFromRooms(lvl - 1, roomcol, 0, pos2 + rom.TopDoor);
-                    if (a.room != null && a.WasChill)
+
+                    if (rom.TopDoors.Count > 0)
                     {
-                        ret.comlpetedRooms.Add(a);
+                        for (int i = 0; i < rom.TopDoors.Count; i++)
+                        {
+                            if (dir == 1 && i == doorindexlol) continue;
+                            var v = pos2 + rom.TopDoors[i] - new Vector2(0, 1);
+                            if (roomcol[(int)v.x, (int)v.y] > 0) keepgoing = false;
+                        }
                     }
-                    good = a.WasChill;
-                }
-                if (good && dir != 0 && rom.HasBottomDoor)
-                {
-                    var a = GenerateFromRooms(lvl - 1, roomcol, 1, pos2 + rom.BottomDoor);
-                    if (a.room != null && a.WasChill)
+                    if (rom.BottomDoors.Count > 0 && keepgoing)
                     {
-                        ret.comlpetedRooms.Add(a);
+                        for (int i = 0; i < rom.BottomDoors.Count; i++)
+                        {
+                            if (dir == 0 && i == doorindexlol) continue;
+                            var v = pos2 + rom.BottomDoors[i] + new Vector2(0, 1);
+                            if (roomcol[(int)v.x, (int)v.y] > 0) keepgoing = false;
+                        }
                     }
-                    good = a.WasChill;
-                }
-                if (good && dir != 3 && rom.HasLeftDoor)
-                {
-                    var a = GenerateFromRooms(lvl - 1, roomcol, 2, pos2 + rom.LeftDoor);
-                    if (a.room != null && a.WasChill)
+                    if (rom.LeftDoors.Count > 0 && keepgoing)
                     {
-                        ret.comlpetedRooms.Add(a);
+                        for (int i = 0; i < rom.LeftDoors.Count; i++)
+                        {
+                            if (dir == 3 && i == doorindexlol) continue;
+                            var v = pos2 + rom.LeftDoors[i] - new Vector2(1, 0);
+                            if (roomcol[(int)v.x, (int)v.y] > 0) keepgoing = false;
+                        }
                     }
-                    good = a.WasChill;
-                }
-                if (good && dir != 2 && rom.HasRightDoor)
-                {
-                    var a = GenerateFromRooms(lvl - 1, roomcol, 3, pos2 + rom.RightDoor);
-                    if (a.room != null && a.WasChill)
+                    if (rom.RightDoors.Count > 0 && keepgoing)
                     {
-                        ret.comlpetedRooms.Add(a);
+                        for (int i = 0; i < rom.RightDoors.Count; i++)
+                        {
+                            if (dir == 2 && i == doorindexlol) continue;
+                            var v = pos2 + rom.RightDoors[i] + new Vector2(1, 0);
+                            if (roomcol[(int)v.x, (int)v.y] > 0) keepgoing = false;
+                        }
                     }
-                    good = a.WasChill;
                 }
-                //Debug.Log("Child Is Chill: " + lvl + ", " + good + ", " + dir);
-                if (!good)
+
+                if (keepgoing)
                 {
-                    ClearFromCoolRoom(ret);
-                    available_rooms.RemoveAt(index);
-                }
-                else
-                {
-                    found_place = true;
-                    break;
+                    for (int i = 0; i < rom.RoomSize.x && keepgoing; i++)
+                    {
+                        for (int j = 0; j < rom.RoomSize.y && keepgoing; j++)
+                        {
+                            roomcol[i + (int)pos2.x, j + (int)pos2.y]++;
+                        }
+                    }
+                    bool good = true;
+                    if (good && rom.TopDoors.Count > 0)
+                    {
+                        for (int i = 0; i < rom.TopDoors.Count && good; i++)
+                        {
+                            if (dir == 1 && i == doorindexlol) continue;
+                            var a = GenerateFromRooms(lvl - 1, roomcol, 0, pos2 + rom.TopDoors[i]);
+                            if (a.room != null && a.WasChill)
+                            {
+                                ret.comlpetedRooms.Add(a);
+                            }
+                            good = a.WasChill;
+                        }
+                    }
+                    if (good && rom.BottomDoors.Count > 0)
+                    {
+                        for (int i = 0; i < rom.BottomDoors.Count && good; i++)
+                        {
+                            if (dir == 0 && i == doorindexlol) continue;
+                            var a = GenerateFromRooms(lvl - 1, roomcol, 1, pos2 + rom.BottomDoors[i]);
+                            if (a.room != null && a.WasChill)
+                            {
+                                ret.comlpetedRooms.Add(a);
+                            }
+                            good = a.WasChill;
+                        }
+
+                    }
+                    if (good && rom.LeftDoors.Count > 0)
+                    {
+                        for (int i = 0; i < rom.LeftDoors.Count && good; i++)
+                        {
+                            if (dir == 3 && i == doorindexlol) continue;
+                            var a = GenerateFromRooms(lvl - 1, roomcol, 2, pos2 + rom.LeftDoors[i]);
+                            if (a.room != null && a.WasChill)
+                            {
+                                ret.comlpetedRooms.Add(a);
+                            }
+                            good = a.WasChill;
+                        }
+                    }
+                    if (good && rom.RightDoors.Count > 0)
+                    {
+                        for (int i = 0; i < rom.RightDoors.Count && good; i++)
+                        {
+                            if (dir == 2 && i == doorindexlol) continue;
+                            var a = GenerateFromRooms(lvl - 1, roomcol, 3, pos2 + rom.RightDoors[i]);
+                            if (a.room != null && a.WasChill)
+                            {
+                                ret.comlpetedRooms.Add(a);
+                            }
+                            good = a.WasChill;
+                        }
+                    }
+                    //Debug.Log("Child Is Chill: " + lvl + ", " + good + ", " + dir);
+                    if (!good)
+                    {
+                        ClearFromCoolRoom(ret);
+                    }
+                    else
+                    {
+                        found_place = true;
+                        goto exitee;
+                    }
                 }
             }
-            else
+
+            if (!found_place)
             {
                 available_rooms.RemoveAt(index);
             }
-        }
 
+
+        }
+        exitee:
         //Debug.Log("Shit dawg " + lvl + ", " + found_place + ", " + dir);
         ret.WasChill = found_place;
         return ret;
@@ -303,14 +362,10 @@ public class Room
     public GameObject RoomObject;
     public bool IsEndpoint = false;
     public Vector2 RoomSize = new Vector2(1, 1);
-    public bool HasLeftDoor = false;
-    public Vector2 LeftDoor = new Vector2(0, 0);
-    public bool HasRightDoor = false;
-    public Vector2 RightDoor = new Vector2(0, 0);
-    public bool HasTopDoor = false;
-    public Vector2 TopDoor = new Vector2(0, 0);
-    public bool HasBottomDoor = false;
-    public Vector2 BottomDoor = new Vector2(0, 0);
+    public List<Vector2> LeftDoors = new List<Vector2>();
+    public List<Vector2> RightDoors = new List<Vector2>();
+    public List<Vector2> TopDoors = new List<Vector2>();
+    public List<Vector2> BottomDoors = new List<Vector2>();
     [HideInInspector]
     public int RoomID = -1;
 

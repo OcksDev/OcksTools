@@ -162,13 +162,15 @@ public class DamageProfile
 {
     public UnityEngine.Object SourceObject;
     public DamageType HowDamageWasDealt = DamageType.Unknown;
+    public DamageType WhatWasTheDamage = DamageType.Unknown;
     public double Damage;
     public List<EffectProfile> Effects = new List<EffectProfile>();
     public Dictionary<string, int> Procs = new Dictionary<string, int>();
-    public DamageProfile(UnityEngine.Object OB, DamageType How, float damage)
+    public DamageProfile(UnityEngine.Object OB, DamageType How,DamageType What, double damage)
     {
         SourceObject = OB;
         HowDamageWasDealt = How;
+        WhatWasTheDamage = What;
         Damage = damage;
     }
     public DamageProfile(DamageProfile pp)
@@ -196,6 +198,13 @@ public class DamageProfile
         Trap,
         Fall,
         World,
+        Fire,
+        Ice,
+        Water,
+        Earth,
+        Air,
+        Dark,
+        Light,
     }
 
 }

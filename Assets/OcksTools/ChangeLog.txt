@@ -16,8 +16,12 @@
   - "Locked" state now has functionality
   - Abstracted node initialization into a method
   - New Node Initializer script to better deal with nodes first being defined
+    - Can initialize from a predefined list and/or child objects
 - SpawnData Improvements
   - Uses Dictionaries instead of Lists for data handling
+- Room Generation Improvements
+  - Reworked how rooms are defined in the editor (again)
+  - Rooms now can have multiple doors on the same side
 - New FunnyMultiCall (Its very niche)
 - Misc Changes
   - Some new default assets
