@@ -22,6 +22,9 @@
 - Room Generation Improvements
   - Reworked how rooms are defined in the editor (again)
   - Rooms now can have multiple doors on the same side
+- Easy Settings Imporvements
+  - New default setting object, the Switcher, lets you select from a list of items
+  - Now has a script dedicated to reading the state of a menu item
 - New FunnyMultiCall (Its very niche)
 - Misc Changes
   - Some new default assets

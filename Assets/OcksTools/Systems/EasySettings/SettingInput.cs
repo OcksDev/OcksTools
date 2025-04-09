@@ -9,12 +9,15 @@ public class SettingInput : MonoBehaviour
     public Color32[] color32s = null;
     private Slider slider;
     private Image img;
-    bool fard;
+    private Switcher sw;
+    [HideInInspector]
+    public bool fard;
     bool hasattached = false;
     private void OnEnable()
     {
         slider = GetComponent<Slider>();
         img = GetComponent<Image>();
+        sw = GetComponent<Switcher>();
         if (!hasattached)
         {
             hasattached = true;
@@ -44,6 +47,9 @@ public class SettingInput : MonoBehaviour
             case "TestToggle":
                 SaveSystem.Instance.TestBool = fard;
                 break;
+            case "TestSwitcher":
+                SaveSystem.Instance.test = sw.index;
+                break;
         }
     }
 
@@ -65,6 +71,10 @@ public class SettingInput : MonoBehaviour
                 break;
             case "TestToggle":
                 fard = SaveSystem.Instance.TestBool;
+                UpdateValue();
+                break;
+            case "TestSwitcher":
+                sw.index = SaveSystem.Instance.test;
                 UpdateValue();
                 break;
         }
