@@ -47,7 +47,7 @@ public class RoomLol : MonoBehaviour
         ClearRooms();
         PopulateRooms();
         int sz = RoomColliders.GetLength(0)/2;
-        var crs = GenerateFromRooms(RoomDensity, RoomColliders, -1, new Vector2(sz,sz));
+        var crs = GenerateFromRooms(RoomDensity, RoomColliders, RoomDirecton.None, new Vector2(sz,sz));
         PlaceFromCoolRoom(crs, gameObject);
 
         Debug.Log($"Build Stats: [{runs}], [{cycles}]" );
@@ -84,7 +84,7 @@ public class RoomLol : MonoBehaviour
             if (room.BottomDoors.Count > 0 && room.IsEndpoint) EndDownRooms.Add(room);
         }
     }
-    public CoolRoom GenerateFromRooms(int lvl, int[,] roomcol, int dir, Vector2 pos)
+    public CoolRoom GenerateFromRooms(int lvl, int[,] roomcol, RoomDirecton dir, Vector2 pos)
     {
         CoolRoom ret = new CoolRoom();
 
@@ -111,16 +111,16 @@ public class RoomLol : MonoBehaviour
             default:
                 available_rooms = new List<Room>(AllRooms);
                 break;
-            case 0:
+            case RoomDirecton.Top:
                 available_rooms = new List<Room>(lvl ==  1? EndDownRooms : DownRooms);
                 break;
-            case 1:
+            case RoomDirecton.Bottom:
                 available_rooms = new List<Room>(lvl == 1 ? EndUpRooms : UpRooms);
                 break;
-            case 2:
+            case RoomDirecton.Left:
                 available_rooms = new List<Room>(lvl == 1 ? EndRightRooms : RightRooms);
                 break;
-            case 3:
+            case RoomDirecton.Right:
                 available_rooms = new List<Room>(lvl == 1 ? EndLeftRooms : LeftRooms);
                 break;
         }
@@ -131,18 +131,18 @@ public class RoomLol : MonoBehaviour
         {
             int index = UnityEngine.Random.Range(0, available_rooms.Count);
             Room rom = available_rooms[index];
-            Func<int, int> getamnt = (x) =>
+            Func<RoomDirecton, int> getamnt = (x) =>
             {
 
                 switch (x)
                 {
-                    case 0:
+                    case RoomDirecton.Top:
                         return rom.BottomDoors.Count;
-                    case 1:
+                    case RoomDirecton.Bottom:
                         return rom.TopDoors.Count;
-                    case 2:
+                    case RoomDirecton.Left:
                         return rom.RightDoors.Count;
-                    case 3:
+                    case RoomDirecton.Right:
                         return rom.LeftDoors.Count;
                     default:
                         return 1;
@@ -155,28 +155,9 @@ public class RoomLol : MonoBehaviour
                 cycles++;
                 bool keepgoing = true;
                 ret.room = rom;
-                var pos2 = pos;
-                switch (dir)
-                {
-                    case 0:
-                        pos2 -= rom.BottomDoors[doorindexlol];
-                        pos2 -= new Vector2(0, 1);
-                        break;
-                    case 1:
-                        pos2 -= rom.TopDoors[doorindexlol];
-                        pos2 += new Vector2(0, 1);
-                        break;
-                    case 2:
-                        pos2 -= rom.RightDoors[doorindexlol];
-                        pos2 -= new Vector2(1, 0);
-                        break;
-                    case 3:
-                        pos2 -= rom.LeftDoors[doorindexlol];
-                        pos2 += new Vector2(1, 0);
-                        break;
-                }
+                var pos2 = ModPos(dir, pos, rom, doorindexlol);
 
-                ret.pos = pos2; // ???
+                ret.pos = pos2;
 
                 for (int i = 0; i < rom.RoomSize.x && keepgoing; i++)
                 {
@@ -195,7 +176,7 @@ public class RoomLol : MonoBehaviour
                     {
                         for (int i = 0; i < rom.TopDoors.Count; i++)
                         {
-                            if (dir == 1 && i == doorindexlol) continue;
+                            if (dir == RoomDirecton.Bottom && i == doorindexlol) continue;
                             var v = pos2 + rom.TopDoors[i] - new Vector2(0, 1);
                             if (roomcol[(int)v.x, (int)v.y] > 0) keepgoing = false;
                         }
@@ -204,7 +185,7 @@ public class RoomLol : MonoBehaviour
                     {
                         for (int i = 0; i < rom.BottomDoors.Count; i++)
                         {
-                            if (dir == 0 && i == doorindexlol) continue;
+                            if (dir == RoomDirecton.Top && i == doorindexlol) continue;
                             var v = pos2 + rom.BottomDoors[i] + new Vector2(0, 1);
                             if (roomcol[(int)v.x, (int)v.y] > 0) keepgoing = false;
                         }
@@ -213,7 +194,7 @@ public class RoomLol : MonoBehaviour
                     {
                         for (int i = 0; i < rom.LeftDoors.Count; i++)
                         {
-                            if (dir == 3 && i == doorindexlol) continue;
+                            if (dir == RoomDirecton.Right && i == doorindexlol) continue;
                             var v = pos2 + rom.LeftDoors[i] - new Vector2(1, 0);
                             if (roomcol[(int)v.x, (int)v.y] > 0) keepgoing = false;
                         }
@@ -222,7 +203,7 @@ public class RoomLol : MonoBehaviour
                     {
                         for (int i = 0; i < rom.RightDoors.Count; i++)
                         {
-                            if (dir == 2 && i == doorindexlol) continue;
+                            if (dir == RoomDirecton.Left && i == doorindexlol) continue;
                             var v = pos2 + rom.RightDoors[i] + new Vector2(1, 0);
                             if (roomcol[(int)v.x, (int)v.y] > 0) keepgoing = false;
                         }
@@ -243,8 +224,8 @@ public class RoomLol : MonoBehaviour
                     {
                         for (int i = 0; i < rom.TopDoors.Count && good; i++)
                         {
-                            if (dir == 1 && i == doorindexlol) continue;
-                            var a = GenerateFromRooms(lvl - 1, roomcol, 0, pos2 + rom.TopDoors[i]);
+                            if (dir == RoomDirecton.Bottom && i == doorindexlol) continue;
+                            var a = GenerateFromRooms(lvl - 1, roomcol, RoomDirecton.Top, pos2 + rom.TopDoors[i]);
                             if (a.room != null && a.WasChill)
                             {
                                 ret.comlpetedRooms.Add(a);
@@ -256,8 +237,8 @@ public class RoomLol : MonoBehaviour
                     {
                         for (int i = 0; i < rom.BottomDoors.Count && good; i++)
                         {
-                            if (dir == 0 && i == doorindexlol) continue;
-                            var a = GenerateFromRooms(lvl - 1, roomcol, 1, pos2 + rom.BottomDoors[i]);
+                            if (dir == RoomDirecton.Top && i == doorindexlol) continue;
+                            var a = GenerateFromRooms(lvl - 1, roomcol, RoomDirecton.Bottom, pos2 + rom.BottomDoors[i]);
                             if (a.room != null && a.WasChill)
                             {
                                 ret.comlpetedRooms.Add(a);
@@ -270,8 +251,8 @@ public class RoomLol : MonoBehaviour
                     {
                         for (int i = 0; i < rom.LeftDoors.Count && good; i++)
                         {
-                            if (dir == 3 && i == doorindexlol) continue;
-                            var a = GenerateFromRooms(lvl - 1, roomcol, 2, pos2 + rom.LeftDoors[i]);
+                            if (dir == RoomDirecton.Right && i == doorindexlol) continue;
+                            var a = GenerateFromRooms(lvl - 1, roomcol, RoomDirecton.Left, pos2 + rom.LeftDoors[i]);
                             if (a.room != null && a.WasChill)
                             {
                                 ret.comlpetedRooms.Add(a);
@@ -283,8 +264,8 @@ public class RoomLol : MonoBehaviour
                     {
                         for (int i = 0; i < rom.RightDoors.Count && good; i++)
                         {
-                            if (dir == 2 && i == doorindexlol) continue;
-                            var a = GenerateFromRooms(lvl - 1, roomcol, 3, pos2 + rom.RightDoors[i]);
+                            if (dir == RoomDirecton.Left && i == doorindexlol) continue;
+                            var a = GenerateFromRooms(lvl - 1, roomcol, RoomDirecton.Right, pos2 + rom.RightDoors[i]);
                             if (a.room != null && a.WasChill)
                             {
                                 ret.comlpetedRooms.Add(a);
@@ -318,7 +299,29 @@ public class RoomLol : MonoBehaviour
         return ret;
     }
 
-
+    public static Vector2 ModPos(RoomDirecton dir, Vector2 pos2, Room rom, int doorindexlol)
+    {
+        switch (dir)
+        {
+            case RoomDirecton.Top:
+                pos2 -= rom.BottomDoors[doorindexlol];
+                pos2 -= new Vector2(0, 1);
+                break;
+            case RoomDirecton.Bottom:
+                pos2 -= rom.TopDoors[doorindexlol];
+                pos2 += new Vector2(0, 1);
+                break;
+            case RoomDirecton.Left:
+                pos2 -= rom.RightDoors[doorindexlol];
+                pos2 -= new Vector2(1, 0);
+                break;
+            case RoomDirecton.Right:
+                pos2 -= rom.LeftDoors[doorindexlol];
+                pos2 += new Vector2(1, 0);
+                break;
+        }
+        return pos2;
+    }
     public void ClearFromCoolRoom(CoolRoom cr)
     {
 
@@ -352,6 +355,15 @@ public class RoomLol : MonoBehaviour
             PlaceFromCoolRoom(c, parent);
             cr.iroom.RelatedRooms.Add(c.iroom);
         }
+    }
+
+    public enum RoomDirecton
+    {
+        None,
+        Top,
+        Bottom,
+        Left,
+        Right,
     }
 }
 
@@ -484,4 +496,79 @@ public class CoolRoom
     public I_Room iroom;
     public Vector2 pos;
     public List<CoolRoom> comlpetedRooms = new List<CoolRoom>();
+    public Dictionary<RoomLol.RoomDirecton, List<bool>> complileduses = new Dictionary<RoomLol.RoomDirecton, List<bool>>();
+    public void CompileUsedDoors()
+    {
+        complileduses.Clear();
+        complileduses.Add(RoomLol.RoomDirecton.Top, new List<bool>(new bool[room.TopDoors.Count]));
+        complileduses.Add(RoomLol.RoomDirecton.Bottom, new List<bool>(new bool[room.BottomDoors.Count]));
+        complileduses.Add(RoomLol.RoomDirecton.Left, new List<bool>(new bool[room.LeftDoors.Count]));
+        complileduses.Add(RoomLol.RoomDirecton.Right, new List<bool>(new bool[room.RightDoors.Count]));
+    }
+
+    public CoolRoom AppendRoom(Room newnerd, RoomLol.RoomDirecton dir, int daddydoorindex = -1, int doorindex = -1)
+    {
+        CoolRoom room = new CoolRoom();
+        room.room = newnerd;
+        room.CompileUsedDoors();
+        var daddy = this;
+
+        if (daddydoorindex == -1)
+        {
+            for (int i = 0; i < daddy.complileduses[dir].Count; i++)
+            {
+                if (!daddy.complileduses[dir][i])
+                {
+                    daddydoorindex = i;
+                    break;
+                }
+            }
+            if (daddydoorindex == -1)
+            {
+                Debug.LogError($"No available {dir.ToString()} Doors!");
+                return null;
+            }
+        }
+        if (doorindex == -1)
+        {
+            for (int i = 0; i < room.complileduses[dir].Count; i++)
+            {
+                if (!room.complileduses[dir][i])
+                {
+                    doorindex = i;
+                    break;
+                }
+            }
+            if (doorindex == -1)
+            {
+
+                RoomLol.RoomDirecton inverteddir = RoomLol.RoomDirecton.None;
+                switch (dir)
+                {
+                    case RoomLol.RoomDirecton.Top: inverteddir = RoomLol.RoomDirecton.Bottom; break;
+                    case RoomLol.RoomDirecton.Bottom: inverteddir = RoomLol.RoomDirecton.Top; break;
+                    case RoomLol.RoomDirecton.Left: inverteddir = RoomLol.RoomDirecton.Right; break;
+                    case RoomLol.RoomDirecton.Right: inverteddir = RoomLol.RoomDirecton.Left; break;
+                }
+                Debug.LogError($"No available {inverteddir.ToString()} Doors!");
+                return null;
+            }
+        }
+        var coolpos = daddy.pos;
+        switch (dir)
+        {
+            case RoomLol.RoomDirecton.Top: coolpos += daddy.room.TopDoors[daddydoorindex]; break;
+            case RoomLol.RoomDirecton.Bottom: coolpos += daddy.room.BottomDoors[daddydoorindex]; break;
+            case RoomLol.RoomDirecton.Left: coolpos += daddy.room.LeftDoors[daddydoorindex]; break;
+            case RoomLol.RoomDirecton.Right: coolpos += daddy.room.RightDoors[daddydoorindex]; break;
+        }
+        coolpos = RoomLol.ModPos(dir, coolpos, newnerd, doorindex);
+        room.pos = coolpos;
+
+        daddy.complileduses[dir][daddydoorindex] = true;
+        room.complileduses[dir][doorindex] = true;
+        daddy.comlpetedRooms.Add(room);
+
+        return room;
+    }
 }

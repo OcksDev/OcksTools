@@ -20,8 +20,10 @@
 - SpawnData Improvements
   - Uses Dictionaries instead of Lists for data handling
 - Room Generation Improvements
-  - Reworked how rooms are defined in the editor (again)
+  - New class to manually define room layouts, its so much easier now
   - Rooms now can have multiple doors on the same side
+  - Reworked how rooms are defined in the editor (again)
+  - Rizzed up the internals to use an enum instead of an int, so much better now
 - Easy Settings Imporvements
   - New default setting object, the Switcher, lets you select from a list of items
   - Now has a script dedicated to reading the state of a menu item

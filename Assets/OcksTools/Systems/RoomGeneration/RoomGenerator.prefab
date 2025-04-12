@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2820689779679550378}
   - component: {fileID: -3949468990596044743}
+  - component: {fileID: 1417934137591042623}
   m_Layer: 0
   m_Name: RoomGenerator
   m_TagString: Untagged
@@ -44,3 +45,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76ee4ebffaa81d54e820efa7ddbb24fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  RoomDensity: 6
+  DistanceScaler: 1
+  CenterSpawn: {x: 0, y: 0, z: 0}
+  RoomNerds: []
+  SpawnedRooms: []
+  runs: 0
+  cycles: 0
+--- !u!114 &1417934137591042623
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9063481460969481341}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39d2b42d759f4e8468354363f499459e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RoomGen: {fileID: -3949468990596044743}
