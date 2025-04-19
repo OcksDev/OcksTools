@@ -7,25 +7,34 @@ public class NodeInitializer : MonoBehaviour
     public bool InitOnAwake = true;
     public bool GetFromChildren = false;
     public List<TreeNode> treeNodes = new List<TreeNode>();
+    public List<NodeInitializer> otherInitializers = new List<NodeInitializer>();
     private void Awake()
     {
         if(InitOnAwake)
             InitializeNodes();
-        if (GetFromChildren)
-        {
-            var ss = GetComponentsInChildren<TreeNode>();
-            foreach(var a in ss)
-            {
-                a.InitializeNode();
-            }
-        }
     }
 
 
     public void InitializeNodes()
     {
-        foreach(var a in treeNodes)
+        if (GetFromChildren)
         {
+            var ss = GetComponentsInChildren<TreeNode>();
+            foreach (var a in ss)
+            {
+                a.InitializeNode();
+            }
+        }
+        else
+        {
+            foreach (var a in treeNodes)
+            {
+                a.InitializeNode();
+            }
+        }
+        foreach(var a in otherInitializers)
+        {
+            a.InitializeNodes();
         }
     }
 }

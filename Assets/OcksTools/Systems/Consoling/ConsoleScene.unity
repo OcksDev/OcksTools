@@ -11422,7 +11422,8 @@ PrefabInstance:
       propertyPath: DialogFiles.Array.data[2].Name
       value: Test3
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
 --- !u!1 &1919323273
 GameObject:

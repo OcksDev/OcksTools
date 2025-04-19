@@ -11,6 +11,7 @@ public class SaveSystem : MonoBehaviour
     public SaveMethod SaveMethod_ = SaveMethod.TXTFile;
     public int test = 0;
     public bool TestBool = false;
+    public KeyCode testkeybind = 0;
     private Dictionary<string, OXFile> OXFiles = new Dictionary<string, OXFile>();
     public static OXEvent<string> SaveAllData = new OXEvent<string>();
     public static OXEvent<string> LoadAllData = new OXEvent<string>();
@@ -72,6 +73,7 @@ public class SaveSystem : MonoBehaviour
 
         test = int.Parse(GetString("test_num", "0", dict));
         TestBool = bool.Parse(GetString("test_bool", "False", dict));
+        testkeybind = InputManager.namekeys[GetString("test_keybind", "NONE", dict)];
         //ConsoleLol.Instance.ConsoleLog(Prefix(i) + "test_num");
 
         LoadAllData.Invoke(dict);
@@ -104,6 +106,7 @@ public class SaveSystem : MonoBehaviour
 
         SetString("test_num", test.ToString(), dict);
         SetString("test_bool", TestBool.ToString(), dict);
+        SetString("test_keybind", InputManager.keynames[testkeybind], dict);
 
         SaveAllData.Invoke(dict);
 

@@ -13,6 +13,7 @@ public class DisplayValue : MonoBehaviour
     public DisplayDataType displayDataType;
     private Slider slider;
     private Switcher switcher;
+    private KeybindInput keybinder;
     public string pre_text = "";
     public string post_text = "";
     // Start is called before the first frame update
@@ -20,6 +21,7 @@ public class DisplayValue : MonoBehaviour
     {
         if (displayType == DisplayType.Slider) slider = reference.GetComponent<Slider>();
         if (displayType == DisplayType.Switcher) switcher = reference.GetComponent<Switcher>();
+        if (displayType == DisplayType.Keybind) keybinder = reference.GetComponent<KeybindInput>();
         if (myself == null) myself = GetComponent<TextMeshProUGUI>();
     }
 
@@ -39,6 +41,7 @@ public class DisplayValue : MonoBehaviour
                 switch (displayDataType)
                 {
                     case DisplayDataType.Text: myself.text = "Unsupported"; break;
+                    case DisplayDataType.Text_Full: myself.text = "Unsupported"; break;
                     case DisplayDataType.Percent: myself.text = textme(((int)(slider.normalizedValue * 100)).ToString()); break;
                     case DisplayDataType.Value: myself.text = textme(slider.value.ToString()); break;
                 }
@@ -47,6 +50,7 @@ public class DisplayValue : MonoBehaviour
                 switch (displayDataType)
                 {
                     case DisplayDataType.Text: myself.text = textme(reference.fard ? "On" : "Off"); break;
+                    case DisplayDataType.Text_Full: myself.text = "Unsupported"; break;
                     case DisplayDataType.Percent: myself.text = textme(reference.fard ? "100" : "0"); break;
                     case DisplayDataType.Value: myself.text = textme(reference.fard ? "1" : "0"); break;
                 }
@@ -55,8 +59,22 @@ public class DisplayValue : MonoBehaviour
                 switch (displayDataType)
                 {
                     case DisplayDataType.Text: myself.text = textme(switcher.Items[switcher.index]); break;
+                    case DisplayDataType.Text_Full: myself.text = "Unsupported"; break;
                     case DisplayDataType.Percent: myself.text = textme(((int)((((float)switcher.index)/(switcher.Items.Count-1))*100)).ToString()); break;
                     case DisplayDataType.Value: myself.text = textme(switcher.index.ToString()); break;
+                }
+                break;
+            case DisplayType.Keybind:
+                if (keybinder.CurrentlySelecting)
+                {
+                    myself.text = "Press a key..."; break;
+                }
+                switch (displayDataType)
+                {
+                    case DisplayDataType.Text: myself.text = textme(InputManager.keynames[keybinder.keyCode]); break;
+                    case DisplayDataType.Text_Full: myself.text = textme(keybinder.keyCode.ToString()); break;
+                    case DisplayDataType.Percent: myself.text = "Unsupported"; break;
+                    case DisplayDataType.Value: myself.text = "Unsupported"; break;
                 }
                 break;
         }
@@ -69,11 +87,13 @@ public class DisplayValue : MonoBehaviour
         Slider,
         Toggle,
         Switcher,
+        Keybind,
     }
     public enum DisplayDataType
     {
         Value,
         Percent,
         Text,
+        Text_Full,
     }
 }

@@ -131,6 +131,14 @@ public class RandomFunctions : MonoBehaviour
         }
         return false;
     }
+    public static bool AllItemsFromListInList<T>(List<T> ti, List<T> tee)
+    {
+        foreach (T t in ti)
+        {
+            if (!tee.Contains(t)) return false;
+        }
+        return true;
+    }
     public static bool ListMatchesList<T>(List<T> ti, List<T> tee)
     {
         if (ti.Count != tee.Count) return false;

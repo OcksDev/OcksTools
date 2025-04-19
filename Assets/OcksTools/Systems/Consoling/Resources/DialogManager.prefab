@@ -55,6 +55,7 @@ MonoBehaviour:
   cps: -1
   cps2: -1
   cps3: -1
+  AutoSkip: -1
   speaker: 
   fulltext: 
   color: 
@@ -68,6 +69,7 @@ MonoBehaviour:
   foundendcall: 0
   attemptskip: 0
   godlyattemptskip: 0
+  backwardskip: 0
 --- !u!114 &1798882000586106620
 MonoBehaviour:
   m_ObjectHideFlags: 0

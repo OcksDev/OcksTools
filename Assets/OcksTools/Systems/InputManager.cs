@@ -114,7 +114,7 @@ public class InputManager : MonoBehaviour
 
     public static bool GetSelected(List<string> ide)
     {
-        return locklevel.Count==0 || ide.Count == 0 || ide[0] == "" || RandomFunctions.ListContainsItemFromList(locklevel, ide);
+        return locklevel.Count==0 || ide.Count == 0 || ide[0] == "" || RandomFunctions.AllItemsFromListInList(ide, locklevel);
     }
 
     public static void ResetLockLevel()
@@ -447,6 +447,13 @@ public class InputManager : MonoBehaviour
         keynames.Add(KeyCode.KeypadPeriod, "n.");
         keynames.Add(KeyCode.KeypadPlus, "n+");
         keynames.Add(KeyCode.KeypadEnter, "nENT");
+        keynames.Add(KeyCode.None, "NONE");
+        keynames.Add(KeyCode.Tilde, "~");
+        keynames.Add(KeyCode.AltGr, "grrr uwu");
+        keynames.Add(KeyCode.BackQuote, "`");
+        keynames.Add(KeyCode.Minus, "-");
+        keynames.Add(KeyCode.Period, ".");
+        keynames.Add(KeyCode.Comma, ",");
     }
 
     public static void CreateKeyAllocation(string name, KeyCode key)
