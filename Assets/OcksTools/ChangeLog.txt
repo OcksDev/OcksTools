@@ -50,6 +50,7 @@
   - Dialog now has an event attribute, letting you easily call arbitrary methods from dialogs
   - Console has a new coat of paint by default.
   - Console now properly moves down to the bottom of the console when entering commands (FR THIS TIME)
+  - New CompareTwoVersions() in RandomFuctions, lets you check which of the two versions inputted is bigger
 ------------
 
 ------------

@@ -216,7 +216,51 @@ public class RandomFunctions : MonoBehaviour
         return 1-x;
     }
 
+    public static CompareState CompareTwoVersions(string I_Am, string compared_to)
+    {
+        //supports things in the format of v#.#.# or #.#.#
+        // There can be any amount of #s, so "v1.2" is valid, so is "1.2.3.4.5", although comparing these exmaples to each other wont work
 
+        if(I_Am.Length < 1) return CompareState.Invalid;
+        if(compared_to.Length < 1) return CompareState.Invalid;
+        if (I_Am.ToLower()[0]=='v') I_Am = I_Am.Substring(1);
+        if (compared_to.ToLower()[0]=='v') compared_to = compared_to.Substring(1);
+        List<string> p = Converter.StringToList(I_Am,".");
+        List<string> p2 = Converter.StringToList(compared_to, ".");
+        int amnt = System.Math.Max(p.Count, p2.Count);
+        for(int i = 0; i < amnt; i++)
+        {
+            try
+            {
+                if (int.Parse(p[i]) < int.Parse(p2[i]))
+                {
+                    return CompareState.Lesser;
+                }
+                else if (int.Parse(p[i]) > int.Parse(p2[i]))
+                {
+                    return CompareState.Greater;
+                }
+            }
+            catch
+            {
+                if(i==p.Count) return CompareState.Lesser;
+                if(i==p2.Count) return CompareState.Greater;
+                return CompareState.Invalid;
+            }
+        }
+
+        return CompareState.Equal;
+
+    }
+
+
+    public enum CompareState
+    {
+        Greater,
+        Equal,
+        Lesser,
+        Invalid,
+    }
 
     public static double GetUnixTime(int type = -1)
     {

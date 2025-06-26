@@ -206,7 +206,8 @@ public class ConsoleLol : MonoBehaviour
                                 "<br> - test destroy" +
                                 "<br> - test listall" +
                                 "<br> - test events" +
-                                "<br> - test escape"
+                                "<br> - test escape" +
+                                "<br> - test compver"
 
                             ), "#bdbdbdff");
                             break;
@@ -275,6 +276,58 @@ public class ConsoleLol : MonoBehaviour
                                     "test result: " + d
 
                                 ), "#bdbdbdff");
+                            break;
+                        case "compver":
+                            ConsoleLog((
+
+                                "comp1: " + RandomFunctions.CompareTwoVersions("v1.0","v1.1").ToString()
+
+                            ), "#bdbdbdff");
+                            ConsoleLog((
+
+                                "comp2: " + RandomFunctions.CompareTwoVersions("v1.2","v1.1").ToString()
+
+                            ), "#bdbdbdff");
+                            ConsoleLog((
+
+                                "comp2: " + RandomFunctions.CompareTwoVersions("v1.2","v2.1").ToString()
+
+                            ), "#bdbdbdff");
+                            ConsoleLog((
+
+                                "comp3: " + RandomFunctions.CompareTwoVersions("v1.2","v2.1.3").ToString()
+
+                            ), "#bdbdbdff");
+                            ConsoleLog((
+
+                                "comp4: " + RandomFunctions.CompareTwoVersions("v1.2.0","2.1.3").ToString()
+
+                            ), "#bdbdbdff");
+                            ConsoleLog((
+
+                                "comp5: " + RandomFunctions.CompareTwoVersions("1.2.0.7.32.2.1.3", "1.2.0.7.32.2.1.2").ToString()
+
+                            ), "#bdbdbdff");
+                            ConsoleLog((
+
+                                "comp6: " + RandomFunctions.CompareTwoVersions("1.2.3.4.5.6.7.8", "1.2.a").ToString()
+
+                            ), "#bdbdbdff");
+                            ConsoleLog((
+
+                                "comp7: " + RandomFunctions.CompareTwoVersions("1.2", "1.2.a").ToString()
+
+                            ), "#bdbdbdff");
+                            ConsoleLog((
+
+                                "comp8: " + RandomFunctions.CompareTwoVersions("1.2.5", "1.2.a").ToString()
+
+                            ), "#bdbdbdff");
+                            ConsoleLog((
+
+                                "comp9: " + RandomFunctions.CompareTwoVersions("v1.2", "1.2.3.4.5").ToString()
+
+                            ), "#bdbdbdff");
                             break;
                         case "escape":
                             string banana = "help(0)eat()cumjjragbanana your_welcum";
