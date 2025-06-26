@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 324499805810810537}
   - component: {fileID: 324499805810810538}
   - component: {fileID: 324499805810810539}
+  - component: {fileID: -8574736125704632883}
   m_Layer: 0
   m_Name: GISHandler
   m_TagString: Untagged
@@ -51,7 +52,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UseLanguageFile: 1
   Mouse_Held_Item:
-    ItemIndex: Empty
+    Name: Empty
     Amount: 0
     Container: {fileID: 0}
     Interacted_Containers: []
@@ -88,7 +89,6 @@ MonoBehaviour:
     Description: EEEEEE 69 2
     MaxAmount: 0
     Type: 0
-  CanHover: 0
 --- !u!114 &324499805810810536
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -102,6 +102,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EditorAuthorityOnFile: 1
+  AllowPublicAccess: 1
   Files: []
 --- !u!114 &324499805810810534
 MonoBehaviour:
@@ -131,11 +132,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1275a46d4d89f7440ac13deba225ab42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SpawnRefs:
-  - {fileID: 0}
-  ParticleSpawnRefs:
-  - {fileID: 0}
-  ParticleSpawnObject: {fileID: 0}
 --- !u!114 &324499805810810538
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -163,4 +159,17 @@ MonoBehaviour:
   SaveMethod_: 0
   test: 0
   TestBool: 0
+  testkeybind: 0
   LoadedData: 0
+--- !u!114 &-8574736125704632883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 324499805810810543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dfb6dde2519ba31478704408696778d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -23,11 +23,9 @@ public class OXComponent
     public static Dictionary<GameObject, Dictionary<string, Component>> StoredComps = new Dictionary<GameObject, Dictionary<string, Component>>();
     public static void StoreComponents(GameObject nerd, List<string> boners)
     {
-        var weenor = Converter.ListToDictionary(boners); // this makes it slightly faster, trust me
+        var weenor = Converter.ListToDictionary(boners); // this makes it slightly faster, trust me bro you have to believe
         //add new values below as needed
-        if (weenor.ContainsKey("Entity")) StoreComponent<EntityOXS>(nerd);
         if (weenor.ContainsKey("SpawnData")) StoreComponent<SpawnData>(nerd);
-        if (weenor.ContainsKey("NavMeshEntity")) StoreComponent<NavMeshEntity>(nerd);
         if (weenor.ContainsKey("Text")) StoreComponent<TextMeshProUGUI>(nerd);
     }
 

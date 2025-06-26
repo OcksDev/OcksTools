@@ -67,8 +67,8 @@ public class Converter : MonoBehaviour
     public static string EscapedListToString(List<string> eee, string split = ", ")
     {
         List<string> dupe = new List<string>(eee);
-        List<string> esc = new List<string>() { split};
-        for(int i = 0; i < dupe.Count;i++)
+        List<string> esc = new List<string>() { split };
+        for (int i = 0; i < dupe.Count; i++)
         {
             dupe[i] = EscapeString(dupe[i], esc);
         }
@@ -238,6 +238,13 @@ public class Converter : MonoBehaviour
             }
         }
         return arr;
+    }
+
+
+
+    public static string ColorToString(Color cc)
+    {
+        return ColorUtility.ToHtmlStringRGB(cc);
     }
 
     public static Color32 StringToColor(string hex, string fallback = "FFFFFF")

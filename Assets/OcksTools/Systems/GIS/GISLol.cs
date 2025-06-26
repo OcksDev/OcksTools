@@ -18,8 +18,6 @@ public class GISLol : MonoBehaviour
 
 
     public Dictionary<string,GISContainer> All_Containers = new Dictionary<string, GISContainer>();
-    [HideInInspector]
-    public bool CanHover = false;
     public static GISLol Instance
     {
         get { return instance; }
@@ -77,7 +75,6 @@ public class GISLol : MonoBehaviour
         var za = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         za.z = 0;
         MouseFollower.transform.position = za;
-        CanHover = true;
         if (InputManager.IsKeyDown("reload"))
         {
             LoadTempForAll();
@@ -98,29 +95,6 @@ public class GISLol : MonoBehaviour
                 c.Value.SaveContents(dict);
             }
         }
-    }
-    [HideInInspector]
-    public List<RaycastResult> rcl = new List<RaycastResult>();
-    public void HoverDataCooler()
-    {
-        if (!CanHover) return;
-        CanHover = false;
-        PointerEventData ped = new PointerEventData(EventSystem.current);
-        ped.position = Input.mousePosition;
-        rcl.Clear();
-        EventSystem.current.RaycastAll(ped, rcl);
-    }
-    public bool IsHovering(GameObject sussy)
-    {
-        GISLol.Instance.HoverDataCooler();
-        foreach (var ray in GISLol.Instance.rcl)
-        {
-            if (ray.gameObject == sussy)
-            {
-                return true;
-            }
-        }
-        return false;
     }
 }
 

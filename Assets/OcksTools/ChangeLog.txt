@@ -4,9 +4,13 @@
 - New Notification System
 - New Stored Random script (plus testing scene/script)
 - New Lerp Animation Tool
+- New Multithreading Tool
 - GIS Improvements
+  - New Ctrl click functionality for containers (default is opted in)
   - Added new method for getting total amount of items in container
   - Added event that is called when a slot is interacted with
+  - Abstracted GISSlot actions into their own methods, should make logic a lot easier to follow and interface with
+  - Hover logic extracted into its own class, now can be used for more general applications
 - Random Functions Improvements
   - Changed RandomFunctions.Dist slightly, and also added DistNoSQRT()
   - Two new easing functions, EaseBounce and EaseOvershoot (and new testing scene for all easing functions)
@@ -24,11 +28,13 @@
   - Rooms now can have multiple doors on the same side
   - Reworked how rooms are defined in the editor (again)
   - Rizzed up the internals to use an enum instead of an int, so much better now
-- Easy Settings Imporvements
+- Easy Settings Improvements
   - New default setting object, the Switcher, lets you select from a list of items
-  - New default setting object, the Keybinder, lets you press a keyboard key or mouse button
+  - New default setting object, the Keybinder, lets you press and save a keyboard key or mouse button
   - Now has a script dedicated to reading the state of a menu item
+  - Easy settings might be cooler now (properly loads settings on enable)
 - New FunnyMultiCall (Its very niche)
+- New Git (Its very niche)
 - Misc Changes
   - Some new default assets
   - Input Mananger now has a different lock level behavior when multiple locks are in place
@@ -39,6 +45,11 @@
     - -
   - EntityOXS now has a *slightly* different method of damage application
   - Tweaked variable locations in File System to make it more clear what you need to change
+  - New converter thing (converting color to hex string)
+  - EffectProfile now properly sets the default data on creation lol
+  - Dialog now has an event attribute, letting you easily call arbitrary methods from dialogs
+  - Console has a new coat of paint by default.
+  - Console now properly moves down to the bottom of the console when entering commands (FR THIS TIME)
 ------------
 
 ------------

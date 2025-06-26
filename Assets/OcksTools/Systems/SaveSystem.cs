@@ -19,6 +19,7 @@ public class SaveSystem : MonoBehaviour
     public Dictionary<string, Dictionary<string, string>> HoldingData = new Dictionary<string, Dictionary<string, string>>();
 
     public static SaveSystem Instance;
+    public static string ActiveDir;
     private void OnApplicationQuit()
     {
         SaveGame();
@@ -37,7 +38,7 @@ public class SaveSystem : MonoBehaviour
     public void LoadGame(string dict = "def")
     {
         LoadedData = true;
-
+        ActiveDir = dict;
 
         InputManager.AssembleTheCodes();
         var s = SoundSystem.Instance;

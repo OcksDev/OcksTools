@@ -22,6 +22,11 @@ public class KeybindInput : MonoBehaviour
         CurrentlySelecting = true;
         yield return new WaitUntil(() =>{ return InputManager.GetAllCurrentlyPressedKeys().Count > 0; });
         var aa = InputManager.GetAllCurrentlyPressedKeys();
+        if (aa[0]== KeyCode.Escape)
+        {
+            CurrentlySelecting = false;
+            yield break;
+        }
         keyCode = aa[0];
         yield return new WaitUntil(() => { return !Input.GetKey(KeyCode.Mouse0); });
         me.WriteValue();

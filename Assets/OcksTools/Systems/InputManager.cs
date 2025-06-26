@@ -52,6 +52,7 @@ public class InputManager : MonoBehaviour
         CreateKeyAllocation("item_half", KeyCode.Mouse1);
         CreateKeyAllocation("item_pick", KeyCode.Mouse2);
         CreateKeyAllocation("item_alt", KeyCode.LeftShift);
+        CreateKeyAllocation("item_mod", KeyCode.LeftControl);
         CreateKeyAllocation("console", KeyCode.Slash);
         CreateKeyAllocation("console_up", KeyCode.UpArrow);
         CreateKeyAllocation("console_down", KeyCode.DownArrow);

@@ -11,6 +11,8 @@ public class GISContainer : MonoBehaviour
     [Tooltip("Uses the GISItems however doesn't use slots")]
     public bool IsAbstract = false;
     public bool CanShiftClickItems = true;
+    public bool CanCtrlClickItems = true;
+    public int CtrlClickPriority = 0;
     public bool AutomaticallyAddChildren = true;
     public bool GenerateRandomItems = false;
     public bool GenerateSlotObjects = true;

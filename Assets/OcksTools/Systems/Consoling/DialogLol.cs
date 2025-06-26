@@ -16,6 +16,7 @@ public class DialogLol : MonoBehaviour
     public List<DialogHolder> ChooseFiles = new List<DialogHolder>();
     public Dictionary<string, DialogHolder> DialogFilesDict = new Dictionary<string, DialogHolder>();
     public Dictionary<string, DialogHolder> ChooseFilesDict = new Dictionary<string, DialogHolder>();
+    public Dictionary<string, System.Action> Events = new Dictionary<string, System.Action>();
     public bool dialogmode = false;
     public string filename = "";
     public int linenum = 0;
@@ -408,12 +409,29 @@ public class DialogLol : MonoBehaviour
                 }
                 succeeded = true;
                 break;
+            case "Event":
+                Events[data]();
+                succeeded = true;
+                break;
             default:
                 if(!ignorewarning)Debug.LogWarning("Unknown Dialog Attribute: \"" + key + "\"  (Dialog File: " + ActiveFileName + ")");
                 break;
         }
         return succeeded;
     }
+
+    public void SetEvent(string name, System.Action ee)
+    {
+        if (Events.ContainsKey(name))
+        {
+            Events[name] = ee;
+        }
+        else
+        {
+            Events.Add(name, ee);
+        }
+    }
+
     public void SetVariable(string key, string val)
     {
         if (variables.ContainsKey(key))

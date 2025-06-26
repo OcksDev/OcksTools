@@ -22,8 +22,6 @@ public class ConsoleLol : MonoBehaviour
     private List<string> command = new List<string>();
     private List<string> command_caps = new List<string>();
     public string BackLog = "";
-    [HideInInspector]
-    public int balls = 0;
     private int comm = 0;
 
 
@@ -103,15 +101,6 @@ public class ConsoleLol : MonoBehaviour
             CommandChange(1);
         }
     }
-    private void LateUpdate()
-    {
-        if (balls > 0)
-        {
-            balls--;
-            var pp = ConsoleObjectRef.scrollbar;
-            if (pp != null) pp.value = 1;
-        }
-    }
 
     public void CommandChange(int i)
     {
@@ -123,11 +112,33 @@ public class ConsoleLol : MonoBehaviour
             sp.text = prev_commands[comm];
         }
     }
+    private Coroutine botju;
+    public IEnumerator BottomJump()
+    {
+        var pp = ConsoleObjectRef.scrollbar;
+        if (pp != null) pp.value = 1;
+        yield return new WaitForFixedUpdate();
+        var ppw = ConsoleObjectRef.scrollview;
+        ConsoleObjectRef.backlog.text = BackLog;
+        ConsoleObjectRef.backlog_size.SetLayoutVertical();
+        ppw.CalculateLayoutInputVertical();
+        ppw.SetLayoutVertical();
+        if (pp != null) pp.value = 1;
+        yield return new WaitForFixedUpdate();
+        if (pp != null) pp.value = 1;
+        yield return new WaitForFixedUpdate();
+        if (pp != null) pp.value = 1;
+        yield return new WaitForFixedUpdate();
+        if (pp != null) pp.value = 1;
+        yield return new WaitForFixedUpdate();
+        if (pp != null) pp.value = 1;
+    }
 
     public void Submit(string inputgaming)
     {
         if (InputManager.IsKeyDown("console") || InputManager.IsKeyDown("close_menu") || Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2)) return;
-        balls = 3;
+        if(botju != null) StopCoroutine(botju);
+        botju = StartCoroutine(BottomJump());
         var pp = ConsoleObjectRef.scrollbar;
         if (pp != null) pp.value = 1;
         var lang = LanguageFileSystem.Instance;
@@ -490,7 +501,6 @@ public class ConsoleLol : MonoBehaviour
             ConsoleLog(lang.GetString("Console", "Error_InvalidCommand"), "#ff0000ff");
         }
 
-        balls = 3;
         comm = prev_commands.Count;
         ConsoleObjectRef.fix.Select();
         ConsoleObjectRef.input.Select();
@@ -505,7 +515,8 @@ public class ConsoleLol : MonoBehaviour
             var pp = BackLog.IndexOf("<br>");
             BackLog = BackLog.Substring(pp+4);
         }
-        balls = 1;
+        if (botju != null) StopCoroutine(botju);
+        botju = StartCoroutine(BottomJump());
     }
     public void CloseConsole()
     {

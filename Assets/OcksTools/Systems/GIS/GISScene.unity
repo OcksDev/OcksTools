@@ -441,6 +441,8 @@ MonoBehaviour:
   SaveLoadData: 0
   IsAbstract: 0
   CanShiftClickItems: 1
+  CanCtrlClickItems: 1
+  CtrlClickPriority: -1
   AutomaticallyAddChildren: 1
   GenerateRandomItems: 0
   GenerateSlotObjects: 1
@@ -1151,6 +1153,8 @@ MonoBehaviour:
   SaveLoadData: 0
   IsAbstract: 0
   CanShiftClickItems: 1
+  CanCtrlClickItems: 1
+  CtrlClickPriority: 0
   AutomaticallyAddChildren: 1
   GenerateRandomItems: 1
   GenerateSlotObjects: 1
@@ -2696,6 +2700,8 @@ MonoBehaviour:
   SaveLoadData: 1
   IsAbstract: 0
   CanShiftClickItems: 1
+  CanCtrlClickItems: 1
+  CtrlClickPriority: 0
   AutomaticallyAddChildren: 1
   GenerateRandomItems: 0
   GenerateSlotObjects: 1
@@ -3437,6 +3443,8 @@ MonoBehaviour:
   SaveLoadData: 1
   IsAbstract: 1
   CanShiftClickItems: 1
+  CanCtrlClickItems: 1
+  CtrlClickPriority: -1
   AutomaticallyAddChildren: 1
   GenerateRandomItems: 0
   GenerateSlotObjects: 0

@@ -222,11 +222,11 @@ public class EffectProfile
     public int MaxStack;
     public EffectProfile(string type, float time, int add_method, int stacks = 1)
     {
-        SetData();
         Name = type;
         Duration = time;
         CombineMethod = add_method;
         Stack =stacks;
+        SetData();
     }
     public EffectProfile()
     {
