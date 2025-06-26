@@ -294,6 +294,7 @@ public class Converter : MonoBehaviour
          * default/0 - Shorthand form (50.00M, 2.00B, 5.00Qa)
          * 1 - Scientific form (5.00E4, 20.00E75)
          * 2 - Long Form (5,267,500,000.69) (not very speedy at large numbers)
+         * 3 - Roman Numerals
          */
 
         char dot = '.';

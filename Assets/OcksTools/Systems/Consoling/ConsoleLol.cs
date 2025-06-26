@@ -207,7 +207,8 @@ public class ConsoleLol : MonoBehaviour
                                 "<br> - test listall" +
                                 "<br> - test events" +
                                 "<br> - test escape" +
-                                "<br> - test compver"
+                                "<br> - test compver"+
+                                "<br> - test roman"
 
                             ), "#bdbdbdff");
                             break;
@@ -359,6 +360,18 @@ public class ConsoleLol : MonoBehaviour
                             ConsoleLog((
 
                                 "Double Max: " + double.MaxValue.ToString()
+
+                            ), "#bdbdbdff");
+                            break;
+                        case "roman":
+                            ConsoleLog((
+
+                                "Roman of 129: " + Converter.NumToRead("129",3)
+
+                            ), "#bdbdbdff");
+                            ConsoleLog((
+
+                                "Roman of 3999: " + Converter.NumToRead("3999",3)
 
                             ), "#bdbdbdff");
                             break;
