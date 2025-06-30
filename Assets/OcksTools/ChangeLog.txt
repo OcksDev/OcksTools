@@ -16,6 +16,7 @@
   - Two new easing functions, EaseBounce and EaseOvershoot (and new testing scene for all easing functions)
   - Officially removed support for old RandomFunctions.SpawnObject
   - SpawnParticle no longer uses an inbuilt list for particle references.
+  - New CompareTwoVersions(), lets you check which of the two versions inputted is bigger
 - Tree Improvements
   - "Locked" state now has functionality
   - Abstracted node initialization into a method
@@ -50,7 +51,6 @@
   - Dialog now has an event attribute, letting you easily call arbitrary methods from dialogs
   - Console has a new coat of paint by default.
   - Console now properly moves down to the bottom of the console when entering commands (FR THIS TIME)
-  - New CompareTwoVersions() in RandomFuctions, lets you check which of the two versions inputted is bigger
 ------------
 
 ------------
