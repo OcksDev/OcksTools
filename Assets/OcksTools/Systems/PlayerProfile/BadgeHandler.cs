@@ -24,18 +24,20 @@ public class BadgeHandler : MonoBehaviour
 
     private void Awake()
     {
-        SaveSystem.LoadAllData.Append(LockIn);
-        SaveSystem.SaveAllData.Append(LockOut);
+        SaveSystem.LoadAllData.Append(LockIn2);
+        SaveSystem.SaveAllData.Append(LockOut2);
         FileSystem.Instance.AssembleFilePaths();
         FileSystem.Instance.CreateFolder(FileSystem.Instance.FileLocations["Badges"]);
         FileSystem.Instance.CreateFolder(FileSystem.Instance.FileLocations["Profile_Badge_Data"]);
     }
 
-    public void LockIn(string dict)
+    public void LockIn2(string dict)
     {
 
         foreach (var a in GameAuthorizedBadges)
         {
+            a.Version = Version;
+            a.GameOrigin = FileSystem.GameTrueName;
             Badges.Add(a.Name, a);
         }
         BadgeFile = new OXFile();
@@ -88,7 +90,7 @@ public class BadgeHandler : MonoBehaviour
     }
 
 
-    public void LockOut(string dict)
+    public void LockOut2(string dict)
     {
         AuthorizeBadgePush();
         WriteAllBadgeData();
@@ -116,7 +118,7 @@ public class BadgeHandler : MonoBehaviour
                 dat.Add("Name", a.Value.Name);
                 dat.Add("Desc", a.Value.Description);
                 dat.Add("Game", a.Value.GameOrigin);
-                dat.Add("Version", Version);
+                dat.Add("Version", a.Value.Version);
                 dat.Add("IMG", ImageConversion.EncodeToPNG(a.Value.Icon.texture));
                 o.Data = dat;
                 o.WriteFile($"{FileSystem.Instance.FileLocations["Profile_Badge_Data"]}\\{a.Key}.ox", true);

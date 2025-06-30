@@ -21,8 +21,8 @@ public class FileSystem : MonoBehaviour
 
     //change these to match your game
     public const string GameVer = "v1.1.1";
-    private const string GameFolderName = "OcksTools";
-    private const string GameTrueName = "Ocks Tools";
+    public const string GameFolderName = "OcksTools";
+    public const string GameTrueName = "Ocks Tools";
 
 
     private static FileSystem instance;
