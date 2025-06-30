@@ -13,8 +13,8 @@ public class CustomFileTester : MonoBehaviour
         if (File.Exists(FileSystem.Instance.FileLocations["OXFileTest"]))
         {
             file.ReadFile(FileSystem.Instance.FileLocations["OXFileTest"]);
+            Debug.Log("OXFile Detected!");
             Debug.Log("Version Detected: " + file.FileVersion);
-
 
             foreach(var a in file.Data.DataOXFiles)
             {
@@ -33,7 +33,7 @@ public class CustomFileTester : MonoBehaviour
                             switch (b.Value.Type)
                             {
                                 case OXFileData.OXFileType.String:
-                                    //Debug.Log($"SubDat: {b.Value.Name} - {b.Value.Get_String()}");
+                                    Debug.Log($"SubDat: {b.Value.Name} - {b.Value.DataString}");
                                     break;
                             }
                         }
@@ -45,7 +45,7 @@ public class CustomFileTester : MonoBehaviour
                             switch (b.Type)
                             {
                                 case OXFileData.OXFileType.String:
-                                    Debug.Log($"SubDat: {b.Name} - {b.DataString}");
+                                    Debug.Log($"SubDat2: {b.Name} - {b.DataString}");
                                     break;
                             }
                         }
@@ -74,7 +74,8 @@ public class CustomFileTester : MonoBehaviour
             subdata2.Add("Pineapple", "Pen");
             subdata2.Add("Pineapple", "Penpineappleapplepen");
 
-            file.Data.Add("PPAP", subdata2);
+            file.Data.Add("PPAP", subdata);
+            file.Data.Add("PPAP2", subdata2);
 
             file.WriteFile(FileSystem.Instance.FileLocations["OXFileTest"], true);
         }

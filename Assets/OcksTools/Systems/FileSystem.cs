@@ -57,18 +57,13 @@ public class FileSystem : MonoBehaviour
             s += $"{GameName}\n";
             WriteFile(FileLocations["OcksGames"], s, true);
         }
-        var pp = new bool[37];
-        for(int i = 0; i < pp.Length; i++)
-        {
-            pp[i] = UnityEngine.Random.Range(0, 2) == 0 ? true:false ;
-        }
     }
     private void Start()
     {
         //ConsoleLol.instance.ConsoleLog("Current File Location: " + DirectoryLol);
         //ConsoleLol.instance.ConsoleLog("Game Data Location: " + GameDirectory);
 
-        WriteFile($"{GameDirectory}\\Test.txt", "Test Data Lol", false);
+        //WriteFile($"{GameDirectory}\\Test.txt", "Test Data Lol", false);
 
 
     }
@@ -85,6 +80,9 @@ public class FileSystem : MonoBehaviour
             {"OcksGames",$"{OcksDirectry}\\Ocks_Games_Owned.txt"},
             {"OXFileTest",$"{GameDirectory}\\Testing.ox"},
             {"Lang",$"{GameDirectory}\\Language"},
+            {"Badges",$"{UniversalDirectory}\\Badges"},
+            {"Profile_Badges",$"{UniversalDirectory}\\Badges\\Badges.ox"},
+            {"Profile_Badge_Data",$"{UniversalDirectory}\\Badges\\Data"},
         };
     }
     public void WriteFile(string FileName, string data, bool CanOverride)

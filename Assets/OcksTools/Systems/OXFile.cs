@@ -19,10 +19,12 @@ using System.Text;
 
 public class OXFile
 {
-    public OXFileData Data = new OXFileData(OXFileData.OXFileType.OXFileData);
+    //touch away
     public const double ParserVersion = 1;
     public static bool DoObsure = true;
+    //no touchy
     public double FileVersion = 0;
+    public OXFileData Data = new OXFileData(OXFileData.OXFileType.OXFileData);
     public bool ReadFile(string str)
     {
         var oxconfirm = Encoding.UTF8.GetBytes("OXFile");
