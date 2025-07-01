@@ -11,7 +11,7 @@ public class BadgeHandler : MonoBehaviour
      * Creating New Badges:
      *  - All images must be set as Read/Write (Advanced > Read/Write > True)
      *  - All images must be set as Uncompressed (Default > Compression > None)
-     * Simply add whatever you want to the authorized badge list
+     * Simply add whatever you want to the authorized badge list in the unity inspector
      */
 
 
@@ -40,52 +40,68 @@ public class BadgeHandler : MonoBehaviour
             a.GameOrigin = FileSystem.GameTrueName;
             Badges.Add(a.Name, a);
         }
-        BadgeFile = new OXFile();
-        BadgeData = BadgeFile.Data;
-        if (System.IO.File.Exists(FileSystem.Instance.FileLocations["Profile_Badges"]))
-        {
-            BadgeFile.ReadFile(FileSystem.Instance.FileLocations["Profile_Badges"]);
-            BadgeData = BadgeFile.Data;
-            Pinned_Badges = BadgeData["PBadges"].DataListString;
-            Owned_Badges = BadgeData["OBadges"].DataListString;
-
-            foreach (var a in Owned_Badges)
-            {
-                Console.Log("Owned Badge: " + a);
-            }
-        }
-        else
-        {
-            //data no load lol
-        }
 
 
         var all = System.IO.Directory.GetFiles(FileSystem.Instance.FileLocations["Profile_Badge_Data"]);
-        foreach(var a in all)
+        foreach (var a in all)
         {
-            if (a.EndsWith(".ox"))
+            var z = a.Substring(a.LastIndexOf("\\") + 1);
+            if (!z.EndsWith(".ox")) continue;
+            z = z.Substring(0, z.IndexOf(".ox"));
+            if (!Badges.ContainsKey(z))
             {
                 StartCoroutine(LoadBadge(a));
             }
         }
 
+        try
+        {
+            BadgeFile = new OXFile();
+            BadgeData = BadgeFile.Data;
+            if (System.IO.File.Exists(FileSystem.Instance.FileLocations["Profile_Badges"]))
+            {
+                BadgeFile.ReadFile(FileSystem.Instance.FileLocations["Profile_Badges"]);
+                BadgeData = BadgeFile.Data;
+                Pinned_Badges = BadgeData["PBadges"].DataListString;
+                Owned_Badges = BadgeData["OBadges"].DataListString;
+            }
+            else
+            {
+                //data no load lol
+            }
+        }
+        catch
+        {
+            Console.Log("Badge Data Corrupted: " + FileSystem.Instance.FileLocations["Profile_Badges"]);
+        }
+
+
+
     }
 
     public IEnumerator LoadBadge(string a)
     {
-        var o = new OXFile();
-        o.ReadFile(a);
-        var n = new OXBadge();
-        n.Name = o.Data["Name"].DataString;
-        if (Badges.ContainsKey(n.Name)) yield break;
-        n.Description = o.Data["Desc"].DataString;
-        n.Version = o.Data["Version"].DataString;
-        n.GameOrigin = o.Data["Game"].DataString;
-        var x = new Texture2D(1, 1);
-        x.LoadImage(o.Data["IMG"].DataRaw);
-        n.Icon = Converter.Texture2DToSprite(x);
-        Console.Log("Loaded: " + n.Name);
-        Badges.Add(n.Name, n);
+        try
+        {
+            var o = new OXFile();
+            o.ReadFile(a);
+            var n = new OXBadge();
+            n.Name = o.Data["Name"].DataString;
+            if (Badges.ContainsKey(n.Name)) yield break;
+            n.Description = o.Data["Desc"].DataString;
+            n.Version = o.Data["Version"].DataString;
+            n.GameOrigin = o.Data["Game"].DataString;
+            var x = new Texture2D(1, 1);
+            x.LoadImage(o.Data["IMG"].DataRaw);
+            if (x.width <= 128) x.filterMode = FilterMode.Point;
+            n.Icon = Converter.Texture2DToSprite(x);
+            Badges.Add(n.Name, n);
+        }
+        catch
+        {
+            Console.Log("Badge Corrupted: " + a);
+        }
+
         yield return null;
     }
 
@@ -126,21 +142,31 @@ public class BadgeHandler : MonoBehaviour
         }
     }
 
-    public void AuthorizeBadgePush()
+    public static void AuthorizeBadgePush()
     {
-        //TESTING DATA
-        Owned_Badges = new List<string>()
-        {
-            "Gooning",
-            "Dev",
-        };
-
         BadgeData.Add("OBadges", Owned_Badges);
         BadgeData.Add("PBadges", Pinned_Badges);
         BadgeFile.WriteFile(FileSystem.Instance.FileLocations["Profile_Badges"], true);
     }
 
-
+    public static void AttemptGrantBadge(string nerd)
+    {
+        if(!Owned_Badges.Contains(nerd)) Owned_Badges.Add(nerd);
+    }
+    public static void AttemptRevokeBadge(string nerd)
+    {
+        if(Owned_Badges.Contains(nerd)) Owned_Badges.Remove(nerd);
+        if(Pinned_Badges.Contains(nerd)) Pinned_Badges.Remove(nerd);
+    }
+    
+    public static void AttemptPinBadge(string nerd)
+    {
+        if(!Pinned_Badges.Contains(nerd) && Owned_Badges.Contains(nerd)) Pinned_Badges.Add(nerd);
+    }
+    public static void AttemptUnpinBadge(string nerd)
+    {
+        if(Pinned_Badges.Contains(nerd)) Pinned_Badges.Remove(nerd);
+    }
 
 }
 [System.Serializable]

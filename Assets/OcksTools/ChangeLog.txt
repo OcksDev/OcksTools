@@ -2,9 +2,11 @@
 ------------
    v1.1.1
 - New Notification System
-- New Stored Random script (plus testing scene/script)
+- New Badge System (Player Profiles)
+  - Allows for cross-game player achievement tracking
 - New Lerp Animation Tool
 - New Multithreading Tool
+- New Stored Random script (plus testing scene/script)
 - GIS Improvements
   - New Ctrl click functionality for containers (default is opted in)
   - Added new method for getting total amount of items in container
@@ -17,6 +19,7 @@
   - Officially removed support for old RandomFunctions.SpawnObject
   - SpawnParticle no longer uses an inbuilt list for particle references.
   - New CompareTwoVersions(), lets you check which of the two versions inputted is bigger
+  - New GetActualSizeOfUI() to actually get the size of UI
 - Tree Improvements
   - "Locked" state now has functionality
   - Abstracted node initialization into a method
@@ -38,6 +41,7 @@
 - New Git (Its very niche)
 - Misc Changes
   - Some new default assets
+    - CutOcto is now 960px scale instead of 100px, matching everything else
   - Input Mananger now has a different lock level behavior when multiple locks are in place
   - Fixed some random missing keys in the Input Manager: 
     - ` 
@@ -51,6 +55,8 @@
   - Dialog now has an event attribute, letting you easily call arbitrary methods from dialogs
   - Console has a new coat of paint by default.
   - Console now properly moves down to the bottom of the console when entering commands (FR THIS TIME)
+  - Console now properly scales when re-sized, it had some janky stuff going on before.
+    - It now also has text wrapping in the output, scaling problems had prevented this before
 ------------
 
 ------------

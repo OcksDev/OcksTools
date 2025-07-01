@@ -5,9 +5,12 @@ using UnityEngine;
 
 public class GlobalCallerHandler
 {
+    /*
+     * The idea for this is to store the outputs of deterministic functions so they dont need to be recalculated many times, idk how useful this will be lol
+     */
+
+
     public static Dictionary<IMultiCaller, bool> all = new Dictionary<IMultiCaller, bool>();
-
-
     public static void ClearAll()
     {
         foreach (var caller in all)

@@ -1369,8 +1369,8 @@
     },
     "m_FragmentContext": {
         "m_Position": {
-            "x": 1537.000244140625,
-            "y": 281.9999694824219
+            "x": 1688.0,
+            "y": 351.0
         },
         "m_Blocks": [
             {
@@ -2337,10 +2337,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": 1247.2000732421875,
-            "y": 540.0,
+            "x": 1312.0,
+            "y": 522.0,
             "width": 208.0,
-            "height": 301.60003662109377
+            "height": 302.0
         }
     },
     "m_Slots": [
@@ -3454,10 +3454,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": 666.4000244140625,
-            "y": 48.79999923706055,
+            "x": 979.0,
+            "y": -86.00001525878906,
             "width": 208.0,
-            "height": 301.6000061035156
+            "height": 302.0
         }
     },
     "m_Slots": [
@@ -8338,7 +8338,7 @@
     "hlslDeclarationOverride": 0,
     "m_Hidden": false,
     "m_Value": {
-        "m_SerializedTexture": "{\"texture\":{\"fileID\":2800000,\"guid\":\"157d71cc13261dd42883fe3435f00f5e\",\"type\":3}}",
+        "m_SerializedTexture": "{\"texture\":{\"fileID\":2800000,\"guid\":\"eef92c1887648cf42a6b081131cbe41c\",\"type\":3}}",
         "m_Guid": ""
     },
     "isMainTexture": false,

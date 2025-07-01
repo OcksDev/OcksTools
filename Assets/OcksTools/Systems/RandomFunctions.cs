@@ -51,6 +51,13 @@ public class RandomFunctions : MonoBehaviour
         }
         return f;
     }
+
+    public static Vector2 GetActualSizeOfUI(RectTransform re) 
+    {
+        //sizeDelta and Rect.width both dont get the actual size, somehow
+        return (re.rect.max - re.rect.min);
+    }
+
     public static Vector3 ReflectVector(Vector3 incoming, Vector3 axis)
     {
         return incoming - 2 * Vector3.Dot(incoming, axis) * axis;
