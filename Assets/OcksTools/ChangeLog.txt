@@ -2,8 +2,10 @@
 ------------
    v1.1.1
 - New Notification System
-- New Badge System (Player Profiles)
-  - Allows for cross-game player achievement tracking
+- New Player Profile System (kinda)
+  - Finally has proper integration, no longer an experimental class
+- New Badge System (within the Player Profile System)
+    - Allows for cross-game player achievement tracking
 - New Lerp Animation Tool
 - New Multithreading Tool
 - New Stored Random script (plus testing scene/script)
