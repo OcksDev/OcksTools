@@ -16,6 +16,7 @@
   - Abstracted GISSlot actions into their own methods, should make logic a lot easier to follow and interface with
   - Hover logic extracted into its own class, now can be used for more general applications
 - Random Functions Improvements
+  - New OpenURLInBrowser() to open urls in the default browser 
   - Changed RandomFunctions.Dist slightly, and also added DistNoSQRT()
   - Two new easing functions, EaseBounce and EaseOvershoot (and new testing scene for all easing functions)
   - Officially removed support for old RandomFunctions.SpawnObject
@@ -55,6 +56,8 @@
   - New converter thing (converting color to hex string)
   - EffectProfile now properly sets the default data on creation lol
   - Dialog now has an event attribute, letting you easily call arbitrary methods from dialogs
+  - Windows Console>Utils Window now properly creates prefab links on the instantiated objects.
+    - Mulitplayer Scene no longer uses un-prefab'ed versions of the console.
   - Console has a new coat of paint by default.
   - Console now properly moves down to the bottom of the console when entering commands (FR THIS TIME)
   - Console now properly scales when re-sized, it had some janky stuff going on before.

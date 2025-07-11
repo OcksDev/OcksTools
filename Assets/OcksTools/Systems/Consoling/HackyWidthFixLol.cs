@@ -11,7 +11,6 @@ public class HackyWidthFixLol : MonoBehaviour
     {
         var m = Myself.sizeDelta;
         m.x = (Parente.rect.max - Parente.rect.min).x;
-        Debug.Log("A" + m);
         Myself.sizeDelta = m;
     }
 }

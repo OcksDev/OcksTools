@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Unity.Mathematics;
@@ -173,6 +174,13 @@ public class RandomFunctions : MonoBehaviour
             }
         }
         return true;
+    }
+
+    public static void OpenURLInBrowser(string url)
+    {
+        var info = new ProcessStartInfo(url);
+        info.UseShellExecute = true;
+        Process.Start(info);
     }
 
     /*

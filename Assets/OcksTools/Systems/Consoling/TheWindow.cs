@@ -41,8 +41,12 @@ public class ConsoleSetupWindow: EditorWindow
                     var f2 = "ConsoleHandler";
 
                     var f = (GameObject)Resources.Load(f1);
-                    var t1 = Instantiate(f, new Vector3(-5.23749303817749f, -2.491374969482422f, 0) + s.transform.position, Quaternion.identity, s.transform);
-                    var t2 = Instantiate((GameObject)Resources.Load(f2), Vector3.zero, Quaternion.identity);
+                    var t1 = (GameObject)PrefabUtility.InstantiatePrefab(f);
+                    t1.transform.position = new Vector3(-5.23749303817749f, -2.491374969482422f, 0) + s.transform.position;
+                    t1.transform.parent = s.transform;
+                    t1.transform.localScale = Vector3.one;
+                    var t2 = (GameObject)PrefabUtility.InstantiatePrefab((GameObject)Resources.Load(f2));
+                    t2.transform.position = Vector3.zero;
                     var a = t2.GetComponent<ConsoleLol>();
                     a.ConsoleObject = t1;
 
@@ -59,9 +63,12 @@ public class ConsoleSetupWindow: EditorWindow
                     var f2 = "DialogManager";
 
                     var f = (GameObject)Resources.Load(f1);
-                    var t1 = Instantiate(f, new Vector3(0f, -2.783632516860962f, 0) + s.transform.position, Quaternion.identity, s.transform);
-                    var t2 = Instantiate((GameObject)Resources.Load(f2), Vector3.zero, Quaternion.identity);
-
+                    var t1 = (GameObject)PrefabUtility.InstantiatePrefab(f);
+                    t1.transform.position = new Vector3(0f, -2.783632516860962f, 0) + s.transform.position;
+                    t1.transform.parent = s.transform;
+                    t1.transform.localScale = Vector3.one;
+                    var t2 = (GameObject)PrefabUtility.InstantiatePrefab((GameObject)Resources.Load(f2));
+                    t2.transform.position = Vector3.zero;
                     t2.GetComponent<DialogLol>().DialogBoxObject = t1;
 
                     t1.name = f1;
@@ -74,8 +81,12 @@ public class ConsoleSetupWindow: EditorWindow
                     var f2 = "ChatHandler";
 
                     var f = (GameObject)Resources.Load(f1);
-                    var t1 = Instantiate(f, new Vector3(-5.310166358947754f, -2.5500009059906008f, 0) + s.transform.position, Quaternion.identity, s.transform);
-                    var t2 = Instantiate((GameObject)Resources.Load(f2), Vector3.zero, Quaternion.identity);
+                    var t1 = (GameObject)PrefabUtility.InstantiatePrefab(f);
+                    t1.transform.position = new Vector3(-5.310166358947754f, -2.5500009059906008f, 0) + s.transform.position;
+                    t1.transform.parent = s.transform;
+                    t1.transform.localScale = Vector3.one;
+                    var t2 = (GameObject)PrefabUtility.InstantiatePrefab((GameObject)Resources.Load(f2));
+                    t2.transform.position = Vector3.zero;
                     var g = t2.GetComponent<ChatLol>();
                     g.ChatLog = t1;
                     g.ChatText = (GameObject)Resources.Load("BonerText");
