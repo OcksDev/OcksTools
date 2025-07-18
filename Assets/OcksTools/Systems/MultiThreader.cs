@@ -5,18 +5,17 @@ using UnityEngine;
 
 public class MultiThreaderEnsure : MonoBehaviour
 {
-
     // neither method A or B are nessecarily better than the other
 
     // OXThreadPoolA = Evenly distribute methods across threads.
 
-        //Pros: No inherent problems, works each thread fairly evenly 
-        //Cons: Doesn't decide based on time to execute methods, so they could pile up on one thread.
+    //Pros: No inherent problems, works each thread fairly evenly 
+    //Cons: Doesn't decide based on time to execute methods, so they could pile up on one thread.
 
     // OXThreadPoolB = Pool methods and have threads pull from the pool.
 
-        //Pros: Threads used more effeciently, never any downtime when possible, better handles methods of varying execution times (I think)
-        //Cons: Threads can sometimes overreach and try to run methods that other threads already are pulling, which could slow down performance slightly. (it shouldn't effect functionality tho)
+    //Pros: Threads used more effeciently, never any downtime when possible, better handles methods of varying execution times (I think)
+    //Cons: Threads can sometimes overreach and try to run methods that other threads already are pulling, which could slow down performance slightly. (it shouldn't effect functionality tho)
 
 
 
@@ -28,12 +27,13 @@ public class MultiThreaderEnsure : MonoBehaviour
 
     // in the case some that threads dont get created properly
     // for some reason Unity makes thread creation unreliable, at least on startup, so this fixes it.
-    public IEnumerator FixSlackers(IOXThreadPool pool) 
+    public IEnumerator FixSlackers(IOXThreadPool pool)
     {
         bool good = true;
         while (good)
         {
             yield return new WaitForFixedUpdate();
+            Debug.Log("Checking");
             good = !pool.CheckAll();
         }
     }
@@ -43,19 +43,20 @@ public class MultiThreaderEnsure : MonoBehaviour
 public class OXThreadPoolA : IOXThreadPool
 {
     public int ThreadCount;
-    public Dictionary<int,Queue<System.Action>> ActionPool = new Dictionary<int, Queue<System.Action>>();
+    public Dictionary<int, Queue<System.Action>> ActionPool = new Dictionary<int, Queue<System.Action>>();
     public OXThreadPoolA(int threadCount)
     {
         ThreadCount = threadCount;
-        for(int i = 0; i < threadCount; i++)
+        for (int i = 0; i < threadCount; i++)
         {
             ActionPool.Add(i, new Queue<System.Action>());
         }
-        for(int i = 0; i < threadCount; i++)
+        for (int i = 0; i < threadCount; i++)
         {
             new System.Threading.Thread(() => { Awaiter(i); }).Start();
         }
-        if(MultiThreaderEnsure.Instance != null)
+        Debug.Log("A");
+        if (MultiThreaderEnsure.Instance != null)
         {
             MultiThreaderEnsure.Instance.StartCoroutine(MultiThreaderEnsure.Instance.FixSlackers(this));
         }
@@ -64,9 +65,9 @@ public class OXThreadPoolA : IOXThreadPool
     int PullNextThread()
     {
         gg = RandomFunctions.Mod(gg + 1, ThreadCount);
-        if(!allconfirmed && !SuccessfulThreads.ContainsKey(gg) && SuccessfulThreads.Count > 0)
+        if (!allconfirmed && !SuccessfulThreads.Contains(gg) && SuccessfulThreads.Count > 0)
         {
-            while (!SuccessfulThreads.ContainsKey(gg))
+            while (!SuccessfulThreads.Contains(gg))
             {
                 gg = RandomFunctions.Mod(gg + 1, ThreadCount);
             }
@@ -74,11 +75,13 @@ public class OXThreadPoolA : IOXThreadPool
         return gg;
     }
 
-    public System.Collections.Concurrent.ConcurrentDictionary<int,int> SuccessfulThreads = new System.Collections.Concurrent.ConcurrentDictionary<int, int>();
+    public HashSet<int> SuccessfulThreads = new HashSet<int>();
     public bool allconfirmed = false;
     private void Awaiter(int i)
     {
-        SuccessfulThreads.TryAdd(i, 0);
+        bool a = false;
+        try { SuccessfulThreads.Add(i); } catch { a = true; }
+        if (a) return;
         if (i > ThreadCount) return;
         if (!ActionPool.ContainsKey(i))
             ActionPool.Add(i, new Queue<System.Action>());
@@ -105,7 +108,7 @@ public class OXThreadPoolA : IOXThreadPool
         bool good = true;
         for (int i = 0; i < ThreadCount; i++)
         {
-            if (SuccessfulThreads.ContainsKey(i)) continue;
+            if (SuccessfulThreads.Contains(i)) continue;
             good = false;
             new System.Threading.Thread(() => { Awaiter(i); }).Start();
         }
@@ -121,21 +124,22 @@ public class OXThreadPoolB : IOXThreadPool
     public OXThreadPoolB(int threadCount)
     {
         ThreadCount = threadCount;
-        for(int i = 0; i < threadCount; i++)
+        for (int i = 0; i < threadCount; i++)
         {
             new System.Threading.Thread(() => { Awaiter(i); }).Start();
         }
-        if(MultiThreaderEnsure.Instance != null)
+        Debug.Log("A");
+        if (MultiThreaderEnsure.Instance != null)
         {
             MultiThreaderEnsure.Instance.StartCoroutine(MultiThreaderEnsure.Instance.FixSlackers(this));
         }
     }
 
-    public System.Collections.Concurrent.ConcurrentDictionary<int, int> SuccessfulThreads = new System.Collections.Concurrent.ConcurrentDictionary<int, int>();
+    public HashSet<int> SuccessfulThreads = new HashSet<int>();
     public bool allconfirmed = false;
     private void Awaiter(int i)
     {
-        SuccessfulThreads.TryAdd(i,0);
+        SuccessfulThreads.Add(i);
         if (i > ThreadCount) return;
         System.Action weenor = null;
         bool smegs = true;
@@ -176,11 +180,11 @@ public class OXThreadPoolB : IOXThreadPool
         bool good = true;
         for (int i = 0; i < ThreadCount; i++)
         {
-            if (SuccessfulThreads.ContainsKey(i)) continue;
+            if (SuccessfulThreads.Contains(i)) continue;
             good = false;
             new System.Threading.Thread(() => { Awaiter(i); }).Start();
         }
-        if(good) allconfirmed = true;
+        if (good) allconfirmed = true;
         return good;
     }
 
