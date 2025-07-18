@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class MultiThreaderEnsure : MonoBehaviour
 {
+
     // neither method A or B are nessecarily better than the other
 
     // OXThreadPoolA = Evenly distribute methods across threads.
@@ -54,7 +55,6 @@ public class OXThreadPoolA : IOXThreadPool
         {
             new System.Threading.Thread(() => { Awaiter(i); }).Start();
         }
-        Debug.Log("A");
         if(MultiThreaderEnsure.Instance != null)
         {
             MultiThreaderEnsure.Instance.StartCoroutine(MultiThreaderEnsure.Instance.FixSlackers(this));
@@ -64,9 +64,9 @@ public class OXThreadPoolA : IOXThreadPool
     int PullNextThread()
     {
         gg = RandomFunctions.Mod(gg + 1, ThreadCount);
-        if(!allconfirmed && !SuccessfulThreads.Contains(gg) && SuccessfulThreads.Count > 0)
+        if(!allconfirmed && !SuccessfulThreads.ContainsKey(gg) && SuccessfulThreads.Count > 0)
         {
-            while (!SuccessfulThreads.Contains(gg))
+            while (!SuccessfulThreads.ContainsKey(gg))
             {
                 gg = RandomFunctions.Mod(gg + 1, ThreadCount);
             }
@@ -74,11 +74,11 @@ public class OXThreadPoolA : IOXThreadPool
         return gg;
     }
 
-    public HashSet<int> SuccessfulThreads = new HashSet<int>();
+    public System.Collections.Concurrent.ConcurrentDictionary<int,int> SuccessfulThreads = new System.Collections.Concurrent.ConcurrentDictionary<int, int>();
     public bool allconfirmed = false;
     private void Awaiter(int i)
     {
-        SuccessfulThreads.Add(i);
+        SuccessfulThreads.TryAdd(i, 0);
         if (i > ThreadCount) return;
         if (!ActionPool.ContainsKey(i))
             ActionPool.Add(i, new Queue<System.Action>());
@@ -105,10 +105,11 @@ public class OXThreadPoolA : IOXThreadPool
         bool good = true;
         for (int i = 0; i < ThreadCount; i++)
         {
-            if (SuccessfulThreads.Contains(i)) continue;
+            if (SuccessfulThreads.ContainsKey(i)) continue;
             good = false;
             new System.Threading.Thread(() => { Awaiter(i); }).Start();
         }
+        if (good) allconfirmed = true;
         return good;
     }
 
@@ -124,18 +125,17 @@ public class OXThreadPoolB : IOXThreadPool
         {
             new System.Threading.Thread(() => { Awaiter(i); }).Start();
         }
-        Debug.Log("A");
         if(MultiThreaderEnsure.Instance != null)
         {
             MultiThreaderEnsure.Instance.StartCoroutine(MultiThreaderEnsure.Instance.FixSlackers(this));
         }
     }
 
-    public HashSet<int> SuccessfulThreads = new HashSet<int>();
+    public System.Collections.Concurrent.ConcurrentDictionary<int, int> SuccessfulThreads = new System.Collections.Concurrent.ConcurrentDictionary<int, int>();
     public bool allconfirmed = false;
     private void Awaiter(int i)
     {
-        SuccessfulThreads.Add(i);
+        SuccessfulThreads.TryAdd(i,0);
         if (i > ThreadCount) return;
         System.Action weenor = null;
         bool smegs = true;
@@ -176,10 +176,11 @@ public class OXThreadPoolB : IOXThreadPool
         bool good = true;
         for (int i = 0; i < ThreadCount; i++)
         {
-            if (SuccessfulThreads.Contains(i)) continue;
+            if (SuccessfulThreads.ContainsKey(i)) continue;
             good = false;
             new System.Threading.Thread(() => { Awaiter(i); }).Start();
         }
+        if(good) allconfirmed = true;
         return good;
     }
 
