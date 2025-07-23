@@ -28,6 +28,12 @@
   - Abstracted node initialization into a method
   - New Node Initializer script to better deal with nodes first being defined
     - Can initialize from a predefined list and/or child objects
+- Console Improvements
+  - Console has a new coat of paint by default.
+  - Console now properly moves down to the bottom of the log when entering commands (FR THIS TIME)
+  - Console now properly scales when re-sized, it had some janky stuff going on before.
+- Dialog Improvements
+  - Added the event attribute, letting you easily call arbitrary methods from dialogs
 - SpawnData Improvements
   - Uses Dictionaries instead of Lists for data handling
 - Room Generation Improvements
@@ -55,12 +61,8 @@
   - Tweaked variable locations in File System to make it more clear what you need to change
   - New converter thing (converting color to hex string)
   - EffectProfile now properly sets the default data on creation lol
-  - Dialog now has an event attribute, letting you easily call arbitrary methods from dialogs
   - Windows Console>Utils Window now properly creates prefab links on the instantiated objects.
     - Mulitplayer Scene no longer uses un-prefab'ed versions of the console.
-  - Console has a new coat of paint by default.
-  - Console now properly moves down to the bottom of the console when entering commands (FR THIS TIME)
-  - Console now properly scales when re-sized, it had some janky stuff going on before.
     - It now also has text wrapping in the output, scaling problems had prevented this before
   - Camera script now has much more intelligble variables for controlling mouse following
 ------------
