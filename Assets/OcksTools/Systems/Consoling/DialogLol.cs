@@ -526,7 +526,7 @@ public class DialogLol : MonoBehaviour
         speaker = "?";
         color = "255|255|255|255";
         tit_color = "255|255|255|255";
-        bg_color = "59|50|84|255";
+        bg_color = "84|144|84|255";
         RichTextEnabled = true;
         CanSkip = true;
         CanEscape = false;
