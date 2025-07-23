@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
@@ -5,7 +6,7 @@ using UnityEngine;
 
 public class MultiThreaderEnsure : MonoBehaviour
 {
-    // neither method A or B are nessecarily better than the other
+    // neither method A, B, or C are nessecarily better than the other
 
     // OXThreadPoolA = Evenly distribute methods across threads.
 
@@ -17,12 +18,21 @@ public class MultiThreaderEnsure : MonoBehaviour
     //Pros: Threads used more effeciently, never any downtime when possible, better handles methods of varying execution times (I think)
     //Cons: Threads can sometimes overreach and try to run methods that other threads already are pulling, which could slow down performance slightly. (it shouldn't effect functionality tho)
 
+    // OXThreadPoolC = Only takes in on method, every thread just executes that method forever.
+
+    //Pros: Threads used as efficiently as you let them, allows for greater control of program flow
+    //Cons: Can only run one input method instead of being able to just handle arbitarary inputs at arbitrary times
 
 
+    public static List<IOXThreadPool> Nerds = new List<IOXThreadPool>();
     public static MultiThreaderEnsure Instance;
     private void Awake()
     {
         Instance = this;
+        for(int i = 0; i < Nerds.Count; i++)
+        {
+            StartCoroutine(FixSlackers(Nerds[i]));
+        }
     }
 
     // in the case some that threads dont get created properly
@@ -60,6 +70,10 @@ public class OXThreadPoolA : IOXThreadPool
         {
             MultiThreaderEnsure.Instance.StartCoroutine(MultiThreaderEnsure.Instance.FixSlackers(this));
         }
+        else
+        {
+            MultiThreaderEnsure.Nerds.Add(this);
+        }
     }
     int gg = 0;
     int PullNextThread()
@@ -93,7 +107,7 @@ public class OXThreadPoolA : IOXThreadPool
             }
             else
             {
-                Thread.Sleep(5);
+                Thread.Sleep(1);
             }
         }
     }
@@ -133,13 +147,19 @@ public class OXThreadPoolB : IOXThreadPool
         {
             MultiThreaderEnsure.Instance.StartCoroutine(MultiThreaderEnsure.Instance.FixSlackers(this));
         }
+        else
+        {
+            MultiThreaderEnsure.Nerds.Add(this);
+        }
     }
 
     public HashSet<int> SuccessfulThreads = new HashSet<int>();
     public bool allconfirmed = false;
     private void Awaiter(int i)
     {
-        SuccessfulThreads.Add(i);
+        bool a = false;
+        try { SuccessfulThreads.Add(i); } catch { a = true; }
+        if (a) return;
         if (i > ThreadCount) return;
         System.Action weenor = null;
         bool smegs = true;
@@ -165,7 +185,7 @@ public class OXThreadPoolB : IOXThreadPool
             }
             else
             {
-                Thread.Sleep(5);
+                Thread.Sleep(1);
             }
         }
     }
@@ -175,6 +195,76 @@ public class OXThreadPoolB : IOXThreadPool
         ActionPool.Enqueue(gaming);
     }
 
+    public bool CheckAll()
+    {
+        bool good = true;
+        for (int i = 0; i < ThreadCount; i++)
+        {
+            if (SuccessfulThreads.Contains(i)) continue;
+            good = false;
+            new System.Threading.Thread(() => { Awaiter(i); }).Start();
+        }
+        if (good) allconfirmed = true;
+        return good;
+    }
+
+}
+
+
+public class OXThreadPoolC : IOXThreadPool
+{
+    public int ThreadCount;
+    public Action<int> Method;
+    public OXThreadPoolC(int threadCount, Action<int> MethodToRun)
+    {
+        Method = MethodToRun;
+        ThreadCount = threadCount;
+        for (int i = 0; i < threadCount; i++)
+        {
+            new System.Threading.Thread(() => { Awaiter(i); }).Start();
+        }
+        Debug.Log("A");
+        if (MultiThreaderEnsure.Instance != null)
+        {
+            MultiThreaderEnsure.Instance.StartCoroutine(MultiThreaderEnsure.Instance.FixSlackers(this));
+        }
+        else
+        {
+            MultiThreaderEnsure.Nerds.Add(this);
+        }
+    }
+    int gg = 0;
+    int PullNextThread()
+    {
+        gg = RandomFunctions.Mod(gg + 1, ThreadCount);
+        if (!allconfirmed && !SuccessfulThreads.Contains(gg) && SuccessfulThreads.Count > 0)
+        {
+            while (!SuccessfulThreads.Contains(gg))
+            {
+                gg = RandomFunctions.Mod(gg + 1, ThreadCount);
+            }
+        }
+        return gg;
+    }
+
+    public HashSet<int> SuccessfulThreads = new HashSet<int>();
+    public bool allconfirmed = false;
+    private void Awaiter(int i)
+    {
+        bool a = false;
+        try { SuccessfulThreads.Add(i); } catch { a = true; }
+        if (a) return;
+        if (i > ThreadCount) return;
+        while (true)
+        {
+            Method(i);
+        }
+    }
+    [Obsolete("Does nothing lol")]
+    public void Add(System.Action gaming)
+    {
+
+    }
     public bool CheckAll()
     {
         bool good = true;

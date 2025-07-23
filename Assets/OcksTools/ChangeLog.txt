@@ -62,6 +62,7 @@
   - Console now properly moves down to the bottom of the console when entering commands (FR THIS TIME)
   - Console now properly scales when re-sized, it had some janky stuff going on before.
     - It now also has text wrapping in the output, scaling problems had prevented this before
+  - Camera script now has much more intelligble variables for controlling mouse following
 ------------
 
 ------------
