@@ -15,7 +15,7 @@ public class ConsoleLol : MonoBehaviour
     public ConsolRefs ConsoleObjectRef;
     public OXLanguageFileIndex LanguageFileIndex;
     private static ConsoleLol instance;
-
+    public bool UseLanguageFileSystem = true;
     public bool enable = false;
     private List<string> prev_commands = new List<string>();
     private string s = "";
@@ -58,7 +58,10 @@ public class ConsoleLol : MonoBehaviour
     {
 
         var l = LanguageFileSystem.Instance;
-        l.AddFile(LanguageFileIndex);
+        if(l != null && UseLanguageFileSystem)
+        {
+            l.AddFile(LanguageFileIndex);
+        }
 
         if(Console.texts.Count > 0)
         {
@@ -462,7 +465,7 @@ public class ConsoleLol : MonoBehaviour
                             ), "#bdbdbdff");
                             break;
                         default:
-                            if (DialogLol.Instance.DialogFilesDict.ContainsKey(command_caps[1]) || DialogLol.Instance.ChooseFilesDict.ContainsKey(command_caps[1]))
+                            if (DialogLol.Instance.LanguageFileIndexes.ContainsKey(command_caps[1]))
                             {
                                 DialogLol.Instance.StartDialog(command_caps[1]);
                                 CloseConsole();

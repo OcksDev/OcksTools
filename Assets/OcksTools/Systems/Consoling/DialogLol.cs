@@ -10,12 +10,12 @@ using UnityEngine.Tilemaps;
 
 public class DialogLol : MonoBehaviour
 {
+    public Dictionary<string,OXLanguageFileIndex> LanguageFileIndexes = new Dictionary<string,OXLanguageFileIndex>();
+    public bool UseLanguageFileSystem = false;
     public GameObject DialogBoxObject;
     private DialogBoxL pp;
     public List<DialogHolder> DialogFiles = new List<DialogHolder>();
     public List<DialogHolder> ChooseFiles = new List<DialogHolder>();
-    public Dictionary<string, DialogHolder> DialogFilesDict = new Dictionary<string, DialogHolder>();
-    public Dictionary<string, DialogHolder> ChooseFilesDict = new Dictionary<string, DialogHolder>();
     public Dictionary<string, System.Action> Events = new Dictionary<string, System.Action>();
     public bool dialogmode = false;
     public string filename = "";
@@ -58,14 +58,6 @@ public class DialogLol : MonoBehaviour
     {
         if (Instance == null) instance = this;
         DialogBoxObject.SetActive(true);
-        foreach(var a in DialogFiles)
-        {
-            DialogFilesDict.Add(a.Name, a);
-        }
-        foreach(var a in ChooseFiles)
-        {
-            ChooseFilesDict.Add(a.Name, a);
-        }
     }
 
 
@@ -81,6 +73,34 @@ public class DialogLol : MonoBehaviour
         SetVariable("Wank", "Wank");
         SetVariable("AttributeInsideVar", "<Name=Bone Eater>");
 
+        if(GetUseLFS())
+        {
+            FileSystem.Instance.CreateFolder($"{FileSystem.Instance.FileLocations["Lang"]}\\{FileSystem.GameVer}\\Dialog");
+        }
+
+        foreach(var a in DialogFiles)
+        {
+            var d = new OXLanguageFileIndex();
+            d.FileName = $"Dialog\\{a.Name}";
+            d.DefaultFile = a.File;
+            d.DontParseDict = true;
+            LanguageFileIndexes.Add(a.Name,d);
+        }
+        foreach(var a in ChooseFiles)
+        {
+            var d = new OXLanguageFileIndex();
+            d.FileName = $"Dialog\\{a.Name}";
+            d.DefaultFile = a.File;
+            d.DontParseDict = true;
+            LanguageFileIndexes.Add(a.Name,d);
+        }
+        if(GetUseLFS())
+        {
+            foreach (var a in LanguageFileIndexes)
+            {
+                LanguageFileSystem.Instance.AddFile(a.Value);
+            }
+        }
     }
 
     // Update is called once per frame
@@ -620,14 +640,17 @@ public class DialogLol : MonoBehaviour
 
     public List<string> GetFormattedFromFile(string filename, string datat = "Dialog")
     {
-        var cd = DialogFilesDict;
-        switch (datat)
+        List<string> str = null;
+        if(GetUseLFS())
         {
-            case "Choose":
-                cd = ChooseFilesDict;
-                break;
+            str =
+        new List<string>(LanguageFileSystem.Instance.GetString(LanguageFileIndexes[filename], "").Split("</> "));
         }
-        var str = new List<string>(cd[filename].File.text.Split("</>"));
+        else
+        {
+            str = new List<string>(LanguageFileIndexes[filename].GetDefaultData().Split("</> "));
+        }
+        
         string d1 = str[0];
         ActiveFileName = d1.Split(Environment.NewLine)[0];
         if(datat != "Choose")str.RemoveAt(0);
@@ -776,17 +799,16 @@ public class DialogLol : MonoBehaviour
 
     public string GetLineFrom(string index, int line, string boner = "Dialog")
     {
-        var str = new List<string>();
-        switch (boner)
+        var str2 = new List<string>();
+        if (GetUseLFS())
         {
-            case "Dialog":
-                str = new List<string>(DialogFilesDict[index].File.text.Split("</> "));
-                break;
-            case "Choose":
-                str = new List<string>(ChooseFilesDict[index].File.text.Split("</>"));
-                break;
+            str2 = new List<string>(LanguageFileSystem.Instance.GetString(LanguageFileIndexes[index], "").Split("</> "));
         }
-        return str[line];
+        else
+        {
+            str2 = new List<string>(LanguageFileIndexes[index].GetDefaultData().Split("</> "));
+        }
+        return str2[line];
     }
 
 
@@ -908,6 +930,12 @@ public class DialogLol : MonoBehaviour
         list2.RemoveAt(0);
         UseEnding(list2[index]);
 
+    }
+
+    public bool GetUseLFS()
+    {
+        if(!UseLanguageFileSystem) return false;
+        return LanguageFileSystem.Instance != null;
     }
 }
 [System.Serializable]

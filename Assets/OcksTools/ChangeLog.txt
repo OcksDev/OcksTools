@@ -32,8 +32,10 @@
   - Console has a new coat of paint by default.
   - Console now properly moves down to the bottom of the log when entering commands (FR THIS TIME)
   - Console now properly scales when re-sized, it had some janky stuff going on before.
+  - Added toggle for using the Language File System or not.
 - Dialog Improvements
   - Dialog now shares the same coat of paint that the console does.
+  - Integration with the Language File System. (also the ability to disable LFS)
   - New StartDialogFromCustomList() which lets you input any list that you want to parse as dialog.
   - Added the event attribute, letting you easily call arbitrary methods from dialogs
   - Removed old and non-functional StartDialogFromLine() since it was old and non-functional

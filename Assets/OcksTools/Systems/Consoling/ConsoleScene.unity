@@ -11220,6 +11220,10 @@ PrefabInstance:
       propertyPath: GameVer
       value: 1.0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 5761330745494254821, guid: 6322f23dea144e04b9fa9443ed389dff, type: 3}
+      propertyPath: EditorAuthorityOnFile
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8019270817284996194, guid: 6322f23dea144e04b9fa9443ed389dff, type: 3}
       propertyPath: m_Name
       value: ConsoleHandler (1)
@@ -11371,7 +11375,7 @@ PrefabInstance:
       objectReference: {fileID: 4900000, guid: 3c594fbc940fc8543ac46e05ed5914d6, type: 3}
     - target: {fileID: 6167858925768747828, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
       propertyPath: ChooseFiles.Array.data[0].Name
-      value: Test1
+      value: Test1C
       objectReference: {fileID: 0}
     - target: {fileID: 6167858925768747828, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
       propertyPath: DialogFiles.Array.data[0].File

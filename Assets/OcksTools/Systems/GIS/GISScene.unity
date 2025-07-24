@@ -3745,6 +3745,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 87245306}
     - target: {fileID: 324499805810810541, guid: e0c709a7a21216947a721dc882abbf55, type: 3}
+      propertyPath: UseLanguageFile
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 324499805810810541, guid: e0c709a7a21216947a721dc882abbf55, type: 3}
       propertyPath: Items.Array.size
       value: 5
       objectReference: {fileID: 0}

@@ -72,6 +72,14 @@ public class LanguageFileSystem : MonoBehaviour
         }
         return Data[namespac][key2];
     }
+    public string GetString(OXLanguageFileIndex index, string key2)
+    {
+        if (index.DontParseDict)
+        {
+            return Data[index.FileName][""];
+        }
+        return Data[index.FileName][key2];
+    }
     public void SetString(string namespac, string key2, string str)
     {
         if(!Data.ContainsKey(namespac)) return;
@@ -109,6 +117,11 @@ public class LanguageFileSystem : MonoBehaviour
         if (EditorAuthorityOnFile || !AllowPublicAccess)
         {
             if(AllowPublicAccess)FileSystem.Instance.WriteFile(realme, file.GetDefaultData(), true);
+            if (file.DontParseDict)
+            {
+                des.Add("", f.ReadFile(realme));
+                return;
+            }
             var ss = Converter.StringToList(file.GetDefaultData(), Environment.NewLine);
             foreach (var d in ss)
             {
@@ -125,6 +138,11 @@ public class LanguageFileSystem : MonoBehaviour
             if (AllowPublicAccess) FileSystem.Instance.WriteFile(realme, file.GetDefaultData(), true);
             goto d9;
         }
+        if (file.DontParseDict)
+        {
+            des.Add("", f.ReadFile(realme));
+            return;
+        }
         var s = Converter.StringToList(f.ReadFile(realme), Environment.NewLine);
 
         foreach (var d in s)
@@ -135,6 +153,12 @@ public class LanguageFileSystem : MonoBehaviour
             }
         }
         d9:
+
+        if (file.DontParseDict)
+        {
+            des.Add("", f.ReadFile(realme));
+            return;
+        }
         s = Converter.StringToList(file.GetDefaultData(), Environment.NewLine);
         foreach (var d in s)
         {
@@ -152,6 +176,7 @@ public class OXLanguageFileIndex
     public string FileName;
     public TextAsset DefaultFile;
     public string DefaultString = "";
+    public bool DontParseDict = false;
     public string GetDefaultData()
     {
         if(DefaultFile != null)
