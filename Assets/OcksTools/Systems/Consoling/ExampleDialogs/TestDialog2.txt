@@ -14,5 +14,5 @@ Its ok if no
 </> 
 </> <Name=Boner> <SoundOnType=A>
 </> How about the player chooses?
-</> <Choose=Test1> <Animate=C1,Rainbow,26>
+</> <Choose=Test1C> <Animate=C1,Rainbow,26>
 

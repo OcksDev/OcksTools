@@ -106,14 +106,14 @@ public class DialogLol : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (InputManager.IsKeyDown("dialog_skip"))
+        if (InputManager.IsKeyDown("dialog_skip", "Dialog"))
         {
             if(datatype != "Choose")
             {
                 attemptskip = true;
             }
         }
-        if (InputManager.IsKeyDown("dialog_skip_back"))
+        if (InputManager.IsKeyDown("dialog_skip_back", "Dialog"))
         {
             if(datatype != "Choose")
             {
@@ -149,7 +149,7 @@ public class DialogLol : MonoBehaviour
         ex:
         attemptskip = false;
         backwardskip = false;
-        if (CanEscape && InputManager.IsKeyDown("close_menu"))
+        if (CanEscape && InputManager.IsKeyDown("close_menu", "Dialog"))
         {
             ResetDialog();
         }
@@ -586,6 +586,7 @@ public class DialogLol : MonoBehaviour
         cp = 0;
         dialogmode = false;
         datatype = "Dialog";
+        InputManager.RemoveLockLevel("Dialog");
         EndBanna();
         SetDefaultParams();
     }
@@ -626,7 +627,7 @@ public class DialogLol : MonoBehaviour
         DialogBoxObject.SetActive(true);
         filename = dialog;
         datatype = datat;
-
+        InputManager.AddLockLevel("Dialog");
         //just closes the OcksTools Console when opening any dialog.
         ConsoleLol.Instance.CloseConsole();
 
@@ -644,11 +645,11 @@ public class DialogLol : MonoBehaviour
         if(GetUseLFS())
         {
             str =
-        new List<string>(LanguageFileSystem.Instance.GetString(LanguageFileIndexes[filename], "").Split("</> "));
+        new List<string>(LanguageFileSystem.Instance.GetString(LanguageFileIndexes[filename], "").Split("</>"));
         }
         else
         {
-            str = new List<string>(LanguageFileIndexes[filename].GetDefaultData().Split("</> "));
+            str = new List<string>(LanguageFileIndexes[filename].GetDefaultData().Split("</>"));
         }
         
         string d1 = str[0];
@@ -802,11 +803,11 @@ public class DialogLol : MonoBehaviour
         var str2 = new List<string>();
         if (GetUseLFS())
         {
-            str2 = new List<string>(LanguageFileSystem.Instance.GetString(LanguageFileIndexes[index], "").Split("</> "));
+            str2 = new List<string>(LanguageFileSystem.Instance.GetString(LanguageFileIndexes[index], "").Split("</>"));
         }
         else
         {
-            str2 = new List<string>(LanguageFileIndexes[index].GetDefaultData().Split("</> "));
+            str2 = new List<string>(LanguageFileIndexes[index].GetDefaultData().Split("</>"));
         }
         return str2[line];
     }
@@ -886,6 +887,8 @@ public class DialogLol : MonoBehaviour
                         if (attribute.Contains(">"))
                         {
                             string he = attribute.Substring(0, attribute.IndexOf(">"));
+                            if (he == "/") continue;
+                            //Debug.Log(he);
                             List<string> he2 = new List<string>(he.Split("="));
                             ApplyAttribute(he2[0], he2[1]);
                         }
