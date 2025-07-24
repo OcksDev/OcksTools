@@ -208,6 +208,7 @@ public class ConsoleLol : MonoBehaviour
                                 "<br> - test events" +
                                 "<br> - test escape" +
                                 "<br> - test compver"+
+                                "<br> - test comp"+
                                 "<br> - test roman"
 
                             ), "#bdbdbdff");
@@ -360,6 +361,18 @@ public class ConsoleLol : MonoBehaviour
                             ConsoleLog((
 
                                 "Double Max: " + double.MaxValue.ToString()
+
+                            ), "#bdbdbdff");
+                            break;
+                        case "comp":
+                            ConsoleLog((
+
+                                $"{command[2]} {command[3]}"
+
+                            ), "#bdbdbdff");
+                            ConsoleLog((
+
+                                "Result: " + RandomFunctions.CompareTwoVersions(command[2], command[3]).ToString()
 
                             ), "#bdbdbdff");
                             break;

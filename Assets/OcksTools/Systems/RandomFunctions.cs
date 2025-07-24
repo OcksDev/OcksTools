@@ -243,7 +243,7 @@ public class RandomFunctions : MonoBehaviour
         List<string> p = Converter.StringToList(I_Am,".");
         List<string> p2 = Converter.StringToList(compared_to, ".");
         int amnt = System.Math.Max(p.Count, p2.Count);
-        for(int i = 0; i < amnt; i++)
+        for (int i = 0; i < amnt; i++)
         {
             try
             {
@@ -258,9 +258,61 @@ public class RandomFunctions : MonoBehaviour
             }
             catch
             {
-                if(i==p.Count) return CompareState.Lesser;
-                if(i==p2.Count) return CompareState.Greater;
-                return CompareState.Invalid;
+                try
+                {
+                    var a = Regex.Match(p[i], "^[0-9]*[a-zA-Z]+$");
+                    var b = Regex.Match(p2[i], "^[0-9]*[a-zA-Z]+$");
+                    var a2 = Regex.Match(p[i], "^[0-9]+");
+                    var b2 = Regex.Match(p2[i], "^[0-9]+");
+                    var a3 = Regex.Match(p[i], "[a-zA-Z]+$");
+                    var b3 = Regex.Match(p2[i], "[a-zA-Z]+$");
+                    if(a.Success || b.Success)
+                    {
+                        //return CompareState.Greater;
+                        if (!a2.Success) return CompareState.Lesser;
+                        if(!b2.Success) return CompareState.Greater;
+
+                        if (int.Parse(a2.Value) < int.Parse(b2.Value))
+                        {
+                            return CompareState.Lesser;
+                        }
+                        else if (int.Parse(a2.Value) > int.Parse(b2.Value))
+                        {
+                            return CompareState.Greater;
+                        }
+                        int t1 = 0;
+                        int t2 = 0;
+                        int x = 1;
+                        for (int j = 0; j < a3.Length; j++)
+                        {
+                            t1 += a3.Value[j] * x;
+                            x *= 10;
+                        }
+                        x = 1;
+                        for(int j = 0; j < b3.Length; j++)
+                        {
+                            t2 += b3.Value[j] * x;
+                            x *= 10;
+                        }
+                        if (t1 < t2)
+                        {
+                            return CompareState.Lesser;
+                        }
+                        else if (t1 > t2)
+                        {
+                            return CompareState.Greater;
+                        }
+                    }
+                    return CompareState.Invalid;
+                }
+                catch(Exception a)
+                {
+                    if (i == p.Count) return CompareState.Lesser;
+                    if (i == p2.Count) return CompareState.Greater;
+                    return CompareState.Invalid;
+                }
+
+
             }
         }
 

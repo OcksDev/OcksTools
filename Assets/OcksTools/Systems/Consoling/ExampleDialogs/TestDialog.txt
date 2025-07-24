@@ -2,7 +2,7 @@
 </> <Name=Gamer> <Speed=10, -, 1> <TitleColor=150,0,0,255> <TextColor=150,0,0,255> <BgColor=150,0,0,255>
 </> Gaming time <color=#000000>Gaming time</color></color></color></color></color> Gaming time<Name=Fuck><TitleColor=75,0,150,255><TextColor=150,150,0,255><Name=Fuck><Name=Fuck><Name=Fuck><Name=Fuck> Gaming <Show=*Fuck> Gaming <*TestVar=*Fuck> Gaming <*=*Fuck> Gaming time Gaming time Gaming time Gaming timeGaming time Gaming time
 </> 
-</> <Speed=69.69, -, 1> <Name=Boner> <RichText=False> <SoundOnType=A>
+</> <Speed=69.69,-,1> <Name=Boner> <RichText=False> <SoundOnType=A>
 </> I eat hair, <Name=Baller>Disabled Rich Text <RichText=False> 
 </> 
 </> <Name=Gamer> <CanSkip=False> <SoundOnType=A> <Animate=Text,Rainbow,260>

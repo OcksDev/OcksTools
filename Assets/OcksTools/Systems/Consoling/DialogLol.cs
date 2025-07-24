@@ -133,10 +133,16 @@ public class DialogLol : MonoBehaviour
         {
             ResetDialog();
         }
-        /* example of starting the dialog from a specific line
-        if (InputManager.IsKeyDown(KeyCode.K))
+        /* example of starting the dialog from a specific list
+        if (InputManager.IsKeyDown(KeyCode.J))
         {
-            StartDialogFromLine(0, 4);
+            StartDialogFromCustomList(new List<string>()
+            {
+                "gooners",
+                "<Name=Giga Gooner>",
+                "Gooning time",
+                "<End>",
+            });
         }*/
 
         if (cp3 <= 0)
@@ -221,7 +227,7 @@ public class DialogLol : MonoBehaviour
         {
             case "br": //fallthrough case to make sure this works properly
             case "Show":
-                // Used to display text inside dialog, pretty much always used in conjucnction with dialog variables
+                // Used to display text inside dialog, pretty much always used in conjunction with dialog variables
                 succeeded = true;
                 break;
             case "CanSkip":
@@ -244,6 +250,7 @@ public class DialogLol : MonoBehaviour
                 break;
             case "AutoSkip":
                 // Automatically jumps to the next dialog line when available after x seconds
+                // set to -1 to disable
                 AutoSkip = float.Parse(data);
                 succeeded = true;
                 break;
@@ -284,7 +291,7 @@ public class DialogLol : MonoBehaviour
                 succeeded = true;
                 break;
             case "Speed":
-                //data should be formatted like    5, 1, 1
+                //data should be formatted like    5, 1, 1    (spaces optional)
                 list = new List<string>(data.Split(","));
                 // Characters per second
                 if (list.Count >= 1 && VariableParse(list[0]) != "-") cps = float.Parse(VariableParse(list[0]));
@@ -372,7 +379,7 @@ public class DialogLol : MonoBehaviour
                 string h = "";
                 try
                 {
-                    h = list[2];
+                    h = VariableParse(list[2]);
                 }
                 catch
                 {
@@ -458,6 +465,10 @@ public class DialogLol : MonoBehaviour
     {
         //attribute variable format
         //*var_name
+
+        //language file system query format
+        //!var_name
+
         if (data == "") return data;
         if (data[0] == ' ') data = data.Substring(1);
         if (data[0] == '*' || data[0] == '!')
@@ -560,6 +571,36 @@ public class DialogLol : MonoBehaviour
     }
     public void StartDialog(string dialog, string datat = "Dialog")
     {
+        StartDialogOverhead(dialog, datat);
+
+        //just closes the OcksTools Console when opening any dialog.
+        ConsoleLol.Instance.CloseConsole();
+
+        switch (datat)
+        {
+            case "Dialog":
+                str = GetFormattedFromFile(filename);
+                StartDialogOverhead2();
+                break;
+            case "Choose":
+                str = GetFormattedFromFile(filename, datat);
+                StartDialogOverhead2();
+                break;
+        }
+    }
+
+    public void StartDialogFromCustomList(List<string> data)
+    {
+        //expects properly formatted list, same style as normal dialog file but with no "</>", also no spaces at the start of a new index.
+
+        StartDialogOverhead(data[0]);
+        data.RemoveAt(0);
+        str = data;
+        StartDialogOverhead2();
+    }
+
+    private void StartDialogOverhead(string dialog, string datat = "Dialog")
+    {
         ResetDialog();
         dialogmode = true;
         DialogBoxObject.SetActive(true);
@@ -569,19 +610,12 @@ public class DialogLol : MonoBehaviour
         //just closes the OcksTools Console when opening any dialog.
         ConsoleLol.Instance.CloseConsole();
 
-        switch (datat)
-        {
-            case "Dialog":
-                str = GetFormattedFromFile(filename);
-                ConsoleLol.Instance.ConsoleLog(datatype + ": " + ActiveFileName, "#bdbdbdff");
-                NextLine();
-                break;
-            case "Choose":
-                str = GetFormattedFromFile(filename, datat);
-                ConsoleLol.Instance.ConsoleLog(datatype + ": " + ActiveFileName, "#bdbdbdff");
-                NextLine();
-                break;
-        }
+    }
+    
+    private void StartDialogOverhead2()
+    {
+        ConsoleLol.Instance.ConsoleLog(datatype + ": " + ActiveFileName, "#bdbdbdff");
+        NextLine();
     }
 
     public List<string> GetFormattedFromFile(string filename, string datat = "Dialog")
@@ -603,26 +637,6 @@ public class DialogLol : MonoBehaviour
         }
         return str;
     }
-
-    public void StartDialogFromLine(string dialog, int line)
-    {
-        // linenum/3 = line
-        // lines start at 0 and go up from there jus like arrays
-        
-        ResetDialog();
-        dialogmode = true;
-        DialogBoxObject.SetActive(true);
-        filename = dialog;
-        datatype = "Dialog";
-
-        //just closes the OcksTools Console when opening any dialog.
-        ConsoleLol.Instance.CloseConsole();
-
-        str = GetFormattedFromFile(filename);
-        ConsoleLol.Instance.ConsoleLog(datatype + ": " + ActiveFileName, "#bdbdbdff");
-        NextLine();
-    }
-
 
 
     public void FixedUpdate()
