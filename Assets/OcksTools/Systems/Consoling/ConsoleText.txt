@@ -16,4 +16,4 @@ Error_NoDialogWithName: No Dialog or Choose file is defined with the name:
 Error_InvalidTime: Invalid time scale input
 Error_InvalidData: Invalid data modification selected
 Error_NoScreenshot: No screenshot component is loaded in the scene
-Error_InvalidParameter: Invalid Parameter: 
+Error_InvalidParameter: Invalid parameter: 

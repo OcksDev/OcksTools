@@ -43,8 +43,8 @@ public class ConsoleLol : MonoBehaviour
 
     public static OXEvent<List<string>, List<string>> ConsoleHook = new OXEvent<List<string>, List<string>>();
     public static OXEvent ConsoleCommandHook = new OXEvent();
-    public static Dictionary<string,OXConsoleCommand> CommandDict = new Dictionary<string,OXConsoleCommand>();
-    public static IOrderedEnumerable<KeyValuePair<string, OXConsoleCommand>> CommandDict2;
+    public static Dictionary<string,OXCommand> CommandDict = new Dictionary<string,OXCommand>();
+    public static IOrderedEnumerable<KeyValuePair<string, OXCommand>> CommandDict2;
 
 
     // Start is called before the first frame update
@@ -160,27 +160,34 @@ public class ConsoleLol : MonoBehaviour
 
     public void SelfCommands()
     {
-        Add(new OXConsoleCommand("test")
-            .Append(new OXConsoleCommand("tag"))
-            .Append(new OXConsoleCommand("circle"))
-            .Append(new OXConsoleCommand("chat"))
-            .Append(new OXConsoleCommand("listall"))
-            .Append(new OXConsoleCommand("compver"))
-            .Append(new OXConsoleCommand("escape"))
-            .Append(new OXConsoleCommand("max"))
-            .Append(new OXConsoleCommand("comp"))
-            .Append(new OXConsoleCommand("roman"))
-            .Append(new OXConsoleCommand("refs"))
-            .Append(new OXConsoleCommand("destroy"))
-            .Append(new OXConsoleCommand("events")));
-        Add(new OXConsoleCommand("settimescale"));
-        Add(new OXConsoleCommand("joe"));
-        Add(new OXConsoleCommand("help").Action(Command_Help)
-            .Append(new OXConsoleCommand("gamer").Action(Command_HelpGamer))
-            .Append(new OXConsoleCommand(OXConsoleCommand.ExpectedInputType.Long).Action(Command_HelpGamer2)
-                .Append(new OXConsoleCommand(OXConsoleCommand.ExpectedInputType.Double).Action(Command_HelpGamer3))));
+        Add(new OXCommand("test")
+            .Append(new OXCommand("tag").Action(ConsoleCommands.Test_tag))
+            .Append(new OXCommand("circle").Action(ConsoleCommands.Test_circle))
+            .Append(new OXCommand("chat").Action(ConsoleCommands.Test_chat))
+            .Append(new OXCommand("listall").Action(ConsoleCommands.Test_listall))
+            .Append(new OXCommand("compver").Action(ConsoleCommands.Test_compver))
+            .Append(new OXCommand("escape").Action(ConsoleCommands.Test_escape))
+            .Append(new OXCommand("max").Action(ConsoleCommands.Test_max))
+            .Append(new OXCommand("comp").Action(ConsoleCommands.Test_comp))
+            .Append(new OXCommand("roman").Action(ConsoleCommands.Test_roman))
+            .Append(new OXCommand("refs").Action(ConsoleCommands.Test_refs))
+            .Append(new OXCommand("destroy").Action(ConsoleCommands.Test_destroy))
+            .Append(new OXCommand("events").Action(ConsoleCommands.Test_events)));
+        Add(new OXCommand("settimescale")
+            .Append(new OXCommand(OXCommand.ExpectedInputType.Double).Action(ConsoleCommands.settimescale)));
+        Add(new OXCommand("joe").Action(ConsoleCommands.joe)
+            .Append(new OXCommand("mother").Action(ConsoleCommands.joe_mother)));
+        Add(new OXCommand("help"));
+        Add(new OXCommand("screenshot").Action(ConsoleCommands.ScreenShot));
+        Add(new OXCommand("dialog")
+            .Append(new OXCommand(OXCommand.ExpectedInputType.String).Action(ConsoleCommands.Dialog)));
+        Add(new OXCommand("clear").Action(ConsoleCommands.Clear));
+        Add(new OXCommand("data")
+            .Append(new OXCommand("edit").Action(ConsoleCommands.Data_Edit))
+            .Append(new OXCommand("read").Action(ConsoleCommands.Data_Read))
+            .Append(new OXCommand("listall").Action(ConsoleCommands.Data_listall))
+            );
     }
-    public static bool StopExecution = false;
     private static OXCommandData raa;
 
     public void Submit(string inputgaming)
@@ -219,6 +226,8 @@ public class ConsoleLol : MonoBehaviour
             raa = new OXCommandData();
             raa.com = command;
             raa.com_caps = command_caps;
+            raa.raw = s;
+            raa.raw_caps = s2;
 
             RecursiveCheck(CommandDict[command[0]],1);
             
@@ -235,14 +244,14 @@ public class ConsoleLol : MonoBehaviour
         ConsoleObjectRef.input.Select();
     }
 
-    public void RecursiveCheck(OXConsoleCommand cum,int lvl)
+    public void RecursiveCheck(OXCommand cum,int lvl)
     {
         if(cum.SubCommands.Count == 0)
         {
             cum.Execution(raa);
             return;
         }
-        OXConsoleCommand next_cum = null;
+        OXCommand next_cum = null;
         foreach(var a in cum.SubCommands)
         {
             if (a.Value == command[lvl])
@@ -256,14 +265,14 @@ public class ConsoleLol : MonoBehaviour
             RecursiveCheck(next_cum, lvl+1);
             return;
         }
-        List<OXConsoleCommand.ExpectedInputType> accepteds = new List<OXConsoleCommand.ExpectedInputType>();
-        accepteds.Add(OXConsoleCommand.ExpectedInputType.String);
+        List<OXCommand.ExpectedInputType> accepteds = new List<OXCommand.ExpectedInputType>();
+        accepteds.Add(OXCommand.ExpectedInputType.String);
         try
         {
             double y = double.Parse(command[lvl]);
-            accepteds.Add(OXConsoleCommand.ExpectedInputType.Double);
+            accepteds.Add(OXCommand.ExpectedInputType.Double);
             long x = long.Parse(command[lvl]);
-            accepteds.Add(OXConsoleCommand.ExpectedInputType.Long);
+            accepteds.Add(OXCommand.ExpectedInputType.Long);
         }
         catch
         {
@@ -289,352 +298,6 @@ public class ConsoleLol : MonoBehaviour
         }
         ConsoleLol.Instance.ConsoleLog(LanguageFileSystem.Instance.GetString("Console", "Error_InvalidParameter") + command_caps[lvl], "#ff0000ff");
     }
-    private void Command_Help()
-    {
-        Console.Log("Help is currently under renovation.", "\"lightblue\"");
-    }
-    private void Command_HelpGamer()
-    {
-        Console.Log("REEEEEEEEEEEEEEE.", "\"lightblue\"");
-    }
-    private void Command_HelpGamer2()
-    {
-        Console.Log("Whole Number: " + command[1], "\"lightblue\"");
-    }
-    private void Command_HelpGamer3()
-    {
-        Console.Log("Whole Number: " + command[1] + ",  but again: " + command[2], "\"lightblue\"");
-    }
-    /*public void aaaaaa()
-    {
-        switch (command[0])
-        {
-            case "help":
-                break;
-            case "test":
-                switch (command[1])
-                {
-                    case "tag":
-                        Tags.AllTags["Exist"].Add("penis", gameObject);
-
-                        ConsoleLog((
-
-                            "test result: " + Tags.AllTags["Exist"]["penis"].name
-
-                        ), "#bdbdbdff");
-                        Tags.ClearAllOf("penis");
-                        break;
-                    case "circle":
-                        SpawnSystem.Instance.SpawnObject("Circle", gameObject, Vector3.zero, Quaternion.Euler(0, 0, 0));
-                        break;
-                    case "chat":
-                        for (int i = 0; i < 10; i++)
-                        {
-                            ChatLol.Instance.WriteChat("Chat Test Lol", "#" + UnityEngine.Random.ColorHSV().ToHexString());
-                        }
-                        break;
-                    case "listall":
-                        foreach (var d in Tags.AllTags["Exist"])
-                            ConsoleLog((
-
-                                "test result: " + d
-
-                            ), "#bdbdbdff");
-                        break;
-                    case "compver":
-                        ConsoleLog((
-
-                            "comp1: " + RandomFunctions.CompareTwoVersions("v1.0", "v1.1").ToString()
-
-                        ), "#bdbdbdff");
-                        ConsoleLog((
-
-                            "comp2: " + RandomFunctions.CompareTwoVersions("v1.2", "v1.1").ToString()
-
-                        ), "#bdbdbdff");
-                        ConsoleLog((
-
-                            "comp2: " + RandomFunctions.CompareTwoVersions("v1.2", "v2.1").ToString()
-
-                        ), "#bdbdbdff");
-                        ConsoleLog((
-
-                            "comp3: " + RandomFunctions.CompareTwoVersions("v1.2", "v2.1.3").ToString()
-
-                        ), "#bdbdbdff");
-                        ConsoleLog((
-
-                            "comp4: " + RandomFunctions.CompareTwoVersions("v1.2.0", "2.1.3").ToString()
-
-                        ), "#bdbdbdff");
-                        ConsoleLog((
-
-                            "comp5: " + RandomFunctions.CompareTwoVersions("1.2.0.7.32.2.1.3", "1.2.0.7.32.2.1.2").ToString()
-
-                        ), "#bdbdbdff");
-                        ConsoleLog((
-
-                            "comp6: " + RandomFunctions.CompareTwoVersions("1.2.3.4.5.6.7.8", "1.2.a").ToString()
-
-                        ), "#bdbdbdff");
-                        ConsoleLog((
-
-                            "comp7: " + RandomFunctions.CompareTwoVersions("1.2", "1.2.a").ToString()
-
-                        ), "#bdbdbdff");
-                        ConsoleLog((
-
-                            "comp8: " + RandomFunctions.CompareTwoVersions("1.2.5", "1.2.a").ToString()
-
-                        ), "#bdbdbdff");
-                        ConsoleLog((
-
-                            "comp9: " + RandomFunctions.CompareTwoVersions("v1.2", "1.2.3.4.5").ToString()
-
-                        ), "#bdbdbdff");
-                        break;
-                    case "escape":
-                        string banana = "help(0)eat()cumjjragbanana your_welcum";
-                        List<string> escape = new List<string>() { "eat", "cum", "rag", "jj" };
-                        ConsoleLog((
-
-                            "input: " + banana
-
-                        ), "#bdbdbdff");
-                        ConsoleLog((
-
-                            $"remove: {escape[0]}, {escape[1]}, {escape[2]}, {escape[3]}"
-
-                        ), "#bdbdbdff");
-                        banana = Converter.EscapeString(banana, escape);
-                        ConsoleLog((
-
-                            "escaped: " + banana
-
-                        ), "#bdbdbdff");
-                        banana = Converter.UnescapeString(banana, escape);
-                        ConsoleLog((
-
-                            "result: " + banana
-
-                        ), "#bdbdbdff");
-                        break;
-                    case "max":
-                        ConsoleLog((
-
-                            "Double Max: " + double.MaxValue.ToString()
-
-                        ), "#bdbdbdff");
-                        break;
-                    case "comp":
-                        ConsoleLog((
-
-                            $"{command[2]} {command[3]}"
-
-                        ), "#bdbdbdff");
-                        ConsoleLog((
-
-                            "Result: " + RandomFunctions.CompareTwoVersions(command[2], command[3]).ToString()
-
-                        ), "#bdbdbdff");
-                        break;
-                    case "roman":
-                        ConsoleLog((
-
-                            "Roman of 129: " + Converter.NumToRead("129", 3)
-
-                        ), "#bdbdbdff");
-                        ConsoleLog((
-
-                            "Roman of 3999: " + Converter.NumToRead("3999", 3)
-
-                        ), "#bdbdbdff");
-                        break;
-                    case "refs":
-                        string cum = "";
-                        int icum = 0;
-                        foreach (var d in Tags.refs)
-                        {
-                            cum += d.Key + ": " + d.Value.name;
-                            if (icum < Tags.refs.Count - 1) cum += "<br>";
-                            icum++;
-                        }
-                        ConsoleLog((
-
-                            cum
-
-                        ), "#bdbdbdff");
-                        break;
-                    case "destroy":
-                        foreach (var d in Tags.AllTags["Exist"])
-                            Destroy(d.Value);
-                        break;
-                    case "events":
-                        var weenor = new OXEvent();
-                        var banan = new OXEvent<string, string>();
-                        weenor.Append("test1", TestMethod);
-                        weenor.Invoke();
-                        banan.Append("logger", Console.Log);
-                        banan.Invoke("Hello World", "\"green\"");
-                        weenor.Remove("test1");
-                        weenor.Invoke();
-                        banan.Invoke("Removed test log", "\"yellow\"");
-                        banan.Append("logger2", Console.Log);
-                        banan.Append("logger3", Console.Log);
-                        banan.Invoke("multiple calls?", "\"orange\"");
-                        break;
-                    default:
-                        ConsoleLog((
-
-                            "Invalid Test"
-
-                        ), "#ff0000ff");
-                        break;
-
-                }
-                break;
-            case "joe":
-                switch (command[1])
-                {
-                    case "mother":
-                        ConsoleLog((
-
-                            "AYYYYYEEEEEE"
-
-                        ), "#bdbdbdff");
-                        break;
-                    default:
-                        ConsoleLog((
-
-                            "Who is joe?"
-
-                        ), "#bdbdbdff");
-                        break;
-                }
-                break;
-            case "dialog":
-                switch (command[1])
-                {
-                    case "stop":
-                        DialogLol.Instance.ResetDialog();
-                        ConsoleLog((
-
-                            lang.GetString("Console", "Message_StoppedDialog")
-
-                        ), "#bdbdbdff");
-                        break;
-                    default:
-                        if (DialogLol.Instance.LanguageFileIndexes.ContainsKey(command_caps[1]))
-                        {
-                            DialogLol.Instance.StartDialog(command_caps[1]);
-                            CloseConsole();
-                        }
-                        else
-                        {
-                            ConsoleLog((
-
-                                lang.GetString("Console", "Error_NoDialogWithName") + $"\"{command_caps[1]}\""
-
-                            ), "#ff0000ff");
-                        }
-                        break;
-                }
-                break;
-            case "screenshot":
-                if (Screenshot.Instance != null)
-                {
-                    CloseConsole();
-                    var ss = new ScreenshotData("test", 1000, 1000, Camera.main, true);
-                    Screenshot.Instance.TakeScreenshot(ss);
-                }
-                else
-                {
-                    ConsoleLog((
-
-                        lang.GetString("Console", "Error_NoScreenshot")
-
-                    ), "#bdbdbdff");
-                }
-                break;
-            case "settimescale":
-                try
-                {
-                    float f = float.Parse(command[1]);
-                    Time.timeScale = f;
-                    ConsoleLog((
-
-                        lang.GetString("Console", "Message_ChangeTime") + f
-
-                    ), "#bdbdbdff");
-                }
-                catch
-                {
-                    ConsoleLog((
-
-                        lang.GetString("Console", "Error_InvalidTime")
-
-                    ), "#bdbdbdff");
-                }
-                break;
-            case "clear":
-                BackLog = "";
-                break;
-            case "data":
-                switch (command[1])
-                {
-                    case "edit":
-                        if (command[2] != "")
-                        {
-                            string eee = s2.Substring(s.IndexOf(command[2]) + command[2].Length + 1);
-                            SaveSystem.Instance.SetString(command_caps[2], eee);
-                            ConsoleLol.Instance.ConsoleLog($"Saved \"{eee}\" into {command_caps[2]}");
-                        }
-                        else
-                        {
-                            ConsoleLol.Instance.ConsoleLog(lang.GetString("Console", "Error_NoReg"), "#ff0000ff");
-                        }
-                        break;
-                    case "read":
-                        if (command[2] != "")
-                        {
-                            ConsoleLol.Instance.ConsoleLog($"{SaveSystem.Instance.GetString(command_caps[2], lang.GetString("Console", "Error_NoData"))}");
-                        }
-                        else
-                        {
-                            ConsoleLol.Instance.ConsoleLog(lang.GetString("Console", "Error_NoReg"), "#ff0000ff");
-                        }
-                        break;
-                    case "listall":
-                        switch (SaveSystem.Instance.SaveMethod_)
-                        {
-                            case SaveSystem.SaveMethod.PlayerPrefs:
-                                ConsoleLol.Instance.ConsoleLog(lang.GetString("Console", "Error_NoDataDump"), "#ff0000ff");
-                                break;
-                            case SaveSystem.SaveMethod.TXTFile:
-                                ConsoleLol.Instance.ConsoleLog($"{Converter.DictionaryToString(SaveSystem.Instance.GetDict(), Environment.NewLine, ": ")}");
-                                break;
-                            case SaveSystem.SaveMethod.OXFile:
-
-                                string combined = "";
-                                foreach (var a in SaveSystem.Instance.GetDictOX().Data.DataOXFiles)
-                                {
-                                    if (combined != "") combined += "<br>";
-                                    combined += a.Key + ": " + a.Value.ToString();
-                                }
-                                ConsoleLol.Instance.ConsoleLog(combined);
-                                break;
-                        }
-                        break;
-                    default:
-                        ConsoleLol.Instance.ConsoleLog(lang.GetString("Console", "Error_InvalidData"), "#ff0000ff");
-                        break;
-                }
-                break;
-            default:
-                break;
-        }
-    }*/
-
     public void ConsoleLog(string text = "Logged", string hex = "\"white\"")
     {
         BackLog = BackLog + "<br><color=" + hex + ">" + text;
@@ -657,7 +320,10 @@ public class ConsoleLol : MonoBehaviour
         Console.Log("Test Log");
     }
 
-
+    public void ClearConsole()
+    {
+        BackLog = "";
+    }
     void ConsoleChange(bool e = false)
     {
         enable = e;
@@ -676,7 +342,7 @@ public class ConsoleLol : MonoBehaviour
     }
 
 
-    public void Add(OXConsoleCommand x)
+    public void Add(OXCommand x)
     {
         CommandDict.Add(x.Value, x);
     }
@@ -711,48 +377,48 @@ public class Console
 // - test [destroy]
 
 
-public class OXConsoleCommand
+public class OXCommand
 {
     public string Value;
-    public List<OXConsoleCommand> SubCommands = new List<OXConsoleCommand>();
+    public List<OXCommand> SubCommands = new List<OXCommand>();
     public string ParentLanguage;
     public string LanguageIndex;
     public bool IsLeaf = false;
     public bool NoDesc = false;
     public ExpectedInputType Expected = ExpectedInputType.None;
     public System.Action<OXCommandData> Execution;
-    public OXConsoleCommand(string Value, string parent_lang, string lang_index)
+    public OXCommand(string Value, string parent_lang, string lang_index)
     {
         this.Value = Value;
         IsLeaf = true;
         ParentLanguage = parent_lang;
         LanguageIndex = lang_index;
     }
-    public OXConsoleCommand(string Value)
+    public OXCommand(string Value)
     {
         this.Value = Value;
         IsLeaf = true;
         NoDesc = true;
     }
-    public OXConsoleCommand(ExpectedInputType ex)
+    public OXCommand(ExpectedInputType ex)
     {
         Expected = ex;
         Value = "-=-";
         IsLeaf = true;
         NoDesc = true;
     }
-    public OXConsoleCommand Append(OXConsoleCommand x)
+    public OXCommand Append(OXCommand x)
     {
         SubCommands.Add(x);
         IsLeaf = false;
         return this;
     }
-    public OXConsoleCommand Action(System.Action<OXCommandData> exe)
+    public OXCommand Action(System.Action<OXCommandData> exe)
     {
         Execution = exe;
         return this;
     }
-    public OXConsoleCommand Action(System.Action exe)
+    public OXCommand Action(System.Action exe)
     {
         Execution = (x) => { exe(); };
         return this;
@@ -772,4 +438,6 @@ public class OXCommandData
 {
     public List<string> com = new List<string>();
     public List<string> com_caps = new List<string>();
+    public string raw = "";
+    public string raw_caps = "";
 }

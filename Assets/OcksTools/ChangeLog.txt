@@ -9,6 +9,13 @@
 - New Lerp Animation Tool
 - New Multithreading Tool
 - New Stored Random script (plus testing scene/script)
+- Console Improvements
+  - Complete overhaul of how commands are parsed
+    - Other systems can now easily define their own commands to be added as needed, it's very modular now
+  - Console has a new coat of paint by default.
+  - Console now properly moves down to the bottom of the log when entering commands (FR THIS TIME)
+  - Console now properly scales when re-sized, it had some janky stuff going on before.
+  - Now properly adds a lock level for the Input Manager
 - GIS Improvements
   - New Ctrl click functionality for containers (default is opted in)
   - Added new method for getting total amount of items in container
@@ -29,11 +36,6 @@
   - Abstracted node initialization into a method
   - New Node Initializer script to better deal with nodes first being defined
     - Can initialize from a predefined list and/or child objects
-- Console Improvements
-  - Console has a new coat of paint by default.
-  - Console now properly moves down to the bottom of the log when entering commands (FR THIS TIME)
-  - Console now properly scales when re-sized, it had some janky stuff going on before.
-  - Now properly adds a lock level for the Input Manager
 - Dialog Improvements
   - Dialog now shares the same coat of paint that the console does.
   - Integration with the Language File System. (also the ability to disable LFS)

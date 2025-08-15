@@ -54,6 +54,9 @@ public class PickThingymabob : MonoBehaviour
             if(relay.JoinCodeTextDick!=null) relay.JoinCodeTextDick.text = relay.Join_Code;
         }
     }
+
+    public OXEvent<string> DebugCode = new OXEvent<string>();
+
     public async Task<string> MakeGame2()
     {
         relay = RelayMoment.Instance;
@@ -71,7 +74,7 @@ public class PickThingymabob : MonoBehaviour
         int i = await relay.CreateRelay();
         if (i == 1)
         {
-            Debug.Log(relay.Join_Code);
+            DebugCode.Invoke(relay.Join_Code);
 
             NetworkManager.Singleton.StartHost();
 

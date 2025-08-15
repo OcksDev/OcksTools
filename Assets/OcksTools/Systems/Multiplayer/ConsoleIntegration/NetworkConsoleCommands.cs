@@ -10,42 +10,32 @@ public class NetworkConsoleCommands : MonoBehaviour
         LanguageFileSystem.Instance.AddFile(LanguageFileIndex);
         //ConsoleLol.ConsoleHook.Append(NetworkConsoleCommandHook);
         ConsoleLol.ConsoleCommandHook.Append(NetworkHelpCommands);
+
+        RelayMoment.Instance.GetComponent<PickThingymabob>().DebugCode.Append(PrintCode);
     }
 
-    /*public void NetworkConsoleCommandHook(List<string> com, List<string> com_cap)
+    public static void host()
     {
-        var lang = LanguageFileSystem.Instance;
-        switch (com[0])
-        {
-            case "host":
-                RelayMoment.Instance.GetComponent<PickThingymabob>().MakeGame();
-                ConsoleLol.RecogHandover = true;
-                break;
-            case "join":
-                try
-                {
-                    RelayMoment.Instance.GetComponent<PickThingymabob>().GoinGameE2(com_cap[1]);
-                    ConsoleLol.RecogHandover = true;
-                }
-                catch
-                {
-                    Console.Log((
+        RelayMoment.Instance.GetComponent<PickThingymabob>().MakeGame();
+    }
+    public static void join(OXCommandData r)
+    {
+        RelayMoment.Instance.GetComponent<PickThingymabob>().GoinGameE2(r.com[1]);
+    }
+    public static void disconnect()
+    {
+        RelayMoment.Instance.EndConnection();
+    }
 
-                        lang.GetString("NetConsole", "Error_BadCode")
-
-                    ), "#ff0000ff");
-                    ConsoleLol.RecogHandover = true;
-                }
-                break;
-            case "disconnect":
-                RelayMoment.Instance.GetComponent<PickThingymabob>().MakeGame();
-                break;
-        }
-    }*/
     public void NetworkHelpCommands()
     {
-        ConsoleLol.Instance.Add(new OXConsoleCommand("host"));
-        ConsoleLol.Instance.Add(new OXConsoleCommand("join"));
-        ConsoleLol.Instance.Add(new OXConsoleCommand("disconnect"));
+        ConsoleLol.Instance.Add(new OXCommand("host").Action(host));
+        ConsoleLol.Instance.Add(new OXCommand("join").Append(new OXCommand(OXCommand.ExpectedInputType.String).Action(join)));
+        ConsoleLol.Instance.Add(new OXCommand("disconnect").Action(host));
+    }
+
+    public void PrintCode(string a)
+    {
+        Console.Log("Join Code: " + a);
     }
 }
