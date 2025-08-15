@@ -34,7 +34,14 @@ public class ConsoleLol : MonoBehaviour
 
 
 
+    /*
+     * To create a hook:
+     * Link up a method to be ran from the ConsoleHook event
+     * Set the bool RecogHandover to true if the method detected a recognised a command, regardless of success state
+     */
 
+    public static OXEvent<List<string>, List<string>> ConsoleHook = new OXEvent<List<string>, List<string>>();
+    public static bool RecogHandover = false;
 
 
 
@@ -164,94 +171,8 @@ public class ConsoleLol : MonoBehaviour
             switch (command[0])
             {
                 case "help":
-                    switch (command[1])
-                    {
-                        case "joe":
-                            ConsoleLog((
-
-                                "Joe" +
-                                "<br> - joe <mother>"
-
-                            ), "#bdbdbdff");
-                            break;
-                        case "settimescale":
-                            ConsoleLog((
-
-                                lang.GetString("Console", "Message_HelpTime") +
-                                "<br> - settimescale <time scale>"
-
-                            ), "#bdbdbdff");
-                            break;
-                        case "screenshot":
-                            ConsoleLog((
-
-                                lang.GetString("Console", "Message_HelpScreenshot") +
-                                "<br> - screenshot"
-
-                            ), "#bdbdbdff");
-                            break;
-                        case "dialog":
-                            ConsoleLog((
-
-                                lang.GetString("Console", "Message_HelpDialog") +
-                                "<br> - dialog <#>" + 
-                                "<br> - dialog stop"
-
-                            ), "#bdbdbdff");
-                            break;
-                        case "test":
-                            ConsoleLog((
-
-                                lang.GetString("Console", "Message_HelpTest") +
-                                "<br> - test chat" +
-                                "<br> - test tag" +
-                                "<br> - test circle" +
-                                "<br> - test destroy" +
-                                "<br> - test listall" +
-                                "<br> - test events" +
-                                "<br> - test escape" +
-                                "<br> - test compver"+
-                                "<br> - test comp"+
-                                "<br> - test roman"
-
-                            ), "#bdbdbdff");
-                            break;
-                        case "data":
-                            ConsoleLog((
-
-                                lang.GetString("Console", "Message_HelpData") +
-                                "<br> - data edit <key> <value>" +
-                                "<br> - data read <key>" +
-                                "<br> - data listall"
-
-                            ), "#bdbdbdff");
-                            break;
-                        case "clear":
-                            ConsoleLog((
-
-                                lang.GetString("Console", "Message_HelpClear") +
-                                "<br> - clear"
-
-                            ), "#bdbdbdff");
-                            break;
-                        default:
-                            ConsoleLog((
-
-                                lang.GetString("Console", "Message_Help") +
-                                "<br> - joe" +
-                                "<br> - settimescale" +
-                                "<br> - test" +
-                                "<br> - dialog" +
-                                "<br> - data" +
-                                "<br> - screenshot" +
-                                "<br> - clear"
-
-                            ), "#bdbdbdff");
-                            break;
-
-                    }
+                    Console.Log("Help is currently under renovation.", "\"lightblue\"");
                     break;
-
                 case "test":
                     switch (command[1])
                     {
@@ -572,7 +493,12 @@ public class ConsoleLol : MonoBehaviour
                     }
                     break;
                 default:
-                    ConsoleLog(lang.GetString("Console", "Error_UnknownCommand") + command[0], "#ff0000ff");
+                    RecogHandover = false;
+                    ConsoleHook.Invoke(command,command_caps);
+                    if (!RecogHandover) // fails to find a recognized command across all hooks
+                    {
+                        ConsoleLog(lang.GetString("Console", "Error_UnknownCommand") + command[0], "#ff0000ff");
+                    }
 
                     break;
             }

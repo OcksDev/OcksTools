@@ -114,6 +114,19 @@ public class LanguageFileSystem : MonoBehaviour
         var des = GetDict(file.FileName);
         des.Clear();
 
+        System.Action<string, string> desAdd = (x,y) =>
+        {
+            if (des.ContainsKey(x))
+            {
+                des[x] = y;
+            }
+            else
+            {
+                des.Add(x, y);
+            }
+        };
+
+
         if (EditorAuthorityOnFile || !AllowPublicAccess)
         {
             if(AllowPublicAccess)FileSystem.Instance.WriteFile(realme, file.GetDefaultData(), true);
@@ -127,7 +140,7 @@ public class LanguageFileSystem : MonoBehaviour
             {
                 if (d.IndexOf(": ") > -1 && !des.ContainsKey(d.Substring(0, d.IndexOf(": "))))
                 {
-                    des.Add(d.Substring(0, d.IndexOf(": ")), d.Substring(d.IndexOf(": ") + 2));
+                    desAdd(d.Substring(0, d.IndexOf(": ")), d.Substring(d.IndexOf(": ") + 2));
                 }
             }
             return;
@@ -149,7 +162,7 @@ public class LanguageFileSystem : MonoBehaviour
         {
             if (d.IndexOf(": ") > -1)
             {
-                des.Add(d.Substring(0, d.IndexOf(": ")), d.Substring(d.IndexOf(": ") + 2));
+                desAdd(d.Substring(0, d.IndexOf(": ")), d.Substring(d.IndexOf(": ") + 2));
             }
         }
         d9:
@@ -164,7 +177,7 @@ public class LanguageFileSystem : MonoBehaviour
         {
             if (d.IndexOf(": ") > -1 && !des.ContainsKey(d.Substring(0, d.IndexOf(": "))))
             {
-                des.Add(d.Substring(0, d.IndexOf(": ")), d.Substring(d.IndexOf(": ") + 2));
+                desAdd(d.Substring(0, d.IndexOf(": ")), d.Substring(d.IndexOf(": ") + 2));
             }
         }
     }

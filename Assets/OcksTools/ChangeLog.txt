@@ -17,6 +17,7 @@
   - Hover logic extracted into its own class, now can be used for more general applications
 - Random Functions Improvements
   - New OpenURLInBrowser() to open urls in the default browser 
+  - New CombineDictionary()
   - Changed RandomFunctions.Dist slightly, and also added DistNoSQRT()
   - Two new easing functions, EaseBounce and EaseOvershoot (and new testing scene for all easing functions)
   - Officially removed support for old RandomFunctions.SpawnObject

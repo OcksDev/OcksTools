@@ -122,6 +122,25 @@ public class RandomFunctions : MonoBehaviour
         }
         return tea;
     }
+
+    public static Dictionary<T,T2> CombineDictionary<T,T2>(Dictionary<T,T2> ti, Dictionary<T,T2> tee)
+    {
+        var tea = new Dictionary<T, T2>(ti);
+        foreach (var t in tee)
+        {
+            if (tea.ContainsKey(t.Key))
+            {
+                tea[t.Key] = t.Value;
+            }
+            else
+            {
+                tea.Add(t.Key, t.Value);
+            }
+        }
+        return tea;
+    }
+
+
     public static List<T> CombineLists<T>(List<T> ti, List<T> tee)
     {
         var tea = new List<T>(ti);
