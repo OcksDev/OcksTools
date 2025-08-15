@@ -160,7 +160,7 @@ public class ConsoleLol : MonoBehaviour
 
     public void SelfCommands()
     {
-        Add(new OXCommand("test")
+        Add(new OXCommand("test", "Console", "Message_HelpTest")
             .Append(new OXCommand("tag").Action(ConsoleCommands.Test_tag))
             .Append(new OXCommand("circle").Action(ConsoleCommands.Test_circle))
             .Append(new OXCommand("chat").Action(ConsoleCommands.Test_chat))
@@ -168,21 +168,25 @@ public class ConsoleLol : MonoBehaviour
             .Append(new OXCommand("compver").Action(ConsoleCommands.Test_compver))
             .Append(new OXCommand("escape").Action(ConsoleCommands.Test_escape))
             .Append(new OXCommand("max").Action(ConsoleCommands.Test_max))
-            .Append(new OXCommand("comp").Action(ConsoleCommands.Test_comp))
+            .Append(new OXCommand("comp")
+                .Append(new OXCommand(OXCommand.ExpectedInputType.String)
+                    .Append(new OXCommand(OXCommand.ExpectedInputType.String).Action(ConsoleCommands.Test_comp))))
             .Append(new OXCommand("roman").Action(ConsoleCommands.Test_roman))
             .Append(new OXCommand("refs").Action(ConsoleCommands.Test_refs))
             .Append(new OXCommand("destroy").Action(ConsoleCommands.Test_destroy))
             .Append(new OXCommand("events").Action(ConsoleCommands.Test_events)));
-        Add(new OXCommand("settimescale")
+        Add(new OXCommand("settimescale", "Console", "Message_HelpTime")
             .Append(new OXCommand(OXCommand.ExpectedInputType.Double).Action(ConsoleCommands.settimescale)));
         Add(new OXCommand("joe").Action(ConsoleCommands.joe)
             .Append(new OXCommand("mother").Action(ConsoleCommands.joe_mother)));
-        Add(new OXCommand("help"));
-        Add(new OXCommand("screenshot").Action(ConsoleCommands.ScreenShot));
-        Add(new OXCommand("dialog")
+        Add(new OXCommand("help", "Console", "Message_HelpHelp").Action(ConsoleCommands.Help)
+            .Append(new OXCommand(OXCommand.ExpectedInputType.Long).Action(ConsoleCommands.Help))
+            .Append(new OXCommand(OXCommand.ExpectedInputType.String).Action(ConsoleCommands.HelpSpecif)));
+        Add(new OXCommand("screenshot", "Console", "Message_HelpScreenshot").Action(ConsoleCommands.ScreenShot));
+        Add(new OXCommand("dialog", "Console", "Message_HelpDialog")
             .Append(new OXCommand(OXCommand.ExpectedInputType.String).Action(ConsoleCommands.Dialog)));
-        Add(new OXCommand("clear").Action(ConsoleCommands.Clear));
-        Add(new OXCommand("data")
+        Add(new OXCommand("clear", "Console", "Message_HelpClear").Action(ConsoleCommands.Clear));
+        Add(new OXCommand("data", "Console", "Message_HelpData")
             .Append(new OXCommand("edit").Action(ConsoleCommands.Data_Edit))
             .Append(new OXCommand("read").Action(ConsoleCommands.Data_Read))
             .Append(new OXCommand("listall").Action(ConsoleCommands.Data_listall))
@@ -244,15 +248,22 @@ public class ConsoleLol : MonoBehaviour
         ConsoleObjectRef.input.Select();
     }
 
-    public void RecursiveCheck(OXCommand cum,int lvl)
+    public void RecursiveCheck(OXCommand cum, int lvl)
     {
-        if(cum.SubCommands.Count == 0)
+        if (cum.SubCommands.Count == 0)
         {
-            cum.Execution(raa);
+            if (cum.Execution != null)
+            {
+                cum.Execution(raa);
+            }
+            else
+            {
+                Console.LogError(LanguageFileSystem.Instance.GetString("Console", "Error_NoCode"));
+            }
             return;
         }
         OXCommand next_cum = null;
-        foreach(var a in cum.SubCommands)
+        foreach (var a in cum.SubCommands)
         {
             if (a.Value == command[lvl])
             {
@@ -260,37 +271,41 @@ public class ConsoleLol : MonoBehaviour
                 break;
             }
         }
-        if(next_cum != null)
-        {
-            RecursiveCheck(next_cum, lvl+1);
-            return;
-        }
-        List<OXCommand.ExpectedInputType> accepteds = new List<OXCommand.ExpectedInputType>();
-        accepteds.Add(OXCommand.ExpectedInputType.String);
-        try
-        {
-            double y = double.Parse(command[lvl]);
-            accepteds.Add(OXCommand.ExpectedInputType.Double);
-            long x = long.Parse(command[lvl]);
-            accepteds.Add(OXCommand.ExpectedInputType.Long);
-        }
-        catch
-        {
-
-        }
-        foreach (var a in cum.SubCommands)
-        {
-            if (accepteds.Contains(a.Expected))
-            {
-                next_cum = a;
-                break;
-            }
-        }
         if (next_cum != null)
         {
-            RecursiveCheck(next_cum, lvl+1);
+            RecursiveCheck(next_cum, lvl + 1);
             return;
         }
+        if (command[lvl] != "")
+        {
+            List<OXCommand.ExpectedInputType> accepteds = new List<OXCommand.ExpectedInputType>();
+            accepteds.Add(OXCommand.ExpectedInputType.String);
+            try
+            {
+                double y = double.Parse(command[lvl]);
+                accepteds.Add(OXCommand.ExpectedInputType.Double);
+                long x = long.Parse(command[lvl]);
+                accepteds.Add(OXCommand.ExpectedInputType.Long);
+            }
+            catch
+            {
+
+            }
+            foreach (var a in cum.SubCommands)
+            {
+                if (accepteds.Contains(a.Expected))
+                {
+                    next_cum = a;
+                    break;
+                }
+            }
+            if (next_cum != null)
+            {
+                RecursiveCheck(next_cum, lvl + 1);
+                return;
+            }
+        }
+
         if(cum.Execution != null && command[lvl] == "")
         {
             cum.Execution(raa);
@@ -353,7 +368,11 @@ public class Console
     public static List<string> texts = new List<string>();
     public static List<string> hexes = new List<string>();
     // a shortcut/shorthand for the console, makes writing to the console faster
-    public static void Log(string text = "Logged", string hex = "\"white\"")
+    public static void Log(string text = "Logged")
+    {
+        Log(text, "#bdbdbdff");
+    }
+    public static void Log(string text, string hex = "\"white\"")
     {
         if(ConsoleLol.Instance != null)
         {
@@ -365,24 +384,21 @@ public class Console
             hexes.Add(hex);
         }
     }
+    public static void LogError(string text = "Logged")
+    {
+        Log(text, "#ff0000ff");
+    }
 }
 
 
-// show as follows:
-// - help
-// - settimescale <#f>
-// - sex <#>
-// - rename <abc>
-// - test [circle]
-// - test [destroy]
 
 
 public class OXCommand
 {
     public string Value;
     public List<OXCommand> SubCommands = new List<OXCommand>();
-    public string ParentLanguage;
-    public string LanguageIndex;
+    public string ParentLanguage="";
+    public string LanguageIndex="";
     public bool IsLeaf = false;
     public bool NoDesc = false;
     public ExpectedInputType Expected = ExpectedInputType.None;

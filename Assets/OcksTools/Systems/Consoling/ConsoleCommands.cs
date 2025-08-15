@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -313,4 +314,129 @@ public class ConsoleCommands : MonoBehaviour
                 break;
         }
     }
+
+    public static void Help(OXCommandData r)
+    {
+        int cmds_per_page = 10;
+
+        int page = 0;
+        int maxpg = ConsoleLol.CommandDict.Count / cmds_per_page;
+        try
+        {
+            page = int.Parse(r.com[1])-1;
+            page= System.Math.Clamp(page, 0, maxpg);
+        }
+        catch
+        {
+
+        }
+
+        Console.Log(LanguageFileSystem.Instance.GetString("Console", "Message_Help") + $"({page+1}/{maxpg+1})");
+
+        try
+        {
+            for (int i = 0; i < cmds_per_page; i++)
+            {
+                Console.Log((
+
+                    "- " + ConsoleLol.CommandDict2.ElementAt(i + (page * cmds_per_page)).Key
+
+                ), "#bdbdbdff");
+            }
+        }
+        catch
+        {
+
+        }
+
+    }
+
+    public static void HelpSpecif(OXCommandData r)
+    {
+        OXCommand m = null;
+        try
+        {
+            m = ConsoleLol.CommandDict[r.com[1]];
+        }
+        catch
+        {
+            Console.LogError(LanguageFileSystem.Instance.GetString("Console", "Error_HelpInspect") + r.com[1]);
+            return;
+        }
+
+        string laste = "";
+        foreach(var a in r.com)
+        {
+            if (a == "") break;
+            laste = a;
+        }
+        escaped = false;
+        ccccc = m;
+        RecursiveDesc(m, laste);
+        if (!escaped)
+        {
+            Console.LogError(LanguageFileSystem.Instance.GetString("Console", "Error_HelpInspect") + laste);
+            return;
+        }
+        if(ccccc == m)
+        {
+            RecursiveHelp(ccccc, " - " + m.Value);
+        }
+        else
+        {
+            RecursiveHelp(ccccc, " - ... " + ccccc.Value);
+        }
+    }
+    private static bool escaped = false;
+    public static void RecursiveDesc(OXCommand c, string laste)
+    {
+        if (escaped) return;
+        if (c.Value == laste)
+        {
+            if (c.ParentLanguage != "")
+            {
+                Console.Log(LanguageFileSystem.Instance.GetString(c.ParentLanguage, c.LanguageIndex));
+            }
+            else
+            {
+                Console.Log(LanguageFileSystem.Instance.GetString("Console", "Message_NoHelp"));
+            }
+            ccccc = c;
+            escaped = true;
+            return;
+        }
+
+        foreach (var a in c.SubCommands)
+        {
+            if (a.Value == "-=-") continue;
+            RecursiveDesc(a, laste);
+            if (escaped) return;
+        }
+        if (escaped) return;
+    }
+    private static OXCommand ccccc;
+    public static void RecursiveHelp(OXCommand c, string based)
+    {
+        foreach (var a in c.SubCommands)
+        {
+            if (a.Value != "-=-")
+            {
+                RecursiveHelp(a, based + " " + a.Value);
+            }
+            else
+            {
+                switch (a.Expected)
+                {
+                    case OXCommand.ExpectedInputType.Double: RecursiveHelp(a, based + " <#f>"); break;
+                    case OXCommand.ExpectedInputType.Long: RecursiveHelp(a, based + " <#>"); break;
+                    case OXCommand.ExpectedInputType.String: RecursiveHelp(a, based + " <abc>"); break;
+                }
+            }
+        }
+        if (c.Execution != null)
+        {
+            Console.Log(based);
+        }
+    }
+
 }
