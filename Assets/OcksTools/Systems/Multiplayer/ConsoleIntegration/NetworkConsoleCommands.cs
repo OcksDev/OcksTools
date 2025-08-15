@@ -8,11 +8,11 @@ public class NetworkConsoleCommands : MonoBehaviour
     private void Start()
     {
         LanguageFileSystem.Instance.AddFile(LanguageFileIndex);
-        ConsoleLol.ConsoleHook.Append(NetworkConsoleCommandHook);
-        ConsoleLol.HelpHook.Append(NetworkHelpCommands);
+        //ConsoleLol.ConsoleHook.Append(NetworkConsoleCommandHook);
+        ConsoleLol.ConsoleCommandHook.Append(NetworkHelpCommands);
     }
 
-    public void NetworkConsoleCommandHook(List<string> com, List<string> com_cap)
+    /*public void NetworkConsoleCommandHook(List<string> com, List<string> com_cap)
     {
         var lang = LanguageFileSystem.Instance;
         switch (com[0])
@@ -41,11 +41,11 @@ public class NetworkConsoleCommands : MonoBehaviour
                 RelayMoment.Instance.GetComponent<PickThingymabob>().MakeGame();
                 break;
         }
-    }
+    }*/
     public void NetworkHelpCommands()
     {
-        ConsoleLol.Instance.Add(new OXConsoleHelp("host"));
-        ConsoleLol.Instance.Add(new OXConsoleHelp("join"));
-        ConsoleLol.Instance.Add(new OXConsoleHelp("disconnect"));
+        ConsoleLol.Instance.Add(new OXConsoleCommand("host"));
+        ConsoleLol.Instance.Add(new OXConsoleCommand("join"));
+        ConsoleLol.Instance.Add(new OXConsoleCommand("disconnect"));
     }
 }
