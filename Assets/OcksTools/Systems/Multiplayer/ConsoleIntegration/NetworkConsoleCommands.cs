@@ -9,10 +9,20 @@ public class NetworkConsoleCommands : MonoBehaviour
     {
         LanguageFileSystem.Instance.AddFile(LanguageFileIndex);
         //ConsoleLol.ConsoleHook.Append(NetworkConsoleCommandHook);
-        ConsoleLol.ConsoleCommandHook.Append(NetworkHelpCommands);
+        ConsoleLol.ConsoleCommandHook.Append(NetworkCommands);
 
         RelayMoment.Instance.GetComponent<PickThingymabob>().DebugCode.Append(PrintCode);
     }
+
+    public void NetworkCommands()
+    {
+        ConsoleLol.Instance.Add(new OXCommand("host").Action(host));
+        ConsoleLol.Instance.Add(new OXCommand("join").Append(new OXCommand(OXCommand.ExpectedInputType.String).Action(join)));
+        ConsoleLol.Instance.Add(new OXCommand("disconnect").Action(host));
+    }
+
+
+
 
     public static void host()
     {
@@ -25,13 +35,6 @@ public class NetworkConsoleCommands : MonoBehaviour
     public static void disconnect()
     {
         RelayMoment.Instance.EndConnection();
-    }
-
-    public void NetworkHelpCommands()
-    {
-        ConsoleLol.Instance.Add(new OXCommand("host").Action(host));
-        ConsoleLol.Instance.Add(new OXCommand("join").Append(new OXCommand(OXCommand.ExpectedInputType.String).Action(join)));
-        ConsoleLol.Instance.Add(new OXCommand("disconnect").Action(host));
     }
 
     public void PrintCode(string a)
