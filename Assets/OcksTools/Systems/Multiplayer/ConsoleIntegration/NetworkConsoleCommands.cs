@@ -9,6 +9,7 @@ public class NetworkConsoleCommands : MonoBehaviour
     {
         LanguageFileSystem.Instance.AddFile(LanguageFileIndex);
         ConsoleLol.ConsoleHook.Append(NetworkConsoleCommandHook);
+        ConsoleLol.HelpHook.Append(NetworkHelpCommands);
     }
 
     public void NetworkConsoleCommandHook(List<string> com, List<string> com_cap)
@@ -41,5 +42,10 @@ public class NetworkConsoleCommands : MonoBehaviour
                 break;
         }
     }
-
+    public void NetworkHelpCommands()
+    {
+        ConsoleLol.Instance.Add(new OXConsoleHelp("host"));
+        ConsoleLol.Instance.Add(new OXConsoleHelp("join"));
+        ConsoleLol.Instance.Add(new OXConsoleHelp("disconnect"));
+    }
 }

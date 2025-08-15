@@ -8,6 +8,7 @@ using UnityEngine.UI;
 using Unity.VisualScripting;
 using static System.Net.Mime.MediaTypeNames;
 using UnityEngine.EventSystems;
+using System.Collections.Specialized;
 
 public class ConsoleLol : MonoBehaviour
 {
@@ -41,8 +42,10 @@ public class ConsoleLol : MonoBehaviour
      */
 
     public static OXEvent<List<string>, List<string>> ConsoleHook = new OXEvent<List<string>, List<string>>();
+    public static OXEvent HelpHook = new OXEvent();
     public static bool RecogHandover = false;
-
+    public static Dictionary<string,OXConsoleHelp> HelpDict = new Dictionary<string,OXConsoleHelp>();
+    public static IOrderedEnumerable<KeyValuePair<string, OXConsoleHelp>> HelpDict2;
 
 
     // Start is called before the first frame update
@@ -79,8 +82,19 @@ public class ConsoleLol : MonoBehaviour
             Console.texts.Clear();
             Console.hexes.Clear();
         }
-
+        StartCoroutine(AssembleHelpMenu());
     }
+
+    public IEnumerator AssembleHelpMenu()
+    {
+        yield return new WaitForFixedUpdate();
+
+        HelpHook.Append(SelfHelpCommands);
+        HelpHook.Invoke();
+
+        HelpDict2 = (from entry in HelpDict orderby entry.Key ascending select entry);
+    }
+
 
     private void Update()
     {
@@ -144,10 +158,37 @@ public class ConsoleLol : MonoBehaviour
         if (pp != null) pp.value = 1;
     }
 
+
+    public void SelfHelpCommands()
+    {
+        Add(new OXConsoleHelp("test")
+            .Append(new OXConsoleHelp("tag"))
+            .Append(new OXConsoleHelp("circle"))
+            .Append(new OXConsoleHelp("chat"))
+            .Append(new OXConsoleHelp("listall"))
+            .Append(new OXConsoleHelp("compver"))
+            .Append(new OXConsoleHelp("escape"))
+            .Append(new OXConsoleHelp("max"))
+            .Append(new OXConsoleHelp("comp"))
+            .Append(new OXConsoleHelp("roman"))
+            .Append(new OXConsoleHelp("refs"))
+            .Append(new OXConsoleHelp("destroy"))
+            .Append(new OXConsoleHelp("events")));
+        Add(new OXConsoleHelp("settimescale"));
+        Add(new OXConsoleHelp("joe"));
+    }
+
     public void Submit(string inputgaming)
     {
         if (InputManager.IsKeyDown("console") || InputManager.IsKeyDown("close_menu") || Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2)) return;
-        if(botju != null) StopCoroutine(botju);
+        try
+        {
+            if (botju != null) StopCoroutine(botju);
+        }
+        catch
+        {
+            return;
+        }
         botju = StartCoroutine(BottomJump());
         var pp = ConsoleObjectRef.scrollbar;
         if (pp != null) pp.value = 1;
@@ -554,6 +595,12 @@ public class ConsoleLol : MonoBehaviour
             InputManager.RemoveLockLevel("Console");
         }
     }
+
+
+    public void Add(OXConsoleHelp x)
+    {
+        HelpDict.Add(x.Value, x);
+    }
 }
 
 public class Console
@@ -573,4 +620,60 @@ public class Console
             hexes.Add(hex);
         }
     }
+}
+
+
+// show as follows:
+// - help
+// - settimescale <#f>
+// - sex <#>
+// - rename <abc>
+// - test [circle]
+// - test [destroy]
+
+
+public class OXConsoleHelp
+{
+    public string Value;
+    public List<OXConsoleHelp> SubCommands = new List<OXConsoleHelp>();
+    public string ParentLanguage;
+    public string LanguageIndex;
+    public bool IsLeaf = false;
+    public bool NoDesc = false;
+    public ExpectedInputType Expected = ExpectedInputType.None;
+    public OXConsoleHelp(string Value, string parent_lang, string lang_index)
+    {
+        this.Value = Value;
+        IsLeaf = true;
+        ParentLanguage = parent_lang;
+        LanguageIndex = lang_index;
+    }
+    public OXConsoleHelp(string Value)
+    {
+        this.Value = Value;
+        IsLeaf = true;
+        NoDesc = true;
+    }
+    public OXConsoleHelp(ExpectedInputType ex)
+    {
+        Expected = ex;
+        Value = "";
+        IsLeaf = true;
+        NoDesc = true;
+    }
+    public OXConsoleHelp Append(OXConsoleHelp x)
+    {
+        SubCommands.Add(x);
+        IsLeaf = false;
+        return this;
+    }
+
+    public enum ExpectedInputType
+    {
+        None,
+        Int,
+        Float,
+        String,
+    }
+
 }
