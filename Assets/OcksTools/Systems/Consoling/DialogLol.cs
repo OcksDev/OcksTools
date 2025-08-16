@@ -24,6 +24,8 @@ public class DialogLol : MonoBehaviour
     public float cps = -1;
     public float cps2 = -1;
     public float cps3 = -1;
+    public float pps = -1;
+    public float pps2 = -1;
     private int charl = 0;
     private float cp2 = -1;
     private float cp = -1;
@@ -187,6 +189,14 @@ public class DialogLol : MonoBehaviour
                     {
                         cp3 = e == " " ? cps2 : cps3;
                     }
+                    else if(e == "," || e == ";" || e == ":")
+                    {
+                        cp3 = pps;
+                    }
+                    else if(e == "." || e == "!" || e == "?")
+                    {
+                        cp3 = pps2;
+                    }
                     if (PlaySoundOnType != "" && !baldcharacters.Contains(e))
                     {
                         PlaySoundPreset(PlaySoundOnType);
@@ -319,6 +329,15 @@ public class DialogLol : MonoBehaviour
                 if (list.Count >= 2 && VariableParse(list[1]) != "-") cps2 = float.Parse(VariableParse(list[1]));
                 // Delay in seconds between each line
                 if (list.Count >= 3 && VariableParse(list[2]) != "-") cps3 = float.Parse(VariableParse(list[2]));
+                succeeded = true;
+                break;
+            case "PunctuationDelay":
+                //data should be formatted like    5, 1, 1    (spaces optional)
+                list = new List<string>(data.Split(","));
+                // Delay in seconds between each small thing like comma, colon, and semicolon
+                if (list.Count >= 1 && VariableParse(list[0]) != "-") pps = float.Parse(VariableParse(list[0]));
+                // Delay in seconds between each big thing like period, questionmark, and exclamation point
+                if (list.Count >= 2 && VariableParse(list[1]) != "-") pps2 = float.Parse(VariableParse(list[1]));
                 succeeded = true;
                 break;
             case "TitleColor":
@@ -554,6 +573,8 @@ public class DialogLol : MonoBehaviour
         cps = 20;
         cps2 = 0;
         cps3 = 0;
+        pps = 0.2f;
+        pps2 = 0.8f;
         speaker = "?";
         color = "255|255|255|255";
         tit_color = "255|255|255|255";

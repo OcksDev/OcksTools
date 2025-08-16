@@ -7,8 +7,13 @@ public class LangSetText : MonoBehaviour
 {
     public bool DoOnStart = false;
     public bool DoOnEnable = true;
+    public bool DoOnAwake = false;
     public bool DoOnFixedUpdate = false;
     List<Thingymambobob> nerds = new List<Thingymambobob>();
+    private void Awake()
+    {
+        if(DoOnAwake) SetTexts();
+    }
     private void OnEnable()
     {
         if(DoOnEnable) SetTexts();

@@ -40,7 +40,8 @@
   - Dialog now shares the same coat of paint that the console does.
   - Integration with the Language File System. (also the ability to disable LFS)
   - New StartDialogFromCustomList() which lets you input any list that you want to parse as dialog.
-  - Added the event attribute, letting you easily call arbitrary methods from dialogs
+  - Added the Event attribute, letting you easily call arbitrary methods from dialogs
+  - Added the PunctuationDelay attribute, letting you easily add delay for various types of punctuation like periods, commas, etc
   - Removed old and non-functional StartDialogFromLine() since it was old and non-functional
   - Starting cleaning some stuff up in the internals
   - Now properly adds a lock level for the Input Manager
