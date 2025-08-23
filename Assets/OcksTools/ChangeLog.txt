@@ -9,6 +9,7 @@
 - New Lerp Animation Tool
 - New Multithreading Tool
 - New Stored Random script (plus testing scene/script)
+- New Global Event System (within OXEvent)
 - Console Improvements
   - Complete overhaul of how commands are parsed
     - Other systems can now easily define their own commands to be added as needed, it's very modular now
@@ -16,6 +17,7 @@
   - Console now properly moves down to the bottom of the log when entering commands (FR THIS TIME)
   - Console now properly scales when re-sized, it had some janky stuff going on before.
   - Now properly adds a lock level for the Input Manager
+    - Also fixed some lock level related stuff
 - GIS Improvements
   - New Ctrl click functionality for containers (default is opted in)
   - Added new method for getting total amount of items in container
@@ -24,7 +26,7 @@
   - Hover logic extracted into its own class, now can be used for more general applications
 - Random Functions Improvements
   - New OpenURLInBrowser() to open urls in the default browser 
-  - New CombineDictionary()
+  - New MergeDictionary()
   - Changed RandomFunctions.Dist slightly, and also added DistNoSQRT()
   - Two new easing functions, EaseBounce and EaseOvershoot (and new testing scene for all easing functions)
   - Officially removed support for old RandomFunctions.SpawnObject
@@ -45,6 +47,7 @@
   - Removed old and non-functional StartDialogFromLine() since it was old and non-functional
   - Starting cleaning some stuff up in the internals
   - Now properly adds a lock level for the Input Manager
+  - Migrated to new Global Event system.
 - SpawnData Improvements
   - Uses Dictionaries instead of Lists for data handling
 - Room Generation Improvements

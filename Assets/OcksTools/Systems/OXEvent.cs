@@ -3,6 +3,36 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public class GlobalEvent
+{
+    private static Dictionary<string, OXEvent> Nerds = new Dictionary<string, OXEvent>();
+    public static void Append(string even, string name, Action method)
+    {
+        if (!Nerds.ContainsKey(even)) Nerds.Add(even, new OXEvent());
+        Nerds[even].Append(name, method);
+    }
+    public static void Append(string even, Action method)
+    {
+        if (!Nerds.ContainsKey(even)) Nerds.Add(even, new OXEvent());
+        Nerds[even].Append(method);
+    }
+
+    public static void Remove(string even, string name)
+    {
+        if (!Nerds.ContainsKey(even)) return;
+        Nerds[even].Remove(name);
+    }
+    public static void Invoke(string even)
+    {
+        if(Nerds.ContainsKey(even)) Nerds[even].Invoke();
+    }
+}
+
+
+
+
+
+
 public class OXEvent
 {
     public Dictionary<string, Action> StoredMethods = new Dictionary<string, Action>();

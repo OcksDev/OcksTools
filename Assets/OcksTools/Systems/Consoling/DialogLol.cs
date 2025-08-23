@@ -16,7 +16,6 @@ public class DialogLol : MonoBehaviour
     private DialogBoxL pp;
     public List<DialogHolder> DialogFiles = new List<DialogHolder>();
     public List<DialogHolder> ChooseFiles = new List<DialogHolder>();
-    public Dictionary<string, System.Action> Events = new Dictionary<string, System.Action>();
     public bool dialogmode = false;
     public string filename = "";
     public int linenum = 0;
@@ -456,7 +455,7 @@ public class DialogLol : MonoBehaviour
                 succeeded = true;
                 break;
             case "Event":
-                Events[data]();
+                GlobalEvent.Invoke(data);
                 succeeded = true;
                 break;
             default:
@@ -466,17 +465,6 @@ public class DialogLol : MonoBehaviour
         return succeeded;
     }
 
-    public void SetEvent(string name, System.Action ee)
-    {
-        if (Events.ContainsKey(name))
-        {
-            Events[name] = ee;
-        }
-        else
-        {
-            Events.Add(name, ee);
-        }
-    }
 
     public void SetVariable(string key, string val)
     {

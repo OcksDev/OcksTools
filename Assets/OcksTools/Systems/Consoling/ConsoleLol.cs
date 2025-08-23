@@ -97,7 +97,7 @@ public class ConsoleLol : MonoBehaviour
 
     private void Update()
     {
-        if (InputManager.IsKeyDown("console", "def"))
+        if (InputManager.IsKeyDown("console") && !enable)
         {
             ConsoleChange(!enable);
         }
@@ -191,6 +191,7 @@ public class ConsoleLol : MonoBehaviour
             .Append(new OXCommand("read").Action(ConsoleCommands.Data_Read))
             .Append(new OXCommand("listall").Action(ConsoleCommands.Data_listall))
             );
+        Add(new OXCommand("howmanywouldyoutake").Action(() => { Console.Log("49 Bullets!"); }));
     }
     private static OXCommandData raa;
 
