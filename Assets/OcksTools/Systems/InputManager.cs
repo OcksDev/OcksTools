@@ -11,15 +11,12 @@ public class InputManager : MonoBehaviour
     public static Dictionary<string, List<KeyCode>> gamekeys = new Dictionary<string, List<KeyCode>>();
     public static Dictionary<string, List<KeyCode>> defaultgamekeys = new Dictionary<string, List<KeyCode>>();
     public static Dictionary<string, string> gamekeynames = new Dictionary<string, string>();
+    public static OXEvent CollectInputAllocs = new OXEvent();
     // Start is called before the first frame update
     void Start()
     {
-        ResetLockLevel();
-    }
-    // Update is called once per frame
-    void Awake()
-    {
         AssembleTheCodes();
+        ResetLockLevel();
     }
 
     public static void AssembleTheCodes()
@@ -40,25 +37,18 @@ public class InputManager : MonoBehaviour
 
         //create custom key allocations
         CreateKeyAllocation("shoot", KeyCode.Mouse0);
+        CreateKeyAllocation("alt_shoot", KeyCode.Mouse1);
         CreateKeyAllocation("move_forward", KeyCode.W);
         CreateKeyAllocation("move_back", KeyCode.S);
         CreateKeyAllocation("move_left", KeyCode.A);
         CreateKeyAllocation("move_right", KeyCode.D);
         CreateKeyAllocation("jump", KeyCode.Space);
         CreateKeyAllocation("reload", KeyCode.R);
+        CreateKeyAllocation("interact", KeyCode.F);
         CreateKeyAllocation("close_menu", KeyCode.Escape);
         CreateKeyAllocation("tab_menu", KeyCode.Tab);
-        CreateKeyAllocation("item_select", KeyCode.Mouse0);
-        CreateKeyAllocation("item_half", KeyCode.Mouse1);
-        CreateKeyAllocation("item_pick", KeyCode.Mouse2);
-        CreateKeyAllocation("item_alt", KeyCode.LeftShift);
-        CreateKeyAllocation("item_mod", KeyCode.LeftControl);
-        CreateKeyAllocation("console", KeyCode.Slash);
-        CreateKeyAllocation("console_up", KeyCode.UpArrow);
-        CreateKeyAllocation("console_down", KeyCode.DownArrow);
-        CreateKeyAllocation("console_autofill", KeyCode.Tab);
-        CreateKeyAllocation("dialog_skip", new List<KeyCode>() {KeyCode.Space, KeyCode.Mouse0, KeyCode.RightArrow});
-        CreateKeyAllocation("dialog_skip_back", KeyCode.LeftArrow);
+
+        CollectInputAllocs.Invoke();
 
     }
 

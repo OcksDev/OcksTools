@@ -62,6 +62,15 @@ public class ConsoleLol : MonoBehaviour
         ConsoleObjectRef = ConsoleObject.GetComponent<ConsolRefs>();
         ConsoleChange(false);
         if (Instance == null) instance = this;
+
+
+        InputManager.CollectInputAllocs.Append("Console", () =>
+        {
+            InputManager.CreateKeyAllocation("console", KeyCode.Slash);
+            InputManager.CreateKeyAllocation("console_up", KeyCode.UpArrow);
+            InputManager.CreateKeyAllocation("console_down", KeyCode.DownArrow);
+            InputManager.CreateKeyAllocation("console_autofill", KeyCode.Tab);
+        });
     }
     public void Start()
     {

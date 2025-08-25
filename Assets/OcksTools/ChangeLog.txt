@@ -50,6 +50,8 @@
   - Migrated to new Global Event system.
 - SpawnData Improvements
   - Uses Dictionaries instead of Lists for data handling
+- Input Manager Improvements
+  - Made the final leap into modular key allocations, now you can define them on the fly and from other scripts
 - Room Generation Improvements
   - New class to manually define room layouts, its so much easier now
   - Rooms now can have multiple doors on the same side

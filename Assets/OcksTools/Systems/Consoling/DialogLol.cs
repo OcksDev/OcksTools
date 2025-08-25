@@ -59,6 +59,12 @@ public class DialogLol : MonoBehaviour
     {
         if (Instance == null) instance = this;
         DialogBoxObject.SetActive(true);
+
+        InputManager.CollectInputAllocs.Append("Dialog", () =>
+        {
+            InputManager.CreateKeyAllocation("dialog_skip", new List<KeyCode>() { KeyCode.Space, KeyCode.Mouse0, KeyCode.RightArrow });
+            InputManager.CreateKeyAllocation("dialog_skip_back", KeyCode.LeftArrow);
+        });
     }
 
 

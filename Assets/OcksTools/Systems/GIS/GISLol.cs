@@ -42,6 +42,15 @@ public class GISLol : MonoBehaviour
             ItemDict.Add(item.Name, item);
         }
         SaveSystem.SaveAllData.Append(SaveAll);
+
+        InputManager.CollectInputAllocs.Append("GIS", () =>
+        {
+            InputManager.CreateKeyAllocation("item_select", KeyCode.Mouse0);
+            InputManager.CreateKeyAllocation("item_half", KeyCode.Mouse1);
+            InputManager.CreateKeyAllocation("item_pick", KeyCode.Mouse2);
+            InputManager.CreateKeyAllocation("item_alt", KeyCode.LeftShift);
+            InputManager.CreateKeyAllocation("item_mod", KeyCode.LeftControl);
+        });
     }
 
 
