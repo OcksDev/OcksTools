@@ -111,12 +111,15 @@ public class ConsoleLol : MonoBehaviour
             ConsoleChange(!enable);
         }
         else if (InputManager.IsKeyDown("console", "Console"))
-        {;
+        {
             if (EventSystem.current.currentSelectedGameObject == null || EventSystem.current.currentSelectedGameObject.name != ConsoleObjectRef.input.gameObject.name)
             {
                 ConsoleObjectRef.fix.Select();
                 ConsoleObjectRef.input.Select();
             }
+        }else if (InputManager.IsKeyDown("console_autofill", "Console"))
+        {
+            AutoFill();
         }
         else if (InputManager.IsKeyDown("close_menu"))
         {
@@ -203,11 +206,11 @@ public class ConsoleLol : MonoBehaviour
         Add(new OXCommand("howmanywouldyoutake").Action(() => { Console.Log("49 Bullets!"); }));
     }
     private static OXCommandData raa;
-
     public void Submit(string inputgaming)
     {
         if (InputManager.IsKeyDown("console") || InputManager.IsKeyDown("close_menu") || Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2)) return;
-        try
+        if (InputManager.IsKeyDown("console_autofill", "Console")) return;
+            try
         {
             if (botju != null) StopCoroutine(botju);
         }
@@ -257,6 +260,93 @@ public class ConsoleLol : MonoBehaviour
         ConsoleObjectRef.fix.Select();
         ConsoleObjectRef.input.Select();
     }
+
+    private OXCommand bestmatch;
+    public void NewVal(string e)
+    {
+        e = e.ToLower();
+
+        var a = Converter.StringToList(e, " ");
+        bestmatch = null;
+        foreach (var c in a)
+        {
+            if (c == "")
+            {
+                ConsoleObjectRef.predictr.text = "";
+                return;
+            }
+        }
+
+        foreach (var c in CommandDict)
+        {
+            if (c.Key.StartsWith(a[0]))
+            {
+                bestmatch = c.Value;
+                break;
+            }
+        }
+        int fd = 0;
+        if(bestmatch != null)
+        {
+            for (int i = 1; i < a.Count; i++)
+            {
+                if (a[i] == "") break;
+                if(i==1 && bestmatch.Value == "help")
+                {
+                    foreach (var banana in CommandDict)
+                    {
+                        if (banana.Value.Value.StartsWith(a[i]))
+                        {
+                            bestmatch = banana.Value;
+                            fd++;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var banana in bestmatch.SubCommands)
+                    {
+                        if (banana.Value == "-=-") continue;
+                        if (banana.Value.StartsWith(a[i]))
+                        {
+                            bestmatch = banana;
+                            fd++;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        if(bestmatch != null && fd == a.Count-1)
+        {
+            ConsoleObjectRef.predictr.text = $"<color=#00000000>{ConsoleObjectRef.input.text}</color>" + bestmatch.Value.Substring(a[fd].Length);
+        }
+        else
+        {
+            bestmatch = null;
+            ConsoleObjectRef.predictr.text = "";
+            return;
+        }
+
+    }
+    public void AutoFill()
+    {
+        if(bestmatch != null)
+        {
+            var e = ConsoleObjectRef.input.text;
+            var a = Converter.StringToList(e, " ");
+            var dd = a[a.Count - 1].Length;
+            e += bestmatch.Value.Substring(dd);
+            ConsoleObjectRef.input.text = e;
+            NewVal(e);
+
+
+            ConsoleObjectRef.input.MoveTextEnd(false);
+        }
+    }
+
 
     public void RecursiveCheck(OXCommand cum, int lvl)
     {
@@ -356,16 +446,21 @@ public class ConsoleLol : MonoBehaviour
         if (e)
         {
             InputManager.AddLockLevel("Console");
-            ConsoleObjectRef.fix.Select();
-            ConsoleObjectRef.input.Select();
+            FixLol();
             ConsoleObjectRef.input.text = "";
+            NewVal("");
         }
         else
         {
             InputManager.RemoveLockLevel("Console");
         }
     }
-
+    public void FixLol()
+    {
+        ConsoleObjectRef.fix.Select();
+        ConsoleObjectRef.input.Select();
+        ConsoleObjectRef.input.MoveTextEnd(false);
+    }
 
     public void Add(OXCommand x)
     {
