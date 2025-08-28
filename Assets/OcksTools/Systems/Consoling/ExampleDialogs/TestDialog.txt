@@ -14,7 +14,8 @@
 </> <Name=Boner> <Speed=69.69, -, -> <TextColor=150,0,0,255> <SoundOnType=A>
 </> Yes <Wait=1><Animate=Text,Rainbow,26>(this text will auto skip) <Wait=1><Animate=Text,Rainbow,Remove>no more rainbow<Wait=1> <Skip> (this txt is never visable)
 </> 
-</> <Name=Gamer> <TextColor=150,0,0,255> <Escape=True> <SoundOnType=A>
+</> <Name=Gamer> <CanSkip=False> <TextColor=150,0,0,255> <Escape=True> <SoundOnType=A>
 </> cool....  fuck<Jump=-4>
+Why not click<WaitForInput>balls<WaitForInput>balls<WaitForInput>balls
 </> <Scene=Test2>
 

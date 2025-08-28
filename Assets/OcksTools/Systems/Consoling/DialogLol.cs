@@ -128,7 +128,7 @@ public class DialogLol : MonoBehaviour
                 attemptskip = true;
             }
         }
-        if (attemptskip)
+        if (attemptskip && !waitforinput)
         {
             if (godlyattemptskip)
             {
@@ -152,6 +152,9 @@ public class DialogLol : MonoBehaviour
             {
                 NextLine();
             }
+        }else if(attemptskip && waitforinput)
+        {
+            waitforinput = false;
         }
         ex:
         attemptskip = false;
@@ -172,7 +175,7 @@ public class DialogLol : MonoBehaviour
             });
         }*/
 
-        if (cp3 <= 0)
+        if (cp3 <= 0 && !waitforinput)
         {
             cp -= Time.deltaTime;
             if (cp <= 0 && charl != fulltext.Length)
@@ -247,6 +250,7 @@ public class DialogLol : MonoBehaviour
     }
 
     public bool foundendcall = false;
+    public bool waitforinput = false;
     public bool attemptskip = false;
     public bool godlyattemptskip = false;
     public bool backwardskip = false;
@@ -388,6 +392,10 @@ public class DialogLol : MonoBehaviour
                 pp.title = "";
                 pp.UpdateColor();
                 foundendcall = true;
+                succeeded = true;
+                break;
+            case "WaitForInput":
+                waitforinput = true;
                 succeeded = true;
                 break;
             case "Shutdown":
@@ -601,6 +609,7 @@ public class DialogLol : MonoBehaviour
         cp = 0;
         dialogmode = false;
         datatype = "Dialog";
+        waitforinput = false;
         InputManager.RemoveLockLevel("Dialog");
         EndBanna();
         SetDefaultParams();
@@ -683,7 +692,7 @@ public class DialogLol : MonoBehaviour
         DialogBoxObject.SetActive(dialogmode);
         if (dialogmode)
         {
-            if(charl >= fulltext.Length && AutoSkip < 0)
+            if((charl >= fulltext.Length && AutoSkip < 0) || waitforinput)
             {
                 pp.clikctoskpo.text = "Click To Continue";
             }

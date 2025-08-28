@@ -44,6 +44,7 @@
   - New StartDialogFromCustomList() which lets you input any list that you want to parse as dialog.
   - Added the Event attribute, letting you easily call arbitrary methods from dialogs
   - Added the PunctuationDelay attribute, letting you easily add delay for various types of punctuation like periods, commas, etc
+  - Added the WaitForInput attribute, which pauses the current dialog until the skip/next button is pressed
   - Removed old and non-functional StartDialogFromLine() since it was old and non-functional
   - Starting cleaning some stuff up in the internals
   - Now properly adds a lock level for the Input Manager

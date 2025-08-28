@@ -277,7 +277,7 @@ public class ConsoleLol : MonoBehaviour
             }
         }
 
-        foreach (var c in CommandDict)
+        foreach (var c in CommandDict2)
         {
             if (c.Key.StartsWith(a[0]))
             {
@@ -293,7 +293,7 @@ public class ConsoleLol : MonoBehaviour
                 if (a[i] == "") break;
                 if(i==1 && bestmatch.Value == "help")
                 {
-                    foreach (var banana in CommandDict)
+                    foreach (var banana in CommandDict2)
                     {
                         if (banana.Value.Value.StartsWith(a[i]))
                         {
