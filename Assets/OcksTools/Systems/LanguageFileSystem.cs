@@ -25,6 +25,12 @@ public class LanguageFileSystem : MonoBehaviour
     {
         if (AllowPublicAccess)
         {
+            FileSystem.LocationEvent.Append("lang",() =>
+            {
+                var f = FileSystem.Instance;
+                f.FileLocations.Add("Lang", $"{f.GameDirectory}\\Language");
+            });
+            FileSystem.Instance.AssembleFilePaths();
             FileSystem.Instance.CreateFolder(FileSystem.Instance.FileLocations["Lang"]);
             FileSystem.Instance.CreateFolder($"{FileSystem.Instance.FileLocations["Lang"]}\\{FileSystem.GameVer}");
         }

@@ -37,6 +37,9 @@ public class FileSystem : MonoBehaviour
     public string GameDirectory = "";
     [HideInInspector]
     public Dictionary<string, string> FileLocations = new Dictionary<string, string>();
+
+    public static OXEvent LocationEvent = new OXEvent();
+
     public static FileSystem Instance
     {
         get { return instance; }
@@ -65,7 +68,7 @@ public class FileSystem : MonoBehaviour
 
         //WriteFile($"{GameDirectory}\\Test.txt", "Test Data Lol", false);
 
-
+        AssembleFilePaths();
     }
     public void AssembleFilePaths()
     {
@@ -74,16 +77,12 @@ public class FileSystem : MonoBehaviour
         GameDirectory = OcksDirectry + "\\" + GameFolderName;
         UniversalDirectory = OcksDirectry + "\\Universal";
 
-        //this feature might be deprecated soon
         FileLocations = new Dictionary<string, string>()
         {
             {"OcksGames",$"{OcksDirectry}\\Ocks_Games_Owned.txt"},
             {"OXFileTest",$"{GameDirectory}\\Testing.ox"},
-            {"Lang",$"{GameDirectory}\\Language"},
-            {"Badges",$"{UniversalDirectory}\\Badges"},
-            {"Profile_Badges",$"{UniversalDirectory}\\Badges\\Badges.ox"},
-            {"Profile_Badge_Data",$"{UniversalDirectory}\\Badges\\Data"},
         };
+        LocationEvent.Invoke();
     }
     public void WriteFile(string FileName, string data, bool CanOverride)
     {

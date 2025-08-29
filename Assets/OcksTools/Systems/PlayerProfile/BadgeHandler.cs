@@ -24,11 +24,21 @@ public class BadgeHandler : MonoBehaviour
 
     private void Awake()
     {
-        SaveSystem.LoadAllData.Append(LockIn2);
-        SaveSystem.SaveAllData.Append(LockOut2);
+
+        FileSystem.LocationEvent.Append("badges", () =>
+        {
+            var f = FileSystem.Instance;
+            f.FileLocations.Add("Badges", $"{f.UniversalDirectory}\\Badges");
+            f.FileLocations.Add("Profile_Badges",$"{f.UniversalDirectory}\\Badges\\Badges.ox");
+            f.FileLocations.Add("Profile_Badge_Data",$"{f.UniversalDirectory}\\Badges\\Data");
+        });
+
         FileSystem.Instance.AssembleFilePaths();
         FileSystem.Instance.CreateFolder(FileSystem.Instance.FileLocations["Badges"]);
         FileSystem.Instance.CreateFolder(FileSystem.Instance.FileLocations["Profile_Badge_Data"]);
+
+        SaveSystem.LoadAllData.Append(LockIn2);
+        SaveSystem.SaveAllData.Append(LockOut2);
     }
 
     public void LockIn2(string dict)

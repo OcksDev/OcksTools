@@ -320,6 +320,7 @@ public class SaveSystem : MonoBehaviour
         {
             case "def": return $"{f.GameDirectory}\\Game_Data{str}";
             case "ox_profile": return $"{f.UniversalDirectory}\\Player_Data.txt";
+            case "console": return $"{f.GameDirectory}\\Console_Data{str}";
             default: return $"{f.GameDirectory}\\Data_{e}{str}";
         }
     }

@@ -13,11 +13,17 @@
 - Console Improvements
   - Complete overhaul of how commands are parsed
     - Other systems can now easily define their own commands to be added as needed, it's very modular now
+  - Added autofill feature, it will try to predict what command you are trying to type (tab to accept)
+  - Added save/loading of previous commands via Save System, toggleable (default is opted in) 
   - Console has a new coat of paint by default.
   - Console now properly moves down to the bottom of the log when entering commands (FR THIS TIME)
   - Console now properly scales when re-sized, it had some janky stuff going on before.
   - Now properly adds a lock level for the Input Manager
     - Also fixed some lock level related stuff
+  - Jumping forward/backward in command history now sets the selector to the end of the line
+  - Jumping forward/backward now lets you return to the last written text rather than deleting it
+    - data is lost if new text is typed tho
+  - Console now clears input text on submit
 - GIS Improvements
   - New Ctrl click functionality for containers (default is opted in)
   - Added new method for getting total amount of items in container

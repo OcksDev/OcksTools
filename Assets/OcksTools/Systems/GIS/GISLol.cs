@@ -115,10 +115,9 @@ public class GISItem
      * This class is for each item in the container, specifying individual data such as durability or amount
      * 
      * When adding new attributes for items, make sure to update the below functions:
-     * GISItem.GISItem()
+     * GISItem.setdefaultvals()
      * GISItem.GISItem(GISItem)
      * GISItem.Compare(GISItem)
-     * GISContainer.LoadContents()
      */
 
     public string Name;

@@ -17,6 +17,8 @@ public class ConsoleLol : MonoBehaviour
     public OXLanguageFileIndex LanguageFileIndex;
     private static ConsoleLol instance;
     public bool UseLanguageFileSystem = true;
+    public bool SavePrevCommands = true;
+    [HideInInspector]
     public bool enable = false;
     private List<string> prev_commands = new List<string>();
     private string s = "";
@@ -71,7 +73,9 @@ public class ConsoleLol : MonoBehaviour
             InputManager.CreateKeyAllocation("console_down", KeyCode.DownArrow);
             InputManager.CreateKeyAllocation("console_autofill", KeyCode.Tab);
         });
+
     }
+
     public void Start()
     {
 
@@ -91,6 +95,13 @@ public class ConsoleLol : MonoBehaviour
             Console.hexes.Clear();
         }
         StartCoroutine(AssembleHelpMenu());
+
+        LoadConsole("");
+    }
+
+    private void OnApplicationQuit()
+    {
+        SaveConsole("");
     }
 
     public IEnumerator AssembleHelpMenu()
@@ -140,12 +151,19 @@ public class ConsoleLol : MonoBehaviour
     public void CommandChange(int i)
     {
         var sp = ConsoleObjectRef.input;
-        if(prev_commands.Count > 0)
+        var a = new List<string>(prev_commands);
+        a.Add(OldS);
+        var b = comm;
+        if (prev_commands.Count > 0)
         {
             comm += i;
-            comm = Math.Clamp(comm, 0, prev_commands.Count - 1);
-            sp.text = prev_commands[comm];
+            comm = Math.Clamp(comm, 0, a.Count - 1);
+            b = comm;
+            sp.text = a[comm];
         }
+        ConsoleObjectRef.input.MoveTextEnd(false);
+        OldS = a[a.Count - 1];
+        comm = b;
     }
     private Coroutine botju;
     public IEnumerator BottomJump()
@@ -206,6 +224,8 @@ public class ConsoleLol : MonoBehaviour
         Add(new OXCommand("howmanywouldyoutake").Action(() => { Console.Log("49 Bullets!"); }));
     }
     private static OXCommandData raa;
+
+    private string OldS = "";
     public void Submit(string inputgaming)
     {
         if (InputManager.IsKeyDown("console") || InputManager.IsKeyDown("close_menu") || Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2)) return;
@@ -225,8 +245,13 @@ public class ConsoleLol : MonoBehaviour
         //this must be run when the text is finished editing
         try
         {
+            ConsoleObjectRef.input.text = "";
             s = inputgaming;
             if (s != "" && (prev_commands.Count == 0 || prev_commands[prev_commands.Count - 1] != s)) prev_commands.Add(s);
+            if(prev_commands.Count > 25)
+            {
+                prev_commands.RemoveAt(0);
+            }
             var s2 = s;
             if (s == "") return;
             s = s.ToLower();
@@ -264,6 +289,8 @@ public class ConsoleLol : MonoBehaviour
     private OXCommand bestmatch;
     public void NewVal(string e)
     {
+        OldS = e;
+        comm = prev_commands.Count;
         e = e.ToLower();
 
         var a = Converter.StringToList(e, " ");
@@ -466,6 +493,20 @@ public class ConsoleLol : MonoBehaviour
     {
         CommandDict.Add(x.Value, x);
     }
+
+    public void SaveConsole(string dict)
+    {
+        if (!SavePrevCommands) return;
+        SaveSystem.Instance.SetList("prev", prev_commands, "console");
+        SaveSystem.Instance.SaveDataToFile("console");
+    }
+    public void LoadConsole(string dict)
+    {
+        if(!SavePrevCommands) return;
+        SaveSystem.Instance.GetDataFromFile("console");
+        prev_commands = SaveSystem.Instance.GetList("prev", prev_commands, "console");
+    }
+
 }
 
 public class Console
