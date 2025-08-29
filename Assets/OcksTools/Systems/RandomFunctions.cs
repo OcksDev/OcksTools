@@ -59,9 +59,9 @@ public class RandomFunctions : MonoBehaviour
         return (re.rect.max - re.rect.min);
     }
 
-    public static Vector3 ReflectVector(Vector3 incoming, Vector3 axis)
+    public static Vector3 ReflectVector(Vector3 incoming, Vector3 normal)
     {
-        return incoming - 2 * Vector3.Dot(incoming, axis) * axis;
+        return incoming - 2 * Vector3.Dot(incoming, normal) * normal;
     }
     public static Dictionary<string,string> GenerateBlankHiddenData()
     {
