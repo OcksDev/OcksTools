@@ -57,6 +57,7 @@
   - Migrated to new Global Event system.
 - SpawnData Improvements
   - Uses Dictionaries instead of Lists for data handling
+  - I am planning on remaking this entire system in the next version
 - Input Manager Improvements
   - Made the final leap into modular key allocations, now you can define them on the fly and from other scripts
 - Room Generation Improvements
