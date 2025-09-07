@@ -15,21 +15,22 @@ public class ServerGamer : NetworkBehaviour
         if (Instance == null) Instance = this;
         ClientID = Tags.GenerateID();
         Console.Log("My ID: " + ClientID);
+        SpawnSystem.SpawnShareMethod = handjoib;
     }
 
     /* working code, commented out to prevent error messages when importing oxtools*/
     [ServerRpc(RequireOwnership = false)]
-    public void SpawnObjectServerRpc(string refe, Vector3 pos, Quaternion rot, string id, string data, string hdata)
+    public void SpawnObjectServerRpc(string spawndata)
     {
-        SpawnObjectClientRpc(refe, pos, rot, id, data, hdata);
+        SpawnObjectClientRpc(ClientID, spawndata);
     }
 
     [ClientRpc]
-    public void SpawnObjectClientRpc(string refe, Vector3 pos, Quaternion rot, string id, string data = "", string hdata = "")
+    public void SpawnObjectClientRpc(string id, string spawndata)
     {
         if (id == ClientID) return;
 
-        SpawnSystem.Instance.SpawnObject(refe, gameObject, pos, rot, false, data, hdata);
+        SpawnSystem.Spawn(new SpawnData(spawndata,0));
     }
 
 
@@ -131,4 +132,9 @@ public class ServerGamer : NetworkBehaviour
             ONVManager.OcksVars[NetID].Add(Name, new OcksNetworkVarData());
         }
     }
+    public void handjoib(string spawndata)
+    {
+        SpawnObjectServerRpc(spawndata);
+    }
+
 }

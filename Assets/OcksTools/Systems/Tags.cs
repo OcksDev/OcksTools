@@ -43,11 +43,6 @@ public class Tags : MonoBehaviour
         AllTags.Add(tag, new Dictionary<string, UnityEngine.Object>());
         AllTagsReverse.Add(tag, new Dictionary<UnityEngine.Object, string>());
     }
-    public static string GetIDOf(UnityEngine.Object a)
-    {
-        var aa = AllTagsReverse["Exist"];
-        return aa.ContainsKey(a) ? aa[a] :"";
-    }
 
     public static bool ObjectHasTag(UnityEngine.Object objecty, string tag)
     {
@@ -57,6 +52,11 @@ public class Tags : MonoBehaviour
     public static bool ObjectHasTag(string objecty, string tag)
     {
         return AllTags[tag].ContainsKey(objecty);
+    }
+    public static string GetIDOf(UnityEngine.Object a, string tag = "Exist")
+    {
+        var aa = AllTagsReverse[tag];
+        return aa.ContainsKey(a) ? aa[a] : "";
     }
     public static T GetFromTag<T>(string tag, string name) where T : UnityEngine.Object
     {

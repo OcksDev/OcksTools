@@ -138,6 +138,12 @@ public class Converter : MonoBehaviour
         var s = StringToList(e.Substring(1, e.Length - 2));
         return new Vector3(float.Parse(s[0]), float.Parse(s[1]), float.Parse(s[2]));
     }
+    
+    public static Quaternion StringToQuaternion(string e)
+    {
+        var s = StringToList(e.Substring(1, e.Length - 2));
+        return new Quaternion(float.Parse(s[0]), float.Parse(s[1]), float.Parse(s[2]), float.Parse(s[3]));
+    }
 
     public static Vector2Int StringToVector2Int(string e)
     {

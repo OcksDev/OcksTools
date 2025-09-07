@@ -1,9 +1,12 @@
 
 ------------
    v1.1.2
+- Complete Spawn System Overhaul!
+  - Completely remade it from the ground up, now much more streamlined
 - Sound System Improvements!
   - Overhauled how sounds are given and parsed, much more modular and expandable
 - Misc Changes
+  - new Converter, StringToQuaternion()
   - Some more reorganizing 
 ------------
 

@@ -97,6 +97,7 @@ public class ConsoleLol : MonoBehaviour
         StartCoroutine(AssembleHelpMenu());
 
         LoadConsole("");
+
     }
 
     private void OnApplicationQuit()
