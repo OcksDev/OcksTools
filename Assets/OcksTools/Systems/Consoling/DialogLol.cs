@@ -241,7 +241,7 @@ public class DialogLol : MonoBehaviour
         switch (index)
         {
             case "A":
-                SoundSystem.Instance.PlaySoundWithClipping("A", false, 0.2f, 0.5f);
+                SoundSystem.Instance.PlaySound(new OXSound("A",0.2f).Pitch(0.5f).Clipping());
                 break;
             default:
                 Debug.LogWarning("Failed to find a sound preset with the index of " + index);

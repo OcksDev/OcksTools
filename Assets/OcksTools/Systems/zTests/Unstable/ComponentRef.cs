@@ -25,7 +25,7 @@ public class OXComponent
     {
         var weenor = Converter.ListToDictionary(boners); // this makes it slightly faster, trust me bro you have to believe
         //add new values below as needed
-        if (weenor.ContainsKey("SpawnData")) StoreComponent<SpawnData>(nerd);
+        //if (weenor.ContainsKey("SpawnData")) StoreComponent<SpawnData>(nerd);
         if (weenor.ContainsKey("Text")) StoreComponent<TextMeshProUGUI>(nerd);
     }
 

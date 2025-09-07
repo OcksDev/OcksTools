@@ -39,7 +39,6 @@ public class ServerGamer : NetworkBehaviour
     {
         RecieveMessageClientRpc(id, type, data);
     }
-
     //chat related method
     [ClientRpc]
     public void RecieveMessageClientRpc(string id, string type, string data)

@@ -64,15 +64,15 @@ public class Caller<T_Output> : IMultiCaller
     public T_Output Multicall(Func<T_Output> aa, string index)
     {
         if (!GlobalCallerHandler.all.ContainsKey(this)) GlobalCallerHandler.all.Add(this, false);
-        bool needsfull = false;
+       // bool needsfull = false;
         if (dict.ContainsKey(index))
         {
             return dict[index];
-        }
+        }/*
         else
         {
             needsfull = true;
-        }
+        }*/
         var x = aa();
         dict.Add(index, x);
         return x;

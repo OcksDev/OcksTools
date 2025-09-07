@@ -1,5 +1,13 @@
 
 ------------
+   v1.1.2
+- Sound System Improvements!
+  - Overhauled how sounds are given and parsed, much more modular and expandable
+- Misc Changes
+  - Some more reorganizing 
+------------
+
+------------
    v1.1.1
 - New Notification System
 - New Player Profile System (kinda)

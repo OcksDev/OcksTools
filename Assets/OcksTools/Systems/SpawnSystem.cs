@@ -17,113 +17,28 @@ public class SpawnSystem : MonoBehaviour
             SpawnableDict.Add(a.Name, a);
         }
     }
-
-    private void Start()
+    public GameObject Spawn(string nerd)
     {
-        StartCoroutine(SpawnPools());
+        var a  = Instantiate(SpawnableDict[nerd].Object);
+        string my_id = Tags.GenerateID();
+
+        var data = new ObjectData(a,my_id);
+
+        Tags.AddObjectToTag(data, my_id, "Spawns");
+        return a;
     }
 
-    public IEnumerator SpawnPools()
+
+}
+
+public class ObjectData : UnityEngine.Object
+{
+    public GameObject Object;
+    public string ID;
+    public ObjectData(GameObject a, string id)
     {
-        // dictates the amount of objects to spawn every 50th of a second, in other words spawning amount*50 objects per second.
-        int simulateousspawns = 1;
-        int sim = 0;
-        for (int i = 0; i < Spawnables.Count; i++)
-        {
-            if (!Spawnables[i].UsePoolForObject) continue;
-            for (int z = 0; z < Spawnables[i].PoolSize; z++)
-            {
-                sim++;
-                if (sim >= simulateousspawns) { yield return new WaitForFixedUpdate(); sim = 0; }
-                SpawnPoolObject(Spawnables[i]);
-            }
-        }
-    }
-
-    public GameObject SpawnObject(string name, GameObject parent, Vector3 pos, Quaternion rot, bool SendToEveryone = false, string data = "", string hidden_data = "")
-    {
-        //object parenting over multiplayer is untested
-        Dictionary<string,string> dadalol = Converter.StringToDictionary(data);
-        Dictionary<string,string> hidden_dadalol = Converter.StringToDictionary(hidden_data);
-        if (hidden_data == "")
-        {
-            hidden_dadalol = RandomFunctions.GenerateBlankHiddenData();
-        }
-
-        //object parenting using Tags, should work over multiplayer, untested
-        if (hidden_dadalol["ParentID"] != "-" && Tags.AllTags["Exist"].ContainsKey(hidden_dadalol["ParentID"]))
-        {
-            parent = (GameObject)Tags.AllTags["Exist"][hidden_dadalol["ParentID"]];
-        }
-        if (Tags.AllTagsReverse["Exist"].ContainsKey(parent))
-        {
-            hidden_dadalol["ParentID"] = Tags.AllTagsReverse["Exist"][parent];
-        }
-
-        //incase you want to run some stuff here based on the object that is going to be spawned
-        switch (name)
-        {
-            case "":
-                break;
-        }
-
-        GameObject f; //Instantiate(Pools[refe].Object, pos, rot, parent.transform);
-
-        if (SpawnableDict[name].UsePoolForObject)
-        {
-            f = SpawnableDict[name].PullObject();
-            f.transform.position = pos;
-            f.transform.rotation = rot;
-            f.transform.parent = parent.transform;
-        }
-        else
-        {
-            f = Instantiate(SpawnableDict[name].Object, pos, rot, parent.transform);
-        }
-
-        var d = f.GetComponent<SpawnData>();
-        if (d != null)
-        {
-            //Requires objects to have SpawnData.cs to allow for data sending
-            d.Data = dadalol;
-            d.Hidden_Data = hidden_dadalol;
-            d.IsReal = hidden_dadalol["IsReal"] == "true";
-            d.Start();
-        }
-
-        if (SendToEveryone)
-        {
-            // This code works, its just commented out by default because it requires Ocks Tools Multiplayer to be added
-            //used for syncing the spawn of a local gameobject over the network instead of being a networked object
-
-            // Object parenting should work with internet connections, provided the IDs of the parents are synced across gamestates
-
-
-            //ServerGamer.Instance.SpawnObjectServerRpc(name, pos, rot, ServerGamer.Instance.ClientID, Converter.DictionaryToString(dadalol), Converter.DictionaryToString(hidden_dadalol));
-        }
-        return f;
-    }
-    public void SpawnPoolObject(Pool pp)
-    {
-        var e = Instantiate(pp.Object, transform.position, Quaternion.identity, transform);
-        e.SetActive(false);
-        pp.PoolLol.Enqueue(e);
-    }
-
-    public void ReturnObject(GameObject sex, string pool)
-    {
-        SpawnableDict[pool].ReturnObject(sex);
-    }
-    public GameObject QuickSpawnObject(string name)
-    {
-        if (SpawnableDict[name].UsePoolForObject)
-        {
-            return SpawnableDict[name].PullObject();
-        }
-        else
-        {
-            return Instantiate(SpawnableDict[name].Object);
-        }
+        Object = a;
+        ID = id;
     }
 }
 
@@ -132,7 +47,7 @@ public class Pool
 {
     public string Name = "";
     public GameObject Object;
-    public int PoolSize = 0;
+    /*public int PoolSize = 0;
     public bool UsePoolForObject = true;
     [HideInInspector]
     public Queue<GameObject> PoolLol = new Queue<GameObject>();
@@ -148,5 +63,5 @@ public class Pool
     {
         ret.SetActive(false);
         PoolLol.Enqueue(ret);
-    }
+    }*/
 }

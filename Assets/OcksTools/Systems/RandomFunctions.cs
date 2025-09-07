@@ -325,7 +325,7 @@ public class RandomFunctions : MonoBehaviour
                     }
                     return CompareState.Invalid;
                 }
-                catch(Exception a)
+                catch
                 {
                     if (i == p.Count) return CompareState.Lesser;
                     if (i == p2.Count) return CompareState.Greater;
