@@ -32,11 +32,15 @@ public class SpawnSystem : MonoBehaviour
     }
     public static GameObject Spawn(SpawnData sp)
     {
-        var a = BasicSpawn(sp.nerd, sp.pos, sp.rot, sp.parent);
-        sp.GameObject = a;
+        GameObject a = null;
+        if (sp.dospawn)
+        {
+            a = BasicSpawn(sp.nerd, sp.pos, sp.rot, sp.parent);
+            sp.GameObject = a;
+            Tags.AddObjectToTag(a, sp.ID, "Exist");
+        }
 
         Tags.AddObjectToTag(sp, sp.ID, "Spawns");
-        Tags.AddObjectToTag(a, sp.ID, "Exist");
 
         if (sp.share && SpawnShareMethod != null)
         {
@@ -66,7 +70,8 @@ public class SpawnData
     public Quaternion rot;
     public Transform parent;
     public bool share;
-    public Dictionary<string, string> data;
+    public bool dospawn = true;
+    public Dictionary<string, string> data = new Dictionary<string, string>();
     public SpawnData(string nerd)
     {
         this.nerd = nerd;
@@ -98,6 +103,11 @@ public class SpawnData
         share = true; 
         return this;
     }
+    public SpawnData DontSpawn()
+    {
+        dospawn = false; 
+        return this;
+    }
     public SpawnData Data(Dictionary<string,string> d)
     {
         this.data = d;
@@ -111,7 +121,7 @@ public class SpawnData
         da.Add("ID", ID);
         da.Add("pos", pos.ToString());
         da.Add("rot", rot.ToString());
-        //da.Add("par", Tags.GetIDOf(parent.gameObject)); //tbd
+        if(parent!=null) da.Add("par", Tags.GetIDOf(parent.gameObject));
         da.Add("dat", Converter.EscapedDictionaryToString(data));
 
         // deliberately not saving share
@@ -126,6 +136,10 @@ public class SpawnData
         pos = Converter.StringToVector3(da["pos"]);
         rot = Converter.StringToQuaternion(da["rot"]);
         data = Converter.EscapedStringToDictionary(da["dat"]);
+        if (da.ContainsKey("par"))
+        {
+            parent = Tags.GetFromTag<GameObject>("Exist", da["par"]).transform;
+        }
     }
 
 }
