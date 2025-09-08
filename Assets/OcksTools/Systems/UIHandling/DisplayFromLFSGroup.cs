@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class LangSetText : MonoBehaviour
+public class DisplayFromLFSGroup : MonoBehaviour
 {
     public bool DoOnStart = false;
     public bool DoOnEnable = true;

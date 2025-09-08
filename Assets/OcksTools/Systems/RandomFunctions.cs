@@ -401,6 +401,10 @@ public class RandomFunctions : MonoBehaviour
     {
         return ((r % max) + max) % max;
     }
+    public static float Mod(float r, float max)
+    {
+        return ((r % max) + max) % max;
+    }
     public static Quaternion PointAtPoint(Vector3 start_location, Vector3 location)
     {
         Quaternion _lookRotation =

@@ -1,6 +1,8 @@
 
 ------------
    v1.1.2
+- New Path Tool
+  - Allows for the easy creation of linear paths. Only hard corners are supported right now, but that might change later
 - Complete Spawn System Overhaul!
   - Completely remade it from the ground up, now much more streamlined
   - Multiplayer functionality is now handled so much better, no need to uncomment code to get it working now

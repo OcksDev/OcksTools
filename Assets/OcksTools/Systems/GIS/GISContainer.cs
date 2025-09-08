@@ -377,6 +377,25 @@ public class GISContainer : MonoBehaviour
         }
         slots.Clear();
     }
+    public void Clear()
+    {
+        foreach( var ns in slots)
+        {
+            ns.Held_Item = new GISItem();
+            ns.OnInteract();
+        }
+    }
+    public void Clear(GISItem diedie, bool usebase = true)
+    {
+        foreach( var ns in slots)
+        {
+            if(ns.Held_Item.Compare(diedie, usebase))
+            {
+                ns.Held_Item = new GISItem();
+                ns.OnInteract();
+            }
+        }
+    }
     public void GenerateSlots(int amount)
     {
         for(int i = 0; i < amount; i++)
