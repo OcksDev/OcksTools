@@ -37,10 +37,10 @@ public class SpawnSystem : MonoBehaviour
         {
             a = BasicSpawn(sp.nerd, sp.pos, sp.rot, sp.parent);
             sp.GameObject = a;
-            Tags.AddObjectToTag(a, sp.ID, "Exist");
+            Tags.AddObjectToTag(a, sp.IDValue, "Exist");
         }
 
-        Tags.AddObjectToTag(sp, sp.ID, "Spawns");
+        Tags.AddObjectToTag(sp, sp.IDValue, "Spawns");
 
         if (sp.share && SpawnShareMethod != null)
         {
@@ -65,7 +65,7 @@ public class SpawnData
 {
     public string nerd;
     public GameObject GameObject;
-    public string ID;
+    public string IDValue;
     public Vector3 pos;
     public Quaternion rot;
     public Transform parent;
@@ -75,7 +75,7 @@ public class SpawnData
     public SpawnData(string nerd)
     {
         this.nerd = nerd;
-        ID = Tags.GenerateID();
+        IDValue = Tags.GenerateID();
     }
     public SpawnData(string nerd,int i)
     {
@@ -113,12 +113,17 @@ public class SpawnData
         this.data = d;
         return this;
     }
+    public SpawnData ID(string i)
+    {
+        this.IDValue = i;
+        return this;
+    }
 
 
     public string ConvertToString()
     {
         Dictionary<string,string> da = new Dictionary<string,string>();
-        da.Add("ID", ID);
+        da.Add("ID", IDValue);
         da.Add("pos", pos.ToString());
         da.Add("rot", rot.ToString());
         if(parent!=null) da.Add("par", Tags.GetIDOf(parent.gameObject));
@@ -132,7 +137,7 @@ public class SpawnData
     public void FromString(string a)
     {
         Dictionary<string,string> da = Converter.EscapedStringToDictionary(a);
-        ID = da["ID"];
+        IDValue = da["ID"];
         pos = Converter.StringToVector3(da["pos"]);
         rot = Converter.StringToQuaternion(da["rot"]);
         data = Converter.EscapedStringToDictionary(da["dat"]);

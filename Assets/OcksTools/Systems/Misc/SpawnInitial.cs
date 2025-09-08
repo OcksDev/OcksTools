@@ -6,12 +6,14 @@ using static Unity.Burst.Intrinsics.X86;
 
 public class SpawnInitial : MonoBehaviour
 {
+    public string UniqueName = "Gamer";
     public void Awake()
     {
         SpawnSystem.Spawn(
             new SpawnData("pre").DontSpawn()
             .Position(transform.position)
             .Rotation(transform.rotation)
+            .ID(UniqueName)
             );
     }
 }
