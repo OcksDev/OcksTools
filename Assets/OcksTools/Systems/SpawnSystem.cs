@@ -37,9 +37,12 @@ public class SpawnSystem : MonoBehaviour
         {
             a = BasicSpawn(sp.nerd, sp.pos, sp.rot, sp.parent);
             sp.GameObject = a;
-            Tags.AddObjectToTag(a, sp.IDValue, "Exist");
         }
-
+        else
+        {
+            a = sp.GameObject;
+        }
+        Tags.AddObjectToTag(a, sp.IDValue, "Exist");
         Tags.AddObjectToTag(sp, sp.IDValue, "Spawns");
 
         if (sp.share && SpawnShareMethod != null)
@@ -98,14 +101,20 @@ public class SpawnData
         this.parent = p;
         return this;
     }
+    public SpawnData Parent(string id)
+    {
+        this.parent = Tags.GetFromTag<GameObject>("Exist", id).transform;
+        return this;
+    }
     public SpawnData MultiplayerShare()
     {
         share = true; 
         return this;
     }
-    public SpawnData DontSpawn()
+    public SpawnData DontSpawn(GameObject a)
     {
-        dospawn = false; 
+        dospawn = false;
+        GameObject = a;
         return this;
     }
     public SpawnData Data(Dictionary<string,string> d)

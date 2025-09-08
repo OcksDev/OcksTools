@@ -249,7 +249,7 @@ public class ConsoleLol : MonoBehaviour
             ConsoleObjectRef.input.text = "";
             s = inputgaming;
             if (s != "" && (prev_commands.Count == 0 || prev_commands[prev_commands.Count - 1] != s)) prev_commands.Add(s);
-            if(prev_commands.Count > 25)
+            if(prev_commands.Count > 50)
             {
                 prev_commands.RemoveAt(0);
             }

@@ -19,7 +19,7 @@ public class ConsoleCommands : MonoBehaviour
     }
     public static void Test_circle()
     {
-        SpawnSystem.Spawn(new SpawnData("Circle").Parent(ConsoleLol.Instance.transform));
+        SpawnSystem.Spawn(new SpawnData("Circle").Parent("Holder"));
     }
     public static void Test_chat()
     {
