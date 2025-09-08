@@ -19,7 +19,10 @@ public class ConsoleCommands : MonoBehaviour
     }
     public static void Test_circle()
     {
-        SpawnSystem.Spawn(new SpawnData("Circle").Parent("Holder"));
+        SpawnSystem.Spawn(new SpawnData("Circle")
+            .Parent("Holder")
+            .Data(new Dictionary<string, string>() { {"TestOB", "Circle" }})
+            );
     }
     public static void Test_chat()
     {
@@ -171,9 +174,16 @@ public class ConsoleCommands : MonoBehaviour
     }
     public static void Test_destroy()
     {
-        while (Tags.AllTags["Exist"].Count > 0)
+        var a = new Dictionary<string,object>(Tags.AllTags["Exist"]);
+        foreach(var b in a)
         {
-            SpawnSystem.Kill((GameObject)Tags.AllTags["Exist"].ElementAt(0).Value);
+            var penis = (GameObject)b.Value;
+            var d = SpawnSystem.GetData(penis).data;
+
+            if (d.ContainsKey("TestOB"))
+            {
+                SpawnSystem.Kill(penis);
+            }
         }
     }
     public static void Test_events()

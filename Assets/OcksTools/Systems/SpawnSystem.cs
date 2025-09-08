@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static Unity.Burst.Intrinsics.X86;
 
 public class SpawnSystem : MonoBehaviour
 {
@@ -72,6 +71,7 @@ public class SpawnData
     public Vector3 pos;
     public Quaternion rot;
     public Transform parent;
+    public string parentrefid = "";
     public bool share;
     public bool dospawn = true;
     public Dictionary<string, string> data = new Dictionary<string, string>();
@@ -106,6 +106,12 @@ public class SpawnData
         this.parent = Tags.GetFromTag<GameObject>("Exist", id).transform;
         return this;
     }
+    public SpawnData ParentFromRef(string refd)
+    {
+        this.parent = Tags.refs[refd].transform;
+        parentrefid = refd;
+        return this;
+    }
     public SpawnData MultiplayerShare()
     {
         share = true; 
@@ -135,7 +141,18 @@ public class SpawnData
         da.Add("ID", IDValue);
         da.Add("pos", pos.ToString());
         da.Add("rot", rot.ToString());
-        if(parent!=null) da.Add("par", Tags.GetIDOf(parent.gameObject));
+        if (parent != null)
+        {
+            if (parentrefid == "")
+            {
+                da.Add("par", Tags.GetIDOf(parent.gameObject));
+            }
+            else
+            {
+                da.Add("par", "");
+                da.Add("par_id", parentrefid);
+            }
+        }
         da.Add("dat", Converter.EscapedDictionaryToString(data));
 
         // deliberately not saving share
@@ -152,7 +169,15 @@ public class SpawnData
         data = Converter.EscapedStringToDictionary(da["dat"]);
         if (da.ContainsKey("par"))
         {
-            parent = Tags.GetFromTag<GameObject>("Exist", da["par"]).transform;
+
+            if (!da.ContainsKey("par_id"))
+            {
+                parent = Tags.GetFromTag<GameObject>("Exist", da["par"]).transform;
+            }
+            else
+            {
+                parent = Tags.refs[da["par_id"]].transform;
+            }
         }
     }
 
