@@ -34,6 +34,7 @@ public class SpawnSystem : MonoBehaviour
     {
         var a = BasicSpawn(sp.nerd, sp.pos, sp.rot, sp.parent);
         sp.GameObject = a;
+
         Tags.AddObjectToTag(sp, sp.ID, "Spawns");
         Tags.AddObjectToTag(a, sp.ID, "Exist");
 
@@ -44,7 +45,11 @@ public class SpawnSystem : MonoBehaviour
 
         return a;
     }
-
+    public static void Kill(GameObject nerd)
+    {
+        Tags.ClearAllOf(Tags.GetIDOf(nerd));
+        Destroy(nerd);
+    }
     public static SpawnData GetData(GameObject nerd)
     {
         return Tags.GetFromTag<SpawnData>("Spawns", Tags.GetIDOf(nerd));
@@ -52,7 +57,7 @@ public class SpawnSystem : MonoBehaviour
 }
 
 
-public class SpawnData : UnityEngine.Object
+public class SpawnData
 {
     public string nerd;
     public GameObject GameObject;

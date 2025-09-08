@@ -12,7 +12,7 @@ public class ConsoleCommands : MonoBehaviour
 
         Console.Log((
 
-            "test result: " + Tags.AllTags["Exist"]["penis"].name
+            "test result: " + ((GameObject)Tags.AllTags["Exist"]["penis"]).name
 
         ), "#bdbdbdff");
         Tags.ClearAllOf("penis");
@@ -171,8 +171,10 @@ public class ConsoleCommands : MonoBehaviour
     }
     public static void Test_destroy()
     {
-        foreach (var d in Tags.AllTags["Exist"])
-            Destroy(d.Value);
+        while (Tags.AllTags["Exist"].Count > 0)
+        {
+            SpawnSystem.Kill((GameObject)Tags.AllTags["Exist"].ElementAt(0).Value);
+        }
     }
     public static void Test_events()
     {

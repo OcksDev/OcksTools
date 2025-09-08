@@ -8,13 +8,13 @@ using UnityEngine;
 [System.Serializable]
 public class Tags : MonoBehaviour
 {
-    public static Dictionary<string, Dictionary<string, UnityEngine.Object>> AllTags = new Dictionary<string, Dictionary<string, UnityEngine.Object>>()
+    public static Dictionary<string, Dictionary<string, object>> AllTags = new Dictionary<string, Dictionary<string, object>>()
     {
-        {"Exist", new Dictionary<string, UnityEngine.Object>()}
+        {"Exist", new Dictionary<string, object>()}
     };
-    public static Dictionary<string, Dictionary<UnityEngine.Object, string>> AllTagsReverse = new Dictionary<string, Dictionary<UnityEngine.Object, string>>()
+    public static Dictionary<string, Dictionary<object, string>> AllTagsReverse = new Dictionary<string, Dictionary<object, string>>()
     {
-        {"Exist", new Dictionary<UnityEngine.Object, string>()}
+        {"Exist", new Dictionary<object, string>()}
     };
     [HideInInspector]
     [DoNotSerialize]
@@ -40,11 +40,11 @@ public class Tags : MonoBehaviour
 
     public static void CreateTag(string tag)
     {
-        AllTags.Add(tag, new Dictionary<string, UnityEngine.Object>());
-        AllTagsReverse.Add(tag, new Dictionary<UnityEngine.Object, string>());
+        AllTags.Add(tag, new Dictionary<string, object>());
+        AllTagsReverse.Add(tag, new Dictionary<object, string>());
     }
 
-    public static bool ObjectHasTag(UnityEngine.Object objecty, string tag)
+    public static bool ObjectHasTag(object objecty, string tag)
     {
         return AllTagsReverse[tag].ContainsKey(objecty);
     }
@@ -53,16 +53,16 @@ public class Tags : MonoBehaviour
     {
         return AllTags[tag].ContainsKey(objecty);
     }
-    public static string GetIDOf(UnityEngine.Object a, string tag = "Exist")
+    public static string GetIDOf(object a, string tag = "Exist")
     {
         var aa = AllTagsReverse[tag];
         return aa.ContainsKey(a) ? aa[a] : "";
     }
-    public static T GetFromTag<T>(string tag, string name) where T : UnityEngine.Object
+    public static T GetFromTag<T>(string tag, string name)
     {
         return (T)AllTags[tag][name];
     }
-    public static void AddObjectToTag(UnityEngine.Object a, string namee, string tag)
+    public static void AddObjectToTag(object a, string namee, string tag)
     {
         if(!AllTags.ContainsKey(tag) || !AllTagsReverse.ContainsKey(tag)) CreateTag(tag);
         AllTags[tag].Add(namee, a);

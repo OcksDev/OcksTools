@@ -3,8 +3,11 @@
    v1.1.2
 - Complete Spawn System Overhaul!
   - Completely remade it from the ground up, now much more streamlined
+  - Added support for new features like Panning audio, Distance control, Looping, and more
 - Sound System Improvements!
   - Overhauled how sounds are given and parsed, much more modular and expandable
+- Tags "Improvements"
+  - Switched from UnityEngine.Object to System.Object, because APPARENTLY UnityEngine.Object is super fucking broken
 - Misc Changes
   - new Converter, StringToQuaternion()
   - Some more reorganizing 

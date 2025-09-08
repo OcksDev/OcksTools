@@ -75,7 +75,7 @@ public class SoundSystem : MonoBehaviour
         }
         SoundMod.Invoke();
         sound.volume *= pvolume;
-        sound.psource = FindOpenSource(sound, findexisting);
+        if(sound.pos == null) sound.psource = FindOpenSource(sound, findexisting);
     }
 
     public AudioSource FindOpenSource(OXSound sound, bool findexisting = false)
@@ -106,12 +106,15 @@ public class SoundSystem : MonoBehaviour
     }
 
 
-    public void PlaySound(OXSound sound)
+    public OXSound PlaySound(OXSound sound)
     {
         ModSound(sound,sound.clipping);
         var volume = 1f;
         var p = sound.psource;
         p.pitch = sound.pitch;
+        p.panStereo = sound.pan;
+        p.bypassEffects = sound.bypass;
+        p.loop = sound.loop;
         if (sound.rand_min != null)
         {
             p.pitch *= Random.Range(sound.rand_min.Value, sound.rand_max.Value);
@@ -127,11 +130,11 @@ public class SoundSystem : MonoBehaviour
         {
             p.Play();
         }
+        return sound;
     }
 
     /*public void PlaySound(string sound, Vector3 pos, bool randompitch = false, float volume = 1f, float pitchmod = 1f)
     {
-        //for 2d games MAKE SURE THE [z] CORDINATE IS SET TO THE SAME AS THE CAMERA
         ModSound(sound);
         var p = psource;
         p.pitch = 1f;
@@ -161,7 +164,11 @@ public class OXSound
     public float? rand_min;
     public float? rand_max;
     public float volume = 1;
+    public float pan = 0;
     public bool clipping = false;
+    public bool bypass = false;
+    public bool loop = false;
+    public float maxd = 0;
     public Vector3? pos;
     public OXSound(string name, float volume)
     {
@@ -173,6 +180,11 @@ public class OXSound
         pitch = v;
         return this;
     }
+    public OXSound Pan(float v)
+    {
+        pan = v;
+        return this;
+    }
     public OXSound RandomPitch(float min,float max)
     {
         rand_min = min;
@@ -181,12 +193,28 @@ public class OXSound
     }
     public OXSound Position(Vector3 v)
     {
+        //for 2d games MAKE SURE THE [z] CORDINATE IS SET TO THE SAME AS THE CAMERA
         pos = v;
         return this;
     }
     public OXSound Clipping()
     {
         clipping = true;
+        return this;
+    }
+    public OXSound BypassEffects()
+    {
+        bypass = true;
+        return this;
+    }
+    public OXSound Loop()
+    {
+        loop = true;
+        return this;
+    }
+    public OXSound MaxDistance(float x)
+    {
+        maxd = x;
         return this;
     }
 
