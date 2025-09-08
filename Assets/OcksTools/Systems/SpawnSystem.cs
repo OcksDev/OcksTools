@@ -69,7 +69,7 @@ public class SpawnData
     public GameObject GameObject;
     public string IDValue;
     public Vector3 pos;
-    public Quaternion rot;
+    public Quaternion rot = Quaternion.identity;
     public Transform parent;
     public string parentrefid = "";
     public bool share;
@@ -138,9 +138,10 @@ public class SpawnData
     public string ConvertToString()
     {
         Dictionary<string,string> da = new Dictionary<string,string>();
+        da.Add("nerd", nerd);
         da.Add("ID", IDValue);
-        da.Add("pos", pos.ToString());
-        da.Add("rot", rot.ToString());
+        if(pos != default)da.Add("pos", pos.ToString());
+        if (rot != Quaternion.identity) da.Add("rot", rot.ToString());
         if (parent != null)
         {
             if (parentrefid == "")
@@ -153,20 +154,21 @@ public class SpawnData
                 da.Add("par_id", parentrefid);
             }
         }
-        da.Add("dat", Converter.EscapedDictionaryToString(data));
+        if(data.Count > 0)da.Add("dat", Converter.EscapedDictionaryToString(data, "!", "?"));
 
         // deliberately not saving share
 
-        return Converter.EscapedDictionaryToString(da);
+        return Converter.EscapedDictionaryToString(da, ":", ";");
     }
 
     public void FromString(string a)
     {
-        Dictionary<string,string> da = Converter.EscapedStringToDictionary(a);
+        Dictionary<string,string> da = Converter.EscapedStringToDictionary(a, ":", ";");
+        nerd = da["nerd"];
         IDValue = da["ID"];
-        pos = Converter.StringToVector3(da["pos"]);
-        rot = Converter.StringToQuaternion(da["rot"]);
-        data = Converter.EscapedStringToDictionary(da["dat"]);
+        if (da.ContainsKey("pos")) pos = Converter.StringToVector3(da["pos"]);
+        if (da.ContainsKey("rot")) rot = Converter.StringToQuaternion(da["rot"]);
+        if (da.ContainsKey("dat")) data = Converter.EscapedStringToDictionary(da["dat"], "!", "?");
         if (da.ContainsKey("par"))
         {
 

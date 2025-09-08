@@ -17,12 +17,22 @@ public class ConsoleCommands : MonoBehaviour
         ), "#bdbdbdff");
         Tags.ClearAllOf("penis");
     }
-    public static void Test_circle()
+    public static void Test_circle(OXCommandData r)
     {
-        SpawnSystem.Spawn(new SpawnData("Circle")
+        var a = SpawnSystem.Spawn(new SpawnData("Circle")
             .Parent("Holder")
             .Data(new Dictionary<string, string>() { {"TestOB", "Circle" }})
+            .MultiplayerShare()
             );
+        if (r.com[2] == "p")
+        {
+            Console.Log(SpawnSystem.GetData(a).ConvertToString());
+        }
+    }
+    public static void Test_read(OXCommandData r)
+    {
+        Console.Log(r.com_caps[2]);
+        Console.Log(Tags.GetFromTag<GameObject>("Exist", r.com_caps[2]).ToString());
     }
     public static void Test_chat()
     {

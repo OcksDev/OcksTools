@@ -205,6 +205,8 @@ public class ConsoleLol : MonoBehaviour
             .Append(new OXCommand("roman").Action(ConsoleCommands.Test_roman))
             .Append(new OXCommand("refs").Action(ConsoleCommands.Test_refs))
             .Append(new OXCommand("destroy").Action(ConsoleCommands.Test_destroy))
+            .Append(new OXCommand("read")
+                .Append(new OXCommand(OXCommand.ExpectedInputType.String).Action(ConsoleCommands.Test_read)))
             .Append(new OXCommand("events").Action(ConsoleCommands.Test_events)));
         Add(new OXCommand("settimescale", "Console", "Message_HelpTime")
             .Append(new OXCommand(OXCommand.ExpectedInputType.Double).Action(ConsoleCommands.settimescale)));
