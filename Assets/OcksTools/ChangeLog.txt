@@ -13,7 +13,7 @@
   - Slightly tweaked interfacing functions
   - Switched from UnityEngine.Object to System.Object, because APPARENTLY UnityEngine.Object is super fucking broken
 - Misc Changes
-  - new Converter, StringToQuaternion()
+  - New converter, StringToQuaternion()
   - Some organizing 
 ------------
 
