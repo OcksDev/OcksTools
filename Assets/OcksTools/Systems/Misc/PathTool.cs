@@ -7,39 +7,58 @@ public class PathTool : MonoBehaviour
 {
     public bool AutoEndConnect = true;
     public List<PT_Point> Positions = new List<PT_Point>();
+    public bool DrawGizmo = true;
     private void Awake()
+    {
+        DrawGizmo = false;
+        CalcFullPath();
+    }
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        if (!DrawGizmo) return;
+        CalcFullPath();
+        for(int i = 0; i < Pather.Positions.Count-1; i++)
+        {
+            Gizmos.color = new Color32(125,255,255,125);
+            Gizmos.DrawLine(Pather.Positions[i], Pather.Positions[i+1]);
+        }
+    }
+#endif
+    public void CalcFullPath()
     {
         Pather = new OXPath();
         Pather.AutoEndConnect = false;
         Pather.Positions.Clear();
+        var pos_working = new List<PT_Point>(Positions);
         if (AutoEndConnect)
         {
-            Positions.Add(Positions[0]);
+            pos_working.Add(Positions[0]);
         }
-        for(int i = 0; i < Positions.Count; i++)
+        for (int i = 0; i < pos_working.Count; i++)
         {
-            var a = Positions[i];
+            var a = pos_working[i];
             if (a.PointType == PT_Point.PT_PointType.Bezier)
             {
                 List<Vector3> points = new List<Vector3>();
-                points.Add(Positions[i - 1].Location.position);
-                int bz = Positions[i].BezierSegments;
-                for (int j = i; j < Positions.Count; j++)
+                points.Add(pos_working[i - 1].Location.position);
+                int bz = pos_working[i].BezierSegments;
+                for (int j = i; j < pos_working.Count; j++)
                 {
-                    if (Positions[j].PointType == PT_Point.PT_PointType.Bezier)
+                    if (pos_working[j].PointType == PT_Point.PT_PointType.Bezier)
                     {
-                        points.Add(Positions[j].Location.position);
+                        points.Add(pos_working[j].Location.position);
                         i++;
                     }
                     else
                     {
-                        points.Add(Positions[j].Location.position);
+                        points.Add(pos_working[j].Location.position);
                         break;
                     }
                 }
-                points = new OXBezier(points,bz).CalculateCurve();
+                points = new OXBezier(points, bz).CalculateCurve();
                 points.RemoveAt(0);
-                foreach(var b in points)
+                foreach (var b in points)
                 {
                     Pather.Positions.Add(b);
                 }
