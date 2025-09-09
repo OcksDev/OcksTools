@@ -11,6 +11,7 @@ public class GISDisplay : MonoBehaviour
     public TextMeshProUGUI amnt;
     public bool  IsPhysical = false;
     public bool UpdateOnFixedUpdate = true;
+    public bool StoreOldAndCompare = true;
     private bool hasfoundcomponents = false;
     private SpriteRenderer[] spriteRenderer;
     private Image[] imageRenderer;
@@ -18,10 +19,19 @@ public class GISDisplay : MonoBehaviour
     {
         GetStuff();
     }
-
-    public void UpdateDisplay()
+    GISItem olditem = null;
+    public void UpdateDisplay(bool force = false)
     {
         if (item == null) item = new GISItem();
+
+        if (StoreOldAndCompare && !force)
+        {
+            if (olditem == item) return;
+            olditem = item;
+        }
+            
+
+
         if (!hasfoundcomponents) GetStuff();
         var data = new GISDisplayData(item);
         amnt.text = data.Count;

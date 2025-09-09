@@ -210,48 +210,21 @@ public class GISItem
         Data["Index"] = Name.ToString();
         Data["Count"] = Amount.ToString();
 
+        Dictionary<string, string> bb = RandomFunctions.MergeDictionary(def, Data);
 
-
-        Dictionary<string, string> bb = new Dictionary<string, string>();
-        foreach (var dat in Data)
-        {
-            if (!def.ContainsKey(dat.Key) || dat.Value != def[dat.Key])
-            {
-                bb.Add(dat.Key, dat.Value);
-            }
-        }
-        if (bb.ContainsKey("Count") && bb["Count"] == "1") bb.Remove("Count");
-
-        e = Converter.DictionaryToString(bb, "~|~", "~o~");
+        if (bb["Index"]=="Empty") bb = new Dictionary<string, string>(); //no need to store this, saves a large amount of space
+        if (bb.ContainsKey("Count") && bb["Count"] == "1") bb.Remove("Count"); //no need to store this, saves a minimal amount of space
+        e = Converter.EscapedDictionaryToString(bb, "~|~", "~o~");
         return e;
     }
     public void StringToItem(string e)
     {
         setdefaultvals();
 
-        var wanker = Converter.StringToDictionary(e, "~|~", "~o~");
-        foreach (var ae in wanker)
-        {
-            if (Data.ContainsKey(ae.Key))
-            {
-                Data[ae.Key] = ae.Value;
-            }
-            else
-            {
-                Data.Add(ae.Key, ae.Value);
-            }
-        }
+        Data = RandomFunctions.MergeDictionary(Data, Converter.EscapedStringToDictionary(e, "~|~", "~o~"));
 
         Name = Data["Index"];
-        if (wanker.ContainsKey("Count"))
-        {
-            Amount = int.Parse(Data["Count"]);
-        }
-        else
-        {
-            Amount = Name != "Empty" ? 1 : 0;
-        }
-
+        Amount = int.Parse(Data["Count"]);
 
     }
 

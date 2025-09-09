@@ -26,13 +26,15 @@ public class OXAnimator : MonoBehaviour
             animationEndEvent.time = clip.length;
             animationEndEvent.functionName = "AnimationCompleteHandler";
             animationEndEvent.stringParameter = clip.name;
-
             clip.AddEvent(animationStartEvent);
             clip.AddEvent(animationEndEvent);
         }
     }
 
-
+    public void SetSpeed(float z)
+    {
+        animator.speed = z;
+    }
 
     public void AnimationStartHandler(string name)
     {
@@ -42,7 +44,7 @@ public class OXAnimator : MonoBehaviour
     {
         OnAnimationComplete?.Invoke(name);
     }
-    public void PlayAnim(OXAnimRuleset pp = null)
+    public void PlayAnim(OXAnimRuleset pp)
     {
         if (curanim.name == pp.name) return;
         if (pp.priority < curanim.priority) return;
@@ -52,10 +54,12 @@ public class OXAnimator : MonoBehaviour
         if(pp.crosstime > 0)
         {
             animator.CrossFade(pp.name, pp.crosstime);
+            SetSpeed(pp.speed);
         }
         else
         {
             animator.Play(pp.name);
+            SetSpeed(pp.speed);
         }
         curanim = pp;
         nextanim = pp.PlayNextAnim;
@@ -75,7 +79,24 @@ public class OXAnimRuleset
         this.crosstime = crosstime;
     }
     //optional parameters
+    public float speed = 1;
     public int priority = 0;
-    public bool canbeoverwritten = false;
-    public OXAnimRuleset PlayNextAnim;
+    public bool canbeoverwritten = true;
+    public OXAnimRuleset PlayNextAnim; // what does this do lol
+
+    public OXAnimRuleset Priority(int z)
+    {
+        priority = z;
+        return this;
+    }
+    public OXAnimRuleset Speed(float spd)
+    {
+        speed = spd;
+        return this;
+    }
+    public OXAnimRuleset DoNotOverride()
+    {
+        canbeoverwritten = false;
+        return this;
+    }
 }
