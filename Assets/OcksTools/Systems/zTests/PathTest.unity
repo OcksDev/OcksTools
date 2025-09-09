@@ -148,7 +148,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 697820349}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.08, y: 2.4, z: 0.018223464}
+  m_LocalPosition: {x: -4.66, y: 1.93, z: 0.018223464}
   m_LocalScale: {x: 0.23, y: 0.23, z: 0.23}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -316,12 +316,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 819215685}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.52, y: 3.81, z: 0.018223464}
+  m_LocalPosition: {x: 1.9500003, y: 2.5499997, z: 0.018223464}
   m_LocalScale: {x: 0.23, y: 0.23, z: 0.23}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 2111457324}
-  m_RootOrder: 5
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &819215687
 SpriteRenderer:
@@ -405,7 +405,7 @@ Transform:
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 2111457324}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &913208609
 SpriteRenderer:
@@ -484,12 +484,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1119312116}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.59, y: -2.11, z: 0.018223464}
+  m_LocalPosition: {x: -2.16, y: -3.44, z: 0.018223464}
   m_LocalScale: {x: 0.23, y: 0.23, z: 0.23}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 2111457324}
-  m_RootOrder: 4
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &1119312118
 SpriteRenderer:
@@ -568,12 +568,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1225961703}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.32, y: 1.07, z: 0.018223464}
+  m_LocalPosition: {x: 6.72, y: 0.12, z: 0.018223464}
   m_LocalScale: {x: 0.23, y: 0.23, z: 0.23}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 2111457324}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &1225961705
 SpriteRenderer:
@@ -652,7 +652,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1369400962}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.47, y: 3.42, z: 0.018223464}
+  m_LocalPosition: {x: -2.7699997, y: 5.52, z: 0.018223464}
   m_LocalScale: {x: 0.23, y: 0.23, z: 0.23}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -788,7 +788,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1528432283}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.82, y: 0.82, z: 0}
+  m_LocalPosition: {x: -0.3899997, y: -0.44000012, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -820,7 +820,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1713775340}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.492, y: 2.058, z: 0.018223464}
+  m_LocalPosition: {x: -0.71, y: -1.11, z: 0.018223464}
   m_LocalScale: {x: 0.23, y: 0.23, z: 0.23}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -904,7 +904,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2058991356}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.24, y: -0.36, z: 0.018223464}
+  m_LocalPosition: {x: -6.23, y: -0.94, z: 0.018223464}
   m_LocalScale: {x: 0.23, y: 0.23, z: 0.23}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -1009,14 +1009,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AutoEndConnect: 1
   Positions:
-  - {fileID: 697820350}
-  - {fileID: 1369400963}
-  - {fileID: 1713775341}
-  - {fileID: 1225961704}
-  - {fileID: 1119312117}
-  - {fileID: 819215686}
-  - {fileID: 913208608}
-  - {fileID: 2058991357}
+  - Location: {fileID: 697820350}
+    PointType: 0
+    BezierSegments: 10
+  - Location: {fileID: 1369400963}
+    PointType: 1
+    BezierSegments: 50
+  - Location: {fileID: 1713775341}
+    PointType: 1
+    BezierSegments: 10
+  - Location: {fileID: 819215686}
+    PointType: 0
+    BezierSegments: -1
+  - Location: {fileID: 1225961704}
+    PointType: 1
+    BezierSegments: 25
+  - Location: {fileID: 913208608}
+    PointType: 0
+    BezierSegments: 10
+  - Location: {fileID: 1119312117}
+    PointType: 0
+    BezierSegments: 10
+  - Location: {fileID: 2058991357}
+    PointType: 1
+    BezierSegments: 10
 --- !u!4 &2111457324
 Transform:
   m_ObjectHideFlags: 0
@@ -1032,10 +1048,10 @@ Transform:
   - {fileID: 697820350}
   - {fileID: 1369400963}
   - {fileID: 1713775341}
-  - {fileID: 1225961704}
-  - {fileID: 1119312117}
   - {fileID: 819215686}
+  - {fileID: 1225961704}
   - {fileID: 913208608}
+  - {fileID: 1119312117}
   - {fileID: 2058991357}
   m_Father: {fileID: 0}
   m_RootOrder: 1
