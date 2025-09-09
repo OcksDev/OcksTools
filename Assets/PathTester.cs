@@ -14,7 +14,7 @@ public class PathTester : MonoBehaviour
     private void Update()
     {
         z += Time.deltaTime * 0.35f;
-        gm.transform.position = tool.GetPos_Percent(z);
+        gm.transform.position = tool.Pather.GetPos_Percent(z);
     }
 
 }
