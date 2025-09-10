@@ -521,6 +521,14 @@ public class Console
     {
         Log(text, "#bdbdbdff");
     }
+    public static void Log(object text)
+    {
+        Log(text.ToString(), "#bdbdbdff");
+    }
+    public static void Log(object text, string hex = "\"white\"")
+    {
+        Log(text.ToString(), hex);
+    }
     public static void Log(string text, string hex = "\"white\"")
     {
         if(ConsoleLol.Instance != null)
@@ -534,6 +542,10 @@ public class Console
         }
     }
     public static void LogError(string text = "Logged")
+    {
+        Log(text, "#ff0000ff");
+    }
+    public static void LogError(object text)
     {
         Log(text, "#ff0000ff");
     }
