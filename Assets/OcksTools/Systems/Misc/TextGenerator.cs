@@ -23,5 +23,5 @@ public class GenProfile
     {
         Max = m; return this;
     }
-}
+} 
 
