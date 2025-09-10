@@ -5,9 +5,17 @@ using UnityEngine;
 
 public class OXGenerator
 {
-    public string Pull()
+    public virtual string Pull(GenProfile pp)
     {
-        reddd
+        return "";
+    }
+}
+
+public class OXGenerator_Username : OXGenerator
+{
+    public override string Pull(GenProfile pp)
+    {
+        return "";
     }
 }
 

@@ -11,6 +11,14 @@ public class TestGamin : MonoBehaviour
         Debug.Log("RAHHH");
         Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new GISItem()));
     }
+    [Button]
+    public void RandomVal()
+    {
+        var d = new WeightedAverage();
+        d.Add(0.75f, "75%");
+        d.Add(0.25f, "25%");
+        Debug.Log(WeightedAverageHandler.DrawFromWeights<string>(d));
+    }
 
     [HorizontalLine]
     public int zzzz = 1;
