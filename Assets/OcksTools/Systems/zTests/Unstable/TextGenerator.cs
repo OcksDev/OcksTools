@@ -132,7 +132,7 @@ public class OXGenerator_Username : OXGenerator
         a.Add(1f, 2); // noun noun
         a.Add(1f, 3); // desc noun
         a.Add(1f, 4); // noun desc
-        a.Add(1f, 5); // nounapend (draw from a list like [ito, ish, ily, ek, aito, er, ell, miz,um] and merge vowels) 
+        a.Add(1f, 5); // nounapend (draw from a list like [ito, ish, ily, ol, aito, er, ell, miz,um,arr] and merge vowels) 
         a.Add(1f, 6); // desc nounapend
         var dd = WeightedAverageHandler.DrawFromWeights<int>(a);
         switch (dd)
