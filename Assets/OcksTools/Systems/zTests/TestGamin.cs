@@ -15,8 +15,9 @@ public class TestGamin : MonoBehaviour
     public void RandomVal()
     {
         var d = new WeightedAverage();
-        d.Add(0.75f, "75%");
-        d.Add(0.25f, "25%");
+        d.Add(75f, "75%");
+        d.Add(25f, "25%");
+        d.Add(1f, "1%");
         Debug.Log(WeightedAverageHandler.DrawFromWeights<string>(d));
     }
 
