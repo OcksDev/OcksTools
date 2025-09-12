@@ -2,6 +2,7 @@
 </> <Name=Boner> <Speed=10,-,1> <TitleColor=150,0,0,255> <TextColor=150,0,0,255> <BgColor=75,0,0,255> <SoundOnType=A>
 </> <Animate=Text,FloatDown>Want to eat hair with me?
 Its ok if no
+<Text=*NestedAttribute>
 </> 
 </> <Speed=10, -, 0.5> <Name=Gamer> <SoundOnType=A>
 </> <Animate=Text,ShakeIn>No, I dont think I will. <Speed=15,1,-><br>You Repell Me

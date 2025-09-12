@@ -73,12 +73,13 @@ public class DialogLol : MonoBehaviour
         ResetDialog();
         pp = DialogBoxObject.GetComponent<DialogBoxL>();
         //lets you write <*=*Var> as shorthand to insert a variable into the dialog
-        SetVariable("", "Show");
+        SetVariable("", "Text");
         //some testing variables for the dialog system
         SetVariable("TestVar", "*VarInSideAVar");
         SetVariable("VarInSideAVar", "Name");
         SetVariable("Wank", "Wank");
         SetVariable("AttributeInsideVar", "<Name=Bone Eater>");
+        SetVariable("NestedAttribute", "<Animate=Text,Rainbow><Text=*VarInSideAVar>");
 
         if(GetUseLFS())
         {
@@ -265,7 +266,7 @@ public class DialogLol : MonoBehaviour
         switch (key)
         {
             case "br": //fallthrough case to make sure this works properly
-            case "Show":
+            case "Text":
                 // Used to display text inside dialog, pretty much always used in conjunction with dialog variables
                 succeeded = true;
                 break;
@@ -749,7 +750,7 @@ public class DialogLol : MonoBehaviour
                         {
                             string mid = "";
                             string voop = VariableParse(stuff[0]);
-                            if (voop == "Show")
+                            if (voop == "Text")
                             {
                                 mid = VariableParse(stuff[1]);
                             }
