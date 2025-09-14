@@ -27,6 +27,7 @@
 - Misc Changes
   - New converter, StringToQuaternion()
   - Console.Log and LogError now can take generic objects as inputs, no need to run .ToString() on non-strings now
+  - Dialog attribute "Show" changed to "Text"
   - Some organizing 
 ------------
 
