@@ -298,6 +298,7 @@ public class ConsoleLol : MonoBehaviour
 
         var a = Converter.StringToList(e, " ");
         bestmatch = null;
+        string besttext = "";
         foreach (var c in a)
         {
             if (c == "")
@@ -312,6 +313,7 @@ public class ConsoleLol : MonoBehaviour
             if (c.Key.StartsWith(a[0]))
             {
                 bestmatch = c.Value;
+                besttext = bestmatch.Value;
                 break;
             }
         }
@@ -328,6 +330,7 @@ public class ConsoleLol : MonoBehaviour
                         if (banana.Value.Value.StartsWith(a[i]))
                         {
                             bestmatch = banana.Value;
+                            besttext = bestmatch.Value;
                             fd++;
                             break;
                         }
@@ -341,6 +344,7 @@ public class ConsoleLol : MonoBehaviour
                         if (banana.Value.StartsWith(a[i]))
                         {
                             bestmatch = banana;
+                            besttext = bestmatch.Value;
                             fd++;
                             break;
                         }
@@ -351,7 +355,7 @@ public class ConsoleLol : MonoBehaviour
 
         if(bestmatch != null && fd == a.Count-1)
         {
-            ConsoleObjectRef.predictr.text = $"<color=#00000000>{ConsoleObjectRef.input.text}</color>" + bestmatch.Value.Substring(a[fd].Length);
+            ConsoleObjectRef.predictr.text = $"<color=#00000000>{ConsoleObjectRef.input.text}</color>" + besttext.Substring(a[fd].Length);
         }
         else
         {

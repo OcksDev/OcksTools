@@ -1,6 +1,6 @@
 -Test Dialog-
 </> <Name=Gamer> <Speed=10, -, 1> <TitleColor=150,0,0,255> <TextColor=150,0,0,255> <BgColor=150,0,0,255>
-</> Gaming time <color=#000000>Gaming time</color></color></color></color></color> Gaming time<Name=Fuck><TitleColor=75,0,150,255><TextColor=150,150,0,255><Name=Fuck><Name=Fuck><Name=Fuck><Name=Fuck> Gaming <Show=*Fuck> Gaming <*TestVar=*Fuck> Gaming <*=*Fuck> Gaming time Gaming time Gaming time Gaming timeGaming time Gaming time
+</> Gaming time <color=#000000>Gaming time</color></color></color></color></color> Gaming time<Name=Fuck><TitleColor=75,0,150,255><TextColor=150,150,0,255><Name=Fuck><Name=Fuck><Name=Fuck><Name=Fuck> Gaming <Text=*Fuck> Gaming <*TestVar=*Fuck> Gaming <*=*Fuck> Gaming time Gaming time Gaming time Gaming timeGaming time Gaming time
 </> 
 </> <Speed=69.69,-,1> <Name=Boner> <RichText=False> <SoundOnType=A>
 </> I eat hair, <Name=Baller>Disabled Rich Text <RichText=False> 
@@ -9,7 +9,7 @@
 </> <Animate=Text,Shake,21>YOU CANT SKIP THIS!!!   <Animate=Text,Halloween>also, <Name=*Fuck>my <Animate=Text,RainbowSnap,4><Animate=Text,Wave,4>name is now <Animate=Text,ShakeWhole>dumb 
 </> 
 </> <Name=Gamer> <CanSkip=False> <SoundOnType=A>
-</> <Animate=Text,Rainbow><Animate=Text,Wave,260>RAINBOW MOVING TEXT WEEEEEEEEEEEEEEEEEEEEEEEEEEEEE<br><Show=!Message_HelpData>
+</> <Animate=Text,Rainbow><Animate=Text,Wave,260>RAINBOW MOVING TEXT WEEEEEEEEEEEEEEEEEEEEEEEEEEEEE<br><Text=!Message_HelpData>
 </> 
 </> <Name=Boner> <Speed=69.69, -, -> <TextColor=150,0,0,255> <SoundOnType=A>
 </> Yes <Wait=1><Animate=Text,Rainbow,26>(this text will auto skip) <Wait=1><Animate=Text,Rainbow,Remove>no more rainbow<Wait=1> <Skip> (this txt is never visable)
