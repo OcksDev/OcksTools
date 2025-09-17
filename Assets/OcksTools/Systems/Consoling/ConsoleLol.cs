@@ -516,7 +516,7 @@ public class ConsoleLol : MonoBehaviour
 
 }
 
-public class Console
+public static class Console
 {
     public static List<string> texts = new List<string>();
     public static List<string> hexes = new List<string>();
@@ -525,11 +525,11 @@ public class Console
     {
         Log(text, "#bdbdbdff");
     }
-    public static void Log(object text)
+    public static void Log(this object text)
     {
         Log(text.ToString(), "#bdbdbdff");
     }
-    public static void Log(object text, string hex = "\"white\"")
+    public static void Log(this object text, string hex = "\"white\"")
     {
         Log(text.ToString(), hex);
     }
@@ -549,7 +549,7 @@ public class Console
     {
         Log(text, "#ff0000ff");
     }
-    public static void LogError(object text)
+    public static void LogError(this object text)
     {
         Log(text, "#ff0000ff");
     }

@@ -24,8 +24,12 @@
   - Added toggleable optimization setting for GISDisplay, to not update the display when the object reference hasn't changed
     - Be careful, directly modifying the properies of an item without changing the reference will not automatically update the display (as it is not updating every tick with this optimization)
     - Default is opted in
+- Converter Improvements!
+  - All Methods are now Extension Methods
+  - New StringToQuaternion()
+- Random Functions Improvements
+  - Some methods have been extracted into the static class OXFunctions and made into Extension Methods.
 - Misc Changes
-  - New converter, StringToQuaternion()
   - Console.Log and LogError now can take generic objects as inputs, no need to run .ToString() on non-strings now
   - Dialog attribute "Show" changed to "Text"
   - Some organizing 

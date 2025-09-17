@@ -5,28 +5,28 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-public class Converter : MonoBehaviour
+public static class Converter
 {
-    public static int BoolToInt(bool a)
+    public static int BoolToInt(this bool a)
     {
         return a ? 1 : 0;
     }
-    public static bool IntToBool(int a)
+    public static bool IntToBool(this int a)
     {
         return a == 1;
     }
 
-    public static string ListToString(List<string> eee, string split = ", ")
+    public static string ListToString(this List<string> eee, string split = ", ")
     {
         return String.Join(split, eee);
     }
 
-    public static List<string> StringToList(string eee, string split = ", ")
+    public static List<string> StringToList(this string eee, string split = ", ")
     {
         return eee.Split(split).ToList();
     }
 
-    public static string DictionaryToString(Dictionary<string, string> dic, string splitter = "<K>", string splitter2 = "<->")
+    public static string DictionaryToString(this Dictionary<string, string> dic, string splitter = "<K>", string splitter2 = "<->")
     {
         List<string> list = new List<string>();
         foreach (var a in dic)
@@ -35,7 +35,7 @@ public class Converter : MonoBehaviour
         }
         return ListToString(list, splitter);
     }
-    public static Dictionary<string, string> StringToDictionary(string e, string splitter = "<K>", string splitter2 = "<->")
+    public static Dictionary<string, string> StringToDictionary(this string e, string splitter = "<K>", string splitter2 = "<->")
     {
         var dic = new Dictionary<string, string>();
         var list = StringToList(e, splitter);
@@ -64,7 +64,7 @@ public class Converter : MonoBehaviour
         }
         return dic;
     }
-    public static string EscapedListToString(List<string> eee, string split = ", ")
+    public static string EscapedListToString(this List<string> eee, string split = ", ")
     {
         List<string> dupe = new List<string>(eee);
         List<string> esc = new List<string>() { split };
@@ -75,7 +75,7 @@ public class Converter : MonoBehaviour
         return String.Join(split, dupe);
     }
 
-    public static List<string> EscapedStringToList(string eee, string split = ", ")
+    public static List<string> EscapedStringToList(this string eee, string split = ", ")
     {
         var dupe = eee.Split(split).ToList();
         List<string> esc = new List<string>() { split };
@@ -86,7 +86,7 @@ public class Converter : MonoBehaviour
         return dupe;
     }
 
-    public static string EscapedDictionaryToString(Dictionary<string, string> dic, string splitter = "<K>", string splitter2 = "<->")
+    public static string EscapedDictionaryToString(this Dictionary<string, string> dic, string splitter = "<K>", string splitter2 = "<->")
     {
         List<string> list = new List<string>();
         List<string> esc = new List<string>() { splitter, splitter2 };
@@ -96,7 +96,7 @@ public class Converter : MonoBehaviour
         }
         return ListToString(list, splitter);
     }
-    public static Dictionary<string, string> EscapedStringToDictionary(string e, string splitter = "<K>", string splitter2 = "<->")
+    public static Dictionary<string, string> EscapedStringToDictionary(this string e, string splitter = "<K>", string splitter2 = "<->")
     {
         var dic = new Dictionary<string, string>();
         List<string> esc = new List<string>() { splitter, splitter2 };
@@ -127,37 +127,37 @@ public class Converter : MonoBehaviour
         return dic;
     }
 
-    public static Vector3Int StringToVector3Int(string e)
+    public static Vector3Int StringToVector3Int(this string e)
     {
         var s = StringToList(e.Substring(1, e.Length - 2));
         return new Vector3Int(int.Parse(s[0]), int.Parse(s[1]), int.Parse(s[2]));
     }
 
-    public static Vector3 StringToVector3(string e)
+    public static Vector3 StringToVector3(this string e)
     {
         var s = StringToList(e.Substring(1, e.Length - 2));
         return new Vector3(float.Parse(s[0]), float.Parse(s[1]), float.Parse(s[2]));
     }
     
-    public static Quaternion StringToQuaternion(string e)
+    public static Quaternion StringToQuaternion(this string e)
     {
         var s = StringToList(e.Substring(1, e.Length - 2));
         return new Quaternion(float.Parse(s[0]), float.Parse(s[1]), float.Parse(s[2]), float.Parse(s[3]));
     }
 
-    public static Vector2Int StringToVector2Int(string e)
+    public static Vector2Int StringToVector2Int(this string e)
     {
         var s = Converter.StringToList(e.Substring(1, e.Length - 2));
         return new Vector2Int(int.Parse(s[0]), int.Parse(s[1]));
     }
 
-    public static Vector2 StringToVector2(string e)
+    public static Vector2 StringToVector2(this string e)
     {
         var s = Converter.StringToList(e.Substring(1, e.Length - 2));
         return new Vector2(float.Parse(s[0]), float.Parse(s[1]));
     }
 
-    public static string BoolArrayToString(bool[] arr)
+    public static string BoolArrayToString(this bool[] arr)
     {
         string op = arr.Length + ":";
         List<string> chars = new List<string>(){
@@ -201,7 +201,7 @@ public class Converter : MonoBehaviour
         return op;
     }
 
-    public static bool[] StringToBoolArray(string e)
+    public static bool[] StringToBoolArray(this string e)
     {
         bool[] arr = new bool[int.Parse(e.Substring(0, e.IndexOf(":")))];
         e = e.Substring(e.IndexOf(":") + 1);
@@ -248,12 +248,12 @@ public class Converter : MonoBehaviour
 
 
 
-    public static string ColorToString(Color cc)
+    public static string ColorToString(this Color cc)
     {
         return ColorUtility.ToHtmlStringRGB(cc);
     }
 
-    public static Color32 StringToColor(string hex, string fallback = "FFFFFF")
+    public static Color32 StringToColor(this string hex, string fallback = "FFFFFF")
     {
         //color inputs should be in hex format
         try
@@ -289,11 +289,11 @@ public class Converter : MonoBehaviour
         }
     }
 
-    public static Sprite Texture2DToSprite(Texture2D tex)
+    public static Sprite Texture2DToSprite(this Texture2D tex)
     {
         return Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(tex.width / 2, tex.height / 2));
     }
-    public static string NumToRead(string number, int style = 0)
+    public static string NumToRead(this string number, int style = 0)
     {
         //converts a raw string of numbers into a much nicer format of your choosing
         /* style values:
@@ -427,11 +427,9 @@ public class Converter : MonoBehaviour
                     break;
             }
         }
-
         return n;
     }
-
-    public static Dictionary<T,int> ListToDictionary<T>(List<T> input)
+    public static Dictionary<T,int> ListToDictionary<T>(this List<T> input)
     {
         var output = new Dictionary<T,int>();
         foreach (var item in input)
@@ -448,7 +446,7 @@ public class Converter : MonoBehaviour
         return output;
     }
 
-    public static string TimeToRead(System.Numerics.BigInteger ine, int type = 0)
+    public static string TimeToRead(this System.Numerics.BigInteger ine, int type = 0)
     {
         //converts a time (in whole seconds) into a readable format
         //type changes the format type:
@@ -514,7 +512,7 @@ public class Converter : MonoBehaviour
         return outp;
     }
 
-    public static string EscapeString(string e, List<string> thingstoremove)
+    public static string EscapeString(this string e, List<string> thingstoremove)
     {
         e = e.Replace("(", "=(");
         e = e.Replace(")", "=)");
@@ -524,7 +522,7 @@ public class Converter : MonoBehaviour
         }
         return e;
     }
-    public static string UnescapeString(string e, List<string> thingstoremove)
+    public static string UnescapeString(this string e, List<string> thingstoremove)
     {
         for (int i = 0; i < thingstoremove.Count; i++)
         {

@@ -113,89 +113,6 @@ public class RandomFunctions : MonoBehaviour
     {
         return cam.ScreenToWorldPoint(Input.mousePosition);
     }
-    public static List<T> RemoveDuplicates<T>(List<T> tee)
-    {
-        var tea = new List<T>();
-        foreach (T t in tee)
-        {
-            if (!tea.Contains(t)) tea.Add(t);
-        }
-        return tea;
-    }
-
-    public static Dictionary<T,T2> MergeDictionary<T,T2>(Dictionary<T,T2> ti, Dictionary<T,T2> tee)
-    {
-        var tea = new Dictionary<T, T2>(ti);
-        foreach (var t in tee)
-        {
-            if (tea.ContainsKey(t.Key))
-            {
-                tea[t.Key] = t.Value;
-            }
-            else
-            {
-                tea.Add(t.Key, t.Value);
-            }
-        }
-        return tea;
-    }
-    
-
-
-    public static List<T> CombineLists<T>(List<T> ti, List<T> tee)
-    {
-        var tea = new List<T>(ti);
-        foreach (T t in tee)
-        {
-            tea.Add(t);
-        }
-        return tea;
-    }
-    public static bool ListContainsItemFromList<T>(List<T> ti, List<T> tee)
-    {
-        foreach (T t in ti)
-        {
-            if (tee.Contains(t)) return true;
-        }
-        return false;
-    }
-    public static bool AllItemsFromListInList<T>(List<T> ti, List<T> tee)
-    {
-        foreach (T t in ti)
-        {
-            if (!tee.Contains(t)) return false;
-        }
-        return true;
-    }
-    public static bool ListMatchesList<T>(List<T> ti, List<T> tee)
-    {
-        if (ti.Count != tee.Count) return false;
-        for (int t = 0; t < ti.Count; t++)
-        {
-            if (!ti[t].Equals(tee[t]))
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-    public static bool ListMatchesListOrderless<T>(List<T> ti, List<T> tee)
-    {
-        if (ti.Count != tee.Count) return false;
-        var tea = new List<T>(ti);
-        var teatea = new List<T>(tee);
-        for (int t = 0; t < tea.Count;)
-        {
-            if (!teatea.Contains(tea[0])) return false;
-            else
-            {
-                teatea.Remove(tea[0]);
-                tea.RemoveAt(0);
-            }
-        }
-        return true;
-    }
-
     public static void OpenURLInBrowser(string url)
     {
         var info = new ProcessStartInfo(url);
@@ -442,5 +359,93 @@ public class RandomFunctions : MonoBehaviour
     }
 
 
+
+}
+
+public static class OXFunctions
+{
+
+    public static List<T> RemoveDuplicates<T>(this List<T> tee)
+    {
+        var tea = new List<T>();
+        foreach (T t in tee)
+        {
+            if (!tea.Contains(t)) tea.Add(t);
+        }
+        return tea;
+    }
+
+    public static Dictionary<T, T2> MergeDictionary<T, T2>(this Dictionary<T, T2> ti, Dictionary<T, T2> tee)
+    {
+        var tea = new Dictionary<T, T2>(ti);
+        foreach (var t in tee)
+        {
+            if (tea.ContainsKey(t.Key))
+            {
+                tea[t.Key] = t.Value;
+            }
+            else
+            {
+                tea.Add(t.Key, t.Value);
+            }
+        }
+        return tea;
+    }
+
+
+
+    public static List<T> CombineLists<T>(this List<T> ti, List<T> tee)
+    {
+        var tea = new List<T>(ti);
+        foreach (T t in tee)
+        {
+            tea.Add(t);
+        }
+        return tea;
+    }
+    public static bool ListContainsItemFromList<T>(this List<T> ti, List<T> tee)
+    {
+        foreach (T t in ti)
+        {
+            if (tee.Contains(t)) return true;
+        }
+        return false;
+    }
+    public static bool AllItemsFromListInList<T>(this List<T> ti, List<T> tee)
+    {
+        foreach (T t in ti)
+        {
+            if (!tee.Contains(t)) return false;
+        }
+        return true;
+    }
+    public static bool ListMatchesList<T>(this List<T> ti, List<T> tee)
+    {
+        if (ti.Count != tee.Count) return false;
+        for (int t = 0; t < ti.Count; t++)
+        {
+            if (!ti[t].Equals(tee[t]))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    public static bool ListMatchesListOrderless<T>(this List<T> ti, List<T> tee)
+    {
+        if (ti.Count != tee.Count) return false;
+        var tea = new List<T>(ti);
+        var teatea = new List<T>(tee);
+        for (int t = 0; t < tea.Count;)
+        {
+            if (!teatea.Contains(tea[0])) return false;
+            else
+            {
+                teatea.Remove(tea[0]);
+                tea.RemoveAt(0);
+            }
+        }
+        return true;
+    }
 
 }

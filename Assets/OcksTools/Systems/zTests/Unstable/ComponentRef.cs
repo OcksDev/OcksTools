@@ -140,7 +140,7 @@ public class OXComponent
         {
             var weenis = GetComponentsInChildrenRecursive<T>(sussy.transform.GetChild(i).gameObject, storeifnull);
             if(weenis.Count > 0)
-            founds = RandomFunctions.CombineLists(founds, weenis);
+            founds = founds.CombineLists(weenis);
         }
         comp = GetComponent<T>(sussy, storeifnull);
         if (comp != null)
