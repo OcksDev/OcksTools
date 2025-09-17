@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Unity.VisualScripting;
 using UnityEngine;
-using static SaveSystem;
 
 public class LanguageFileSystem : MonoBehaviour
 {

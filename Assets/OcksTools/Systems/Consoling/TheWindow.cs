@@ -2,7 +2,6 @@
 
 using UnityEngine;
 using UnityEditor;
-using Unity.VisualScripting;
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;

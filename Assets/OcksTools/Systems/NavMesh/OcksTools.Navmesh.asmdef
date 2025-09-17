@@ -1,0 +1,17 @@
+{
+    "name": "OcksTools.Navmesh",
+    "rootNamespace": "",
+    "references": [
+        "GUID:37c48f55ffd6044479375d24b6ff2a1e",
+        "GUID:8c4dd21966739024fbd72155091d199e"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

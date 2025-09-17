@@ -2,7 +2,6 @@
 
 using UnityEngine;
 using UnityEditor;
-using Unity.VisualScripting;
 using UnityEngine.UI;
 
 public class RectWindow: EditorWindow

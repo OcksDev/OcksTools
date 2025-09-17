@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 [System.Serializable]
@@ -17,7 +16,6 @@ public class Tags : MonoBehaviour
         {"Exist", new Dictionary<object, string>()}
     };
     [HideInInspector]
-    [DoNotSerialize]
     public static Dictionary<string, GameObject> refs = new Dictionary<string, GameObject>();
     public List<OXTagRefThing> RefedObjects = new List<OXTagRefThing>();
     /*

@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class ConsoleCommands : MonoBehaviour
@@ -38,7 +37,7 @@ public class ConsoleCommands : MonoBehaviour
     {
         for (int i = 0; i < 10; i++)
         {
-            ChatLol.Instance.WriteChat("Chat Test Lol", "#" + UnityEngine.Random.ColorHSV().ToHexString());
+            ChatLol.Instance.WriteChat("Chat Test Lol", "#" + UnityEngine.Random.ColorHSV().ColorToString());
         }
     }
     

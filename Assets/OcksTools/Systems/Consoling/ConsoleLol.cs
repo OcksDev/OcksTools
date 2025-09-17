@@ -5,8 +5,6 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Unity.VisualScripting;
-using static System.Net.Mime.MediaTypeNames;
 using UnityEngine.EventSystems;
 using System.Collections.Specialized;
 
