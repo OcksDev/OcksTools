@@ -260,13 +260,15 @@ public class ConsoleCommands : MonoBehaviour
     {
         ConsoleLol.Instance.ClearConsole();
     }
+
+    public static System.Action ScreenshotAction;
+
     public static void ScreenShot()
     {
-        if (Screenshot.Instance != null)
+        if (ScreenshotAction != null)
         {
             ConsoleLol.Instance.ClearConsole();
-            var ss = new ScreenshotData("test", 1000, 1000, Camera.main, true);
-            Screenshot.Instance.TakeScreenshot(ss);
+            ScreenshotAction();
         }
         else
         {

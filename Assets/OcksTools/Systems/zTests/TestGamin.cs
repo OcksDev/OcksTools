@@ -9,7 +9,7 @@ public class TestGamin : MonoBehaviour
     public void TestButton()
     {
         Debug.Log("RAHHH");
-        Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new GISItem()));
+        //Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new GISItem()));
     }
     [Button]
     public void RandomVal()

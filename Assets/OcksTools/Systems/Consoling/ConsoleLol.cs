@@ -42,7 +42,6 @@ public class ConsoleLol : MonoBehaviour
      */
 
     public static OXEvent<List<string>, List<string>> ConsoleHook = new OXEvent<List<string>, List<string>>();
-    public static OXEvent ConsoleCommandHook = new OXEvent();
     public static Dictionary<string,OXCommand> CommandDict = new Dictionary<string,OXCommand>();
     public static IOrderedEnumerable<KeyValuePair<string, OXCommand>> CommandDict2;
 
@@ -107,8 +106,8 @@ public class ConsoleLol : MonoBehaviour
     {
         yield return new WaitForFixedUpdate();
 
-        ConsoleCommandHook.Append(SelfCommands);
-        ConsoleCommandHook.Invoke();
+        GlobalEvent.Append("Console", SelfCommands);
+        GlobalEvent.Invoke("Console");
 
         CommandDict2 = (from entry in CommandDict orderby entry.Key ascending select entry);
     }

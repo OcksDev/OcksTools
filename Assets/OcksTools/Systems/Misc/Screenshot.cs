@@ -9,6 +9,18 @@ public class Screenshot : MonoBehaviour
     {
         Instance = this;
     }
+
+    public static void SetConsoleCommandLol()
+    {
+        var ss = new ScreenshotData("test", 1000, 1000, Camera.main, true);
+        Screenshot.Instance.TakeScreenshot(ss);
+    }
+    public static void ConsoleCommandLol()
+    {
+        var ss = new ScreenshotData("test", 1000, 1000, Camera.main, true);
+        Screenshot.Instance.TakeScreenshot(ss);
+    }
+
     public void TakeScreenshot(ScreenshotData Sdata)
     {
         Sdata.CamerasToUpdate.Add(Sdata.Camera);

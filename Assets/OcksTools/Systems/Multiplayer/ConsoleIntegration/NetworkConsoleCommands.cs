@@ -9,7 +9,7 @@ public class NetworkConsoleCommands : MonoBehaviour
     {
         LanguageFileSystem.Instance.AddFile(LanguageFileIndex);
         //ConsoleLol.ConsoleHook.Append(NetworkConsoleCommandHook);
-        ConsoleLol.ConsoleCommandHook.Append(NetworkCommands);
+        GlobalEvent.Append("Console", NetworkCommands);
 
         RelayMoment.Instance.GetComponent<PickThingymabob>().DebugCode.Append(PrintCode);
     }
