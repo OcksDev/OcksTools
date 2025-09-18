@@ -1,0 +1,28 @@
+var class_converter =
+[
+    [ "BoolArrayToString", "db/d92/class_converter.html#a0424e9bb0586f69c7754045b558f65f0", null ],
+    [ "BoolToInt", "db/d92/class_converter.html#ac1bf020e084ec1782001c5595e324cc3", null ],
+    [ "ColorToString", "db/d92/class_converter.html#abf3356b613059f435f73a3d794db1ac5", null ],
+    [ "DictionaryToString", "db/d92/class_converter.html#a7bd1feb6b67c8b30da81dafe53c37494", null ],
+    [ "EscapedDictionaryToString", "db/d92/class_converter.html#aa7106bdadb2ff4469e8c262d2beb1834", null ],
+    [ "EscapedListToString", "db/d92/class_converter.html#a31b0115cf77c62299fee1aad3e408d08", null ],
+    [ "EscapedStringToDictionary", "db/d92/class_converter.html#a7b681c8e645aab3aaa378e1da08d3472", null ],
+    [ "EscapedStringToList", "db/d92/class_converter.html#ac5e82aa50306bbb4031a1f3f58d7fcbb", null ],
+    [ "EscapeString", "db/d92/class_converter.html#a34fe473b1c5eaaad4325472db3c5d025", null ],
+    [ "IntToBool", "db/d92/class_converter.html#a936b496a3cf3fa106a46d2e90164e4d4", null ],
+    [ "ListToDictionary< T >", "db/d92/class_converter.html#a73eba63472b3862dd7fbf12078770dcb", null ],
+    [ "ListToString", "db/d92/class_converter.html#ab31f34d45ee578c7ef216cc5e93c8d97", null ],
+    [ "NumToRead", "db/d92/class_converter.html#a4c03dad16e5749ce8647d2ecc8f718d0", null ],
+    [ "StringToBoolArray", "db/d92/class_converter.html#aefad235377ff614079d17722f816189b", null ],
+    [ "StringToColor", "db/d92/class_converter.html#a9576fc8d08ba1eea6e29e8adcd3e4c75", null ],
+    [ "StringToDictionary", "db/d92/class_converter.html#abbb9d22c075138c649d9a6f7522e6230", null ],
+    [ "StringToList", "db/d92/class_converter.html#a5024a8ac63b1b2e18a80d60a06f62547", null ],
+    [ "StringToQuaternion", "db/d92/class_converter.html#a9667cea6da7117db96948cf4a85978fa", null ],
+    [ "StringToVector2", "db/d92/class_converter.html#a1caba7183eac0998b71d7f5ff84621db", null ],
+    [ "StringToVector2Int", "db/d92/class_converter.html#a0c4b262d716dca600a29ef38782f3650", null ],
+    [ "StringToVector3", "db/d92/class_converter.html#ab69f264ea7813a8d900a38a28cdd5806", null ],
+    [ "StringToVector3Int", "db/d92/class_converter.html#a18656a4c77ff0fb85e833cf2cda999f8", null ],
+    [ "Texture2DToSprite", "db/d92/class_converter.html#af944a996978f1a4e6139bd0618c7a098", null ],
+    [ "TimeToRead", "db/d92/class_converter.html#adb4fc68801590fa0b4fd5d2a8eb129a7", null ],
+    [ "UnescapeString", "db/d92/class_converter.html#a9cb75884495b2e2d805d1245364b7f70", null ]
+];
