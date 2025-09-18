@@ -1,6 +1,0 @@
-var class_caller_2_g =
-[
-    [ "ClearDict", "class_caller-2-g.html#aeca15de2a380991d0d54fbeedcca1865", null ],
-    [ "Multicall", "class_caller-2-g.html#a9e2d5cc369cde2ef48558864ca696c62", null ],
-    [ "dict", "class_caller-2-g.html#a37dd3336ffef6ac77b673eafa1520326", null ]
-];
