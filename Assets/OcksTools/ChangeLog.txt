@@ -1,7 +1,7 @@
 
 ------------
    v1.1.2
-- Major work toward using Assembly Definitions in OcksTools
+- OcksTools now uses Assembly Definitions
   - Should hopefully speed up compilation times of some things
 - New Path Tool
   - Allows for the easy creation of linear paths. Only hard corners are supported right now, but that might change later
@@ -28,17 +28,17 @@
     - Be careful, directly modifying the properies of an item without changing the reference will not automatically update the display (as it is not updating every tick with this optimization)
     - Default is opted in
 - Converter Improvements!
-  - All Methods are now Extension Methods
+  - All methods are now Extension Methods
   - New StringToQuaternion()
 - Random Functions Improvements
   - Some methods have been extracted into the static class OXFunctions and made into Extension Methods.
+  - Mod() now has varients for float, double, and long
 - Console Improvements
   - Log and LogError now can take generic objects as inputs, no need to run .ToString() on non-strings now (they are also now Extension Methods)
   - Migrated command assembling event to use the Global Event system.
 - Misc Changes
   - Dialog attribute "Show" changed to "Text"
   - Some organizing 
-
 ------------
 
 ------------
@@ -131,7 +131,6 @@
     - Mulitplayer Scene no longer uses un-prefab'ed versions of the console.
     - It now also has text wrapping in the output, scaling problems had prevented this before
   - Camera script now has much more intelligble variables for controlling mouse following
-
 ------------
 
 ------------
@@ -327,7 +326,6 @@
   - Allows for the storing of GetComponent.
   - Doesn't actually help performance and is just kinda worse, so its binned until I can make it better
 - And more.. (I added/changed so much that I missed writing some of it down)
-
 ------------
 
 ------------
@@ -394,7 +392,6 @@
   - Console no longer lets you enter completely blank commands
   - Slight changes to console appearance and misc tweaks
   - Rect Utils now overwrites Canvas Scaler if the component already exists
-
 ------------
 
 ------------
@@ -450,7 +447,6 @@
   - Console now automatically opens with the text field selected
   - Fixed bug with multiplayer spawning data in SpawnObject
   - Cleared up a bunch of random warnings
-
 ------------
 
 ------------
@@ -507,7 +503,6 @@
   - General Code Organizaion and code comments
   - Added "WhatIsThis.txt" which provides an overview of the tools package
   - More lol
-
 ------------
 
 ------------
@@ -546,7 +541,6 @@
 - Added AutoTextSize (does not work with auto canva scaling)
 - Added Auto Canvas Scaling to the Console scene
 - Fixed some random stuff
-
 ------------
 
 ------------
@@ -576,7 +570,6 @@
   - Added Shake
   - Added Shove (just change the vector3 ppos)
     - Added a decent example for some player hurt effects within the camera script
-
 ------------
 
 ------------
@@ -591,5 +584,4 @@
   - Unique ID generator
 - Multiplayer Base Setup
 - Homemade Console
-
 ------------                                      

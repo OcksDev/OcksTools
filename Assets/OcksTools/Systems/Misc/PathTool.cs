@@ -118,7 +118,7 @@ public class OXPath
 
     public Vector3 GetPos_Distance(float distance)
     {
-        distance = RandomFunctions.Mod(distance, total_dist);
+        distance = OXFunctions.Mod(distance, total_dist);
         int z = GetIndex(distance);
         distance -= floats[z];
         float perc = distance / (floats[z + 1] - floats[z]);

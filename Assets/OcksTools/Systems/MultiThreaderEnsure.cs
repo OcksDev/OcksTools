@@ -78,12 +78,12 @@ public class OXThreadPoolA : IOXThreadPool
     int gg = 0;
     int PullNextThread()
     {
-        gg = RandomFunctions.Mod(gg + 1, ThreadCount);
+        gg = OXFunctions.Mod(gg + 1, ThreadCount);
         if (!allconfirmed && !SuccessfulThreads.Contains(gg) && SuccessfulThreads.Count > 0)
         {
             while (!SuccessfulThreads.Contains(gg))
             {
-                gg = RandomFunctions.Mod(gg + 1, ThreadCount);
+                gg = OXFunctions.Mod(gg + 1, ThreadCount);
             }
         }
         return gg;
@@ -236,12 +236,12 @@ public class OXThreadPoolC : IOXThreadPool
     int gg = 0;
     int PullNextThread()
     {
-        gg = RandomFunctions.Mod(gg + 1, ThreadCount);
+        gg = OXFunctions.Mod(gg + 1, ThreadCount);
         if (!allconfirmed && !SuccessfulThreads.Contains(gg) && SuccessfulThreads.Count > 0)
         {
             while (!SuccessfulThreads.Contains(gg))
             {
-                gg = RandomFunctions.Mod(gg + 1, ThreadCount);
+                gg = OXFunctions.Mod(gg + 1, ThreadCount);
             }
         }
         return gg;

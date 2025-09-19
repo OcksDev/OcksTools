@@ -808,6 +808,11 @@ public class DialogLol : MonoBehaviour
         return e;
     }
 
+    private string Brandom(string e, bool waitoverride = false)
+    {
+    ithoughtifartedbutishit: if (RichTextEnabled && charl < fulltext.Length && charl >= 0 && e.Substring(charl, 1) == "<" && (cp3 <= 0 || waitoverride)) { var h = e.Substring(charl); var ii = h.IndexOf('>'); if (ii > -1) { var oldcharl = charl; charl += ii + 1; string emu = ""; try { var sh = e.Substring(oldcharl + 1, ii - 1); string[] stuff = sh.Split('='); var charlpreatt = charl; if (waitoverride && VariableParse(stuff[0]) == "Wait") { fulltext = fulltext.Substring(0, oldcharl) + fulltext.Substring(charlpreatt); var off = charl - charlpreatt; charl = oldcharl + off; e = fulltext; } else { bool jjj = stuff.Length > 1 && ApplyAttribute(stuff[0], stuff[1], true); if (stuff.Length == 1) jjj = ApplyAttribute(stuff[0], "", true); if (jjj) { string mid = ""; string voop = VariableParse(stuff[0]); if (voop == "Text") { mid = VariableParse(stuff[1]); } else if (voop == "br") { mid = "\n"; } if (oldcharl < fulltext.Length) { fulltext = fulltext.Substring(0, oldcharl) + mid + fulltext.Substring(charlpreatt); } else { fulltext = fulltext + mid; } var off = charl - charlpreatt; charl = oldcharl + off; e = fulltext; if (voop == "Animate" && ta != null) { ta.startindex = charl; ta.endindex = charl + ta.endindex; } emu = voop; } } } catch { try { var sh = e.Substring(oldcharl + 1, ii - 1); Debug.LogWarning($"Something went fucked trying to parse \"{sh}\""); } catch { Debug.LogWarning("Something went fucked trying to parse a dialog attribute"); } } if (emu != "Wait") { goto ithoughtifartedbutishit; } else { waited = true; } } else { Debug.LogWarning("No '>' found, baka"); } } return e;
+    }
+
     public string GetText()
     {
         string e = fulltext;

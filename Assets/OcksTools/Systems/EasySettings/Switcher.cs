@@ -9,12 +9,12 @@ public class Switcher : MonoBehaviour
     public SettingInput SI;
     public void IndexUp()
     {
-        index = RandomFunctions.Mod(index + 1, Items.Count);
+        index = OXFunctions.Mod(index + 1, Items.Count);
         SI.WriteValue();
     }
     public void IndexDown()
     {
-        index = RandomFunctions.Mod(index - 1, Items.Count);
+        index = OXFunctions.Mod(index - 1, Items.Count);
         SI.WriteValue();
     }
 }

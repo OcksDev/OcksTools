@@ -313,14 +313,6 @@ public class RandomFunctions : MonoBehaviour
         var z = p2.z - p1.z;
         return (x * x) + (y * y) + (z * z);
     }
-    public static int Mod(int r, int max)
-    {
-        return ((r % max) + max) % max;
-    }
-    public static float Mod(float r, float max)
-    {
-        return ((r % max) + max) % max;
-    }
     public static Quaternion PointAtPoint(Vector3 start_location, Vector3 location)
     {
         Quaternion _lookRotation =
@@ -363,7 +355,22 @@ public class RandomFunctions : MonoBehaviour
 
 public static class OXFunctions
 {
-
+    public static int Mod(this int r, int max)
+    {
+        return ((r % max) + max) % max;
+    }
+    public static float Mod(this float r, float max)
+    {
+        return ((r % max) + max) % max;
+    }
+    public static double Mod(this double r, double max)
+    {
+        return ((r % max) + max) % max;
+    }
+    public static long Mod(this long r, long max)
+    {
+        return ((r % max) + max) % max;
+    }
     public static List<T> RemoveDuplicates<T>(this List<T> tee)
     {
         var tea = new List<T>();
