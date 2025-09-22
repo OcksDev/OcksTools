@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,31 @@ public class ConsoleCommands : MonoBehaviour
 
         ), "#bdbdbdff");
         Tags.ClearAllOf("penis");
+    }
+    public static void Test_dict()
+    {
+        var d = new Dictionary<string, string>()
+        {
+            { "Hello", "1" },
+            { "A", "2" },
+            { "B", "3" },
+            { "C", "4" },
+            { "Dingler", "5" },
+        }
+            
+            ;
+
+        try
+        {
+            d.DictionaryToRead().Log();
+
+            var a = d.StringDictionaryToABDictionary<string, TestClass>();
+            a.DictionaryToRead().Log();
+        }
+        catch(System.Exception e)
+        {
+            Console.Log(e.ToString());
+        }
     }
     public static void Test_circle(OXCommandData r)
     {
@@ -462,4 +488,14 @@ public class ConsoleCommands : MonoBehaviour
         }
     }
 
+}
+
+
+public class TestClass
+{
+    public int Gamer = 1;
+    public override string ToString()
+    {
+        return $"TestClass[{Gamer}]";
+    }
 }

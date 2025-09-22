@@ -7,6 +7,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections.Specialized;
+using System.IO;
+using System.Reflection;
 
 public class ConsoleLol : MonoBehaviour
 {
@@ -70,7 +72,6 @@ public class ConsoleLol : MonoBehaviour
             InputManager.CreateKeyAllocation("console_down", KeyCode.DownArrow);
             InputManager.CreateKeyAllocation("console_autofill", KeyCode.Tab);
         });
-
     }
 
     public void Start()
@@ -196,6 +197,7 @@ public class ConsoleLol : MonoBehaviour
             .Append(new OXCommand("compver").Action(ConsoleCommands.Test_compver))
             .Append(new OXCommand("escape").Action(ConsoleCommands.Test_escape))
             .Append(new OXCommand("max").Action(ConsoleCommands.Test_max))
+            .Append(new OXCommand("dict").Action(ConsoleCommands.Test_dict))
             .Append(new OXCommand("comp")
                 .Append(new OXCommand(OXCommand.ExpectedInputType.String)
                     .Append(new OXCommand(OXCommand.ExpectedInputType.String).Action(ConsoleCommands.Test_comp))))

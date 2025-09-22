@@ -26,6 +26,62 @@ public static class Converter
         return eee.Split(split).ToList();
     }
 
+    public static Dictionary<string,string> ABDictionaryToStringDictionary<A,B>(this Dictionary<A, B> dic)
+    {
+        var t = new Dictionary<string,string>();
+        foreach (var key in dic)
+        {
+            t.Add(key.Key.ToString(), key.Value.ToString());
+        }
+        return t;
+    }
+    public static Dictionary<A,B> StringDictionaryToABDictionary<A,B>(this Dictionary<string, string> dic)
+    {
+        var t = new Dictionary<A,B>();
+        var con_a = GetConverter<A>();
+        var con_b = GetConverter<B>();
+        foreach (var key in dic)
+        {
+            t.Add((A)con_a(key.Key), (B)con_b(key.Value));
+        }
+        return t;
+    }
+    public static System.Func<string,object> GetConverter<A>()
+    {
+        switch (typeof(A).Name)
+        {
+            case "String":
+                return (x) => { return x; };
+            case "Single":
+                return (x) => { return float.Parse(x); };
+            case "Double":
+                return (x) => { return double.Parse(x); };
+            case "Byte":
+                return (x) => { return byte.Parse(x); };
+            case "Int32":
+                return (x) => { return int.Parse(x); };
+            case "Int64":
+                return (x) => { return long.Parse(x); };
+            case "Boolean":
+                return (x) => { return bool.Parse(x); };
+            default:
+                //return (x) => { return x.StringToSelf(new ConvertType<A>()); };
+                $"No known converter for \"{typeof(A).Name}\"".LogError();
+                return null;
+        }
+
+    }
+
+    public static string DictionaryToRead<A,B>(this Dictionary<A, B> dic)
+    {
+        List<string> a = new List<string>();
+        foreach(var b in dic)
+        {
+            a.Add("{ " + b.Key.ToString() + ", " + b.Value.ToString() + " }");
+        }
+        return ListToString(a, "\n");
+    }
+
     public static string DictionaryToString(this Dictionary<string, string> dic, string splitter = "<K>", string splitter2 = "<->")
     {
         List<string> list = new List<string>();
@@ -521,6 +577,7 @@ public static class Converter
             e = e.Replace($"{thingstoremove[i]}", $"({i})");
         }
         return e;
+
     }
     public static string UnescapeString(this string e, List<string> thingstoremove)
     {
@@ -534,5 +591,14 @@ public static class Converter
         return e;
     }
 
+
+}
+
+public class ConvertType<T> { }
+
+
+
+public class ConversionMethod : Attribute
+{
 
 }
