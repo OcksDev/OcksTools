@@ -30,6 +30,8 @@
 - Converter Improvements!
   - All methods are now Extension Methods
   - New StringToQuaternion()
+  - New ABDictionaryToStringDictionary()
+  - New DictionaryToRead()
 - Random Functions Improvements
   - Some methods have been extracted into the static class OXFunctions and made into Extension Methods.
   - Mod() now has varients for float, double, and long
@@ -39,6 +41,8 @@
 - Misc Changes
   - Dialog attribute "Show" changed to "Text"
   - Some organizing 
+  - new ConversionAgrigator class which is marked as unstable for now.
+    - I am trying to make a generalized thing to convert [string -> generic type], but its hard af
 ------------
 
 ------------

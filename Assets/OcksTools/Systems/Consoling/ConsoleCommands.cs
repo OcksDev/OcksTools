@@ -19,7 +19,12 @@ public class ConsoleCommands : MonoBehaviour
     }
     public static void Test_dict()
     {
-        var d = new Dictionary<string, string>()
+        var dd = ConversionAgrigator.ConvertString<TestClass>("50");
+        Console.Log(dd );
+
+
+
+        /*var d = new Dictionary<string, string>()
         {
             { "Hello", "1" },
             { "A", "2" },
@@ -40,7 +45,7 @@ public class ConsoleCommands : MonoBehaviour
         catch(System.Exception e)
         {
             Console.Log(e.ToString());
-        }
+        }*/
     }
     public static void Test_circle(OXCommandData r)
     {
@@ -498,4 +503,13 @@ public class TestClass
     {
         return $"TestClass[{Gamer}]";
     }
+
+    [ConversionMethod]
+    public TestClass ConvertStringToMe(string input)
+    {
+        var a = new TestClass();
+        a.Gamer = int.Parse(input);
+        return a;
+    }
+
 }
