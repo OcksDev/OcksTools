@@ -13,7 +13,7 @@ public class ConversionAgrigator : MonoBehaviour
     public static void GatherMethods()
     {
        // object instance = Activator.CreateInstance(t);
-        Dictionary<string, MethodInfo> methods = Assembly.GetExecutingAssembly()
+        var methods = Assembly.GetExecutingAssembly()
             .GetTypes()
             .SelectMany(x => x.GetMethods())
             .Where(y => y.GetCustomAttributes().OfType<ConversionMethod>().Any())
@@ -21,7 +21,11 @@ public class ConversionAgrigator : MonoBehaviour
         Console.Log(methods.ABDictionaryToStringDictionary().DictionaryToRead());
         foreach(var a in methods)
         {
-            //ConversionMethods.Add(a.Key, (x) => { return methods[a.Key].Invoke(x); });
+            ConversionMethods.Add(a.Key, (x) => 
+            {
+                var dd = Activator.CreateInstance(a.Value.ReflectedType);
+                return methods[a.Key].Invoke(dd, new object[] { x }); 
+            });
         }
         
 
