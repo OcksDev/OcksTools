@@ -19,11 +19,11 @@ public class ConsoleCommands : MonoBehaviour
     }
     public static void Test_dict()
     {
-        var dd = ConversionAgrigator.ConvertString<TestClass>("50");
-        Console.Log(dd );
+        Console.Log("50".StringToObject<TestClass>());
 
-
-
+        var a = "50".StringToObject<double>();
+        a += 50;
+        Console.Log(a);
         /*var d = new Dictionary<string, string>()
         {
             { "Hello", "1" },

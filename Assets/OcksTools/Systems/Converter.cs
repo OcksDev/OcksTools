@@ -7,6 +7,37 @@ using UnityEngine;
 
 public static class Converter
 {
+
+    public static Dictionary<string, Func<string,object>> ConversionMethods = new Dictionary<string, Func<string, object>>();
+
+    public static A StringToObject<A>(this string data)
+    {
+        string typename = typeof(A).Name;
+        if (!ConversionMethods.ContainsKey(typename))
+        {
+            switch (typename)
+            {
+                case "String":
+                    return (A)(object)data;
+                case "Single":
+                    return (A)(object)float.Parse(data);
+                case "Double":
+                    return (A)(object)double.Parse(data);
+                case "Byte":
+                    return (A)(object)byte.Parse(data);
+                case "Int32":
+                    return (A)(object)int.Parse(data);
+                case "Int64":
+                    return (A)(object)long.Parse(data);
+                case "Boolean":
+                    return (A)(object)bool.Parse(data);
+                default:
+                    throw new Exception($"No conversion created for type \"{typeof(A).Name}\"");
+            }
+        }
+        return (A)ConversionMethods[typename](data);
+    }
+
     public static int BoolToInt(this bool a)
     {
         return a ? 1 : 0;

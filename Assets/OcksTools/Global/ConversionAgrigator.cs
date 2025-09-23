@@ -4,17 +4,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using static ConversionAgrigator;
 
 public class ConversionAgrigator : MonoBehaviour
 {
     // Start is called before the first frame update
+
+    public delegate A Convertion<A>(string message);
+
     [ConversionMethod]
     [RuntimeInitializeOnLoadMethod]
     public static void GatherMethods()
     {
-        Assembly[] assemblies = new Assembly[1];
+        Assembly[] assemblies = new Assembly[4];
 
         assemblies[0] = Assembly.GetExecutingAssembly();
+        assemblies[1] = Assembly.Load("OcksTools");
+        assemblies[2] = Assembly.Load("OcksTools.Multiplayer");
+        assemblies[3] = Assembly.Load("OcksTools.NavMesh");
 
 
         foreach (var ass in assemblies)
@@ -30,29 +37,15 @@ public class ConversionAgrigator : MonoBehaviour
                 Console.Log(methods.ABDictionaryToStringDictionary().DictionaryToRead());
                 foreach (var a in methods)
                 {
-                    ConversionMethods.Add(a.Key, (x) =>
-                    {
-                        var dd = Activator.CreateInstance(a.Value.ReflectedType);
-                        return methods[a.Key].Invoke(dd, new object[] { x });
-                    });
+                    var dd = Activator.CreateInstance(a.Value.ReflectedType);
+                    Converter.ConversionMethods.Add(a.Key, (x) => { return a.Value.Invoke(dd, new object[] { x }); });
+
                 }
             }
         }
         
 
 
-    }
-
-    public static Dictionary<string, Func<string, object>> ConversionMethods = new Dictionary<string, Func<string, object>>();
-
-    public static object ConvertString<A>(string data)
-    {
-        string typename = typeof(A).Name;
-        if (!ConversionMethods.ContainsKey(typename))
-        {
-            return null;
-        }
-        return ConversionMethods[typename](data);
     }
 
 }

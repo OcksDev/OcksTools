@@ -32,6 +32,7 @@
   - New StringToQuaternion()
   - New ABDictionaryToStringDictionary()
   - New DictionaryToRead()
+  - New StringToObject<>()
 - Random Functions Improvements
   - Some methods have been extracted into the static class OXFunctions and made into Extension Methods.
   - Mod() now has varients for float, double, and long
