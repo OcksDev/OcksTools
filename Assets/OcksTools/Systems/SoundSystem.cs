@@ -73,8 +73,8 @@ public class SoundSystem : MonoBehaviour
                 break;
         }
         SoundMod.Invoke();
-        sound.volume *= pvolume;
-        if(sound.pos == null) sound.psource = FindOpenSource(sound, findexisting);
+        sound._volume *= pvolume;
+        if(sound._pos == null) sound.psource = FindOpenSource(sound, findexisting);
     }
 
     public AudioSource FindOpenSource(OXSound sound, bool findexisting = false)
@@ -107,23 +107,23 @@ public class SoundSystem : MonoBehaviour
 
     public OXSound PlaySound(OXSound sound)
     {
-        ModSound(sound,sound.clipping);
+        ModSound(sound,sound._clipping);
         var volume = 1f;
         var p = sound.psource;
-        p.pitch = sound.pitch;
-        p.panStereo = sound.pan;
-        p.bypassEffects = sound.bypass;
-        p.loop = sound.loop;
-        if (sound.rand_min != null)
+        p.pitch = sound._pitch;
+        p.panStereo = sound._pan;
+        p.bypassEffects = sound._bypass;
+        p.loop = sound._loop;
+        if (sound._rand_min != null)
         {
-            p.pitch *= Random.Range(sound.rand_min.Value, sound.rand_max.Value);
+            p.pitch *= Random.Range(sound._rand_min.Value, sound._rand_max.Value);
         }
         volume *= MasterVolume;
-        volume *= sound.volume;
+        volume *= sound._volume;
         p.volume = volume;
-        if(sound.pos != null)
+        if(sound._pos != null)
         {
-            AudioSource.PlayClipAtPoint(p.clip, sound.pos.Value, volume);
+            AudioSource.PlayClipAtPoint(p.clip, sound._pos.Value, volume);
         }
         else
         {
@@ -159,61 +159,61 @@ public class OXSound
     public string name;
     public AudioClip clip;
     public AudioSource psource;
-    public float pitch = 1;
-    public float? rand_min;
-    public float? rand_max;
-    public float volume = 1;
-    public float pan = 0;
-    public bool clipping = false;
-    public bool bypass = false;
-    public bool loop = false;
-    public float maxd = 0;
-    public Vector3? pos;
+    public float _pitch = 1;
+    public float? _rand_min;
+    public float? _rand_max;
+    public float _volume = 1;
+    public float _pan = 0;
+    public bool _clipping = false;
+    public bool _bypass = false;
+    public bool _loop = false;
+    public float _maxd = 0;
+    public Vector3? _pos;
     public OXSound(string name, float volume)
     {
         this.name = name;
-        this.volume = volume;
+        this._volume = volume;
     }
     public OXSound Pitch(float v)
     {
-        pitch = v;
+        _pitch = v;
         return this;
     }
     public OXSound Pan(float v)
     {
-        pan = v;
+        _pan = v;
         return this;
     }
     public OXSound RandomPitch(float min,float max)
     {
-        rand_min = min;
-        rand_max = max;
+        _rand_min = min;
+        _rand_max = max;
         return this;
     }
     public OXSound Position(Vector3 v)
     {
         //for 2d games MAKE SURE THE [z] CORDINATE IS SET TO THE SAME AS THE CAMERA
-        pos = v;
+        _pos = v;
         return this;
     }
     public OXSound Clipping()
     {
-        clipping = true;
+        _clipping = true;
         return this;
     }
     public OXSound BypassEffects()
     {
-        bypass = true;
+        _bypass = true;
         return this;
     }
     public OXSound Loop()
     {
-        loop = true;
+        _loop = true;
         return this;
     }
     public OXSound MaxDistance(float x)
     {
-        maxd = x;
+        _maxd = x;
         return this;
     }
 

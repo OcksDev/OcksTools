@@ -32,19 +32,19 @@ public class SpawnSystem : MonoBehaviour
     public static GameObject Spawn(SpawnData sp)
     {
         GameObject a = null;
-        if (sp.dospawn)
+        if (sp._dospawn)
         {
-            a = BasicSpawn(sp.nerd, sp.pos, sp.rot, sp.parent);
+            a = BasicSpawn(sp.nerd, sp._pos, sp._rot, sp._parent);
             sp.GameObject = a;
         }
         else
         {
             a = sp.GameObject;
         }
-        Tags.AddObjectToTag(a, sp.IDValue, "Exist");
-        Tags.AddObjectToTag(sp, sp.IDValue, "Spawns");
+        Tags.AddObjectToTag(a, sp._IDValue, "Exist");
+        Tags.AddObjectToTag(sp, sp._IDValue, "Spawns");
 
-        if (sp.share && SpawnShareMethod != null)
+        if (sp._share && SpawnShareMethod != null)
         {
             SpawnShareMethod(sp.ConvertToString());
         }
@@ -67,18 +67,18 @@ public class SpawnData
 {
     public string nerd;
     public GameObject GameObject;
-    public string IDValue;
-    public Vector3 pos;
-    public Quaternion rot = Quaternion.identity;
-    public Transform parent;
-    public string parentrefid = "";
-    public bool share;
-    public bool dospawn = true;
+    public string _IDValue;
+    public Vector3 _pos;
+    public Quaternion _rot = Quaternion.identity;
+    public Transform _parent;
+    public string _parentrefid = "";
+    public bool _share;
+    public bool _dospawn = true;
     public Dictionary<string, string> data = new Dictionary<string, string>();
     public SpawnData(string nerd)
     {
         this.nerd = nerd;
-        IDValue = Tags.GenerateID();
+        _IDValue = Tags.GenerateID();
     }
     public SpawnData(string nerd,int i)
     {
@@ -88,38 +88,38 @@ public class SpawnData
 
     public SpawnData Position(Vector3 pos)
     {
-        this.pos = pos;
+        this._pos = pos;
         return this;
     }
     public SpawnData Rotation(Quaternion pos)
     {
-        this.rot = pos;
+        this._rot = pos;
         return this;
     }
     public SpawnData Parent(Transform p)
     {
-        this.parent = p;
+        this._parent = p;
         return this;
     }
     public SpawnData Parent(string id)
     {
-        this.parent = Tags.GetFromTag<GameObject>("Exist", id).transform;
+        this._parent = Tags.GetFromTag<GameObject>("Exist", id).transform;
         return this;
     }
     public SpawnData ParentFromRef(string refd)
     {
-        this.parent = Tags.refs[refd].transform;
-        parentrefid = refd;
+        this._parent = Tags.refs[refd].transform;
+        _parentrefid = refd;
         return this;
     }
     public SpawnData MultiplayerShare()
     {
-        share = true; 
+        _share = true; 
         return this;
     }
     public SpawnData DontSpawn(GameObject a)
     {
-        dospawn = false;
+        _dospawn = false;
         GameObject = a;
         return this;
     }
@@ -130,7 +130,7 @@ public class SpawnData
     }
     public SpawnData ID(string i)
     {
-        this.IDValue = i;
+        this._IDValue = i;
         return this;
     }
 
@@ -139,19 +139,19 @@ public class SpawnData
     {
         Dictionary<string,string> da = new Dictionary<string,string>();
         da.Add("nerd", nerd);
-        da.Add("ID", IDValue);
-        if(pos != default)da.Add("pos", pos.ToString());
-        if (rot != Quaternion.identity) da.Add("rot", rot.ToString());
-        if (parent != null)
+        da.Add("ID", _IDValue);
+        if(_pos != default)da.Add("pos", _pos.ToString());
+        if (_rot != Quaternion.identity) da.Add("rot", _rot.ToString());
+        if (_parent != null)
         {
-            if (parentrefid == "")
+            if (_parentrefid == "")
             {
-                da.Add("par", Tags.GetIDOf(parent.gameObject));
+                da.Add("par", Tags.GetIDOf(_parent.gameObject));
             }
             else
             {
                 da.Add("par", "");
-                da.Add("par_id", parentrefid);
+                da.Add("par_id", _parentrefid);
             }
         }
         if(data.Count > 0)da.Add("dat", Converter.EscapedDictionaryToString(data, "!", "?"));
@@ -165,20 +165,20 @@ public class SpawnData
     {
         Dictionary<string,string> da = Converter.EscapedStringToDictionary(a, ":", ";");
         nerd = da["nerd"];
-        IDValue = da["ID"];
-        if (da.ContainsKey("pos")) pos = Converter.StringToVector3(da["pos"]);
-        if (da.ContainsKey("rot")) rot = Converter.StringToQuaternion(da["rot"]);
+        _IDValue = da["ID"];
+        if (da.ContainsKey("pos")) _pos = Converter.StringToVector3(da["pos"]);
+        if (da.ContainsKey("rot")) _rot = Converter.StringToQuaternion(da["rot"]);
         if (da.ContainsKey("dat")) data = Converter.EscapedStringToDictionary(da["dat"], "!", "?");
         if (da.ContainsKey("par"))
         {
 
             if (!da.ContainsKey("par_id"))
             {
-                parent = Tags.GetFromTag<GameObject>("Exist", da["par"]).transform;
+                _parent = Tags.GetFromTag<GameObject>("Exist", da["par"]).transform;
             }
             else
             {
-                parent = Tags.refs[da["par_id"]].transform;
+                _parent = Tags.refs[da["par_id"]].transform;
             }
         }
     }
