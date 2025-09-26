@@ -621,3 +621,59 @@ public class OXCommandData
     public string raw = "";
     public string raw_caps = "";
 }
+
+[System.Serializable]
+public class MultiRef<A, B>
+{
+    public A a;
+    public B b;
+    public MultiRef(A a, B b)
+    {
+        this.a = a;
+        this.b = b;
+    }
+}
+
+[System.Serializable]
+public class MultiRef<A, B, C>
+{
+    public A a;
+    public B b;
+    public C c;
+    public MultiRef(A a, B b, C c)
+    {
+        this.a = a;
+        this.b = b;
+        this.c = c;
+    }
+}
+[System.Serializable]
+public class MultiRef<A, B, C, D>
+{
+    public A a;
+    public B b;
+    public C c;
+    public D d;
+    public MultiRef(A a, B b, C c, D d)
+    {
+        this.a = a;
+        this.b = b;
+        this.c = c;
+        this.d = d;
+    }
+}
+
+[System.Serializable]
+public class SDictionary<A, B>
+{
+    public List<MultiRef<A, B>> List = new List<MultiRef<A,B>>();
+    public Dictionary<A,B> Dict = new Dictionary<A,B>();
+    public void Compile()
+    {
+        Dict.Clear();
+        foreach(var a in List)
+        {
+            Dict.Add(a.a, a.b);
+        }
+    }
+}
