@@ -31,6 +31,21 @@ public static class Converter
                     return (A)(object)long.Parse(data);
                 case "Boolean":
                     return (A)(object)bool.Parse(data);
+                case "Decimal":
+                    return (A)(object)decimal.Parse(data);
+                case "Vector2":
+                    return (A)(object)data.StringToVector2();
+                case "Vector2Int":
+                    return (A)(object)data.StringToVector2Int();
+                case "Vector3":
+                    return (A)(object)data.StringToVector3();
+                case "Vector3Int":
+                    return (A)(object)data.StringToVector3Int();
+                case "Quaternion":
+                    return (A)(object)data.StringToQuaternion();
+                case "Color":
+                case "Color32":
+                    return (A)(object)data.StringToColor();
                 default:
                     throw new Exception($"No conversion created for type \"{typeof(A).Name}\"");
             }
@@ -38,6 +53,15 @@ public static class Converter
         return (A)ConversionMethods[typename](data);
     }
 
+    public static List<string> AListToStringlist<A>(this List<A> eee)
+    {
+        var a = new List<string>();
+        foreach (var b in eee)
+        {
+            a.Add(b.ToString());
+        }
+        return a;
+    }
     public static int BoolToInt(this bool a)
     {
         return a ? 1 : 0;
@@ -48,7 +72,7 @@ public static class Converter
     }
 
     public static string ListToString(this List<string> eee, string split = ", ")
-    {
+    { 
         return String.Join(split, eee);
     }
 
@@ -63,6 +87,15 @@ public static class Converter
         foreach (var key in dic)
         {
             t.Add(key.Key.ToString(), key.Value.ToString());
+        }
+        return t;
+    }
+    public static Dictionary<A,B> StringDictionaryToABDictionary<A,B>(this Dictionary<string, string> dic)
+    {
+        var t = new Dictionary<A,B>();
+        foreach (var key in dic)
+        {
+            t.Add(key.Key.StringToObject<A>(), key.Value.StringToObject<B>());
         }
         return t;
     }

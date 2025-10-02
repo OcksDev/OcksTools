@@ -31,6 +31,7 @@
   - All methods are now Extension Methods
   - New StringToQuaternion()
   - New ABDictionaryToStringDictionary()
+  - New AListToStringList()
   - New DictionaryToRead()
   - New StringToObject<>()
 - Random Functions Improvements

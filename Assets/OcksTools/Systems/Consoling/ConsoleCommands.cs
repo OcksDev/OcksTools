@@ -24,28 +24,13 @@ public class ConsoleCommands : MonoBehaviour
         var a = "50".StringToObject<double>();
         a += 50;
         Console.Log(a);
-        /*var d = new Dictionary<string, string>()
-        {
-            { "Hello", "1" },
-            { "A", "2" },
-            { "B", "3" },
-            { "C", "4" },
-            { "Dingler", "5" },
-        }
-            
-            ;
-
-        try
-        {
-            d.DictionaryToRead().Log();
-
-            var a = d.StringDictionaryToABDictionary<string, TestClass>();
-            a.DictionaryToRead().Log();
-        }
-        catch(System.Exception e)
-        {
-            Console.Log(e.ToString());
-        }*/
+    }
+    public static void Test_sete()
+    {
+        string cooldata = "original";
+        Console.Log(cooldata);
+        GlobalEvent.Set(out cooldata, "new data", "test event");
+        Console.Log(cooldata);
     }
     public static void Test_circle(OXCommandData r)
     {

@@ -198,6 +198,7 @@ public class ConsoleLol : MonoBehaviour
             .Append(new OXCommand("escape").Action(ConsoleCommands.Test_escape))
             .Append(new OXCommand("max").Action(ConsoleCommands.Test_max))
             .Append(new OXCommand("dict").Action(ConsoleCommands.Test_dict))
+            .Append(new OXCommand("sete").Action(ConsoleCommands.Test_sete))
             .Append(new OXCommand("comp")
                 .Append(new OXCommand(OXCommand.ExpectedInputType.String)
                     .Append(new OXCommand(OXCommand.ExpectedInputType.String).Action(ConsoleCommands.Test_comp))))

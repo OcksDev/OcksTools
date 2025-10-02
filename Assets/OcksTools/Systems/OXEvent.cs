@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GlobalEvent
+public static class GlobalEvent
 {
     private static Dictionary<string, OXEvent> Nerds = new Dictionary<string, OXEvent>();
     public static void Append(string even, string name, Action method)
@@ -26,6 +26,14 @@ public class GlobalEvent
     {
         if(Nerds.ContainsKey(even)) Nerds[even].Invoke();
     }
+
+    public static A Set<A>(out A banana, A newval, string eventt)
+    {
+        banana = newval;
+        Invoke(eventt);
+        return banana;
+    }
+
 }
 
 public class GlobalMethod
