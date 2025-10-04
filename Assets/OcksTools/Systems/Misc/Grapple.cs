@@ -30,16 +30,16 @@ public class Grapple : MonoBehaviour
 
         if (Input.GetKey(KeyCode.Mouse0))
         {
-            rig.velocity += new Vector2(a.x, a.y);
+            rig.linearVelocity += new Vector2(a.x, a.y);
             var c = b;
             c.z = 0;
             Debug.DrawLine(transform.position, c, new Color32(255, 255, 255, 255), 0.02f);
         }
-        if(Mathf.Abs(rig.velocity.x) > rg_max_vel)
+        if(Mathf.Abs(rig.linearVelocity.x) > rg_max_vel)
         {
-            var bb = rig.velocity;
+            var bb = rig.linearVelocity;
             bb.x *= 0.97f;
-            rig.velocity = bb;
+            rig.linearVelocity = bb;
         }
         Vector3 m = Vector3.zero;
         if (Input.GetKey(KeyCode.A))
@@ -59,6 +59,6 @@ public class Grapple : MonoBehaviour
             m -= Vector3.up;
         }
         m *= movespeed;
-        rig.velocity += new Vector2(m.x, m.y);
+        rig.linearVelocity += new Vector2(m.x, m.y);
     }
 }

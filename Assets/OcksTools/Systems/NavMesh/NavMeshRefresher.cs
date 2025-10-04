@@ -5,7 +5,7 @@ using UnityEngine.AI;
 
 public class NavMeshRefresher : MonoBehaviour
 {
-    private int ij = 0;
+   /* private int ij = 0;
     private NavMeshSurface2d navMeshSurface2D;
     public bool ActiveRefresh = false;
     // Start is called before the first frame update
@@ -39,5 +39,5 @@ public class NavMeshRefresher : MonoBehaviour
             navMeshSurface2D.BuildNavMesh();
         }
     }
-
+   */
 }
