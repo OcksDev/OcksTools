@@ -201,8 +201,9 @@ public class GISItem
     }
 
 
-    public string ItemToString()
+    public override string ToString()
     {
+        if (this == null) return "NULL";
         string e = "";
         var def = GetDefaultData();
 
@@ -216,6 +217,7 @@ public class GISItem
         e = Converter.EscapedDictionaryToString(bb, "~|~", "~o~");
         return e;
     }
+    [ConversionMethod]
     public void StringToItem(string e)
     {
         setdefaultvals();

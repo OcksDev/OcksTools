@@ -10,9 +10,11 @@ public static class Converter
 
     public static Dictionary<string, Func<string,object>> ConversionMethods = new Dictionary<string, Func<string, object>>();
 
-    public static A StringToObject<A>(this string data)
+
+    // to use custom objects, mark a function which takes in a string as [ConversionMethod]
+    public static A StringToObject<A>(this string data, string? explicit_type = null)
     {
-        string typename = typeof(A).Name;
+        string typename = explicit_type != null ? explicit_type : typeof(A).Name;
         if (!ConversionMethods.ContainsKey(typename))
         {
             switch (typename)
@@ -53,12 +55,41 @@ public static class Converter
         return (A)ConversionMethods[typename](data);
     }
 
-    public static List<string> AListToStringlist<A>(this List<A> eee)
+    public static List<string> AListToStringList<A>(this List<A> eee)
     {
         var a = new List<string>();
         foreach (var b in eee)
         {
             a.Add(b.ToString());
+        }
+        return a;
+    }
+    public static List<B> AListToBList_DownCast<A,B>(this List<A> eee) where A : B
+    {
+        var a = new List<B>();
+        foreach (var b in eee)
+        {
+            a.Add((B)b);
+        }
+        return a;
+    }
+    public static List<B> AListToBList_UpCast<A,B>(this List<A> eee) where B : A
+    {
+        var a = new List<B>();
+        foreach (var b in eee)
+        {
+            a.Add((B)b);
+        }
+        return a;
+    }
+    public static List<A> StringListToAList<A>(this List<string> eee)
+    {
+        var a = new List<A>();
+        string tA = typeof(A).Name;
+        foreach (var b in eee)
+        {
+            var dd = b.StringToObject<A>(tA);
+            a.Add(dd);
         }
         return a;
     }
@@ -71,7 +102,7 @@ public static class Converter
         return a == 1;
     }
 
-    public static string ListToString(this List<string> eee, string split = ", ")
+    public static string ListToString<A>(this List<A> eee, string split = ", ")
     { 
         return String.Join(split, eee);
     }
@@ -93,9 +124,12 @@ public static class Converter
     public static Dictionary<A,B> StringDictionaryToABDictionary<A,B>(this Dictionary<string, string> dic)
     {
         var t = new Dictionary<A,B>();
+        string tA = typeof(A).Name;
+        string tB = typeof(B).Name;
         foreach (var key in dic)
         {
-            t.Add(key.Key.StringToObject<A>(), key.Value.StringToObject<B>());
+            t.Add(key.Key.StringToObject<A>(tA), 
+                  key.Value.StringToObject<B>(tB));
         }
         return t;
     }
@@ -109,7 +143,7 @@ public static class Converter
         return ListToString(a, "\n");
     }
 
-    public static string DictionaryToString(this Dictionary<string, string> dic, string splitter = "<K>", string splitter2 = "<->")
+    public static string DictionaryToString<A,B>(this Dictionary<A, B> dic, string splitter = "<K>", string splitter2 = "<->")
     {
         List<string> list = new List<string>();
         foreach (var a in dic)
@@ -147,13 +181,13 @@ public static class Converter
         }
         return dic;
     }
-    public static string EscapedListToString(this List<string> eee, string split = ", ")
+    public static string EscapedListToString<A>(this List<A> eee, string split = ", ")
     {
-        List<string> dupe = new List<string>(eee);
+        List<string> dupe = new List<string>();
         List<string> esc = new List<string>() { split };
-        for (int i = 0; i < dupe.Count; i++)
+        for (int i = 0; i < eee.Count; i++)
         {
-            dupe[i] = EscapeString(dupe[i], esc);
+            dupe.Add(EscapeString(eee[i].ToString(), esc));
         }
         return String.Join(split, dupe);
     }
@@ -169,13 +203,13 @@ public static class Converter
         return dupe;
     }
 
-    public static string EscapedDictionaryToString(this Dictionary<string, string> dic, string splitter = "<K>", string splitter2 = "<->")
+    public static string EscapedDictionaryToString<A, B>(this Dictionary<A, B> dic, string splitter = "<K>", string splitter2 = "<->")
     {
         List<string> list = new List<string>();
         List<string> esc = new List<string>() { splitter, splitter2 };
         foreach (var a in dic)
         {
-            list.Add(EscapeString(a.Key, esc) + splitter2 + EscapeString(a.Value, esc));
+            list.Add(EscapeString(a.Key.ToString(), esc) + splitter2 + EscapeString(a.Value.ToString(), esc));
         }
         return ListToString(list, splitter);
     }

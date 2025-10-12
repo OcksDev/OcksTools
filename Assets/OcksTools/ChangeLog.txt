@@ -24,9 +24,7 @@
 - GIS Improvements
   - New Clear() and Clear(GISItem) methods to wipe either all items or all items of a specific type
   - Majorly simplified the ItemToString and StringToItem methods
-  - Added toggleable optimization setting for GISDisplay, to not update the display when the object reference hasn't changed
-    - Be careful, directly modifying the properies of an item without changing the reference will not automatically update the display (as it is not updating every tick with this optimization)
-    - Default is opted in
+  - ItemToString() changed to override ToString() instead 
 - Converter Improvements!
   - All methods are now Extension Methods
   - New StringToQuaternion()

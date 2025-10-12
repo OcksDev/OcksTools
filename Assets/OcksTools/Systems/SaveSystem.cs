@@ -26,7 +26,7 @@ public class SaveSystem : MonoBehaviour
     private void Awake()
     {
         if (Instance == null) Instance = this;
-        
+
     }
     private void Start()
     {
@@ -42,13 +42,13 @@ public class SaveSystem : MonoBehaviour
         InputManager.AssembleTheCodes();
         var s = SoundSystem.Instance;
         List<string> list = new List<string>();
-        Dictionary<string,string> dic = new Dictionary<string, string>();
+        Dictionary<string, string> dic = new Dictionary<string, string>();
 
 
 
         GetDataFromFile(dict);
 
-        dic = GetDict("keybinds", new Dictionary<string,string>(), dict);
+        dic = GetDict("keybinds", new Dictionary<string, string>(), dict);
         List<KeyCode> shungite = new List<KeyCode>();
         if (dic.Count > 0)
         {
@@ -56,7 +56,7 @@ public class SaveSystem : MonoBehaviour
             {
                 list = Converter.StringToList(a.Value);
                 shungite.Clear();
-                foreach(var key in list)
+                foreach (var key in list)
                 {
                     shungite.Add(InputManager.namekeys[key]);
                 }
@@ -64,7 +64,7 @@ public class SaveSystem : MonoBehaviour
             }
         }
 
-        if(s != null)
+        if (s != null)
         {
             s.MasterVolume = float.Parse(GetString("snd_mas", "1", dict));
             s.SFXVolume = float.Parse(GetString("snd_sfx", "1", dict));
@@ -88,11 +88,11 @@ public class SaveSystem : MonoBehaviour
         foreach (var a in InputManager.gamekeys)
         {
             list.Clear();
-            foreach(var b in a.Value)
+            foreach (var b in a.Value)
             {
                 list.Add(InputManager.keynames[b]);
             }
-            dic.Add(a.Key,Converter.ListToString(list));
+            dic.Add(a.Key, Converter.ListToString(list));
         }
         SetDict("keybinds", dic, dict);
         //PlayerPrefs.SetInt("UnitySelectMonitor", index); // sets the monitor that unity uses
@@ -145,7 +145,7 @@ public class SaveSystem : MonoBehaviour
         }
         return ""; //code never reaches here but it makes the compiler shut up
     }
-    
+
     public List<string> GetList(string key, List<string> defaul = null, string dict = "def")
     {
         //use this method to properly query data 
@@ -176,10 +176,17 @@ public class SaveSystem : MonoBehaviour
                 }
             case SaveMethod.PlayerPrefs:
                 var cd = Converter.EscapedStringToList(PlayerPrefs.GetString($"{dict}_{key}", ""));
-                return cd.Count > 0?cd:defaul;
+                return cd.Count > 0 ? cd : defaul;
         }
         return null; //code never reaches here but it makes the compiler shut up
     }
+
+    public List<A> GetList<A>(string key, List<A> defaul = null, string dict = "def")
+    {
+        return GetList(key, defaul.AListToStringList(), dict).StringListToAList<A>();
+    }
+
+
     public Dictionary<string,string> GetDict(string key, Dictionary<string, string> defaul = null, string dict = "def")
     {
         //use this method to properly query data 
@@ -215,6 +222,10 @@ public class SaveSystem : MonoBehaviour
         return null; //code never reaches here but it makes the compiler shut up
     }
 
+    public Dictionary<A, B> GetDict<A, B>(string key, Dictionary<A, B> defaul = null, string dict = "def")
+    {
+        return GetDict(key, defaul.ABDictionaryToStringDictionary(), dict).StringDictionaryToABDictionary<A,B>();
+    }
 
     public void SetString(string key, string data, string dict = "def")
     {
@@ -264,6 +275,10 @@ public class SaveSystem : MonoBehaviour
                 break;
         }
     }
+    public void SetList<A>(string key, List<A> data, string dict = "def")
+    {
+        SetList(key, data.AListToStringList(), dict);
+    }
     
     public void SetDict(string key, Dictionary<string,string> data, string dict = "def")
     {
@@ -288,6 +303,11 @@ public class SaveSystem : MonoBehaviour
                 PlayerPrefs.SetString($"{dict}_{key}", Converter.EscapedDictionaryToString(data));
                 break;
         }
+    }
+
+    public void SetDict<A,B>(string key, Dictionary<A, B> data, string dict = "def")
+    {
+        SetDict(key, data.ABDictionaryToStringDictionary(), dict);
     }
 
 
