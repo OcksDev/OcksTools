@@ -218,6 +218,13 @@ public class GISItem
         return e;
     }
     [ConversionMethod]
+    public GISItem ConvertToItem(string e)
+    {
+        var a = new GISItem();
+        a.StringToItem(e);
+        return a;
+    }
+
     public void StringToItem(string e)
     {
         setdefaultvals();

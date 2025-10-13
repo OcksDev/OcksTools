@@ -25,19 +25,27 @@
   - New Clear() and Clear(GISItem) methods to wipe either all items or all items of a specific type
   - Majorly simplified the ItemToString and StringToItem methods
   - ItemToString() changed to override ToString() instead 
+  - GISContainer save/loading now incorperates more streamlined code
 - Converter Improvements!
   - All methods are now Extension Methods
+  - Many string exclusive converstion methods now take generic objects which automatically applies .ToString()
+  - (Important) New StringToObject<>()
   - New StringToQuaternion()
-  - New ABDictionaryToStringDictionary()
-  - New AListToStringList()
+  - New ABDictionaryToStringDictionary<>()
+  - New StringDictionaryToABDictionary<>()
+  - New AListToStringList<>()
+  - New StringListToAList<>()
   - New DictionaryToRead()
-  - New StringToObject<>()
+  - New AListToBList_DownCast<>()
+  - New AListToBList_UpCast<>()
 - Random Functions Improvements
   - Some methods have been extracted into the static class OXFunctions and made into Extension Methods.
   - Mod() now has varients for float, double, and long
 - Console Improvements
   - Log and LogError now can take generic objects as inputs, no need to run .ToString() on non-strings now (they are also now Extension Methods)
   - Migrated command assembling event to use the Global Event system.
+- Save System Improvements
+  - Arbitrary object getting/setting now works, along with related get/sets on object lists and object dictionaries
 - Misc Changes
   - Dialog attribute "Show" changed to "Text"
   - Some organizing 

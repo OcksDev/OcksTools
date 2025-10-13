@@ -145,6 +145,10 @@ public class SaveSystem : MonoBehaviour
         }
         return ""; //code never reaches here but it makes the compiler shut up
     }
+    public A GetObject<A>(string key, A defaul = default, string dict = "def")
+    {
+        return GetString(key, defaul.ToString(), dict).StringToObject<A>();
+    }
 
     public List<string> GetList(string key, List<string> defaul = null, string dict = "def")
     {
@@ -251,6 +255,12 @@ public class SaveSystem : MonoBehaviour
                 break;
         }
     }
+    public void SetObject<A>(string key, A data, string dict = "def")
+    {
+        SetString(key, data.ToString(), dict);
+    }
+
+
     public void SetList(string key, List<string> data, string dict = "def")
     {
         switch (SaveMethod_)

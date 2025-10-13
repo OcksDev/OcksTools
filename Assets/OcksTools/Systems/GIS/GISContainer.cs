@@ -163,15 +163,8 @@ public class GISContainer : MonoBehaviour
         if (SaveLoadData)
         {
             GISLol.Instance.LoadTempForAll();
-            List<string> a = new List<string>();
-            List<string> b = new List<string>();
 
-            foreach (var p in slots)
-            {
-                a.Add(p.Held_Item.ItemToString());
-            }
-
-            SaveSystem.Instance.SetList(GetName(), a, dict);
+            SaveSystem.Instance.SetList(GetName(), slots, dict);
         }
     }
 
@@ -197,15 +190,12 @@ public class GISContainer : MonoBehaviour
             }
             List<string> a = new List<string>();
             List<string> b = new List<string>();
-            var gg = SaveSystem.Instance.GetList("cnt_" + Name, new List<string>());
+            var gg = SaveSystem.Instance.GetList("cnt_" + Name, new List<GISItem>());
             if (gg.Count > 0)
             {
                 int i = 0;
-                GISItem ghj = null;
-                foreach (var st in gg)
+                foreach (var ghj in gg)
                 {
-                    ghj = new GISItem();
-                    ghj.StringToItem(st);
                     ghj.Container = this;
 
                     if (IsAbstract)

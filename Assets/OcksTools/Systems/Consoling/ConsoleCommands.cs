@@ -20,10 +20,16 @@ public class ConsoleCommands : MonoBehaviour
     public static void Test_dict()
     {
         Console.Log("50".StringToObject<TestClass>());
+        "---".Log();
+        List<string> bananas = new List<string>();
+        bananas.Add("1");
+        bananas.Add("2");
+        bananas.Add("3");
+        bananas.Add("4");
+        bananas.ListToString().Log();
+        var dd = bananas.StringListToAList<TestClass>();
+        dd.ListToString().Log();
 
-        var a = "50".StringToObject<double>();
-        a += 50;
-        Console.Log(a);
     }
     public static void Test_sete()
     {
