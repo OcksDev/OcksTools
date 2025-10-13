@@ -10,7 +10,7 @@
 - New Username Generator Tool (its kinda mid, so I put it in Misc)
 - New Global Method System (within OXEvent)
 - Complete Spawn System Overhaul!
-  - Completely remade it from the ground up, now much more streamlined
+  - Completely remade it from the ground up, now much more streamlined and modular
   - Multiplayer functionality is now handled so much better, no need to uncomment code to get it working now
 - Sound System Improvements!
   - Overhauled how sounds are given and parsed, much more modular and expandable
@@ -25,10 +25,10 @@
   - New Clear() and Clear(GISItem) methods to wipe either all items or all items of a specific type
   - Majorly simplified the ItemToString and StringToItem methods
   - ItemToString() changed to override ToString() instead 
-  - GISContainer save/loading now incorperates more streamlined code
+  - GISContainer save/loading now has more streamlined code
 - Converter Improvements!
   - All methods are now Extension Methods
-  - Many string exclusive converstion methods now take generic objects which automatically applies .ToString()
+  - Many string exclusive converstion methods now take generic objects that then automatically apply .ToString()
   - (Important) New StringToObject<>()
   - New StringToQuaternion()
   - New ABDictionaryToStringDictionary<>()
@@ -49,7 +49,8 @@
 - Misc Changes
   - Dialog attribute "Show" changed to "Text"
   - Some organizing 
-  - new ConversionAgrigator class which is marked as unstable for now.
+  - New MultiRef classes for between 2-4 types
+  - New ConversionAgrigator class which is marked as unstable for now.
     - I am trying to make a generalized thing to convert [string -> generic type], but its hard af
 ------------
 
