@@ -15,7 +15,7 @@ public class MenuHandler : MonoBehaviour
         {
             BaseMenuStates.Add(state.Name, state);
             CurrentMenuStates.Add(state.Name, new MenuState(state));
-            state.Menu.SetActive(state.State);
+            SetStates(state.Menu, state.State);
         }
     }
 
@@ -28,7 +28,7 @@ public class MenuHandler : MonoBehaviour
     {
         if (CurrentMenuStates[name].State == newstate) return;
         CurrentMenuStates[name].State = newstate;
-        CurrentMenuStates[name].Menu.SetActive(newstate);
+        SetStates(CurrentMenuStates[name].Menu, newstate);
         if (!update) return;
         if (newstate)
         {
@@ -59,14 +59,17 @@ public class MenuHandler : MonoBehaviour
     {
         SetMenuState(menu, !CurrentMenuStates[menu].State, true);
     }
-
+    public static void SetStates(List<GameObject> gms, bool newstate)
+    {
+        foreach(var a in gms) a.SetActive(newstate);
+    }
 }
 
 [System.Serializable]
 public class MenuState
 {
     public string Name;
-    public GameObject Menu;
+    public List<GameObject> Menu;
     public bool State;
     public OXEvent OnOpen = new OXEvent();
     public OXEvent OnClose = new OXEvent();
