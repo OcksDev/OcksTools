@@ -70,6 +70,10 @@ public class MenuHandler : MonoBehaviour
         var cum = CurrentMenuStates[name];
         StartCoroutine(AnimSmegging(cum, anim));
     }
+    public void PlayAnimOneShot(MenuState cum, System.Func<MenuState, IEnumerator> anim)
+    {
+        StartCoroutine(AnimSmegging(cum, anim));
+    }
     public IEnumerator AnimSmegging(MenuState cum, System.Func<MenuState, IEnumerator> anim)
     {
         if ( cum.AnimLocked) yield break;
@@ -125,12 +129,19 @@ public class MenuState
     public System.Func<MenuState, IEnumerator> ClosingAnimation;
     public OXEvent OnOpen = new OXEvent();
     public OXEvent OnClose = new OXEvent();
+    [HideInInspector]
     public bool AnimLocked = false;
     public MenuState(MenuState a)
     {
         Name = a.Name;
         Menu = a.Menu;
         State = a.State;
+    }
+    public MenuState(List<GameObject> nerds)
+    {
+        Name = "-TEMP-";
+        Menu = nerds;
+        State = true;
     }
 }
 
@@ -143,11 +154,23 @@ public class ExampleMenuAnims
         yield return OXLerp.Linear((x) =>
         {
             float overshoot = RandomFunctions.EaseOvershoot(x, 4, 2f);
-            foreach(var a in cum.Menu)
+            foreach (var a in cum.Menu)
             {
-                a.transform.localScale= Vector3.one * overshoot;
+                a.transform.localScale = Vector3.one * overshoot;
             }
         }, 0.5f);
+    }
+    public static IEnumerator TVShut(MenuState cum)
+    {
+        yield return OXLerp.Linear((x) =>
+        {
+            float overshootx = RandomFunctions.EaseIn(x,3);
+            float overshooty = RandomFunctions.EaseIn(x,9);
+            foreach (var a in cum.Menu)
+            {
+                a.transform.localScale = new Vector3(1 + overshootx, 1-overshooty);
+            }
+        }, 0.35f);
     }
 }
 

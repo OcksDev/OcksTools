@@ -15,7 +15,7 @@ public class MenuTester : MonoBehaviour
         MenuHandler.CurrentMenuStates["m1"].OnClose.Append(() => Debug.Log("m1_close") ) ;
 
         MenuHandler.CurrentMenuStates["m3"].OpeningAnimation = ExampleMenuAnims.PopIn;
-        MenuHandler.CurrentMenuStates["m3"].ClosingAnimation = m3close;
+        MenuHandler.CurrentMenuStates["m3"].ClosingAnimation = ExampleMenuAnims.TVShut;
     }
 
     public IEnumerator m3open(MenuState cum)
