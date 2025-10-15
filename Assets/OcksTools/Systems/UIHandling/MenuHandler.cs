@@ -40,7 +40,7 @@ public class MenuHandler : MonoBehaviour
         cum.AnimLocked = true;
         if (!forced && !newstate && cum.ClosingAnimation != null)
         {
-            yield return StartCoroutine(cum.ClosingAnimation(cum));
+            yield return StartCoroutine(cum.ClosingAnimation(cum.Menu));
         }
 
         cum.State = newstate;
@@ -48,7 +48,7 @@ public class MenuHandler : MonoBehaviour
 
         if (!forced && newstate && cum.OpeningAnimation != null)
         {
-            yield return StartCoroutine(cum.OpeningAnimation(cum));
+            yield return StartCoroutine(cum.OpeningAnimation(cum.Menu));
         }
 
 
@@ -125,8 +125,8 @@ public class MenuState
     public string Name;
     public List<GameObject> Menu;
     public bool State;
-    public System.Func<MenuState, IEnumerator> OpeningAnimation;
-    public System.Func<MenuState, IEnumerator> ClosingAnimation;
+    public System.Func<List<GameObject>, IEnumerator> OpeningAnimation;
+    public System.Func<List<GameObject>, IEnumerator> ClosingAnimation;
     public OXEvent OnOpen = new OXEvent();
     public OXEvent OnClose = new OXEvent();
     [HideInInspector]
@@ -149,28 +149,71 @@ public class MenuState
 
 public class ExampleMenuAnims
 {
-    public static IEnumerator PopIn(MenuState cum)
+    public static IEnumerator PopIn(List<GameObject> cum)
     {
         yield return OXLerp.Linear((x) =>
         {
             float overshoot = RandomFunctions.EaseOvershoot(x, 4, 2f);
-            foreach (var a in cum.Menu)
+            foreach (var a in cum)
             {
                 a.transform.localScale = Vector3.one * overshoot;
             }
         }, 0.5f);
     }
-    public static IEnumerator TVShut(MenuState cum)
+    public static IEnumerator WobbleIn_VH(List<GameObject> cum)
+    {
+        yield return OXLerp.Linear((x) =>
+        {
+            float off = 0.15f;
+            var y = x * (1 + off);
+            float overshoot1 = RandomFunctions.EaseOvershoot(Mathf.Clamp01(y), 4, 2f);
+            float overshoot2 = RandomFunctions.EaseOvershoot(Mathf.Clamp01(y-off), 4, 2f);
+            foreach (var a in cum)
+            {
+                a.transform.localScale = new Vector3(1*overshoot2,1*overshoot1,1);
+            }
+        }, 0.5f);
+    }
+    public static IEnumerator WobbleIn_HV(List<GameObject> cum)
+    {
+        yield return OXLerp.Linear((x) =>
+        {
+            float off = 0.15f;
+            var y = x * (1 + off);
+            float overshoot1 = RandomFunctions.EaseOvershoot(Mathf.Clamp01(y), 4, 2f);
+            float overshoot2 = RandomFunctions.EaseOvershoot(Mathf.Clamp01(y-off), 4, 2f);
+            foreach (var a in cum)
+            {
+                a.transform.localScale = new Vector3(1*overshoot1,1*overshoot2,1);
+            }
+        }, 0.5f);
+    }
+    public static IEnumerator TVShut(List<GameObject> cum)
     {
         yield return OXLerp.Linear((x) =>
         {
             float overshootx = RandomFunctions.EaseIn(x,3);
             float overshooty = RandomFunctions.EaseIn(x,9);
-            foreach (var a in cum.Menu)
+            foreach (var a in cum)
             {
-                a.transform.localScale = new Vector3(1 + overshootx, 1-overshooty);
+                a.transform.localScale = new Vector3(1 + overshootx, 1-overshooty,1);
             }
         }, 0.35f);
+    }
+    public static IEnumerator TVShut_Alt(List<GameObject> cum)
+    {
+        yield return OXLerp.Linear((x) =>
+        {
+            float off = 0.35f;
+            var y = x * (1 + off);
+            float overshootx = RandomFunctions.EaseIn(Mathf.Clamp01(y-off),3);
+            float overshooty = RandomFunctions.EaseIn(Mathf.Clamp01(y),9);
+            overshooty *= 0.975f;
+            foreach (var a in cum)
+            {
+                a.transform.localScale = new Vector3(1 - overshootx, 1-overshooty,1);
+            }
+        }, 0.5f);
     }
 }
 

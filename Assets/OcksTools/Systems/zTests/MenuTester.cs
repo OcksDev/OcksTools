@@ -16,8 +16,12 @@ public class MenuTester : MonoBehaviour
 
         MenuHandler.CurrentMenuStates["m3"].OpeningAnimation = ExampleMenuAnims.PopIn;
         MenuHandler.CurrentMenuStates["m3"].ClosingAnimation = ExampleMenuAnims.TVShut;
-    }
 
+
+        MenuHandler.CurrentMenuStates["m2"].OpeningAnimation = ExampleMenuAnims.WobbleIn_VH;
+        MenuHandler.CurrentMenuStates["m2"].ClosingAnimation = ExampleMenuAnims.TVShut_Alt;
+    }
+    
     public IEnumerator m3open(MenuState cum)
     {
         var d = cum.Menu[0].transform;
