@@ -73,6 +73,15 @@ public static class Converter
         }
         return a;
     }
+    public static List<B> AListToBList<A,B>(this List<A> eee, Func<A,B> convert)
+    {
+        var a = new List<B>();
+        foreach (var b in eee)
+        {
+            a.Add(convert(b));
+        }
+        return a;
+    }
     public static List<B> AListToBList_UpCast<A,B>(this List<A> eee) where B : A
     {
         var a = new List<B>();

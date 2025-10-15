@@ -163,12 +163,7 @@ public class GISContainer : MonoBehaviour
         if (SaveLoadData)
         {
             GISLol.Instance.LoadTempForAll();
-            List<GISItem> rees = new List<GISItem>();
-            foreach(var a in slots)
-            {
-                rees.Add(a.Held_Item);
-            }
-            SaveSystem.Instance.SetList(GetName(), rees, dict);
+            SaveSystem.Instance.SetList(GetName(), slots.AListToBList((x)=>x.Held_Item), dict);
         }
     }
 

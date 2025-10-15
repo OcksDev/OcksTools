@@ -55,6 +55,7 @@
   - New DictionaryToRead()
   - New AListToBList_DownCast<>()
   - New AListToBList_UpCast<>()
+  - New AListToBList<>()
 - Random Functions Improvements
   - Some methods have been extracted into the static class OXFunctions and made into Extension Methods.
   - Mod() now has varients for float, double, and long
