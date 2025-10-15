@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class MenuTester : MonoBehaviour
@@ -12,5 +13,30 @@ public class MenuTester : MonoBehaviour
     {
         MenuHandler.CurrentMenuStates["m1"].OnOpen.Append(() => Debug.Log("m1_open") ) ;
         MenuHandler.CurrentMenuStates["m1"].OnClose.Append(() => Debug.Log("m1_close") ) ;
+
+        MenuHandler.CurrentMenuStates["m3"].OpeningAnimation = ExampleMenuAnims.PopIn;
+        MenuHandler.CurrentMenuStates["m3"].ClosingAnimation = m3close;
     }
+
+    public IEnumerator m3open(MenuState cum)
+    {
+        var d = cum.Menu[0].transform;
+        for (int i = 0; i < 25; i++)
+        {
+            d.localScale = Vector3.one * ((float)i)/25;
+            yield return new WaitForFixedUpdate();
+        }
+        d.localScale = Vector3.one;
+    }
+    public IEnumerator m3close(MenuState cum)
+    {
+        var d = cum.Menu[0].transform;
+        for (int i = 0; i < 25; i++)
+        {
+            d.localScale = Vector3.one * ((float)(25-i))/25;
+            yield return new WaitForFixedUpdate();
+        }
+        d.localScale = Vector3.zero;
+    }
+
 }
