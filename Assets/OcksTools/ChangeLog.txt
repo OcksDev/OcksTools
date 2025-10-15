@@ -62,6 +62,10 @@
 - Console Improvements
   - Log and LogError now can take generic objects as inputs, no need to run .ToString() on non-strings now (they are also now Extension Methods)
   - Migrated command assembling event to use the Global Event system.
+- Input System Improvements
+  - Added mouse scroll as valid inputs, also controller buttons
+  - Added some debug comments to clear up lock levels
+  - Removed obselete methods, making the class much easier to parse
 - Save System Improvements
   - Arbitrary object getting/setting now works, along with related get/sets on object lists and object dictionaries
 - New Username Generator Tool (its kinda mid, so I put it in Misc)

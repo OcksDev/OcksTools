@@ -45,7 +45,7 @@ public class InputManager : MonoBehaviour
         CreateKeyAllocation("jump", KeyCode.Space);
         CreateKeyAllocation("reload", KeyCode.R);
         CreateKeyAllocation("interact", KeyCode.F);
-        CreateKeyAllocation("close_menu", KeyCode.Escape);
+        CreateKeyAllocation("close_menu", new List<KeyCode>() { KeyCode.Escape, KeyCode.JoystickButton1 });
         CreateKeyAllocation("tab_menu", KeyCode.Tab);
 
         CollectInputAllocs.Invoke();
@@ -98,13 +98,14 @@ public class InputManager : MonoBehaviour
 
     public static void ResetBind(string keyname)
     {
-        //this is ResetBind but misspelled, I cant be bothered to fix this
         gamekeys[keyname] = defaultgamekeys[keyname];
     }
 
 
     public static bool GetSelected(List<string> ide)
     {
+        // ide = {"a", "b"}  locklevel = {"a", "b", "c"} returns: true
+        // ide = {"a", "b", "no"}  locklevel = {"a", "b"} returns: false
         return locklevel.Count==0 || ide.Count == 0 || ide[0] == "" 
             || ide.AllItemsFromListInList(locklevel);
     }
@@ -252,79 +253,6 @@ public class InputManager : MonoBehaviour
     {
         return IsKeyUp(baller, new List<string>() { a });
     }
-    [Obsolete]
-    public static bool IsMouseDown(int baller, List<string> ide)
-    {
-        if (!IsDie(ide)) return false;
-        if (!GetSelected(ide)) return false;
-        return Input.GetMouseButtonDown(baller);
-    }
-    [Obsolete]
-    public static bool IsMouse(int baller, List<string> ide)
-    {
-        if (!IsDie(ide)) return false;
-        if (!GetSelected(ide)) return false;
-        return Input.GetMouseButton(baller);
-    }
-    [Obsolete]
-    public static bool IsMouseUp(int baller, List<string> ide)
-    {
-        if (!IsDie(ide)) return false;
-        if (!GetSelected(ide)) return false;
-        return Input.GetMouseButtonUp(baller);
-    }
-    [Obsolete]
-    public static bool IsButtonDown(string baller, List<string> ide)
-    {
-        if (!IsDie(ide)) return false;
-        if (!GetSelected(ide)) return false;
-        return Input.GetButtonDown(baller);
-    }
-    [Obsolete]
-    public static bool IsButton(string baller, List<string> ide)
-    {
-        if (!IsDie(ide)) return false;
-        if (!GetSelected(ide)) return false;
-        return Input.GetButton(baller);
-    }
-    [Obsolete]
-    public static bool IsButtonUp(string baller, List<string> ide)
-    {
-        if (!IsDie(ide)) return false;
-        if (!GetSelected(ide)) return false;
-        return Input.GetButtonUp(baller);
-    }
-    [Obsolete]
-    public static bool IsMouseDown(int baller, string ide = "")
-    {
-        return IsMouseDown(baller, new List<string>() { ide });
-    }
-    [Obsolete]
-    public static bool IsMouse(int baller, string ide = "")
-    {
-        return IsMouse(baller, new List<string>() { ide });
-    }
-    [Obsolete]
-    public static bool IsMouseUp(int baller, string ide = "")
-    {
-        return IsMouseUp(baller, new List<string>() { ide });
-    }
-    [Obsolete]
-    public static bool IsButtonDown(string baller, string ide = "")
-    {
-        return IsButtonDown(baller, new List<string>() { ide });
-    }
-    [Obsolete]
-    public static bool IsButton(string baller, string ide = "")
-    {
-        return IsButton(baller, new List<string>() { ide });
-    }
-    [Obsolete]
-    public static bool IsButtonUp(string baller, string ide = "")
-    {
-        return IsButtonUp(baller, new List<string>() { ide });
-    }
-
     public static void SetGameKeys()
     {
         keynames.Clear();
@@ -446,6 +374,18 @@ public class InputManager : MonoBehaviour
         keynames.Add(KeyCode.Minus, "-");
         keynames.Add(KeyCode.Period, ".");
         keynames.Add(KeyCode.Comma, ",");
+        keynames.Add(KeyCode.WheelDown, "wDWN");
+        keynames.Add(KeyCode.WheelUp, "wUP");
+        keynames.Add(KeyCode.JoystickButton0, "cA");
+        keynames.Add(KeyCode.JoystickButton1, "cB");
+        keynames.Add(KeyCode.JoystickButton2, "cX");
+        keynames.Add(KeyCode.JoystickButton3, "cY");
+        keynames.Add(KeyCode.JoystickButton4, "cLB");
+        keynames.Add(KeyCode.JoystickButton5, "cRB");
+        keynames.Add(KeyCode.JoystickButton6, "cBACK");
+        keynames.Add(KeyCode.JoystickButton7, "cSTRT");
+        keynames.Add(KeyCode.JoystickButton8, "cLSB");
+        keynames.Add(KeyCode.JoystickButton9, "cRSB");
     }
 
     public static void CreateKeyAllocation(string name, KeyCode key)
