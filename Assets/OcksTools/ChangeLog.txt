@@ -7,7 +7,6 @@
   - Allows for the easy creation of linear paths. Only hard corners are supported right now, but that might change later
   - New Bezier Tool, kind of a sub-tool of the path tool, lets you easily make bezier curves and also cut them into linear segments
 - New Weighted Averages Tool
-- New Username Generator Tool (its kinda mid, so I put it in Misc)
 - New Global Method System (within OXEvent)
 - New Menu Handler System
 - Complete Spawn System Overhaul!
@@ -47,6 +46,7 @@
   - Migrated command assembling event to use the Global Event system.
 - Save System Improvements
   - Arbitrary object getting/setting now works, along with related get/sets on object lists and object dictionaries
+- New Username Generator Tool (its kinda mid, so I put it in Misc)
 - Misc Changes
   - Dialog attribute "Show" changed to "Text"
   - Some organizing 
