@@ -15,6 +15,17 @@ public class MenuHandler : MonoBehaviour
         Instance = this;
         foreach(var state in Menus)
         {
+            if (state.InitialTransforms == null) state.InitialTransforms = new Dictionary<GameObject, MultiRef<Vector3, Vector3, Quaternion>>();
+            foreach (var gm in state.Menu)
+            {
+                if (gm == null) continue;
+                state.InitialTransforms.Add(gm, new MultiRef<Vector3,Vector3,Quaternion>
+                    (
+                        gm.transform.localPosition,
+                        gm.transform.localScale,
+                        gm.transform.localRotation
+                    ));
+            }
             BaseMenuStates.Add(state.Name, state);
             CurrentMenuStates.Add(state.Name, new MenuState(state));
             SetStates(state.Menu, state.State);
@@ -26,6 +37,15 @@ public class MenuHandler : MonoBehaviour
         MenuMethods.Invoke();
     }
 
+    public bool GetMenuState(string nerd)
+    {
+        return CurrentMenuStates[nerd].State;
+    }
+    public bool GetMenuLocked(string nerd)
+    {
+        return CurrentMenuStates[nerd].AnimLocked;
+    }
+
     public void SetMenuState(string name, bool newstate, bool update = true, bool forced = false)
     {
         StartCoroutine(UpdateMenuStateEnumee(name, newstate, update, forced));
@@ -34,10 +54,12 @@ public class MenuHandler : MonoBehaviour
     public IEnumerator UpdateMenuStateEnumee(string name, bool newstate, bool update = true, bool forced = false)
     {
         var cum = CurrentMenuStates[name];
-        if (cum.State == newstate) yield break;
+        if (!forced && cum.State == newstate) yield break;
         if (!forced && cum.AnimLocked) yield break;
 
         cum.AnimLocked = true;
+        LoadInitials(cum);
+
         if (!forced && !newstate && cum.ClosingAnimation != null)
         {
             yield return StartCoroutine(cum.ClosingAnimation(cum.Menu));
@@ -45,7 +67,7 @@ public class MenuHandler : MonoBehaviour
 
         cum.State = newstate;
         SetStates(cum.Menu, newstate);
-
+        
         if (!forced && newstate && cum.OpeningAnimation != null)
         {
             yield return StartCoroutine(cum.OpeningAnimation(cum.Menu));
@@ -64,21 +86,30 @@ public class MenuHandler : MonoBehaviour
         }
         yield return null;
     }
-
-    public void PlayAnim(string name, System.Func<MenuState, IEnumerator> anim)
+    public static void LoadInitials(MenuState cum)
+    {
+        foreach(var gm in cum.Menu)
+        {
+            var dd = cum.InitialTransforms[gm];
+            gm.transform.localPosition = dd.a;
+            gm.transform.localScale = dd.b;
+            gm.transform.localRotation = dd.c;
+        }
+    }
+    public void PlayAnim(string name, System.Func<List<GameObject>, IEnumerator> anim)
     {
         var cum = CurrentMenuStates[name];
         StartCoroutine(AnimSmegging(cum, anim));
     }
-    public void PlayAnimOneShot(MenuState cum, System.Func<MenuState, IEnumerator> anim)
+    public void PlayAnimOneShot(List<GameObject> nerds, System.Func<List<GameObject>, IEnumerator> anim)
     {
-        StartCoroutine(AnimSmegging(cum, anim));
+        StartCoroutine(AnimSmegging(new MenuState(nerds), anim));
     }
-    public IEnumerator AnimSmegging(MenuState cum, System.Func<MenuState, IEnumerator> anim)
+    public IEnumerator AnimSmegging(MenuState cum, System.Func<List<GameObject>, IEnumerator> anim)
     {
         if ( cum.AnimLocked) yield break;
         cum.AnimLocked = true;
-        yield return StartCoroutine(anim(cum));
+        yield return StartCoroutine(anim(cum.Menu));
         cum.AnimLocked = false;
     }
 
@@ -124,6 +155,8 @@ public class MenuState
 {
     public string Name;
     public List<GameObject> Menu;
+    [HideInInspector]
+    public Dictionary<GameObject, MultiRef<Vector3, Vector3, Quaternion>> InitialTransforms;
     public bool State;
     public System.Func<List<GameObject>, IEnumerator> OpeningAnimation;
     public System.Func<List<GameObject>, IEnumerator> ClosingAnimation;
@@ -136,6 +169,7 @@ public class MenuState
         Name = a.Name;
         Menu = a.Menu;
         State = a.State;
+        InitialTransforms = a.InitialTransforms;
     }
     public MenuState(List<GameObject> nerds)
     {
@@ -214,6 +248,48 @@ public class ExampleMenuAnims
                 a.transform.localScale = new Vector3(1 - overshootx, 1-overshooty,1);
             }
         }, 0.5f);
+    }
+    public static IEnumerator EaseEven(List<GameObject> cum)
+    {
+        yield return OXLerp.Linear((x) =>
+        {
+            float off = 0.0f;
+            var y = x * (1 + off);
+            float overshootx = RandomFunctions.EaseIn(Mathf.Clamp01(y - off), 3);
+            float overshooty = RandomFunctions.EaseIn(Mathf.Clamp01(y), 3);
+            foreach (var a in cum)
+            {
+                a.transform.localScale = new Vector3(overshootx, overshooty, 1);
+            }
+        }, 0.35f);
+    }
+    public static IEnumerator EaseVH(List<GameObject> cum)
+    {
+        yield return OXLerp.Linear((x) =>
+        {
+            float off = 0.15f;
+            var y = x * (1 + off);
+            float overshootx = RandomFunctions.EaseIn(Mathf.Clamp01(y - off), 3);
+            float overshooty = RandomFunctions.EaseIn(Mathf.Clamp01(y), 3);
+            foreach (var a in cum)
+            {
+                a.transform.localScale = new Vector3(overshootx, overshooty, 1);
+            }
+        }, 0.35f);
+    }
+    public static IEnumerator EaseHV(List<GameObject> cum)
+    {
+        yield return OXLerp.Linear((x) =>
+        {
+            float off = 0.15f;
+            var y = x * (1 + off);
+            float overshootx = RandomFunctions.EaseIn(Mathf.Clamp01(y - off), 3);
+            float overshooty = RandomFunctions.EaseIn(Mathf.Clamp01(y), 3);
+            foreach (var a in cum)
+            {
+                a.transform.localScale = new Vector3(overshooty, overshootx, 1);
+            }
+        }, 0.35f);
     }
 }
 

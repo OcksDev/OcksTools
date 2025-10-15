@@ -20,6 +20,8 @@ public class MenuTester : MonoBehaviour
 
         MenuHandler.CurrentMenuStates["m2"].OpeningAnimation = ExampleMenuAnims.WobbleIn_VH;
         MenuHandler.CurrentMenuStates["m2"].ClosingAnimation = ExampleMenuAnims.TVShut_Alt;
+
+        MenuHandler.CurrentMenuStates["m1"].OpeningAnimation = ExampleMenuAnims.EaseVH;
     }
     
     public IEnumerator m3open(MenuState cum)
