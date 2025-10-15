@@ -73,8 +73,7 @@
   - Dialog attribute "Show" changed to "Text"
   - Some organizing 
   - New MultiRef classes for between 2-4 types
-  - New ConversionAgrigator class which is marked as unstable for now.
-    - I am trying to make a generalized thing to convert [string -> generic type], but its hard af
+  - New ConversionAgrigator class which is a helper for something in Converter
 ------------
 
 ------------
