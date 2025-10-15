@@ -14,14 +14,15 @@ public class MenuTester : MonoBehaviour
         MenuHandler.CurrentMenuStates["m1"].OnOpen.Append(() => Debug.Log("m1_open") ) ;
         MenuHandler.CurrentMenuStates["m1"].OnClose.Append(() => Debug.Log("m1_close") ) ;
 
-        MenuHandler.CurrentMenuStates["m3"].OpeningAnimation = ExampleMenuAnims.PopIn;
-        MenuHandler.CurrentMenuStates["m3"].ClosingAnimation = ExampleMenuAnims.TVShut;
+        MenuHandler.CurrentMenuStates["m3"].OpeningAnimation = OXDefaultAnimations.WobbleInEven;
+        MenuHandler.CurrentMenuStates["m3"].ClosingAnimation = OXDefaultAnimations.TVOut;
 
 
-        MenuHandler.CurrentMenuStates["m2"].OpeningAnimation = ExampleMenuAnims.WobbleIn_VH;
-        MenuHandler.CurrentMenuStates["m2"].ClosingAnimation = ExampleMenuAnims.TVShut_Alt;
+        MenuHandler.CurrentMenuStates["m2"].OpeningAnimation = OXDefaultAnimations.WobbleInVH;
+        MenuHandler.CurrentMenuStates["m2"].ClosingAnimation = OXDefaultAnimations.EaseOutVH;
 
-        MenuHandler.CurrentMenuStates["m1"].OpeningAnimation = ExampleMenuAnims.EaseVH;
+        MenuHandler.CurrentMenuStates["m1"].OpeningAnimation = OXDefaultAnimations.SpinInLeft;
+        MenuHandler.CurrentMenuStates["m1"].ClosingAnimation = OXDefaultAnimations.SpinOutRight;
     }
     
     public IEnumerator m3open(MenuState cum)

@@ -9,6 +9,23 @@
 - New Weighted Averages Tool
 - New Global Method System (within OXEvent)
 - New Menu Handler System
+  - New Menu Animations subsystem (within Animation)
+  - Includes the following default animations:
+    - WobbleInEven
+    - WobbleInVH
+    - WobbleInHV
+    - TVOut
+    - TVOutAlt
+    - SpinInLeft
+    - SpinInRight
+    - SpinOutLeft
+    - SpinOutRight
+    - EaseInEven
+    - EaseInVH
+    - EaseInHV
+    - EaseOutEven
+    - EaseOutVH
+    - EaseOutHV
 - Complete Spawn System Overhaul!
   - Completely remade it from the ground up, now much more streamlined and modular
   - Multiplayer functionality is now handled so much better, no need to uncomment code to get it working now
