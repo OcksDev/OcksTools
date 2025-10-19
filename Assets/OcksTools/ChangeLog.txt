@@ -59,6 +59,10 @@
 - Random Functions Improvements
   - Some methods have been extracted into the static class OXFunctions and made into Extension Methods.
   - Mod() now has varients for float, double, and long
+- Dialog Improvements
+  - New Attribute "InstantText" which loads the full text box rather than waiting for any delays.
+  - Fixed dataless attribute parsing in the load section of dialogs
+  - Attribute "Show" changed to "Text"
 - Console Improvements
   - Log and LogError now can take generic objects as inputs, no need to run .ToString() on non-strings now (they are also now Extension Methods)
   - Migrated command assembling event to use the Global Event system.
@@ -70,7 +74,6 @@
   - Arbitrary object getting/setting now works, along with related get/sets on object lists and object dictionaries
 - New Username Generator Tool (its kinda mid, so I put it in Misc)
 - Misc Changes
-  - Dialog attribute "Show" changed to "Text"
   - Some organizing 
   - New MultiRef classes for between 2-4 types
   - New ConversionAgrigator class which is a helper for something in Converter

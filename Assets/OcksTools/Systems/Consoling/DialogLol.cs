@@ -20,25 +20,43 @@ public class DialogLol : MonoBehaviour
     public string filename = "";
     public int linenum = 0;
     public int charnum = -1;
+    [HideInInspector]
     public float cps = -1;
+    [HideInInspector]
     public float cps2 = -1;
+    [HideInInspector]
     public float cps3 = -1;
+    [HideInInspector]
     public float pps = -1;
+    [HideInInspector]
     public float pps2 = -1;
     private int charl = 0;
     private float cp2 = -1;
     private float cp = -1;
     private float cp3 = -1;
+    [HideInInspector]
     public float AutoSkip = -1;
+    [HideInInspector]
     public string speaker = "";
+    [HideInInspector]
     public string fulltext = "";
+    [HideInInspector]
     public string color = "";
+    [HideInInspector]
     public string bg_color = "";
+    [HideInInspector]
     public string tit_color = "";
+    [HideInInspector]
     public string datatype = "Dialog";
+    [HideInInspector]
     public bool RichTextEnabled = true;
+    [HideInInspector]
+    public bool InstantShowAllText = true;
+    [HideInInspector]
     public bool CanSkip = true;
+    [HideInInspector]
     public bool CanEscape = false;
+    [HideInInspector]
     public string PlaySoundOnType = "";
     private List<string> str = new List<string>();
     private string ActiveFileName = "";
@@ -46,6 +64,10 @@ public class DialogLol : MonoBehaviour
     private Dictionary<string, string> variables = new Dictionary<string, string>();
 
     private static DialogLol instance;
+
+    public DialogDefaults TrueDefaults;
+    private DialogDefaults CurrentDefaults;
+
 
     // Start is called before the first frame update
     public static DialogLol Instance
@@ -250,19 +272,35 @@ public class DialogLol : MonoBehaviour
         }
     }
 
+    [HideInInspector]
     public bool foundendcall = false;
+    [HideInInspector]
     public bool waitforinput = false;
+    [HideInInspector]
     public bool attemptskip = false;
+    [HideInInspector]
     public bool godlyattemptskip = false;
+    [HideInInspector]
     public bool backwardskip = false;
     public bool ApplyAttribute(string key, string data, bool ignorewarning = false)
     {
+        // attribute default for file format
+        // ^var_name
         foundendcall = false;
         List<string> list = new List<string>();
         key = VariableParse(key);
         data = VariableParse(data);
+        bool is_default_set = false;
         bool succeeded = false;
+        bool succeeded_defaulting = false;
         string aaa = "";
+
+        if(key.Length > 1)
+        {
+            var starter = key[0];
+            is_default_set = starter == '^';
+        }
+
         switch (key)
         {
             case "br": //fallthrough case to make sure this works properly
@@ -277,8 +315,15 @@ public class DialogLol : MonoBehaviour
                 break;
             case "Skip":
                 // Forces a skip
-                attemptskip = true;
-                godlyattemptskip = true;
+                if (LoadingNextDialog)
+                {
+                    NextLine();
+                }
+                else
+                {
+                    attemptskip = true;
+                    godlyattemptskip = true;
+                }
                 succeeded = true;
                 break;
             case "SkipBack":
@@ -287,6 +332,10 @@ public class DialogLol : MonoBehaviour
                 godlyattemptskip = true;
                 backwardskip = true;
                 succeeded = true;
+                if (LoadingNextDialog)
+                {
+                    throw new Exception("Invalid use of this attribute lol");
+                }
                 break;
             case "AutoSkip":
                 // Automatically jumps to the next dialog line when available after x seconds
@@ -327,8 +376,16 @@ public class DialogLol : MonoBehaviour
                 break;
             case "RichText":
                 // Skips ahead in the text whenever a richtext is detected in the text
-                RichTextEnabled = data=="True";
+                RichTextEnabled = data == "True";
                 succeeded = true;
+                break;
+            case "InstantText":
+                InstantShowAllText = data == "True";
+                succeeded = true;
+                if (!LoadingNextDialog)
+                {
+                    ApplyAttribute("Skip","");
+                }
                 break;
             case "Speed":
                 //data should be formatted like    5, 1, 1    (spaces optional)
@@ -477,6 +534,12 @@ public class DialogLol : MonoBehaviour
                 if(!ignorewarning)Debug.LogWarning("Unknown Dialog Attribute: \"" + key + "\"  (Dialog File: " + ActiveFileName + ")");
                 break;
         }
+
+        if(!succeeded_defaulting && is_default_set)
+        {
+            Debug.LogWarning("Invalid use: \"" + key + "\"  (Dialog File: " + ActiveFileName + ")\n(Attribute can not be used to set a default value)");
+        }
+
         return succeeded;
     }
 
@@ -585,6 +648,7 @@ public class DialogLol : MonoBehaviour
         RichTextEnabled = true;
         CanSkip = true;
         CanEscape = false;
+        InstantShowAllText = false;
         AutoSkip = -1;
         EndBanna();
         PlaySoundOnType = "";
@@ -647,11 +711,13 @@ public class DialogLol : MonoBehaviour
 
     private void StartDialogOverhead(string dialog, string datat = "Dialog")
     {
+        CurrentDefaults = TrueDefaults;
         ResetDialog();
         dialogmode = true;
         DialogBoxObject.SetActive(true);
         filename = dialog;
         datatype = datat;
+       // charl = -1;
         InputManager.AddLockLevel("Dialog");
         //just closes the OcksTools Console when opening any dialog.
         ConsoleLol.Instance.CloseConsole();
@@ -808,11 +874,6 @@ public class DialogLol : MonoBehaviour
         return e;
     }
 
-    private string Brandom(string e, bool waitoverride = false)
-    {
-    ithoughtifartedbutishit: if (RichTextEnabled && charl < fulltext.Length && charl >= 0 && e.Substring(charl, 1) == "<" && (cp3 <= 0 || waitoverride)) { var h = e.Substring(charl); var ii = h.IndexOf('>'); if (ii > -1) { var oldcharl = charl; charl += ii + 1; string emu = ""; try { var sh = e.Substring(oldcharl + 1, ii - 1); string[] stuff = sh.Split('='); var charlpreatt = charl; if (waitoverride && VariableParse(stuff[0]) == "Wait") { fulltext = fulltext.Substring(0, oldcharl) + fulltext.Substring(charlpreatt); var off = charl - charlpreatt; charl = oldcharl + off; e = fulltext; } else { bool jjj = stuff.Length > 1 && ApplyAttribute(stuff[0], stuff[1], true); if (stuff.Length == 1) jjj = ApplyAttribute(stuff[0], "", true); if (jjj) { string mid = ""; string voop = VariableParse(stuff[0]); if (voop == "Text") { mid = VariableParse(stuff[1]); } else if (voop == "br") { mid = "\n"; } if (oldcharl < fulltext.Length) { fulltext = fulltext.Substring(0, oldcharl) + mid + fulltext.Substring(charlpreatt); } else { fulltext = fulltext + mid; } var off = charl - charlpreatt; charl = oldcharl + off; e = fulltext; if (voop == "Animate" && ta != null) { ta.startindex = charl; ta.endindex = charl + ta.endindex; } emu = voop; } } } catch { try { var sh = e.Substring(oldcharl + 1, ii - 1); Debug.LogWarning($"Something went fucked trying to parse \"{sh}\""); } catch { Debug.LogWarning("Something went fucked trying to parse a dialog attribute"); } } if (emu != "Wait") { goto ithoughtifartedbutishit; } else { waited = true; } } else { Debug.LogWarning("No '>' found, baka"); } } return e;
-    }
-
     public string GetText()
     {
         string e = fulltext;
@@ -843,7 +904,8 @@ public class DialogLol : MonoBehaviour
     }
 
 
-
+    [HideInInspector]
+    public bool LoadingNextDialog = false;
     public void NextLine(bool wank = false)
     {
         if (filename != "")
@@ -851,6 +913,7 @@ public class DialogLol : MonoBehaviour
             switch (datatype)
             {
                 case "Dialog":
+                    LoadingNextDialog = true;
                     if (charl >= fulltext.Length || backwardskip)
                     {
                         EndBanna();
@@ -865,7 +928,6 @@ public class DialogLol : MonoBehaviour
                         if (ln == 0 || !UseEnding(r))
                         {
                             string g = str[linenum - 1];
-                            List<string> list = new List<string>(g.Split(", "));
                             List<string> list23 = new List<string>(g.Split("<"));
                             fulltext = str[linenum];
                             SetDefaultParams();
@@ -875,8 +937,19 @@ public class DialogLol : MonoBehaviour
                                 {
                                     string he = attribute.Substring(0, attribute.IndexOf(">"));
                                     List<string> he2 = new List<string>(he.Split("="));
-                                    ApplyAttribute(he2[0], he2[1]);
-                                }
+                                    if(he2.Count > 1)
+                                    {
+                                        ApplyAttribute(he2[0], he2[1]);
+                                    }
+                                    else
+                                    {
+                                        ApplyAttribute(he2[0], "");
+                                    }
+                                } 
+                            }
+                            if (InstantShowAllText)
+                            {
+                                NextLine();
                             }
                             cp2 = 1 / cps;
                             pp.text = "";
@@ -903,6 +976,7 @@ public class DialogLol : MonoBehaviour
                     }
                     break;
                 case "Choose":
+                    LoadingNextDialog = true;
                     pp.q_gameobjects[0].GetComponent<TextAnimator>().anims.Clear();
                     pp.q_gameobjects[1].GetComponent<TextAnimator>().anims.Clear();
                     pp.q_gameobjects[2].GetComponent<TextAnimator>().anims.Clear();
@@ -920,7 +994,14 @@ public class DialogLol : MonoBehaviour
                             if (he == "/") continue;
                             //Debug.Log(he);
                             List<string> he2 = new List<string>(he.Split("="));
-                            ApplyAttribute(he2[0], he2[1]);
+                            if (he2.Count > 1)
+                            {
+                                ApplyAttribute(he2[0], he2[1]);
+                            }
+                            else
+                            {
+                                ApplyAttribute(he2[0], "");
+                            }
                         }
                     }
                     str.RemoveAt(1);
@@ -942,6 +1023,7 @@ public class DialogLol : MonoBehaviour
                     break;
             }
         }
+        LoadingNextDialog = false;
     }
     public void PrevLine()
     {
@@ -976,4 +1058,10 @@ public class DialogHolder
 {
     public string Name;
     public TextAsset File; 
+}
+
+[System.Serializable]
+public class DialogDefaults
+{
+
 }

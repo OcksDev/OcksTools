@@ -11640,7 +11640,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6167858925768747828, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
       propertyPath: DialogFiles.Array.size
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 6167858925768747828, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
       propertyPath: ChooseFiles.Array.data[0].File
@@ -11673,6 +11673,14 @@ PrefabInstance:
     - target: {fileID: 6167858925768747828, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
       propertyPath: DialogFiles.Array.data[2].Name
       value: Test3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6167858925768747828, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
+      propertyPath: DialogFiles.Array.data[3].File
+      value: 
+      objectReference: {fileID: 4900000, guid: 4f936147568b8874a80bc1f927518972, type: 3}
+    - target: {fileID: 6167858925768747828, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
+      propertyPath: DialogFiles.Array.data[3].Name
+      value: TestA
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 0}
