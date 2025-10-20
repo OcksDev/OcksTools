@@ -11615,6 +11615,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1307030347}
     - target: {fileID: 6167858925768747828, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
+      propertyPath: TrueDefaults.cps
+      value: 26
+      objectReference: {fileID: 0}
+    - target: {fileID: 6167858925768747828, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
       propertyPath: files.Array.size
       value: 3
       objectReference: {fileID: 0}

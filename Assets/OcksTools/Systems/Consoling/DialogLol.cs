@@ -5,6 +5,7 @@ using System.Data.SqlTypes;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -282,11 +283,20 @@ public class DialogLol : MonoBehaviour
     public bool godlyattemptskip = false;
     [HideInInspector]
     public bool backwardskip = false;
+
+    public static string CleanText(string a)
+    {
+        a = Regex.Replace(a, @"[ \n]", "");
+        return a;
+    }
+
     public bool ApplyAttribute(string key, string data, bool ignorewarning = false)
     {
         // attribute default for file format
-        // ^var_name
+        // ^AttributeName
         foundendcall = false;
+        key = CleanText(key);
+        data = CleanText(data);
         List<string> list = new List<string>();
         key = VariableParse(key);
         data = VariableParse(data);
@@ -294,11 +304,14 @@ public class DialogLol : MonoBehaviour
         bool succeeded = false;
         bool succeeded_defaulting = false;
         string aaa = "";
-
         if(key.Length > 1)
         {
             var starter = key[0];
             is_default_set = starter == '^';
+            if (is_default_set)
+            {
+                key = key.Substring(1);
+            }
         }
 
         switch (key)
@@ -312,6 +325,11 @@ public class DialogLol : MonoBehaviour
                 // Allows skipping to the end of the dialog
                 CanSkip = data == "True";
                 succeeded = true;
+                if (is_default_set)
+                {
+                    CurrentDefaults.CanSkip = CanSkip;
+                    succeeded_defaulting = true;
+                }
                 break;
             case "Skip":
                 // Forces a skip
@@ -342,6 +360,11 @@ public class DialogLol : MonoBehaviour
                 // set to -1 to disable
                 AutoSkip = float.Parse(data);
                 succeeded = true;
+                if (is_default_set)
+                {
+                    CurrentDefaults.AutoSkip = AutoSkip;
+                    succeeded_defaulting = true;
+                }
                 break;
             case "Jump":
                 // jumps x amount of characters. Since this deletes itself after use, I dont think it will cause infinite loops on negative jumps
@@ -353,6 +376,11 @@ public class DialogLol : MonoBehaviour
                 // Choses a sound preset from PlaySoundPreset() to play when a new character is displayd
                 PlaySoundOnType = data;
                 succeeded = true;
+                if (is_default_set)
+                {
+                    CurrentDefaults.PlaySoundOnType = PlaySoundOnType;
+                    succeeded_defaulting = true;
+                }
                 break;
             case "Wait":
                 // Waits x seconds before moving forward
@@ -368,20 +396,40 @@ public class DialogLol : MonoBehaviour
                 // Allows the early escaping of dialog events
                 CanEscape = data == "True";
                 succeeded = true;
+                if (is_default_set)
+                {
+                    CurrentDefaults.CanEscape = CanEscape;
+                    succeeded_defaulting = true;
+                }
                 break;
             case "Name":
                 // Changes the title of the dialog window
                 speaker = data;
                 succeeded = true;
+                if (is_default_set)
+                {
+                    CurrentDefaults.speaker = speaker;
+                    succeeded_defaulting = true;
+                }
                 break;
             case "RichText":
                 // Skips ahead in the text whenever a richtext is detected in the text
                 RichTextEnabled = data == "True";
                 succeeded = true;
+                if (is_default_set)
+                {
+                    CurrentDefaults.RichTextEnabled = RichTextEnabled;
+                    succeeded_defaulting = true;
+                }
                 break;
             case "InstantText":
                 InstantShowAllText = data == "True";
                 succeeded = true;
+                if (is_default_set)
+                {
+                    CurrentDefaults.InstantShowAllText = InstantShowAllText;
+                    succeeded_defaulting = true;
+                }
                 if (!LoadingNextDialog)
                 {
                     ApplyAttribute("Skip","");
@@ -397,6 +445,13 @@ public class DialogLol : MonoBehaviour
                 // Delay in seconds between each line
                 if (list.Count >= 3 && VariableParse(list[2]) != "-") cps3 = float.Parse(VariableParse(list[2]));
                 succeeded = true;
+                if (is_default_set)
+                {
+                    CurrentDefaults.cps = cps;
+                    CurrentDefaults.cps2 = cps2;
+                    CurrentDefaults.cps3 = cps3;
+                    succeeded_defaulting = true;
+                }
                 break;
             case "PunctuationDelay":
                 //data should be formatted like    5, 1, 1    (spaces optional)
@@ -406,30 +461,48 @@ public class DialogLol : MonoBehaviour
                 // Delay in seconds between each big thing like period, questionmark, and exclamation point
                 if (list.Count >= 2 && VariableParse(list[1]) != "-") pps2 = float.Parse(VariableParse(list[1]));
                 succeeded = true;
+                if (is_default_set)
+                {
+                    CurrentDefaults.pps = pps;
+                    CurrentDefaults.pps2 = pps2;
+                    succeeded_defaulting = true;
+                }
                 break;
             case "TitleColor":
-                data = data.Replace(" ", "");
                 list = new List<string>(data.Split(","));
                 //4 input color formated like 255,255,255,255
                 aaa = VariableParse(list[0]) + "|" + VariableParse(list[1]) + "|" + VariableParse(list[2]) + "|" + VariableParse(list[3]);
                 tit_color = aaa;
                 succeeded = true;
+                if (is_default_set)
+                {
+                    CurrentDefaults.tit_color = tit_color;
+                    succeeded_defaulting = true;
+                }
                 break;
             case "TextColor":
-                data = data.Replace(" ", "");
                 list = new List<string>(data.Split(","));
                 //4 input color formated like 255,255,255,255
                 aaa = VariableParse(list[0]) + "|" + VariableParse(list[1]) + "|" + VariableParse(list[2]) + "|" + VariableParse(list[3]);
                 color = aaa;
                 succeeded = true;
+                if (is_default_set)
+                {
+                    CurrentDefaults.color = color;
+                    succeeded_defaulting = true;
+                }
                 break;
             case "BgColor":
-                data = data.Replace(" ", "");
                 list = new List<string>(data.Split(","));
                 //4 input color formated like 255,255,255,255
                 aaa = VariableParse(list[0]) + "|" + VariableParse(list[1]) + "|" + VariableParse(list[2]) + "|" + VariableParse(list[3]);
                 bg_color = aaa;
                 succeeded = true;
+                if (is_default_set)
+                {
+                    CurrentDefaults.bg_color = bg_color;
+                    succeeded_defaulting = true;
+                }
                 break;
             case "Scene":
                 //Starts a new dialog file
@@ -462,15 +535,12 @@ public class DialogLol : MonoBehaviour
                 succeeded = true;
                 break;
             case "Set":
-                data = data.Replace(" ", "");
                 list = new List<string>(data.Split(","));
                 //sets a variable
                 variables[VariableParse(list[0])] = VariableParse(list[1]);
                 succeeded = true;
                 break;
             case "Animate":
-                data = data.Replace(" ", "");
-                // Waits x seconds before moving forward
                 // Animate=Text, Wave, 10
                 list = new List<string>(data.Split(","));
                 var e = new Func<GameObject>(() => { 
@@ -537,7 +607,7 @@ public class DialogLol : MonoBehaviour
 
         if(!succeeded_defaulting && is_default_set)
         {
-            Debug.LogWarning("Invalid use: \"" + key + "\"  (Dialog File: " + ActiveFileName + ")\n(Attribute can not be used to set a default value)");
+            Debug.LogWarning("Invalid default assignment: \"" + key + "\"  (Dialog File: " + ActiveFileName + ")\n(this attribute can not be used to set a default value)");
         }
 
         return succeeded;
@@ -574,16 +644,16 @@ public class DialogLol : MonoBehaviour
         //language file system query format
         //!var_name
 
-        if (data == "") return data;
-        if (data[0] == ' ') data = data.Substring(1);
-        if (data[0] == '*' || data[0] == '!')
+        var st = CleanText(data);
+        if (st == "") return data;
+        if (st[0] == '*' || st[0] == '!')
         {
             string p2 = "";
             string newdat = "";
-            p2 = data.Substring(1);
+            p2 = st.Substring(1);
             try
             {
-                if (data[0] == '*')
+                if (st[0] == '*')
                 {
                     newdat = variables[p2];
                 }
@@ -636,20 +706,22 @@ public class DialogLol : MonoBehaviour
 
     public void SetDefaultParams()
     {
-        cps = 20;
-        cps2 = 0;
-        cps3 = 0;
-        pps = 0.2f;
-        pps2 = 0.8f;
-        speaker = "?";
-        color = "255|255|255|255";
-        tit_color = "255|255|255|255";
-        bg_color = "84|144|84|255";
-        RichTextEnabled = true;
-        CanSkip = true;
-        CanEscape = false;
-        InstantShowAllText = false;
-        AutoSkip = -1;
+        if (CurrentDefaults == null) CurrentDefaults = TrueDefaults;
+        cps = CurrentDefaults.cps;
+        cps2 = CurrentDefaults.cps2;
+        cps3 = CurrentDefaults.cps3;
+        pps = CurrentDefaults.pps;
+        pps2 = CurrentDefaults.pps2;
+        speaker = CurrentDefaults.speaker;
+        color = CurrentDefaults.color;
+        tit_color = CurrentDefaults.tit_color;
+        bg_color = CurrentDefaults.bg_color;
+        RichTextEnabled = CurrentDefaults.RichTextEnabled;
+        CanSkip = CurrentDefaults.CanSkip;
+        CanEscape = CurrentDefaults.CanEscape;
+        InstantShowAllText = CurrentDefaults.InstantShowAllText;
+        AutoSkip = CurrentDefaults.AutoSkip;
+        PlaySoundOnType = CurrentDefaults.PlaySoundOnType;
         EndBanna();
         PlaySoundOnType = "";
         if (pp != null)
@@ -1063,5 +1135,20 @@ public class DialogHolder
 [System.Serializable]
 public class DialogDefaults
 {
+    public float cps = 26;
+    public float cps2 = 0;
+    public float cps3 = 0;
+    public float pps = 0.2f;
+    public float pps2 = 0.8f;
+    public float AutoSkip = -1;
+    public string speaker = "?";
+    public string color = "255|255|255|255";
+    public string tit_color = "255|255|255|255";
+    public string bg_color = "84|144|84|255";
+    public string PlaySoundOnType = "";
+    public bool RichTextEnabled = true;
+    public bool CanSkip = true;
+    public bool CanEscape = false;
+    public bool InstantShowAllText = false;
 
 }

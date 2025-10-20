@@ -60,7 +60,9 @@
   - Some methods have been extracted into the static class OXFunctions and made into Extension Methods.
   - Mod() now has varients for float, double, and long
 - Dialog Improvements
-  - New Attribute "InstantText" which loads the full text box rather than waiting for any delays.
+  - New Attribute "InstantText" which allows you to load the full text box rather than waiting for any delays.
+  - Certain Attributes can be marked as defaults by prepending them with ^
+    - This applies their effect to all remaining dialogs in a given file
   - Fixed dataless attribute parsing in the load section of dialogs
   - Attribute "Show" changed to "Text"
 - Console Improvements
