@@ -70,6 +70,7 @@
   - Migrated command assembling event to use the Global Event system.
 - Input System Improvements
   - Added mouse scroll as valid inputs, also controller buttons
+  - New methods to easily get a readable format of the keynames of a given gamekey/list-of-keycodes
   - Added some debug comments to clear up lock levels
   - Removed obselete methods, making the class much easier to parse
 - Save System Improvements

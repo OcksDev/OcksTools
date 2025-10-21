@@ -52,6 +52,21 @@ public class InputManager : MonoBehaviour
 
     }
 
+    public static string GetReadableStringOf(List<KeyCode> n, bool first_only = false)
+    {
+        var dd = n.AListToBList((x) => keynames[x]);
+        if (first_only && dd.Count > 1)
+        {
+            dd = dd.GetRange(0, 1);
+        }
+        return dd.ListToString();
+    }
+    public static string GetReadableStringOf(string a, bool first_only = false)
+    {
+        return GetReadableStringOf(gamekeys[a], first_only);
+    }
+
+
     public static KeyCode GetArbitraryKeyPressed()
     {
         if (Input.anyKeyDown)

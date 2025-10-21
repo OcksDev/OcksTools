@@ -94,6 +94,9 @@ public class DialogLol : MonoBehaviour
     void Start()
     {
         ResetDialog();
+
+        GlobalEvent.Append("SecondInChain", () => StartDialog("TestSecondChain"));
+
         pp = DialogBoxObject.GetComponent<DialogBoxL>();
         //lets you write <*=*Var> as shorthand to insert a variable into the dialog
         SetVariable("", "Text");
@@ -1029,6 +1032,7 @@ public class DialogLol : MonoBehaviour
                             pp.color = color;
                             pp.tit_color = tit_color;
                             pp.bg_color = bg_color;
+                            pp.UpdateText();
                             pp.UpdateColor();
                         }
                     }
