@@ -11,7 +11,7 @@ using UnityEngine.Tilemaps;
 
 public class DialogLol : MonoBehaviour
 {
-    public Dictionary<string, OXLanguageFileIndex> LanguageFileIndexes = new Dictionary<string, OXLanguageFileIndex>();
+    public Dictionary<string,OXLanguageFileIndex> LanguageFileIndexes = new Dictionary<string,OXLanguageFileIndex>();
     public bool UseLanguageFileSystem = false;
     public GameObject DialogBoxObject;
     private DialogBoxL pp;
@@ -107,28 +107,28 @@ public class DialogLol : MonoBehaviour
         SetVariable("AttributeInsideVar", "<Name=Bone Eater>");
         SetVariable("NestedAttribute", "<Animate=Text,Rainbow><Text=*VarInSideAVar>");
 
-        if (GetUseLFS())
+        if(GetUseLFS())
         {
             FileSystem.Instance.CreateFolder($"{FileSystem.Instance.FileLocations["Lang"]}\\{FileSystem.GameVer}\\Dialog");
         }
 
-        foreach (var a in DialogFiles)
+        foreach(var a in DialogFiles)
         {
             var d = new OXLanguageFileIndex();
             d.FileName = $"Dialog\\{a.Name}";
             d.DefaultFile = a.File;
             d.DontParseDict = true;
-            LanguageFileIndexes.Add(a.Name, d);
+            LanguageFileIndexes.Add(a.Name,d);
         }
-        foreach (var a in ChooseFiles)
+        foreach(var a in ChooseFiles)
         {
             var d = new OXLanguageFileIndex();
             d.FileName = $"Dialog\\{a.Name}";
             d.DefaultFile = a.File;
             d.DontParseDict = true;
-            LanguageFileIndexes.Add(a.Name, d);
+            LanguageFileIndexes.Add(a.Name,d);
         }
-        if (GetUseLFS())
+        if(GetUseLFS())
         {
             foreach (var a in LanguageFileIndexes)
             {
@@ -142,14 +142,14 @@ public class DialogLol : MonoBehaviour
     {
         if (InputManager.IsKeyDown("dialog_skip", "Dialog"))
         {
-            if (datatype != "Choose")
+            if(datatype != "Choose")
             {
                 attemptskip = true;
             }
         }
         if (InputManager.IsKeyDown("dialog_skip_back", "Dialog"))
         {
-            if (datatype != "Choose")
+            if(datatype != "Choose")
             {
                 backwardskip = true;
                 attemptskip = true;
@@ -163,7 +163,7 @@ public class DialogLol : MonoBehaviour
             }
             else
             {
-                if (!CanSkip && charl < fulltext.Length)
+                if(!CanSkip && charl < fulltext.Length)
                 {
                     goto ex;
                 }
@@ -179,11 +179,11 @@ public class DialogLol : MonoBehaviour
             {
                 NextLine();
             }
-        } else if (attemptskip && waitforinput)
+        }else if(attemptskip && waitforinput)
         {
             waitforinput = false;
         }
-    ex:
+        ex:
         attemptskip = false;
         backwardskip = false;
         if (CanEscape && InputManager.IsKeyDown("close_menu", "Dialog"))
@@ -209,26 +209,26 @@ public class DialogLol : MonoBehaviour
             {
                 cp += cp2;
                 if (cp < 0) charl += Math.Abs((int)(cp / cp2));
-                if (!waited) charl += 1;
+                if(!waited)charl += 1;
                 waited = false;
                 cp = cp2;
                 upt();
                 if (cp3 <= 0)
                 {
                     string e = GetText();
-                    if (e.Length > 0)
+                    if(e.Length > 0)
                     {
-                        e = e.Substring(e.Length - 1, 1);
+                        e = e.Substring(e.Length-1,1);
                     }
                     if (e == " " || e.Contains("\n"))
                     {
                         cp3 = e == " " ? cps2 : cps3;
                     }
-                    else if (e == "," || e == ";" || e == ":")
+                    else if(e == "," || e == ";" || e == ":")
                     {
                         cp3 = pps;
                     }
-                    else if (e == "." || e == "!" || e == "?")
+                    else if(e == "." || e == "!" || e == "?")
                     {
                         cp3 = pps2;
                     }
@@ -243,7 +243,7 @@ public class DialogLol : MonoBehaviour
         {
             cp3 -= Time.deltaTime;
         }
-        if (AutoSkip >= 0 && !isautoproc && charl >= fulltext.Length && datatype != "Choose")
+        if(AutoSkip >= 0 && !isautoproc && charl >= fulltext.Length && datatype != "Choose")
         {
             banna = StartCoroutine(AutoSkipe());
         }
@@ -252,7 +252,7 @@ public class DialogLol : MonoBehaviour
     public IEnumerator AutoSkipe()
     {
         isautoproc = true;
-        if (AutoSkip > 0) yield return new WaitForSeconds(AutoSkip);
+        if(AutoSkip > 0) yield return new WaitForSeconds(AutoSkip);
         cp = 0;
         NextLine();
         isautoproc = false;
@@ -268,7 +268,7 @@ public class DialogLol : MonoBehaviour
         switch (index)
         {
             case "A":
-                SoundSystem.Instance.PlaySound(new OXSound("A", 0.2f).Pitch(0.5f).Clipping());
+                SoundSystem.Instance.PlaySound(new OXSound("A",0.2f).Pitch(0.5f).Clipping());
                 break;
             default:
                 Debug.LogWarning("Failed to find a sound preset with the index of " + index);
@@ -307,7 +307,7 @@ public class DialogLol : MonoBehaviour
         bool succeeded = false;
         bool succeeded_defaulting = false;
         string aaa = "";
-        if (key.Length > 1)
+        if(key.Length > 1)
         {
             var starter = key[0];
             is_default_set = starter == '^';
@@ -435,7 +435,7 @@ public class DialogLol : MonoBehaviour
                 }
                 if (!LoadingNextDialog)
                 {
-                    ApplyAttribute("Skip", "");
+                    ApplyAttribute("Skip","");
                 }
                 break;
             case "Speed":
@@ -546,7 +546,7 @@ public class DialogLol : MonoBehaviour
             case "Animate":
                 // Animate=Text, Wave, 10
                 list = new List<string>(data.Split(","));
-                var e = new Func<GameObject>(() => {
+                var e = new Func<GameObject>(() => { 
                     switch (VariableParse(list[0]))
                     {
                         case "Text": return pp.TextObject;
@@ -555,8 +555,8 @@ public class DialogLol : MonoBehaviour
                         case "C2": return pp.q_gameobjects[1];
                         case "C3": return pp.q_gameobjects[2];
                         case "C4": return pp.q_gameobjects[3];
-                        default: return pp.TextObject;
-                    }
+                        default: return pp.TextObject; 
+                    } 
                 })();
                 var animat = e.GetComponent<TextAnimator>();
                 string h = "";
@@ -604,11 +604,11 @@ public class DialogLol : MonoBehaviour
                 succeeded = true;
                 break;
             default:
-                if (!ignorewarning) Debug.LogWarning("Unknown Dialog Attribute: \"" + key + "\"  (Dialog File: " + ActiveFileName + ")");
+                if(!ignorewarning)Debug.LogWarning("Unknown Dialog Attribute: \"" + key + "\"  (Dialog File: " + ActiveFileName + ")");
                 break;
         }
 
-        if (!succeeded_defaulting && is_default_set)
+        if(!succeeded_defaulting && is_default_set)
         {
             Debug.LogWarning("Invalid default assignment: \"" + key + "\"  (Dialog File: " + ActiveFileName + ")\n(this attribute can not be used to set a default value)");
         }
@@ -686,9 +686,9 @@ public class DialogLol : MonoBehaviour
             {
                 h = r.Substring(i);
                 var ind = h.IndexOf(">");
-                var e = r.Substring(i + 1, ind - 1);
+                var e = r.Substring(i + 1, ind-1);
                 int ind2 = e.IndexOf("=");
-                if (ind2 > -1)
+                if(ind2 > -1)
                 {
                     //Debug.Log(e.Substring(0, ind2));
                     ApplyAttribute(e.Substring(0, ind2), e.Substring(ind2 + 1));
@@ -700,37 +700,31 @@ public class DialogLol : MonoBehaviour
                     didf = foundendcall;
                 }
 
-                i += ind + 1;
+                i += ind +1;
             }
         }
 
         return didf;
     }
 
-    public void SetFromDefault(DialogDefaults d)
-    {
-        if(d.cps.HasValue) cps = d.cps.Value;
-        if (d.cps2.HasValue) cps2 = d.cps2.Value;
-        if (d.cps3.HasValue) cps3 = d.cps3.Value;
-        if (d.pps.HasValue) pps = d.pps.Value;
-        if (d.pps2.HasValue) pps2 = d.pps2.Value;
-        if (d.speaker != null) speaker = d.speaker;
-        if (d.color != null) color = d.color;
-        if (d.tit_color != null) tit_color = d.tit_color;
-        if (d.bg_color != null) bg_color = d.bg_color;
-        if (d.PlaySoundOnType != null) PlaySoundOnType = d.PlaySoundOnType;
-        if (d.RichTextEnabled.HasValue) RichTextEnabled = d.RichTextEnabled.Value;
-        if (d.CanSkip.HasValue) CanSkip = d.CanSkip.Value;
-        if (d.CanEscape.HasValue) CanEscape = d.CanEscape.Value;
-        if (d.InstantShowAllText.HasValue) InstantShowAllText = d.InstantShowAllText.Value;
-        if (d.AutoSkip.HasValue) AutoSkip = d.AutoSkip.Value;
-    }
-
-
     public void SetDefaultParams()
     {
         if (CurrentDefaults == null) CurrentDefaults = TrueDefaults;
-        SetFromDefault(CurrentDefaults);
+        cps = CurrentDefaults.cps;
+        cps2 = CurrentDefaults.cps2;
+        cps3 = CurrentDefaults.cps3;
+        pps = CurrentDefaults.pps;
+        pps2 = CurrentDefaults.pps2;
+        speaker = CurrentDefaults.speaker;
+        color = CurrentDefaults.color;
+        tit_color = CurrentDefaults.tit_color;
+        bg_color = CurrentDefaults.bg_color;
+        RichTextEnabled = CurrentDefaults.RichTextEnabled;
+        CanSkip = CurrentDefaults.CanSkip;
+        CanEscape = CurrentDefaults.CanEscape;
+        InstantShowAllText = CurrentDefaults.InstantShowAllText;
+        AutoSkip = CurrentDefaults.AutoSkip;
+        PlaySoundOnType = CurrentDefaults.PlaySoundOnType;
         EndBanna();
         PlaySoundOnType = "";
         if (pp != null)
@@ -1145,38 +1139,20 @@ public class DialogHolder
 [System.Serializable]
 public class DialogDefaults
 {
-    public float? cps = 26;
-    public float? cps2 = 0;
-    public float? cps3 = 0;
-    public float? pps = 0.2f;
-    public float? pps2 = 0.8f;
-    public float? AutoSkip = -1;
+    public float cps = 26;
+    public float cps2 = 0;
+    public float cps3 = 0;
+    public float pps = 0.2f;
+    public float pps2 = 0.8f;
+    public float AutoSkip = -1;
     public string speaker = "?";
     public string color = "255|255|255|255";
     public string tit_color = "255|255|255|255";
     public string bg_color = "84|144|84|255";
     public string PlaySoundOnType = "";
-    public bool? RichTextEnabled = true;
-    public bool? CanSkip = true;
-    public bool? CanEscape = false;
-    public bool? InstantShowAllText = false;
-    public Dictionary<string, DialogDefaults>
-    public DialogDefaults(bool empty)
-    {
-        cps = null;
-        cps2 = null;
-        cps3 = null;
-        pps = null;
-        pps2 = null;
-        AutoSkip = null;
-        speaker = null;
-        color = null;
-        tit_color = null;
-        bg_color = null;
-        PlaySoundOnType = null;
-        RichTextEnabled = null;
-        CanSkip = null;
-        CanEscape = null;
-        InstantShowAllText = null;
-    }
+    public bool RichTextEnabled = true;
+    public bool CanSkip = true;
+    public bool CanEscape = false;
+    public bool InstantShowAllText = false;
+
 }
