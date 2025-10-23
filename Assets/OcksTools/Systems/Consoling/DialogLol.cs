@@ -220,17 +220,20 @@ public class DialogLol : MonoBehaviour
                     {
                         e = e.Substring(e.Length-1,1);
                     }
-                    if (e == " " || e.Contains("\n"))
+                    if (charl < fulltext.Length)
                     {
-                        cp3 = e == " " ? cps2 : cps3;
-                    }
-                    else if(e == "," || e == ";" || e == ":")
-                    {
-                        cp3 = pps;
-                    }
-                    else if(e == "." || e == "!" || e == "?")
-                    {
-                        cp3 = pps2;
+                        if (e == " " || e.Contains("\n"))
+                        {
+                            cp3 = e == " " ? cps2 : cps3;
+                        }
+                        else if (e == "," || e == ";" || e == ":")
+                        {
+                            cp3 = pps;
+                        }
+                        else if (e == "." || e == "!" || e == "?")
+                        {
+                            cp3 = pps2;
+                        }
                     }
                     if (PlaySoundOnType != "" && !baldcharacters.Contains(e))
                     {
@@ -1005,6 +1008,7 @@ public class DialogLol : MonoBehaviour
                             string g = str[linenum - 1];
                             List<string> list23 = new List<string>(g.Split("<"));
                             fulltext = str[linenum];
+                            fulltext = Regex.Replace(fulltext, @"[ \n\r\t]+$", "");
                             SetDefaultParams();
                             foreach (var attribute in list23)
                             {
