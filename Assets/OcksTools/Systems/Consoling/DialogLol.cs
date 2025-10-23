@@ -834,10 +834,14 @@ public class DialogLol : MonoBehaviour
 
     public void FixedUpdate()
     {
-        DialogBoxObject.SetActive(dialogmode);
+        DialogBoxObject.SetActive(dialogmode); 
+        UpdateClickThing();
+    }
+    public void UpdateClickThing()
+    {
         if (dialogmode)
         {
-            if((charl >= fulltext.Length && AutoSkip < 0) || waitforinput)
+            if ((charl >= fulltext.Length && AutoSkip < 0) || waitforinput)
             {
                 pp.clikctoskpo.text = "Click To Continue";
             }
@@ -1038,6 +1042,7 @@ public class DialogLol : MonoBehaviour
                             pp.bg_color = bg_color;
                             pp.UpdateText();
                             pp.UpdateColor();
+                            UpdateClickThing();
                         }
                     }
                     else

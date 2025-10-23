@@ -63,6 +63,8 @@
   - New Attribute "InstantText" which allows you to load the full text box rather than waiting for any delays.
   - Certain Attributes can be marked as defaults by prepending them with ^
     - This applies their effect to all remaining dialogs in a given file
+  - Fixed "Click To Continue" or other 1-frame artifacts that sometimes happened when opening a dialog.
+  - Fixed erroneous ending characters like \n or \r from being considered part of dialog
   - Fixed dataless attribute parsing in the load section of dialogs
   - Attribute "Show" changed to "Text"
 - Console Improvements
