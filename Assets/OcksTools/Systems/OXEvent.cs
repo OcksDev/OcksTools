@@ -112,9 +112,10 @@ public class OXEvent
     }
     public void Append(Action method)
     {
-        if (!StoredMethods.ContainsKey(method.Method.Name))
+        var dd = Tags.GenerateID();
+        if (!StoredMethods.ContainsKey(dd))
         {
-            StoredMethods.Add(method.Method.Name, method);
+            StoredMethods.Add(dd, method);
         }
     }
     public void Remove(string name)
@@ -152,9 +153,10 @@ public class OXEvent<T>
     }
     public void Append(Action<T> method)
     {
-        if (!StoredMethods.ContainsKey(method.Method.Name))
+        var dd = Tags.GenerateID();
+        if (!StoredMethods.ContainsKey(dd))
         {
-            StoredMethods.Add(method.Method.Name, method);
+            StoredMethods.Add(dd, method);
         }
     }
     public void Remove(string name)
@@ -191,9 +193,10 @@ public class OXEvent<T, T2>
     }
     public void Append(Action<T, T2> method)
     {
-        if (!StoredMethods.ContainsKey(method.Method.Name))
+        var dd = Tags.GenerateID();
+        if (!StoredMethods.ContainsKey(dd))
         {
-            StoredMethods.Add(method.Method.Name, method);
+            StoredMethods.Add(dd, method);
         }
     }
     public void Remove(string name)
@@ -231,9 +234,10 @@ public class OXEvent<T, T2, T3>
     }
     public void Append(Action<T, T2, T3> method)
     {
-        if (!StoredMethods.ContainsKey(method.Method.Name))
+        var dd = Tags.GenerateID();
+        if (!StoredMethods.ContainsKey(dd))
         {
-            StoredMethods.Add(method.Method.Name, method);
+            StoredMethods.Add(dd, method);
         }
     }
     public void Remove(string name)
@@ -271,9 +275,10 @@ public class OXEvent<T, T2, T3, T4>
     }
     public void Append(Action<T, T2, T3, T4> method)
     {
-        if (!StoredMethods.ContainsKey(method.Method.Name))
+        var dd = Tags.GenerateID();
+        if (!StoredMethods.ContainsKey(dd))
         {
-            StoredMethods.Add(method.Method.Name, method);
+            StoredMethods.Add(dd, method);
         }
     }
     public void Remove(string name)
@@ -311,9 +316,10 @@ public class OXEvent<T, T2, T3, T4, T5>
     }
     public void Append(Action<T, T2, T3, T4, T5> method)
     {
-        if (!StoredMethods.ContainsKey(method.Method.Name))
+        var dd = Tags.GenerateID();
+        if (!StoredMethods.ContainsKey(dd))
         {
-            StoredMethods.Add(method.Method.Name, method);
+            StoredMethods.Add(dd, method);
         }
     }
     public void Remove(string name)
@@ -339,3 +345,12 @@ public class OXEvent<T, T2, T3, T4, T5>
 
 }
 
+
+public class AddToEvent : Attribute
+{
+    public string dingle;
+    public AddToEvent(string a)
+    {
+        dingle = a;
+    }
+}

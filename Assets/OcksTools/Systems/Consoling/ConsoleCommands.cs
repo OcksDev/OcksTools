@@ -38,6 +38,25 @@ public class ConsoleCommands : MonoBehaviour
         GlobalEvent.Set(out cooldata, "new data", "test event");
         Console.Log(cooldata);
     }
+    public static void Test_gevent()
+    {
+        GlobalEvent.Invoke("TestEvent");
+    }
+
+    [AddToEvent("TestEvent")]
+    public void Test_Event1()
+    {
+        Console.Log("Hello");
+    }
+
+    [AddToEvent("TestEvent")]
+    public void Test_Event2()
+    {
+        Console.Log("World");
+    }
+
+
+
     public static void Test_circle(OXCommandData r)
     {
         var a = SpawnSystem.Spawn(new SpawnData("Circle")

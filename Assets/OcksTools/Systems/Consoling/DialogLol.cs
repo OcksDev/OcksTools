@@ -67,7 +67,7 @@ public class DialogLol : MonoBehaviour
     private static DialogLol instance;
 
     public DialogDefaults TrueDefaults;
-    private DialogDefaults CurrentDefaults;
+    private DialogSettings CurrentSettings;
 
 
     // Start is called before the first frame update
@@ -333,7 +333,7 @@ public class DialogLol : MonoBehaviour
                 succeeded = true;
                 if (is_default_set)
                 {
-                    CurrentDefaults.CanSkip = CanSkip;
+                    CurrentSettings.Set("CanSkip", CanSkip.ToString());
                     succeeded_defaulting = true;
                 }
                 break;
@@ -341,7 +341,7 @@ public class DialogLol : MonoBehaviour
                 // Forces a skip
                 if (LoadingNextDialog)
                 {
-                    NextLine();
+                    InstantShowAllText = true;
                 }
                 else
                 {
@@ -368,7 +368,7 @@ public class DialogLol : MonoBehaviour
                 succeeded = true;
                 if (is_default_set)
                 {
-                    CurrentDefaults.AutoSkip = AutoSkip;
+                    CurrentSettings.Set("AutoSkip", AutoSkip.ToString());
                     succeeded_defaulting = true;
                 }
                 break;
@@ -384,7 +384,7 @@ public class DialogLol : MonoBehaviour
                 succeeded = true;
                 if (is_default_set)
                 {
-                    CurrentDefaults.PlaySoundOnType = PlaySoundOnType;
+                    CurrentSettings.Set("PlaySoundOnType", PlaySoundOnType.ToString());
                     succeeded_defaulting = true;
                 }
                 break;
@@ -404,7 +404,7 @@ public class DialogLol : MonoBehaviour
                 succeeded = true;
                 if (is_default_set)
                 {
-                    CurrentDefaults.CanEscape = CanEscape;
+                    CurrentSettings.Set("CanEscape", CanEscape.ToString());
                     succeeded_defaulting = true;
                 }
                 break;
@@ -414,7 +414,7 @@ public class DialogLol : MonoBehaviour
                 succeeded = true;
                 if (is_default_set)
                 {
-                    CurrentDefaults.speaker = speaker;
+                    CurrentSettings.Set("speaker", speaker.ToString());
                     succeeded_defaulting = true;
                 }
                 break;
@@ -424,7 +424,7 @@ public class DialogLol : MonoBehaviour
                 succeeded = true;
                 if (is_default_set)
                 {
-                    CurrentDefaults.RichTextEnabled = RichTextEnabled;
+                    CurrentSettings.Set("RichTextEnabled", RichTextEnabled.ToString());
                     succeeded_defaulting = true;
                 }
                 break;
@@ -433,7 +433,7 @@ public class DialogLol : MonoBehaviour
                 succeeded = true;
                 if (is_default_set)
                 {
-                    CurrentDefaults.InstantShowAllText = InstantShowAllText;
+                    CurrentSettings.Set("InstantShowAllText", InstantShowAllText.ToString());
                     succeeded_defaulting = true;
                 }
                 if (!LoadingNextDialog)
@@ -453,9 +453,9 @@ public class DialogLol : MonoBehaviour
                 succeeded = true;
                 if (is_default_set)
                 {
-                    CurrentDefaults.cps = cps;
-                    CurrentDefaults.cps2 = cps2;
-                    CurrentDefaults.cps3 = cps3;
+                    CurrentSettings.Set("cps", cps.ToString());
+                    CurrentSettings.Set("cps2", cps2.ToString());
+                    CurrentSettings.Set("cps3", cps3.ToString());
                     succeeded_defaulting = true;
                 }
                 break;
@@ -469,8 +469,8 @@ public class DialogLol : MonoBehaviour
                 succeeded = true;
                 if (is_default_set)
                 {
-                    CurrentDefaults.pps = pps;
-                    CurrentDefaults.pps2 = pps2;
+                    CurrentSettings.Set("pps", pps.ToString());
+                    CurrentSettings.Set("pps2", pps2.ToString());
                     succeeded_defaulting = true;
                 }
                 break;
@@ -482,7 +482,7 @@ public class DialogLol : MonoBehaviour
                 succeeded = true;
                 if (is_default_set)
                 {
-                    CurrentDefaults.tit_color = tit_color;
+                    CurrentSettings.Set("tit_color", tit_color.ToString());
                     succeeded_defaulting = true;
                 }
                 break;
@@ -494,7 +494,7 @@ public class DialogLol : MonoBehaviour
                 succeeded = true;
                 if (is_default_set)
                 {
-                    CurrentDefaults.color = color;
+                    CurrentSettings.Set("color", color.ToString());
                     succeeded_defaulting = true;
                 }
                 break;
@@ -506,7 +506,7 @@ public class DialogLol : MonoBehaviour
                 succeeded = true;
                 if (is_default_set)
                 {
-                    CurrentDefaults.bg_color = bg_color;
+                    CurrentSettings.Set("bg_color", bg_color.ToString());
                     succeeded_defaulting = true;
                 }
                 break;
@@ -710,24 +710,31 @@ public class DialogLol : MonoBehaviour
         return didf;
     }
 
+    public void ParseFromSettings(DialogSettings CurrentDefaults)
+    {
+        Console.Log(CurrentDefaults.CurrentData.DictionaryToRead());
+        if(CurrentDefaults.CurrentData.ContainsKey("cps")) cps = float.Parse(CurrentDefaults.Get("cps"));
+        if (CurrentDefaults.CurrentData.ContainsKey("cps2")) cps2 = float.Parse(CurrentDefaults.Get("cps2"));
+        if (CurrentDefaults.CurrentData.ContainsKey("cps3")) cps3 = float.Parse(CurrentDefaults.Get("cps3"));
+        if (CurrentDefaults.CurrentData.ContainsKey("pps")) pps = float.Parse(CurrentDefaults.Get("pps"));
+        if (CurrentDefaults.CurrentData.ContainsKey("pps2")) pps2 = float.Parse(CurrentDefaults.Get("pps2"));
+        if (CurrentDefaults.CurrentData.ContainsKey("AutoSkip")) AutoSkip = float.Parse(CurrentDefaults.Get("AutoSkip"));
+        if (CurrentDefaults.CurrentData.ContainsKey("speaker")) speaker = CurrentDefaults.Get("speaker");
+        if (CurrentDefaults.CurrentData.ContainsKey("color")) color = CurrentDefaults.Get("color");
+        if (CurrentDefaults.CurrentData.ContainsKey("tit_color")) tit_color = CurrentDefaults.Get("tit_color");
+        if (CurrentDefaults.CurrentData.ContainsKey("bg_color")) bg_color = CurrentDefaults.Get("bg_color");
+        if (CurrentDefaults.CurrentData.ContainsKey("PlaySoundOnType")) PlaySoundOnType = CurrentDefaults.Get("PlaySoundOnType");
+        if (CurrentDefaults.CurrentData.ContainsKey("RichTextEnabled")) RichTextEnabled = bool.Parse(CurrentDefaults.Get("RichTextEnabled"));
+        if (CurrentDefaults.CurrentData.ContainsKey("CanSkip")) CanSkip = bool.Parse(CurrentDefaults.Get("CanSkip"));
+        if (CurrentDefaults.CurrentData.ContainsKey("CanEscape")) CanEscape = bool.Parse(CurrentDefaults.Get("CanEscape"));
+        if (CurrentDefaults.CurrentData.ContainsKey("InstantShowAllText")) InstantShowAllText = bool.Parse(CurrentDefaults.Get("InstantShowAllText"));
+        Console.LogError(InstantShowAllText);
+    }
+
     public void SetDefaultParams()
     {
-        if (CurrentDefaults == null) CurrentDefaults = TrueDefaults;
-        cps = CurrentDefaults.cps;
-        cps2 = CurrentDefaults.cps2;
-        cps3 = CurrentDefaults.cps3;
-        pps = CurrentDefaults.pps;
-        pps2 = CurrentDefaults.pps2;
-        speaker = CurrentDefaults.speaker;
-        color = CurrentDefaults.color;
-        tit_color = CurrentDefaults.tit_color;
-        bg_color = CurrentDefaults.bg_color;
-        RichTextEnabled = CurrentDefaults.RichTextEnabled;
-        CanSkip = CurrentDefaults.CanSkip;
-        CanEscape = CurrentDefaults.CanEscape;
-        InstantShowAllText = CurrentDefaults.InstantShowAllText;
-        AutoSkip = CurrentDefaults.AutoSkip;
-        PlaySoundOnType = CurrentDefaults.PlaySoundOnType;
+        if (CurrentSettings == null) CurrentSettings = new DialogSettings(TrueDefaults);
+        ParseFromSettings(CurrentSettings);
         EndBanna();
         PlaySoundOnType = "";
         if (pp != null)
@@ -789,7 +796,7 @@ public class DialogLol : MonoBehaviour
 
     private void StartDialogOverhead(string dialog, string datat = "Dialog")
     {
-        CurrentDefaults = TrueDefaults;
+        CurrentSettings = new DialogSettings(TrueDefaults);
         ResetDialog();
         dialogmode = true;
         DialogBoxObject.SetActive(true);
@@ -1040,7 +1047,7 @@ public class DialogLol : MonoBehaviour
                             pp.color = color;
                             pp.tit_color = tit_color;
                             pp.bg_color = bg_color;
-                            pp.UpdateText();
+                            if(!InstantShowAllText) pp.UpdateText(); // Why does this break InstantShowAllText?
                             pp.UpdateColor();
                             UpdateClickThing();
                         }
@@ -1164,4 +1171,42 @@ public class DialogDefaults
     public bool CanEscape = false;
     public bool InstantShowAllText = false;
 
+}
+public class DialogSettings
+{
+    public Dictionary<string, string> CurrentData = new Dictionary<string, string>();
+    public DialogSettings() { }
+    public DialogSettings(DialogDefaults a) { SetFromDefaults(a); }
+    public void SetFromDefaults(DialogDefaults a)
+    {
+        CurrentData.Clear();
+        CurrentData.Add("cps", a.cps.ToString());
+        CurrentData.Add("cps2", a.cps2.ToString());
+        CurrentData.Add("cps3", a.cps3.ToString());
+        CurrentData.Add("pps", a.pps.ToString());
+        CurrentData.Add("pps2", a.pps2.ToString());
+        CurrentData.Add("AutoSkip", a.AutoSkip.ToString());
+        CurrentData.Add("speaker", a.speaker.ToString());
+        CurrentData.Add("color", a.color.ToString());
+        CurrentData.Add("tit_color", a.tit_color.ToString());
+        CurrentData.Add("bg_color", a.bg_color.ToString());
+        CurrentData.Add("PlaySoundOnType", a.PlaySoundOnType.ToString());
+        CurrentData.Add("RichTextEnabled", a.RichTextEnabled.ToString());
+        CurrentData.Add("CanSkip", a.CanSkip.ToString());
+        CurrentData.Add("CanEscape", a.CanEscape.ToString());
+        CurrentData.Add("InstantShowAllText", a.InstantShowAllText.ToString());
+    }   
+    public string Get(string data)
+    {
+        return CurrentData[data];
+    }
+    public void Set(string data, string data2)
+    {
+        if(!CurrentData.ContainsKey(data)) 
+        { 
+            CurrentData.Add(data, ""); 
+        }
+        Console.LogError($"Set {data} to {data2}");
+        CurrentData[data] = data2;
+    }
 }

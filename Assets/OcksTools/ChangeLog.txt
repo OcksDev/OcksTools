@@ -7,7 +7,6 @@
   - Allows for the easy creation of linear paths. Only hard corners are supported right now, but that might change later
   - New Bezier Tool, kind of a sub-tool of the path tool, lets you easily make bezier curves and also cut them into linear segments
 - New Weighted Averages Tool
-- New Global Method System (within OXEvent)
 - New Menu Handler System
   - New Menu Animations subsystem (within Animation)
   - Includes the following default animations:
@@ -32,6 +31,8 @@
 - Sound System Improvements!
   - Overhauled how sounds are given and parsed, much more modular and expandable
   - Added support for new features like Panning audio, Distance control, Looping, and more
+- OXEvent Improvements
+  - New Global Method System
 - Tags Improvements
   - Slightly tweaked interfacing functions
   - Switched from UnityEngine.Object to System.Object, because APPARENTLY UnityEngine.Object is super fucking broken
@@ -81,7 +82,8 @@
 - Misc Changes
   - Some organizing 
   - New MultiRef classes for between 2-4 types
-  - New ConversionAgrigator class which is a helper for something in Converter
+  - New GlobalAttributeCollector class which just facilitates attributes
+  - OXEvent append methods with implicit names now generate UUIDs instead of using the method name
 ------------
 
 ------------
