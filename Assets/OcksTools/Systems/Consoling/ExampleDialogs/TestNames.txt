@@ -1,0 +1,17 @@
+-Test Dialog-
+</> <Name=Red> <&TextColor=255,0,0,255>
+</> Howdy!
+</> 
+</> <Name=Blue> <&TextColor=0,120,255,255>
+</> Howdy to you as well!
+</> 
+</> <Name=Red>
+</> So what's life like?
+</> 
+</> <Name=Blue>
+</> Idk
+</> 
+</> <Name=Red>
+</> fair enough lol
+</> <End>
+

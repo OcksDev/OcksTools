@@ -63,6 +63,7 @@ public class DialogLol : MonoBehaviour
     private string ActiveFileName = "";
     private string baldcharacters = " \n\t";
     private Dictionary<string, string> variables = new Dictionary<string, string>();
+    private Dictionary<string, DialogSettings> name_to_setting = new Dictionary<string, DialogSettings>();
 
     private static DialogLol instance;
 
@@ -307,14 +308,26 @@ public class DialogLol : MonoBehaviour
         key = VariableParse(key);
         data = VariableParse(data);
         bool is_default_set = false;
+        bool is_named_set = false;
         bool succeeded = false;
         bool succeeded_defaulting = false;
+        bool succeeded_named = false;
         string aaa = "";
-        if(key.Length > 1)
+        if (key.Length > 1)
         {
             var starter = key[0];
             is_default_set = starter == '^';
             if (is_default_set)
+            {
+                key = key.Substring(1);
+            }
+        }
+
+        if (key.Length > 1)
+        {
+            var starter = key[0];
+            is_named_set = starter == '&';
+            if (is_named_set)
             {
                 key = key.Substring(1);
             }
@@ -387,6 +400,11 @@ public class DialogLol : MonoBehaviour
                     CurrentSettings.Set("PlaySoundOnType", PlaySoundOnType.ToString());
                     succeeded_defaulting = true;
                 }
+                if (is_named_set)
+                {
+                    Set("PlaySoundOnType", PlaySoundOnType.ToString());
+                    succeeded_named = true;
+                }
                 break;
             case "Wait":
                 // Waits x seconds before moving forward
@@ -394,7 +412,7 @@ public class DialogLol : MonoBehaviour
                 succeeded = true;
                 break;
             case "PlaySound":
-                // Waits x seconds before moving forward
+                // Plays a given sound from sound presets
                 PlaySoundPreset(data);
                 succeeded = true;
                 break;
@@ -407,6 +425,11 @@ public class DialogLol : MonoBehaviour
                     CurrentSettings.Set("CanEscape", CanEscape.ToString());
                     succeeded_defaulting = true;
                 }
+                if (is_named_set)
+                {
+                    Set("CanEscape", CanEscape.ToString());
+                    succeeded_named = true;
+                }
                 break;
             case "Name":
                 // Changes the title of the dialog window
@@ -416,6 +439,10 @@ public class DialogLol : MonoBehaviour
                 {
                     CurrentSettings.Set("speaker", speaker.ToString());
                     succeeded_defaulting = true;
+                }
+                if (name_to_setting.ContainsKey(speaker))
+                {
+                    ParseFromSettings(name_to_setting[speaker]);
                 }
                 break;
             case "RichText":
@@ -427,14 +454,25 @@ public class DialogLol : MonoBehaviour
                     CurrentSettings.Set("RichTextEnabled", RichTextEnabled.ToString());
                     succeeded_defaulting = true;
                 }
+                if (is_named_set)
+                {
+                    Set("RichTextEnabled", RichTextEnabled.ToString());
+                    succeeded_named = true;
+                }
                 break;
             case "InstantText":
+                // instantly shows all text in the current segment, skipping to the end.
                 InstantShowAllText = data == "True";
                 succeeded = true;
                 if (is_default_set)
                 {
                     CurrentSettings.Set("InstantShowAllText", InstantShowAllText.ToString());
                     succeeded_defaulting = true;
+                }
+                if (is_named_set)
+                {
+                    Set("InstantShowAllText", InstantShowAllText.ToString());
+                    succeeded_named = true;
                 }
                 if (!LoadingNextDialog)
                 {
@@ -458,10 +496,18 @@ public class DialogLol : MonoBehaviour
                     CurrentSettings.Set("cps3", cps3.ToString());
                     succeeded_defaulting = true;
                 }
+                if (is_named_set)
+                {
+                    Set("cps", cps.ToString());
+                    Set("cps2", cps2.ToString());
+                    Set("cps3", cps3.ToString());
+                    succeeded_named = true;
+                }
                 break;
             case "PunctuationDelay":
                 //data should be formatted like    5, 1, 1    (spaces optional)
                 list = new List<string>(data.Split(","));
+
                 // Delay in seconds between each small thing like comma, colon, and semicolon
                 if (list.Count >= 1 && VariableParse(list[0]) != "-") pps = float.Parse(VariableParse(list[0]));
                 // Delay in seconds between each big thing like period, questionmark, and exclamation point
@@ -472,6 +518,12 @@ public class DialogLol : MonoBehaviour
                     CurrentSettings.Set("pps", pps.ToString());
                     CurrentSettings.Set("pps2", pps2.ToString());
                     succeeded_defaulting = true;
+                }
+                if (is_named_set)
+                {
+                    Set("pps", pps.ToString());
+                    Set("pps2", pps2.ToString());
+                    succeeded_named = true;
                 }
                 break;
             case "TitleColor":
@@ -485,6 +537,11 @@ public class DialogLol : MonoBehaviour
                     CurrentSettings.Set("tit_color", tit_color.ToString());
                     succeeded_defaulting = true;
                 }
+                if (is_named_set)
+                {
+                    Set("tit_color", tit_color.ToString());
+                    succeeded_named = true;
+                }
                 break;
             case "TextColor":
                 list = new List<string>(data.Split(","));
@@ -497,6 +554,11 @@ public class DialogLol : MonoBehaviour
                     CurrentSettings.Set("color", color.ToString());
                     succeeded_defaulting = true;
                 }
+                if (is_named_set)
+                {
+                    Set("color", color.ToString());
+                    succeeded_named = true;
+                }
                 break;
             case "BgColor":
                 list = new List<string>(data.Split(","));
@@ -508,6 +570,11 @@ public class DialogLol : MonoBehaviour
                 {
                     CurrentSettings.Set("bg_color", bg_color.ToString());
                     succeeded_defaulting = true;
+                }
+                if (is_named_set)
+                {
+                    Set("bg_color", bg_color.ToString());
+                    succeeded_named = true;
                 }
                 break;
             case "Scene":
@@ -532,6 +599,7 @@ public class DialogLol : MonoBehaviour
                 succeeded = true;
                 break;
             case "WaitForInput":
+                //pauses the dialog until the skip/continue input is triggered
                 waitforinput = true;
                 succeeded = true;
                 break;
@@ -547,6 +615,7 @@ public class DialogLol : MonoBehaviour
                 succeeded = true;
                 break;
             case "Animate":
+                // Animates part of the text using animations from TextAnimator.cs
                 // Animate=Text, Wave, 10
                 list = new List<string>(data.Split(","));
                 var e = new Func<GameObject>(() => { 
@@ -614,6 +683,10 @@ public class DialogLol : MonoBehaviour
         if(!succeeded_defaulting && is_default_set)
         {
             Debug.LogWarning("Invalid default assignment: \"" + key + "\"  (Dialog File: " + ActiveFileName + ")\n(this attribute can not be used to set a default value)");
+        }
+        if(!succeeded_named && is_named_set)
+        {
+            Debug.LogWarning("Invalid named default assignment: \"" + key + "\"  (Dialog File: " + ActiveFileName + ")\n(this attribute can not be used to set a name based default value)");
         }
 
         return succeeded;
@@ -710,25 +783,23 @@ public class DialogLol : MonoBehaviour
         return didf;
     }
 
-    public void ParseFromSettings(DialogSettings CurrentDefaults)
+    public void ParseFromSettings(DialogSettings Settings)
     {
-        Console.Log(CurrentDefaults.CurrentData.DictionaryToRead());
-        if(CurrentDefaults.CurrentData.ContainsKey("cps")) cps = float.Parse(CurrentDefaults.Get("cps"));
-        if (CurrentDefaults.CurrentData.ContainsKey("cps2")) cps2 = float.Parse(CurrentDefaults.Get("cps2"));
-        if (CurrentDefaults.CurrentData.ContainsKey("cps3")) cps3 = float.Parse(CurrentDefaults.Get("cps3"));
-        if (CurrentDefaults.CurrentData.ContainsKey("pps")) pps = float.Parse(CurrentDefaults.Get("pps"));
-        if (CurrentDefaults.CurrentData.ContainsKey("pps2")) pps2 = float.Parse(CurrentDefaults.Get("pps2"));
-        if (CurrentDefaults.CurrentData.ContainsKey("AutoSkip")) AutoSkip = float.Parse(CurrentDefaults.Get("AutoSkip"));
-        if (CurrentDefaults.CurrentData.ContainsKey("speaker")) speaker = CurrentDefaults.Get("speaker");
-        if (CurrentDefaults.CurrentData.ContainsKey("color")) color = CurrentDefaults.Get("color");
-        if (CurrentDefaults.CurrentData.ContainsKey("tit_color")) tit_color = CurrentDefaults.Get("tit_color");
-        if (CurrentDefaults.CurrentData.ContainsKey("bg_color")) bg_color = CurrentDefaults.Get("bg_color");
-        if (CurrentDefaults.CurrentData.ContainsKey("PlaySoundOnType")) PlaySoundOnType = CurrentDefaults.Get("PlaySoundOnType");
-        if (CurrentDefaults.CurrentData.ContainsKey("RichTextEnabled")) RichTextEnabled = bool.Parse(CurrentDefaults.Get("RichTextEnabled"));
-        if (CurrentDefaults.CurrentData.ContainsKey("CanSkip")) CanSkip = bool.Parse(CurrentDefaults.Get("CanSkip"));
-        if (CurrentDefaults.CurrentData.ContainsKey("CanEscape")) CanEscape = bool.Parse(CurrentDefaults.Get("CanEscape"));
-        if (CurrentDefaults.CurrentData.ContainsKey("InstantShowAllText")) InstantShowAllText = bool.Parse(CurrentDefaults.Get("InstantShowAllText"));
-        Console.LogError(InstantShowAllText);
+        if(Settings.CurrentData.ContainsKey("cps")) cps = float.Parse(Settings.Get("cps"));
+        if (Settings.CurrentData.ContainsKey("cps2")) cps2 = float.Parse(Settings.Get("cps2"));
+        if (Settings.CurrentData.ContainsKey("cps3")) cps3 = float.Parse(Settings.Get("cps3"));
+        if (Settings.CurrentData.ContainsKey("pps")) pps = float.Parse(Settings.Get("pps"));
+        if (Settings.CurrentData.ContainsKey("pps2")) pps2 = float.Parse(Settings.Get("pps2"));
+        if (Settings.CurrentData.ContainsKey("AutoSkip")) AutoSkip = float.Parse(Settings.Get("AutoSkip"));
+        if (Settings.CurrentData.ContainsKey("speaker")) speaker = Settings.Get("speaker");
+        if (Settings.CurrentData.ContainsKey("color")) color = Settings.Get("color");
+        if (Settings.CurrentData.ContainsKey("tit_color")) tit_color = Settings.Get("tit_color");
+        if (Settings.CurrentData.ContainsKey("bg_color")) bg_color = Settings.Get("bg_color");
+        if (Settings.CurrentData.ContainsKey("PlaySoundOnType")) PlaySoundOnType = Settings.Get("PlaySoundOnType");
+        if (Settings.CurrentData.ContainsKey("RichTextEnabled")) RichTextEnabled = bool.Parse(Settings.Get("RichTextEnabled"));
+        if (Settings.CurrentData.ContainsKey("CanSkip")) CanSkip = bool.Parse(Settings.Get("CanSkip"));
+        if (Settings.CurrentData.ContainsKey("CanEscape")) CanEscape = bool.Parse(Settings.Get("CanEscape"));
+        if (Settings.CurrentData.ContainsKey("InstantShowAllText")) InstantShowAllText = bool.Parse(Settings.Get("InstantShowAllText"));
     }
 
     public void SetDefaultParams()
@@ -1144,6 +1215,13 @@ public class DialogLol : MonoBehaviour
         if(!UseLanguageFileSystem) return false;
         return LanguageFileSystem.Instance != null;
     }
+
+    public void Set(string name, string data)
+    {
+        if (!name_to_setting.ContainsKey(speaker)) name_to_setting.Add(speaker, new DialogSettings());
+        name_to_setting[speaker].Set(name, data);
+    }
+
 }
 [System.Serializable]
 public class DialogHolder
@@ -1206,7 +1284,6 @@ public class DialogSettings
         { 
             CurrentData.Add(data, ""); 
         }
-        Console.LogError($"Set {data} to {data2}");
         CurrentData[data] = data2;
     }
 }
