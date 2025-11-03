@@ -13,10 +13,16 @@ public class Render
     {
         return Screen.currentResolution.refreshRateRatio.value;
     }
+    /// <summary>
+    /// in pixels
+    /// </summary>
     public static Vector2Int GetMonitorSize()
     {
         return new Vector2Int(Screen.currentResolution.width, Screen.currentResolution.height);
     }
+    /// <summary>
+    /// in pixels
+    /// </summary>
     public static Vector2Int GetWindowSize()
     {
         return new Vector2Int(Screen.width, Screen.height);
@@ -41,6 +47,9 @@ public class Render
     {
         Screen.fullScreenMode = mode;
     }
+    /// <summary>
+    /// in pixels
+    /// </summary>
     public static void SetWindowSize(int width, int height)
     {
         Screen.SetResolution(width, height, GetFullscreen());
