@@ -1,18 +1,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 public class DialogLol : MonoBehaviour
 {
     public Dictionary<string,OXLanguageFileIndex> LanguageFileIndexes = new Dictionary<string,OXLanguageFileIndex>();
     public bool UseLanguageFileSystem = false;
+    public static string BadGex = @"[\^*!&,]";
     public GameObject DialogBoxObject;
     private DialogBoxL pp;
     public List<DialogHolder> DialogFiles = new List<DialogHolder>();
@@ -104,9 +102,11 @@ public class DialogLol : MonoBehaviour
         //some testing variables for the dialog system
         SetVariable("TestVar", "*VarInSideAVar");
         SetVariable("VarInSideAVar", "Name");
+        SetVariable("Fuck", "Shit");
         SetVariable("Wank", "Wank");
         SetVariable("AttributeInsideVar", "<Name=Bone Eater>");
-        SetVariable("NestedAttribute", "<Animate=Text,Rainbow><Text=*VarInSideAVar>");
+        SetVariable("NestedAttribute", "<Animate=Text,Rainbow>");
+        SetVariable("MassApplyVariable", "ApplyStyle");
 
         if(GetUseLFS())
         {
@@ -297,40 +297,28 @@ public class DialogLol : MonoBehaviour
         return a;
     }
 
-    public bool ApplyAttribute(string key, string data, bool ignorewarning = false)
+    public bool ApplyAttribute(string key_input, string data_input, bool ignorewarning = false)
     {
         // attribute default for file format
         // ^AttributeName
         foundendcall = false;
-        key = CleanText(key);
-        data = CleanText(data);
-        List<string> list = new List<string>();
-        key = VariableParse(key);
-        data = VariableParse(data);
+        List<string> slist = new List<string>();
+        var key = VariableParse(key_input)[0];
+        var data = VariableParse(data_input);
         bool is_default_set = false;
         bool is_named_set = false;
         bool succeeded = false;
         bool succeeded_defaulting = false;
         bool succeeded_named = false;
         string aaa = "";
-        if (key.Length > 1)
-        {
-            var starter = key[0];
-            is_default_set = starter == '^';
-            if (is_default_set)
-            {
-                key = key.Substring(1);
-            }
-        }
 
-        if (key.Length > 1)
+        is_default_set = key.Contains("^");
+        is_named_set = key.Contains("&");
+
+        key = Regex.Replace(key, BadGex, "");
+        for(int i = 0; i < data.Count; i++)
         {
-            var starter = key[0];
-            is_named_set = starter == '&';
-            if (is_named_set)
-            {
-                key = key.Substring(1);
-            }
+            data[i] = Regex.Replace(data[i], BadGex, "");
         }
 
         switch (key)
@@ -342,7 +330,7 @@ public class DialogLol : MonoBehaviour
                 break;
             case "CanSkip":
                 // Allows skipping to the end of the dialog
-                CanSkip = data == "True";
+                CanSkip = data[0] == "True";
                 succeeded = true;
                 if (is_default_set)
                 {
@@ -377,7 +365,7 @@ public class DialogLol : MonoBehaviour
             case "AutoSkip":
                 // Automatically jumps to the next dialog line when available after x seconds
                 // set to -1 to disable
-                AutoSkip = float.Parse(data);
+                AutoSkip = float.Parse(data[0]);
                 succeeded = true;
                 if (is_default_set)
                 {
@@ -388,12 +376,12 @@ public class DialogLol : MonoBehaviour
             case "Jump":
                 // jumps x amount of characters. Since this deletes itself after use, I dont think it will cause infinite loops on negative jumps
                 // be careful tho
-                charl += int.Parse(data);
+                charl += int.Parse(data[0]);
                 succeeded = true;
                 break;
             case "SoundOnType":
                 // Choses a sound preset from PlaySoundPreset() to play when a new character is displayd
-                PlaySoundOnType = data;
+                PlaySoundOnType = data[0];
                 succeeded = true;
                 if (is_default_set)
                 {
@@ -408,17 +396,17 @@ public class DialogLol : MonoBehaviour
                 break;
             case "Wait":
                 // Waits x seconds before moving forward
-                cp3 = float.Parse(data);
+                cp3 = float.Parse(data[0]);
                 succeeded = true;
                 break;
             case "PlaySound":
                 // Plays a given sound from sound presets
-                PlaySoundPreset(data);
+                PlaySoundPreset(data[0]);
                 succeeded = true;
                 break;
             case "Escape":
                 // Allows the early escaping of dialog events
-                CanEscape = data == "True";
+                CanEscape = data[0] == "True";
                 succeeded = true;
                 if (is_default_set)
                 {
@@ -433,7 +421,7 @@ public class DialogLol : MonoBehaviour
                 break;
             case "Name":
                 // Changes the title of the dialog window
-                speaker = data;
+                speaker = data[0];
                 succeeded = true;
                 if (is_default_set)
                 {
@@ -447,7 +435,7 @@ public class DialogLol : MonoBehaviour
                 break;
             case "RichText":
                 // Skips ahead in the text whenever a richtext is detected in the text
-                RichTextEnabled = data == "True";
+                RichTextEnabled = data[0] == "True";
                 succeeded = true;
                 if (is_default_set)
                 {
@@ -462,7 +450,7 @@ public class DialogLol : MonoBehaviour
                 break;
             case "InstantText":
                 // instantly shows all text in the current segment, skipping to the end.
-                InstantShowAllText = data == "True";
+                InstantShowAllText = data[0] == "True";
                 succeeded = true;
                 if (is_default_set)
                 {
@@ -481,13 +469,12 @@ public class DialogLol : MonoBehaviour
                 break;
             case "Speed":
                 //data should be formatted like    5, 1, 1    (spaces optional)
-                list = new List<string>(data.Split(","));
                 // Characters per second
-                if (list.Count >= 1 && VariableParse(list[0]) != "-") cps = float.Parse(VariableParse(list[0]));
+                if (data.Count >= 1 && data[0] != "-") cps = float.Parse(data[0]);
                 // Delay in seconds between each word
-                if (list.Count >= 2 && VariableParse(list[1]) != "-") cps2 = float.Parse(VariableParse(list[1]));
+                if (data.Count >= 2 && data[1] != "-") cps2 = float.Parse(data[1]);
                 // Delay in seconds between each line
-                if (list.Count >= 3 && VariableParse(list[2]) != "-") cps3 = float.Parse(VariableParse(list[2]));
+                if (data.Count >= 3 && data[2] != "-") cps3 = float.Parse(data[2]);
                 succeeded = true;
                 if (is_default_set)
                 {
@@ -506,12 +493,10 @@ public class DialogLol : MonoBehaviour
                 break;
             case "PunctuationDelay":
                 //data should be formatted like    5, 1, 1    (spaces optional)
-                list = new List<string>(data.Split(","));
-
                 // Delay in seconds between each small thing like comma, colon, and semicolon
-                if (list.Count >= 1 && VariableParse(list[0]) != "-") pps = float.Parse(VariableParse(list[0]));
+                if (data.Count >= 1 && data[0] != "-") pps = float.Parse(data[0]);
                 // Delay in seconds between each big thing like period, questionmark, and exclamation point
-                if (list.Count >= 2 && VariableParse(list[1]) != "-") pps2 = float.Parse(VariableParse(list[1]));
+                if (data.Count >= 2 && data[1] != "-") pps2 = float.Parse(data[1]);
                 succeeded = true;
                 if (is_default_set)
                 {
@@ -527,9 +512,8 @@ public class DialogLol : MonoBehaviour
                 }
                 break;
             case "TitleColor":
-                list = new List<string>(data.Split(","));
                 //4 input color formated like 255,255,255,255
-                aaa = VariableParse(list[0]) + "|" + VariableParse(list[1]) + "|" + VariableParse(list[2]) + "|" + VariableParse(list[3]);
+                aaa = data[0] + "|" + data[1] + "|" + data[2] + "|" + data[3];
                 tit_color = aaa;
                 succeeded = true;
                 if (is_default_set)
@@ -544,9 +528,8 @@ public class DialogLol : MonoBehaviour
                 }
                 break;
             case "TextColor":
-                list = new List<string>(data.Split(","));
                 //4 input color formated like 255,255,255,255
-                aaa = VariableParse(list[0]) + "|" + VariableParse(list[1]) + "|" + VariableParse(list[2]) + "|" + VariableParse(list[3]);
+                aaa = data[0] + "|" + data[1] + "|" + data[2] + "|" + data[3];
                 color = aaa;
                 succeeded = true;
                 if (is_default_set)
@@ -561,9 +544,8 @@ public class DialogLol : MonoBehaviour
                 }
                 break;
             case "BgColor":
-                list = new List<string>(data.Split(","));
                 //4 input color formated like 255,255,255,255
-                aaa = VariableParse(list[0]) + "|" + VariableParse(list[1]) + "|" + VariableParse(list[2]) + "|" + VariableParse(list[3]);
+                aaa = data[0] + "|" + data[1] + "|" + data[2] + "|" + data[3];
                 bg_color = aaa;
                 succeeded = true;
                 if (is_default_set)
@@ -577,15 +559,48 @@ public class DialogLol : MonoBehaviour
                     succeeded_named = true;
                 }
                 break;
+            case "ApplyStyle":
+                // applies a selected name's stored attributes to the current speaker
+
+                if (!name_to_setting.ContainsKey(speaker)) name_to_setting.Add(speaker, new DialogSettings());
+                if (!name_to_setting.ContainsKey(data[0])) name_to_setting.Add(data[0], new DialogSettings());
+                ParseFromSettings(name_to_setting[data[0]]);
+
+                if (is_default_set)
+                {
+                    CurrentSettings.CurrentData = CurrentSettings.CurrentData.MergeDictionary(name_to_setting[data[0]].CurrentData);
+                    succeeded_defaulting = true;
+                }
+                if (is_named_set)
+                {
+                    name_to_setting[speaker].CopyFrom(name_to_setting[data[0]]);
+                    succeeded_named = true;
+                }
+                succeeded = true;
+                break;
+            case "ClearStyle":
+                // Clears any lasting style applied to a given name
+
+                if (name_to_setting.ContainsKey(data[0])) name_to_setting.Remove(data[0]);
+
+                succeeded = true;
+                break;
+            case "ResetDefaults":
+                // Resets all lasting defaults to their base values
+
+                CurrentSettings = new DialogSettings(TrueDefaults);
+
+                succeeded = true;
+                break;
             case "Scene":
                 //Starts a new dialog file
-                StartDialog(data);
+                StartDialog(data[0]);
                 foundendcall = true;
                 succeeded = true;
                 break;
             case "Choose":
                 //Starts a new choose file
-                StartDialog(data, "Choose");
+                StartDialog(data[0], "Choose");
                 foundendcall = true;
                 succeeded = true;
                 break;
@@ -609,17 +624,15 @@ public class DialogLol : MonoBehaviour
                 succeeded = true;
                 break;
             case "Set":
-                list = new List<string>(data.Split(","));
                 //sets a variable
-                variables[VariableParse(list[0])] = VariableParse(list[1]);
+                variables[data[0]] = data[1];
                 succeeded = true;
                 break;
             case "Animate":
                 // Animates part of the text using animations from TextAnimator.cs
                 // Animate=Text, Wave, 10
-                list = new List<string>(data.Split(","));
                 var e = new Func<GameObject>(() => { 
-                    switch (VariableParse(list[0]))
+                    switch (data[0])
                     {
                         case "Text": return pp.TextObject;
                         case "Title": return pp.TitleObject;
@@ -634,7 +647,7 @@ public class DialogLol : MonoBehaviour
                 string h = "";
                 try
                 {
-                    h = VariableParse(list[2]);
+                    h = data[2];
                 }
                 catch
                 {
@@ -644,7 +657,7 @@ public class DialogLol : MonoBehaviour
                 {
                     case "Remove":
                         ta = null;
-                        var s = VariableParse(list[1]);
+                        var s = data[1];
                         for (int i = 0; i < animat.anims.Count; i++)
                         {
                             if (animat.anims[i].Type == s)
@@ -656,10 +669,10 @@ public class DialogLol : MonoBehaviour
                         break;
                     default:
                         var a = new TextAnim();
-                        a.Type = VariableParse(list[1]);
+                        a.Type = data[1];
                         try
                         {
-                            a.endindex = int.Parse(VariableParse(list[2]));
+                            a.endindex = int.Parse(data[2]);
                         }
                         catch
                         {
@@ -672,7 +685,7 @@ public class DialogLol : MonoBehaviour
                 succeeded = true;
                 break;
             case "Event":
-                GlobalEvent.Invoke(data);
+                GlobalEvent.Invoke(data[0]);
                 succeeded = true;
                 break;
             default:
@@ -715,40 +728,37 @@ public class DialogLol : MonoBehaviour
             return defaultval;
         }
     }
-    private string VariableParse(string data)
+    private List<string> VariableParse(string data)
     {
         //attribute variable format
         //*var_name
 
         //language file system query format
-        //!var_name
-
+        //!var_name=
         var st = CleanText(data);
-        if (st == "") return data;
-        if (st[0] == '*' || st[0] == '!')
+        List<string> nerds = st.StringToList(",");
+        List<string> outpi = new List<string>();
+        foreach(var a in nerds)
         {
-            string p2 = "";
-            string newdat = "";
-            p2 = st.Substring(1);
-            try
+            var dd = Regex.Match(a, $"{BadGex}+").Value;
+            var prepend = Regex.Replace(dd, $"[!*]+", "");
+            var realdata = Regex.Replace(a, $"{BadGex}+", "");
+            if (dd.Contains("*"))
             {
-                if (st[0] == '*')
-                {
-                    newdat = variables[p2];
-                }
-                else
-                {
-                    newdat = LanguageFileSystem.Instance.GetString("unknown", p2);
-                }
+                var smegleton = VariableParse(variables[realdata]);
+                foreach(var b in smegleton) { outpi.Add(prepend + b); }
             }
-            catch
+            else if(dd.Contains("!"))
             {
-                return data;
+                outpi.Add(prepend + LanguageFileSystem.Instance.GetString("unknown", realdata));
             }
-            newdat = VariableParse(newdat);
-            data = newdat;
+            else
+            {
+                outpi.Add(a);
+            }
         }
-        return data;
+        return outpi;
+
     }
 
     public bool UseEnding(string r)
@@ -961,7 +971,7 @@ public class DialogLol : MonoBehaviour
                     var sh = e.Substring(oldcharl + 1, ii - 1);
                     string[] stuff = sh.Split('=');
                     var charlpreatt = charl;
-                    if(waitoverride && VariableParse(stuff[0]) == "Wait")
+                    if(waitoverride && VariableParse(stuff[0])[0] == "Wait")
                     {
                         fulltext = fulltext.Substring(0, oldcharl) + fulltext.Substring(charlpreatt);
                         var off = charl - charlpreatt;
@@ -975,10 +985,10 @@ public class DialogLol : MonoBehaviour
                         if (jjj)
                         {
                             string mid = "";
-                            string voop = VariableParse(stuff[0]);
+                            string voop = VariableParse(stuff[0])[0];
                             if (voop == "Text")
                             {
-                                mid = VariableParse(stuff[1]);
+                                mid = VariableParse(stuff[1])[0];
                             }
                             else if(voop == "br")
                             {
@@ -1005,16 +1015,16 @@ public class DialogLol : MonoBehaviour
                     }
                     
                 }
-                catch
+                catch(Exception ezez)
                 {
                     try
                     {
                         var sh = e.Substring(oldcharl + 1, ii - 1);
-                        Debug.LogWarning($"Something went fucked trying to parse \"{sh}\"");
+                        Debug.LogWarning($"Something went fucked trying to parse \"{sh}\"\n{ezez}");
                     }
                     catch
                     {
-                        Debug.LogWarning("Something went fucked trying to parse a dialog attribute");
+                        Debug.LogWarning($"Something went fucked trying to parse a dialog attribute\n{ezez}");
                     }
                 }
                 if(emu != "Wait")
@@ -1087,7 +1097,16 @@ public class DialogLol : MonoBehaviour
                         string r = str[ln];
                         if (ln == 0 || !UseEnding(r))
                         {
-                            string g = str[linenum - 1];
+                            string g = "";
+                            try
+                            {
+                                g = str[linenum - 1];
+                            }
+                            catch
+                            {
+                                ResetDialog();
+                                return;
+                            }
                             List<string> list23 = new List<string>(g.Split("<"));
                             fulltext = str[linenum];
                             fulltext = Regex.Replace(fulltext, @"[ \n\r\t]+$", "");
@@ -1255,6 +1274,7 @@ public class DialogSettings
     public Dictionary<string, string> CurrentData = new Dictionary<string, string>();
     public DialogSettings() { }
     public DialogSettings(DialogDefaults a) { SetFromDefaults(a); }
+    public DialogSettings(DialogSettings a) { CopyFrom(a); }
     public void SetFromDefaults(DialogDefaults a)
     {
         CurrentData.Clear();
@@ -1285,5 +1305,13 @@ public class DialogSettings
             CurrentData.Add(data, ""); 
         }
         CurrentData[data] = data2;
+    }
+    public void CopyFrom(DialogSettings a)
+    {
+        CurrentData.Clear();
+        foreach(var b in a.CurrentData)
+        {
+            CurrentData.Add(b.Key, b.Value);
+        }
     }
 }

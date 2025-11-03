@@ -13,5 +13,23 @@
 </> 
 </> <Name=Red>
 </> fair enough lol
-</> <End>
+</> 
+</> <Name=Stealer> <ApplyStyle=Blue>
+</> I have stolen your color!
+</> 
+</> <Name=Blue>
+</> WHAT
+</> 
+</> <Name=Stealer>
+</> Nah you can have it back. <&ApplyStyle=Red>I am red now.
+</> 
+</> <Name=Stealer>
+</> See?
+</> 
+</> <Name=Stealer> 
+</> It stays! But now, <&TextColor=0,255,0,255><^*MassApplyVariable=Stealer>everyone is green!
+</> 
+</> <Name=New Guy>
+</> NOOOOO
+</> 
 

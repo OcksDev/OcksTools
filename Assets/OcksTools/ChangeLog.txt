@@ -25,6 +25,21 @@
     - EaseOutEven
     - EaseOutVH
     - EaseOutHV
+- Dialog Improvements
+  - Overhauled internal logic for variable parsing
+  - Certain Attributes can be marked as defaults by prepending them with ^
+    - This applies their effect to all remaining dialogs in a given file
+  - Certain Attributes can be marked as styles by prepending them with ^
+    - This applies their effect to all remaining dialogs in a given file that have the same name as when the variable was set
+  - New Attribute "InstantText" which allows you to load the full text box rather than waiting for any delays.
+  - New Attribute "ApplyStyle" which applies all the "Named Defaults" that a different speaker has, but onto the current one
+    - This can, itself, be made into a style or default
+  - New Attribute "ClearStyle" lets you reset a given name's style
+  - New Attribute "ResetDefaults" resets current defaults to base defaults
+  - Fixed "Click To Continue" or other 1-frame artifacts that sometimes happened when opening a dialog.
+  - Fixed erroneous ending characters like \n or \r from being considered part of dialog
+  - Fixed broken dataless attribute parsing in the load section of dialogs
+  - Attribute "Show" changed to "Text"
 - Complete Spawn System Overhaul!
   - Completely remade it from the ground up, now much more streamlined and modular
   - Multiplayer functionality is now handled so much better, no need to uncomment code to get it working now
@@ -32,6 +47,8 @@
   - Overhauled how sounds are given and parsed, much more modular and expandable
   - Added support for new features like Panning audio, Distance control, Looping, and more
 - OXEvent Improvements
+  - New c# attribute called AddToEvent
+  - OXEvent append methods with implicit names now generate UUIDs instead of using the method name
   - New Global Method System
 - Tags Improvements
   - Slightly tweaked interfacing functions
@@ -60,14 +77,6 @@
 - Random Functions Improvements
   - Some methods have been extracted into the static class OXFunctions and made into Extension Methods.
   - Mod() now has varients for float, double, and long
-- Dialog Improvements
-  - New Attribute "InstantText" which allows you to load the full text box rather than waiting for any delays.
-  - Certain Attributes can be marked as defaults by prepending them with ^
-    - This applies their effect to all remaining dialogs in a given file
-  - Fixed "Click To Continue" or other 1-frame artifacts that sometimes happened when opening a dialog.
-  - Fixed erroneous ending characters like \n or \r from being considered part of dialog
-  - Fixed dataless attribute parsing in the load section of dialogs
-  - Attribute "Show" changed to "Text"
 - Console Improvements
   - Log and LogError now can take generic objects as inputs, no need to run .ToString() on non-strings now (they are also now Extension Methods)
   - Migrated command assembling event to use the Global Event system.
@@ -83,7 +92,6 @@
   - Some organizing 
   - New MultiRef classes for between 2-4 types
   - New GlobalAttributeCollector class which just facilitates attributes
-  - OXEvent append methods with implicit names now generate UUIDs instead of using the method name
 ------------
 
 ------------
