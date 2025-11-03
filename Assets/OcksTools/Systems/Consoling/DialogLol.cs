@@ -300,7 +300,13 @@ public class DialogLol : MonoBehaviour
     public bool ApplyAttribute(string key_input, string data_input, bool ignorewarning = false)
     {
         // attribute default for file format
-        // ^AttributeName
+        //   ^AttributeName
+        // attribute style to be applied to any time the same speaker talks going forward.
+        //   &AttributeName
+        // variable to have it's value replaced
+        //   *AttributeName
+        // language file system variable to have it's value replaced 
+        //   !AttributeName
         foundendcall = false;
         List<string> slist = new List<string>();
         var key = VariableParse(key_input)[0];
@@ -878,6 +884,7 @@ public class DialogLol : MonoBehaviour
     private void StartDialogOverhead(string dialog, string datat = "Dialog")
     {
         CurrentSettings = new DialogSettings(TrueDefaults);
+        name_to_setting.Clear();
         ResetDialog();
         dialogmode = true;
         DialogBoxObject.SetActive(true);
