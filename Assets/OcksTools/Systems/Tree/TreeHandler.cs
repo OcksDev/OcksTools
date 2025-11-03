@@ -6,7 +6,7 @@ using static TreeNode;
 public class TreeHandler : MonoBehaviour
 {
     public static Dictionary<string, TreeNode> Nodes = new Dictionary<string, TreeNode>();
-    public static Dictionary<string, string> CurrentOwnerships = new Dictionary<string, string>();
+    public static Dictionary<string, int> CurrentOwnerships = new Dictionary<string, int>();
     public static OXEvent LoadCurrentState = new OXEvent();
     public static OXEvent SpawnPartners = new OXEvent();
     public static OXEvent SpawnLines = new OXEvent();
@@ -23,10 +23,10 @@ public class TreeHandler : MonoBehaviour
     public void LoadAllTree(string dict)
     {
         //phase 1 - load all the values
-        CurrentOwnerships = SaveSystem.Instance.GetDict("TreeData", new Dictionary<string, string>(), dict);
+        CurrentOwnerships = SaveSystem.Instance.GetDict("TreeData", new Dictionary<string, int>(), dict);
         //phase 2 - the canvas partner objects
         SpawnPartners.Invoke();
-        //phase 3 - set the state of the things
+        //phase 3 - update the state of nodes to make sure they all know their state
         LoadCurrentState.Invoke();
         //phase 4 - all nodes know about their related nodes
         foreach (var node in Nodes)
@@ -59,7 +59,7 @@ public class TreeHandler : MonoBehaviour
             case ViewReq.AtLeastOne:
                 foreach (var a in Prerequisites)
                 {
-                    if (CurrentOwnerships.ContainsKey(a))
+                    if (MetNodeReqs(a))
                     {
                         passedreq = true;
                         goto weenorus;
@@ -69,7 +69,7 @@ public class TreeHandler : MonoBehaviour
             case ViewReq.AllOf:
                 foreach (var a in Prerequisites)
                 {
-                    if (!CurrentOwnerships.ContainsKey(a))
+                    if (!MetNodeReqs(a))
                     {
                         passedreq = false;
                         goto weenorus;
@@ -80,5 +80,38 @@ public class TreeHandler : MonoBehaviour
         }
     weenorus:
         return passedreq;
+    }
+    public static int GetNodeLevel(string node)
+    {
+        if(!CurrentOwnerships.ContainsKey(node)) return 0;
+        return CurrentOwnerships[node];
+    }
+    public static int GetNodeLevel(TreeNode node)
+    {
+        if (!CurrentOwnerships.ContainsKey(node.Name)) return 0;
+        return CurrentOwnerships[node.Name];
+    }
+    public static bool MetNodeReqs(string node)
+    {
+        return MetNodeReqs(Nodes[node]);
+    }
+    public static bool MetNodeReqs(TreeNode node)
+    {
+        return CurrentOwnerships.ContainsKey(node.Name) && NodeHasMetLevel(node);
+    }
+
+    public static bool NodeHasMetLevel(string node)
+    {
+        return NodeHasMetLevel(Nodes[node]);
+    }
+    public static bool NodeHasMetLevel(TreeNode node)
+    {
+        switch (node.LevelRequirement)
+        {
+            case LevelReq.FirstLevel: return CurrentOwnerships[node.Name] >= 1;
+            case LevelReq.MaxLevel: return CurrentOwnerships[node.Name] >= node.MaxLevel;
+                
+                default : return false; // not reachable code lol
+        }
     }
 }

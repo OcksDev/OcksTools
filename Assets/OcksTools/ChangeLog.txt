@@ -1,7 +1,11 @@
 
 ------------
    v1.1.3
-- Nothing so far..
+- New Render tool
+  - Aggrigates a lot of system/rendering stuff like refreshrate, resolution, anti-aliasing, etc
+- Tree Improvements
+  - Nodes now have a max level that they can be bought up to
+  - Added some helper methods in TreeHandler to make interfacing easier
 ------------
 
 ------------

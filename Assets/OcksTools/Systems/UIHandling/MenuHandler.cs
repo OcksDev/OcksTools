@@ -105,7 +105,7 @@ public class MenuHandler : MonoBehaviour
     {
         StartCoroutine(AnimSmegging(new MenuState(nerds), anim));
     }
-    public IEnumerator AnimSmegging(MenuState cum, System.Func<List<GameObject>, IEnumerator> anim)
+    private IEnumerator AnimSmegging(MenuState cum, System.Func<List<GameObject>, IEnumerator> anim)
     {
         if ( cum.AnimLocked) yield break;
         cum.AnimLocked = true;

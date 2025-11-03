@@ -5,6 +5,8 @@ using UnityEngine;
 public class TreeNode : MonoBehaviour
 {
     public string Name;
+    public int MaxLevel = 1;
+    public LevelReq LevelRequirement = LevelReq.FirstLevel;
     public List<string> Prerequisites = new List<string>();
     [HideInInspector]
     public List<string> RelateNodes;
@@ -16,10 +18,24 @@ public class TreeNode : MonoBehaviour
     public ViewStates StartState = ViewStates.Hidden;
     [HideInInspector]
     public ViewStates ViewState = ViewStates.Hidden;
+    [HideInInspector]
     public GameObject CanvasPartner;
+    [HideInInspector]
     public GameObject LineObject;
     private PartnerScrpt prntr;
     public Dictionary<string, Transform> lines = new Dictionary<string, Transform>();
+
+
+
+    public void Click()
+    {
+        //return out of this function to stop a click from going through and getting this node
+        ClickEffect();
+    }
+
+
+
+
     private void Awake()
     {
         InitializeNode();
@@ -37,8 +53,6 @@ public class TreeNode : MonoBehaviour
         TreeHandler.SpawnLines.Append(Name, SpawnLines);
         TreeHandler.UpdateLines.Append(Name, UpdateAllLines);
     }
-
-
     public void UpdateState()
     {
         var t = TreeHandler.Instance;
@@ -60,7 +74,7 @@ public class TreeNode : MonoBehaviour
                     goto Ragg;
                 case ViewStates.Available:
                 Ragg:
-                    if (TreeHandler.CurrentOwnerships.ContainsKey(Name))
+                    if (TreeHandler.MetNodeReqs(this))
                     {
                         ViewState = ViewStates.Obtained;
                     }
@@ -123,14 +137,14 @@ public class TreeNode : MonoBehaviour
             TreeHandler.Nodes[a].UpdateAllLines();
         }
     }
-    public void Click()
+    public void ClickEffect()
     {
         var t = TreeHandler.Instance;
         if (!t.MeetsReqs(Prerequisites, ViewRequirement))
         {
             return;
         }
-        switch(ViewState)
+        switch (ViewState)
         {
             case ViewStates.Obtained:
                 //clicked an already obtained thing
@@ -139,12 +153,18 @@ public class TreeNode : MonoBehaviour
                 //clicked something that is locked
                 break;
             case ViewStates.Available:
-                TreeHandler.CurrentOwnerships.Add(Name, "");
+                if (TreeHandler.CurrentOwnerships.ContainsKey(Name))
+                {
+                    TreeHandler.CurrentOwnerships[Name]++;
+                }
+                else
+                {
+                    TreeHandler.CurrentOwnerships.Add(Name, 1);
+                }
                 PropogatedUpdate();
                 break;
         }
     }
-
     public void SpawnPartner()
     {
         CanvasPartner = Instantiate(CanvasPartner, transform.position, transform.rotation, TreeHandler.Instance.PartnerParent.transform);
@@ -174,7 +194,7 @@ public class TreeNode : MonoBehaviour
     }
     public void UpdateLineStatus(KeyValuePair<string, Transform> s)
     {
-        if (!TreeHandler .CurrentOwnerships.ContainsKey(Name))
+        if (!TreeHandler.MetNodeReqs(this))
         {
             s.Value.gameObject.SetActive(false);
             return;
@@ -204,6 +224,11 @@ public class TreeNode : MonoBehaviour
     {
         AtLeastOne,
         AllOf,
+    }
+    public enum LevelReq
+    {
+        FirstLevel,
+        MaxLevel,
     }
     public enum ViewStates
     {
