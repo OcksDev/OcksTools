@@ -42,18 +42,18 @@ public class RecordedObject : MonoBehaviour
         if (RecordOptions.HasFlag(ThingsToRecord.AngVelocity2D)) AngVelocity2D.StartRecording(Time.time);
         status = RecordingStatus.Recording;
     }
-    public void StartPlayback()
+    public void StartPlayback(float spd)
     {
         if (body != null) body.isKinematic = true;
         if (body2d != null) body2d.simulated = false;
-        Timer.StartPlayback(Time.time);
-        if (RecordOptions.HasFlag(ThingsToRecord.Position)) Position.StartPlayback(Time.time);
-        if (RecordOptions.HasFlag(ThingsToRecord.Scale)) Scale.StartPlayback(Time.time);
-        if (RecordOptions.HasFlag(ThingsToRecord.Rotation)) Rotation.StartPlayback(Time.time);
-        if (RecordOptions.HasFlag(ThingsToRecord.Velocity)) Velocity.StartPlayback(Time.time);
-        if (RecordOptions.HasFlag(ThingsToRecord.AngVelocity)) AngVelocity.StartPlayback(Time.time);
-        if (RecordOptions.HasFlag(ThingsToRecord.Velocity2D)) Velocity2D.StartPlayback(Time.time);
-        if (RecordOptions.HasFlag(ThingsToRecord.AngVelocity2D)) AngVelocity2D.StartPlayback(Time.time);
+        Timer.StartPlayback(Time.time, spd);
+        if (RecordOptions.HasFlag(ThingsToRecord.Position)) Position.StartPlayback(Time.time, spd);
+        if (RecordOptions.HasFlag(ThingsToRecord.Scale)) Scale.StartPlayback(Time.time, spd);
+        if (RecordOptions.HasFlag(ThingsToRecord.Rotation)) Rotation.StartPlayback(Time.time, spd);
+        if (RecordOptions.HasFlag(ThingsToRecord.Velocity)) Velocity.StartPlayback(Time.time, spd);
+        if (RecordOptions.HasFlag(ThingsToRecord.AngVelocity)) AngVelocity.StartPlayback(Time.time, spd);
+        if (RecordOptions.HasFlag(ThingsToRecord.Velocity2D)) Velocity2D.StartPlayback(Time.time, spd);
+        if (RecordOptions.HasFlag(ThingsToRecord.AngVelocity2D)) AngVelocity2D.StartPlayback(Time.time, spd);
         status = RecordingStatus.Playing;
         if (gam != null) StopCoroutine(gam);
         gam = StartCoroutine(Gamin());
@@ -107,7 +107,11 @@ public class RecordedObject : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.R))
         {
-            StartPlayback();
+            StartPlayback(1);
+        }
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            StartPlayback(-1);
         }
         if (status == RecordingStatus.Recording)
         {
@@ -208,7 +212,8 @@ public class RecordedObject : MonoBehaviour
     }
     public IEnumerator Gamin()
     {
-        yield return new WaitForSeconds(Timer.record[1].a);
+        var d = Timer.record[1].a / Timer.playback_speed;
+        yield return new WaitForSeconds(d);
         StopPlayback();
     }
     public Coroutine gam;
@@ -269,21 +274,56 @@ public class DataRecord<T>
         }
     }
     int last = 0;
-    public T StartPlayback(float t)
+    public float playback_speed = 1;
+    bool reversed = false;
+    public T StartPlayback(float t, float speed = 1)
     {
+        playback_speed = speed;
+
         last = 0;
         starttime = t;
+        if(speed < 0)
+        {
+            return StartPlaybackReverse(t);
+        }
+        else if(speed==0)
+        {
+            throw new Exception("Can not play record at zero speed lol");
+        }
         return record[0].b;
+    }
+    private T StartPlaybackReverse(float t)
+    {
+        playback_speed *= -1;
+        reversed = true;
+        last = record.Count - 1;
+        return record[record.Count-1].b;
     }
     public MultiRef<float,T,T>? PollPlayback(float time)
     {
+        if (reversed) return PollPlaybackReversed(time);
         time -= starttime;
+        time *= playback_speed;
         if (last == record.Count - 1) return null;
         if (record[last].a <= time)
         {
             last++;
             var dif = record[last].a - record[last-1].a;
+            dif /= playback_speed;
             return new MultiRef<float, T, T>(dif,record[last-1].b, record[last].b);
+        }
+        return null;
+    }
+    private MultiRef<float,T,T>? PollPlaybackReversed(float time)
+    {
+        var st = ((starttime - time) * playback_speed) + record[record.Count-1].a;
+        if (last == 0) return null;
+        if (record[last].a >= st)
+        {
+            last--;
+            var dif = Mathf.Abs(record[last+1].a - record[last].a);
+            dif /= playback_speed;
+            return new MultiRef<float, T, T>(dif,record[last+1].b, record[last].b);
         }
         return null;
     }
