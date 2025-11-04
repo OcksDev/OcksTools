@@ -199,6 +199,7 @@ public class ConsoleLol : MonoBehaviour
             .Append(new OXCommand("dict").Action(ConsoleCommands.Test_dict))
             .Append(new OXCommand("sete").Action(ConsoleCommands.Test_sete))
             .Append(new OXCommand("gevent").Action(ConsoleCommands.Test_gevent))
+            .Append(new OXCommand("remap").Action(ConsoleCommands.Test_remap))
             .Append(new OXCommand("comp")
                 .Append(new OXCommand(OXCommand.ExpectedInputType.String)
                     .Append(new OXCommand(OXCommand.ExpectedInputType.String).Action(ConsoleCommands.Test_comp))))

@@ -42,6 +42,11 @@ public class ConsoleCommands : MonoBehaviour
     {
         GlobalEvent.Invoke("TestEvent");
     }
+    public static void Test_remap()
+    {
+        Console.Log(0.5.Remap(0,1,0,10));
+        Console.Log(5.0.Remap(0,10,0,1));
+    }
 
     [AddToEvent("TestEvent")]
     public void Test_Event1()

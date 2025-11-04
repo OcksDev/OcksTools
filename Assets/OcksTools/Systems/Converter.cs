@@ -679,7 +679,7 @@ public class ConversionMethod : Attribute
 }
 
 [System.Serializable]
-public class MultiRef<A, B>
+public struct MultiRef<A, B>
 {
     public A a;
     public B b;
@@ -691,7 +691,7 @@ public class MultiRef<A, B>
 }
 
 [System.Serializable]
-public class MultiRef<A, B, C>
+public struct MultiRef<A, B, C>
 {
     public A a;
     public B b;
@@ -704,7 +704,7 @@ public class MultiRef<A, B, C>
     }
 }
 [System.Serializable]
-public class MultiRef<A, B, C, D>
+public struct MultiRef<A, B, C, D>
 {
     public A a;
     public B b;

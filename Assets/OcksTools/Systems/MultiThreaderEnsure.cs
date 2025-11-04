@@ -180,7 +180,8 @@ public class OXThreadPoolB : IOXThreadPool
                 }
                 if (smegs)
                 {
-                    weenor(); //taken out of the try/catch so that debugging is easier
+                    if (weenor != null) weenor(); //taken out of the try/catch so that debugging is easier
+                    else Debug.LogWarning($"Thread {i} tried to pull a null action?");
                 }
             }
             else

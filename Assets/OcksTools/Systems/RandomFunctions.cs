@@ -380,6 +380,14 @@ public static class OXFunctions
         }
         return tea;
     }
+    public static double Remap(this double value, double original_min, double original_max, double new_min, double new_max)
+    {
+        return (value - original_min) / (original_max - original_min) * (new_max - new_min) + new_min;
+    }
+    public static float Remap(this float value, float original_min, float original_max, float new_min, float new_max)
+    {
+        return (value - original_min) / (original_max - original_min) * (new_max - new_min) + new_min;
+    }
 
     public static Dictionary<T, T2> MergeDictionary<T, T2>(this Dictionary<T, T2> ti, Dictionary<T, T2> tee)
     {

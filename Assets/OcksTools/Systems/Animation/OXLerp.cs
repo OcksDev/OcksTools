@@ -11,7 +11,7 @@ public class OXLerp : MonoBehaviour
         float f = 1 / time;
         while (x < 1)
         {
-            x = Mathf.Clamp01(x+Time.deltaTime*f);
+            x = Mathf.Clamp01(x+(Time.deltaTime*f));
             method(x);
             yield return null;
         }
