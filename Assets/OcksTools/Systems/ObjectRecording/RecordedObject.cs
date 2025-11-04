@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -12,6 +13,7 @@ public class RecordedObject : MonoBehaviour
     private Rigidbody body;
 
 
+    public DataRecord<int> Timer = new DataRecord<int>();
     public DataRecord<Vector3> Position = new DataRecord<Vector3>();
     private DataRecord<Quaternion> Rotation = new DataRecord<Quaternion>();
     private DataRecord<Vector3> Scale = new DataRecord<Vector3>();
@@ -27,45 +29,67 @@ public class RecordedObject : MonoBehaviour
     }
     public void StartRecording()
     {
+        if (body != null) body.isKinematic = false;
+        if (body2d != null) body2d.simulated = true;
+        if (gam != null) StopCoroutine(gam);
+        Timer.StartRecording(Time.time);
         if(RecordOptions.HasFlag(ThingsToRecord.Position)) Position.StartRecording(Time.time);
         if (RecordOptions.HasFlag(ThingsToRecord.Scale)) Scale.StartRecording(Time.time);
         if (RecordOptions.HasFlag(ThingsToRecord.Rotation)) Rotation.StartRecording(Time.time);
         if (RecordOptions.HasFlag(ThingsToRecord.Velocity)) Velocity.StartRecording(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.AngVelocity)) AngVelocity.StartRecording(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.Velocity2D)) Velocity2D.StartRecording(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.AngVelocity2D)) AngVelocity2D.StartRecording(Time.time);
         status = RecordingStatus.Recording;
     }
     public void StartPlayback()
     {
+        if (body != null) body.isKinematic = true;
+        if (body2d != null) body2d.simulated = false;
+        Timer.StartPlayback(Time.time);
         if (RecordOptions.HasFlag(ThingsToRecord.Position)) Position.StartPlayback(Time.time);
         if (RecordOptions.HasFlag(ThingsToRecord.Scale)) Scale.StartPlayback(Time.time);
         if (RecordOptions.HasFlag(ThingsToRecord.Rotation)) Rotation.StartPlayback(Time.time);
         if (RecordOptions.HasFlag(ThingsToRecord.Velocity)) Velocity.StartPlayback(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.AngVelocity)) AngVelocity.StartPlayback(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.Velocity2D)) Velocity2D.StartPlayback(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.AngVelocity2D)) AngVelocity2D.StartPlayback(Time.time);
         status = RecordingStatus.Playing;
+        if (gam != null) StopCoroutine(gam);
+        gam = StartCoroutine(Gamin());
     }
 
     public Action PollAll = null;
 
     public void StopRecording()
     {
+        Timer.StopRecording(Time.time);
         if (RecordOptions.HasFlag(ThingsToRecord.Position)) Position.StopRecording(Time.time);
         if (RecordOptions.HasFlag(ThingsToRecord.Scale)) Scale.StopRecording(Time.time);
         if (RecordOptions.HasFlag(ThingsToRecord.Rotation)) Rotation.StopRecording(Time.time);
         if (RecordOptions.HasFlag(ThingsToRecord.Velocity)) Velocity.StopRecording(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.AngVelocity)) AngVelocity.StopRecording(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.Velocity2D)) Velocity2D.StopRecording(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.AngVelocity2D)) AngVelocity2D.StopRecording(Time.time);
         status = RecordingStatus.None;
     }
     public void StopPlayback()
     {
         status = 0;
+        if (body != null) body.isKinematic = false;
+        if (body2d != null) body2d.simulated = true;
+        if(gam != null) StopCoroutine(gam);
     }
     public void Poll()
     {
-        if (RecordOptions.HasFlag(ThingsToRecord.Position))
-        {
-            Debug.Log("Im polling it");
-            Position.PollData(transform.localPosition, Time.time);
-        }
+        Timer.PollData(1, Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.Position)) Position.PollData(transform.localPosition, Time.time);
         if (RecordOptions.HasFlag(ThingsToRecord.Scale)) Scale.PollData(transform.localScale, Time.time);
         if (RecordOptions.HasFlag(ThingsToRecord.Rotation)) Rotation.PollData(transform.localRotation, Time.time);
         if (RecordOptions.HasFlag(ThingsToRecord.Velocity)) Velocity.PollData(body.linearVelocity, Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.AngVelocity)) AngVelocity.PollData(body.angularVelocity, Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.Velocity2D)) Velocity2D.PollData(body2d.linearVelocity, Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.AngVelocity2D)) AngVelocity2D.PollData(body2d.angularVelocity, Time.time);
     }
     private void FixedUpdate()
     {
@@ -85,7 +109,7 @@ public class RecordedObject : MonoBehaviour
         {
             StartPlayback();
         }
-        if(status == RecordingStatus.Recording)
+        if (status == RecordingStatus.Recording)
         {
             if (UseFixedUpdate)
             {
@@ -100,7 +124,6 @@ public class RecordedObject : MonoBehaviour
                 Poll();
             }
         }
-
         if(status == RecordingStatus.Playing)
         {
             if (RecordOptions.HasFlag(ThingsToRecord.Position))
@@ -147,11 +170,48 @@ public class RecordedObject : MonoBehaviour
                     }, g.Value.a));
                 }
             }
+            if (RecordOptions.HasFlag(ThingsToRecord.AngVelocity))
+            {
+                var g = AngVelocity.PollPlayback(Time.time);
+                if (g.HasValue)
+                {
+                    StartCoroutine(OXLerp.Linear((x) =>
+                    {
+                        body.angularVelocity = Vector3.Lerp(g.Value.b, g.Value.c, x);
+                    }, g.Value.a));
+                }
+            }
+            if (RecordOptions.HasFlag(ThingsToRecord.Velocity2D))
+            {
+                var g = Velocity2D.PollPlayback(Time.time);
+                if (g.HasValue)
+                {
+                    StartCoroutine(OXLerp.Linear((x) =>
+                    {
+                        body2d.linearVelocity = Vector2.Lerp(g.Value.b, g.Value.c, x);
+                    }, g.Value.a));
+                }
+            }
+            if (RecordOptions.HasFlag(ThingsToRecord.AngVelocity2D))
+            {
+                var g = AngVelocity2D.PollPlayback(Time.time);
+                if (g.HasValue)
+                {
+                    StartCoroutine(OXLerp.Linear((x) =>
+                    {
+                        body2d.angularVelocity = Mathf.Lerp(g.Value.b, g.Value.c, x);
+                    }, g.Value.a));
+                }
+            }
         }
 
     }
-
-
+    public IEnumerator Gamin()
+    {
+        yield return new WaitForSeconds(Timer.record[1].a);
+        StopPlayback();
+    }
+    public Coroutine gam;
 
     [Flags]
     public enum ThingsToRecord

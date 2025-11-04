@@ -1,6 +1,8 @@
 
 ------------
    v1.1.3
+- New Object Recorder System
+  - Lets you record and playback the history of a gameobject's transform/rigidbody
 - New Render tool
   - Aggrigates a lot of system/rendering stuff like refreshrate, resolution, anti-aliasing, etc
 - Tree Improvements

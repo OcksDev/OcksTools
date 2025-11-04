@@ -33,6 +33,18 @@ public class PlayerController : MonoBehaviour
         }
 
     }
+    private void Update()
+    {
+
+        if (Input.GetKey(KeyCode.Mouse0))
+        {
+            Time.timeScale = 0.2f;
+        }
+        else
+        {
+            Time.timeScale = 1f;
+        }
+    }
 
 
 }
