@@ -12,7 +12,7 @@ public class RecordedObject : MonoBehaviour
     private Rigidbody body;
 
 
-    private DataRecord<Vector3> Position = new DataRecord<Vector3>();
+    public DataRecord<Vector3> Position = new DataRecord<Vector3>();
     private DataRecord<Quaternion> Rotation = new DataRecord<Quaternion>();
     private DataRecord<Vector3> Scale = new DataRecord<Vector3>();
     private DataRecord<Vector3> Velocity = new DataRecord<Vector3>();
@@ -35,10 +35,10 @@ public class RecordedObject : MonoBehaviour
     }
     public void StartPlayback()
     {
-        Position.StartPlayback(Time.time);
-        Scale.StartPlayback(Time.time);
-        Rotation.StartPlayback(Time.time);
-        Velocity.StartPlayback(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.Position)) Position.StartPlayback(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.Scale)) Scale.StartPlayback(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.Rotation)) Rotation.StartPlayback(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.Velocity)) Velocity.StartPlayback(Time.time);
         status = RecordingStatus.Playing;
     }
 
@@ -46,7 +46,11 @@ public class RecordedObject : MonoBehaviour
 
     public void StopRecording()
     {
-
+        if (RecordOptions.HasFlag(ThingsToRecord.Position)) Position.StopRecording(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.Scale)) Scale.StopRecording(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.Rotation)) Rotation.StopRecording(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.Velocity)) Velocity.StopRecording(Time.time);
+        status = RecordingStatus.None;
     }
     public void StopPlayback()
     {
@@ -54,7 +58,11 @@ public class RecordedObject : MonoBehaviour
     }
     public void Poll()
     {
-        if (RecordOptions.HasFlag(ThingsToRecord.Position)) Position.PollData(transform.localPosition, Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.Position))
+        {
+            Debug.Log("Im polling it");
+            Position.PollData(transform.localPosition, Time.time);
+        }
         if (RecordOptions.HasFlag(ThingsToRecord.Scale)) Scale.PollData(transform.localScale, Time.time);
         if (RecordOptions.HasFlag(ThingsToRecord.Rotation)) Rotation.PollData(transform.localRotation, Time.time);
         if (RecordOptions.HasFlag(ThingsToRecord.Velocity)) Velocity.PollData(body.linearVelocity, Time.time);
