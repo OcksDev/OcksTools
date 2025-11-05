@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Codice.Client.Commands.WkTree.WorkspaceTreeNode;
 
 public class PlayerController3D : MonoBehaviour
 {
@@ -245,7 +246,13 @@ public class PlayerController3D : MonoBehaviour
                 Jump();
                 InputBuffer.Instance.RemoveBuffer("Jump");
                 im_walling_it = false;
-                rigid.linearVelocity += dd.normal * wall_leave_boost_str;
+                Vector3 dir = Vector3.zero;
+                if (InputManager.IsKey("move_forward", "Player")) dir += HeadXZ.forward;
+                if (InputManager.IsKey("move_back", "Player")) dir += HeadXZ.forward * -1;
+                if (InputManager.IsKey("move_right", "Player")) dir += HeadY.right;
+                if (InputManager.IsKey("move_left", "Player")) dir += HeadY.right * -1;
+
+                rigid.linearVelocity += dir.normalized * wall_leave_boost_str;
             }
 
         };
