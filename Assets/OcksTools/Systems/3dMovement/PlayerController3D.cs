@@ -30,7 +30,7 @@ public class PlayerController3D : MonoBehaviour
 
 
         Vector3 dir = new Vector3(0, 0, 0);
-        if (grounded)
+        if (grounded || !Movements.HasFlag(AllowedMovements.BunnyHop))
         {
             move *= decay;
             if (InputManager.IsKey("move_forward", "Player")) dir += HeadXZ.forward;
@@ -39,7 +39,7 @@ public class PlayerController3D : MonoBehaviour
             if (InputManager.IsKey("move_left", "Player")) dir += HeadY.right * -1;
             if(dir.magnitude > 0.5f) dir.Normalize();
         }
-        else if (Movements.HasFlag(AllowedMovements.BunnyHop))
+        else
         {
             if (InputManager.IsKey("move_forward", "Player")) dir += HeadXZ.forward;
             if (InputManager.IsKey("move_back", "Player")) dir += HeadXZ.forward * -1;
