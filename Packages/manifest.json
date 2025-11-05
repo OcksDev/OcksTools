@@ -6,7 +6,7 @@
     "com.unity.multiplayer.center": "1.0.0",
     "com.unity.multiplayer.playmode": "1.6.1",
     "com.unity.multiplayer.samples.coop": "https://github.com/Unity-Technologies/com.unity.multiplayer.samples.coop.git?path=/Packages/com.unity.multiplayer.samples.coop#main",
-    "com.unity.netcode.gameobjects": "1.14.1",
+    "com.unity.netcode.gameobjects": "2.7.0",
     "com.unity.render-pipelines.universal": "17.2.0",
     "com.unity.services.multiplayer": "1.1.8",
     "com.unity.shadergraph": "17.2.0",

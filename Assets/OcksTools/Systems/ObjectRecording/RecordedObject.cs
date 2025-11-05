@@ -282,7 +282,8 @@ public class DataRecord<T>
 
         last = 0;
         starttime = t;
-        if(speed < 0)
+        reversed = false;
+        if (speed < 0)
         {
             return StartPlaybackReverse(t);
         }

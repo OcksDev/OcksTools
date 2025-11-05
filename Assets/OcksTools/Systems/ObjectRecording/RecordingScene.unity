@@ -301,13 +301,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1c5bebaa25975a458ee48637d57f876, type: 3}
   m_Name: 
   m_EditorClassIdentifier: OcksTools::RecordedObject
-  RecordOptions: 35
+  RecordOptions: 3
   UseFixedUpdate: 1
   status: 0
   Timer:
     record: []
+    playback_speed: 1
   Position:
     record: []
+    playback_speed: 1
 --- !u!212 &1618179842
 SpriteRenderer:
   m_ObjectHideFlags: 0
