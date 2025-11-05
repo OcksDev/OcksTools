@@ -39,7 +39,7 @@ public class PlayerController3D : MonoBehaviour
             if (InputManager.IsKey("move_left", "Player")) dir += HeadY.right * -1;
             if(dir.magnitude > 0.5f) dir.Normalize();
         }
-        else
+        else if (Movements.HasFlag(AllowedMovements.BunnyHop))
         {
             if (InputManager.IsKey("move_forward", "Player")) dir += HeadXZ.forward;
             if (InputManager.IsKey("move_back", "Player")) dir += HeadXZ.forward * -1;
@@ -150,6 +150,7 @@ public class PlayerController3D : MonoBehaviour
         Dash = 1 << 1,
         Wallride = 1 << 2,
         Slide = 1 << 3,
+        BunnyHop = 1 << 4,
     }
     bool grounded = false;
     public void CollisionGroundCheck()
