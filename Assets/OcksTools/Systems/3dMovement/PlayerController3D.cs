@@ -252,7 +252,7 @@ public class PlayerController3D : MonoBehaviour
                 if (InputManager.IsKey("move_right", "Player")) dir += HeadY.right;
                 if (InputManager.IsKey("move_left", "Player")) dir += HeadY.right * -1;
 
-                rigid.linearVelocity += dir.normalized * wall_leave_boost_str;
+                rigid.linearVelocity += (dd.normal + dir.normalized).normalized * wall_leave_boost_str;
             }
 
         };
