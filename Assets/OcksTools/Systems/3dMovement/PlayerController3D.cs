@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class PlayerController3D : MonoBehaviour
 {
+    public float player_height = 2;
+    public float player_width = 1;
     private Rigidbody rigid;
     public AllowedMovements Movements;
     public float move_speed = 2;
@@ -14,8 +16,11 @@ public class PlayerController3D : MonoBehaviour
     public float xz_decay = 0.9f;
     public float mouse_sense = 1;
     public float grav_str = 2;
+    public float wall_grav_str = 2;
     public float max_dot = 0.5f;
     public float air_str = 2;
+    public float wall_boost_str = 6;
+    public float wall_leave_boost_str = 6;
     private Vector3 move = new Vector3(0, 0, 0);
     public Transform HeadY;
     public Transform HeadXZ;
@@ -24,10 +29,24 @@ public class PlayerController3D : MonoBehaviour
         rigid= GetComponent<Rigidbody>();
         ToggleMouseState(true);
     }
+
+    private bool im_walling_it = false;
+    private Vector3 wall_direction = default;
+    bool waswallin = false;
+
     void FixedUpdate()
     {
         rigid.linearVelocity = new Vector3(rigid.linearVelocity.x * xz_decay, rigid.linearVelocity.y, rigid.linearVelocity.z * xz_decay);
-
+        if(waswallin && !im_walling_it)
+        {
+            rigid.useGravity = true;
+            waswallin = false;
+        }
+        else if(!waswallin && im_walling_it)
+        {
+            rigid.useGravity = false;
+            waswallin = true;
+        }
 
         Vector3 dir = new Vector3(0, 0, 0);
         if (grounded || !Movements.HasFlag(AllowedMovements.BunnyHop))
@@ -74,23 +93,31 @@ public class PlayerController3D : MonoBehaviour
         }
         Vector3 bgalls = move * Time.deltaTime * move_speed * 20;
         rigid.linearVelocity += bgalls;
-        rigid.linearVelocity += Vector3.down * grav_str;
+        rigid.linearVelocity += Vector3.down * (im_walling_it? wall_grav_str : grav_str);
 
     }
     public bool Jump()
     {
-        if(!grounded) return false;
         grounded = false;
         var dd = rigid.linearVelocity;
         dd.y = jump_str;
         rigid.linearVelocity = dd;
         return true;
     }
+
+    public bool JumpChecked()
+    {
+        if (!grounded) return false;
+        return Jump();
+    }
+
     private float rot_y = 0;
     private float rot_x = 0;
     private void Update()
     {
+        if (Movements.HasFlag(AllowedMovements.Jump)) InputBuffer.Instance.BufferListen("jump", "Player", "Jump", 0.1f);
         CollisionGroundCheck();
+        WallCheck();
 
 
 
@@ -102,12 +129,11 @@ public class PlayerController3D : MonoBehaviour
         HeadY.localRotation = Quaternion.Euler(rot_y, 0, 0);
         HeadXZ.localRotation = Quaternion.Euler(0, rot_x, 0);
 
-        if (Movements.HasFlag(AllowedMovements.Jump))
+        if (Movements.HasFlag(AllowedMovements.Jump) && !im_walling_it)
         {
-            InputBuffer.Instance.BufferListen("jump", "Player", "Jump", 0.1f);
             if (InputBuffer.Instance.GetBuffer("Jump"))
             {
-                var a = Jump();
+                var a = JumpChecked();
                 if (a)
                 {
                     InputBuffer.Instance.RemoveBuffer("Jump");
@@ -155,7 +181,7 @@ public class PlayerController3D : MonoBehaviour
     bool grounded = false;
     public void CollisionGroundCheck()
     {
-        var a = Physics.RaycastAll(transform.position, Vector3.down, 1.3f);
+        var a = Physics.RaycastAll(transform.position, Vector3.down, (player_height/2) + 0.3f);
         for(int i = 0; i < a.Length; i++)
         {
             var dd = a[i];
@@ -168,6 +194,87 @@ public class PlayerController3D : MonoBehaviour
         }
 
         grounded = false;
+        return;
+    }
+    private GameObject LastWallRidden = null;
+    public void WallCheck()
+    {
+        if (grounded)
+        {
+            im_walling_it = false;
+            LastWallRidden = null;
+            return;
+        }
+
+        var gg = rigid.linearVelocity;
+        var imgg = new Vector3(0, gg.y, 0);
+        var imxz = new Vector3(gg.x, 0, gg.z);
+
+        if (imxz.magnitude <= 1 || Vector3.Dot(imxz.normalized, HeadXZ.forward) < 0)
+        {
+            im_walling_it = false;
+            LastWallRidden = null;
+            return;
+        }
+
+        var a = Physics.RaycastAll(transform.position, HeadY.right, (player_width / 2) + 0.1f);
+        var aa = Physics.RaycastAll(transform.position, HeadY.right*-1, (player_width / 2) + 0.1f);
+
+
+        var curpos = transform.position;
+        Action<RaycastHit> banana = (dd) =>
+        {
+            var altered = Quaternion.Euler(0, 90, 0) * dd.normal;
+
+            if (Vector3.Dot(altered, move.normalized) < 0f)
+            {
+                altered *= -1;
+            }
+
+            if (!im_walling_it && LastWallRidden != dd.collider.gameObject)
+            {
+                imgg.y = wall_boost_str;
+            }
+            move = altered * move.magnitude;
+            rigid.linearVelocity = imgg + (altered * imxz.magnitude);
+            LastWallRidden = dd.collider.gameObject;
+            im_walling_it = true;
+
+            if (InputBuffer.Instance.GetBuffer("Jump"))
+            {
+                Jump();
+                InputBuffer.Instance.RemoveBuffer("Jump");
+                im_walling_it = false;
+                rigid.linearVelocity += dd.normal * wall_leave_boost_str;
+            }
+
+        };
+
+        for (int i = 0; i < a.Length; i++)
+        {
+            var dd = a[i];
+            if(dd.collider.isTrigger) continue;
+            if (!im_walling_it && Vector3.Dot(dd.normal, imxz.normalized) <= 0) LastWallRidden = null;
+            if (!im_walling_it && dd.collider.gameObject == LastWallRidden) continue;
+            if(Vector3.Dot(dd.normal, HeadY.right * -1) >= 0.45f)
+            {
+                banana(dd);
+                return;
+            }
+        }
+        for (int i = 0; i < aa.Length; i++)
+        {
+            var dd = aa[i];
+            if(dd.collider.isTrigger) continue;
+            if (!im_walling_it && Vector3.Dot(dd.normal, imxz.normalized) <= 0) LastWallRidden = null;
+            if (!im_walling_it && dd.collider.gameObject == LastWallRidden) continue;
+            if (Vector3.Dot(dd.normal, HeadY.right) >= 0.45f)
+            {
+                banana(dd);
+                return;
+            }
+        }
+        im_walling_it = false;
         return;
     } 
 }
