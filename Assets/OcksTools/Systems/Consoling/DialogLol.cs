@@ -293,9 +293,11 @@ public class DialogLol : MonoBehaviour
 
     public static string CleanText(string a)
     {
-        a = Regex.Replace(a, @"[ \n]", "");
+        a = Regex.Replace(a, @"^[ \n]+", "");
+        a = Regex.Replace(a, @"[ \n]+$", "");
         return a;
     }
+
 
     public bool ApplyAttribute(string key_input, string data_input, bool ignorewarning = false)
     {
