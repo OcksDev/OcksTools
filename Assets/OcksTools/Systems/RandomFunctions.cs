@@ -52,16 +52,6 @@ public class RandomFunctions : MonoBehaviour
         return f;
     }
 
-    public static Vector2 GetActualSizeOfUI(RectTransform re) 
-    {
-        //sizeDelta and Rect.width both dont get the actual size, somehow
-        return (re.rect.max - re.rect.min);
-    }
-
-    public static Vector3 ReflectVector(Vector3 incoming, Vector3 normal)
-    {
-        return incoming - 2 * Vector3.Dot(incoming, normal) * normal;
-    }
     public static Dictionary<string,string> GenerateBlankHiddenData()
     {
         return new Dictionary<string, string>()
@@ -462,4 +452,14 @@ public static class OXFunctions
         return true;
     }
 
+    public static Vector2 GetActualSizeOfUI(this RectTransform re)
+    {
+        //sizeDelta and Rect.width both dont get the actual size, somehow
+        return (re.rect.max - re.rect.min);
+    }
+
+    public static Vector3 ReflectVector(this Vector3 incoming, Vector3 normal)
+    {
+        return incoming - 2 * Vector3.Dot(incoming, normal) * normal;
+    }
 }

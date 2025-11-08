@@ -333,18 +333,23 @@ MonoBehaviour:
   player_width: 1
   Movements: -1
   move_speed: 2
+  air_speed: 0.1
   jump_str: 12
   decay: 0.7
+  air_decay: 0.98
   xz_decay: 0.85
   mouse_sense: 1
   grav_str: 0.5
   wall_grav_str: 0.25
   max_dot: 0.7
-  air_str: 3
+  air_str: 1
   wall_boost_str: 4
   wall_leave_boost_str: 10
   HeadY: {fileID: 6371845093491532323}
   HeadXZ: {fileID: 4998704634607921774}
+  Normal: 112
+  Stationary: 122
+  grounded: 0
 --- !u!54 &8653577835142743007
 Rigidbody:
   m_ObjectHideFlags: 0

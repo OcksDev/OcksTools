@@ -1,19 +1,26 @@
 using Codice.CM.Common;
+using NaughtyAttributes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 using static Codice.Client.Commands.WkTree.WorkspaceTreeNode;
 
 public class PlayerController3D : MonoBehaviour
 {
     public float player_height = 2;
     public float player_width = 1;
+
+    public float wall_cameratilt = 1;
+
     private Rigidbody rigid;
     public AllowedMovements Movements;
     public float move_speed = 2;
+    public float air_speed = 0.1f;
     public float jump_str = 2;
     public float decay = 0.8f;
+    public float air_decay = 0.98f;
     public float xz_decay = 0.9f;
     public float mouse_sense = 1;
     public float grav_str = 2;
@@ -25,6 +32,8 @@ public class PlayerController3D : MonoBehaviour
     private Vector3 move = new Vector3(0, 0, 0);
     public Transform HeadY;
     public Transform HeadXZ;
+    [EnumFlags] public RigidbodyConstraints Normal;
+    [EnumFlags] public RigidbodyConstraints Stationary;
     private void Start()
     {
         rigid= GetComponent<Rigidbody>();
@@ -38,15 +47,22 @@ public class PlayerController3D : MonoBehaviour
     void FixedUpdate()
     {
         rigid.linearVelocity = new Vector3(rigid.linearVelocity.x * xz_decay, rigid.linearVelocity.y, rigid.linearVelocity.z * xz_decay);
-        if(waswallin && !im_walling_it)
-        {
-            rigid.useGravity = true;
-            waswallin = false;
-        }
-        else if(!waswallin && im_walling_it)
+        if (grounded)
         {
             rigid.useGravity = false;
-            waswallin = true;
+        }
+        else
+        {
+            if (waswallin && !im_walling_it)
+            {
+                rigid.useGravity = true;
+                waswallin = false;
+            }
+            else if ((!waswallin && im_walling_it))
+            {
+                rigid.useGravity = false;
+                waswallin = true;
+            }
         }
 
         Vector3 dir = new Vector3(0, 0, 0);
@@ -61,6 +77,7 @@ public class PlayerController3D : MonoBehaviour
         }
         else
         {
+            move *= air_decay;
             if (InputManager.IsKey("move_forward", "Player")) dir += HeadXZ.forward;
             if (InputManager.IsKey("move_back", "Player")) dir += HeadXZ.forward * -1;
             if (InputManager.IsKey("move_right", "Player")) dir += HeadY.right;
@@ -86,16 +103,22 @@ public class PlayerController3D : MonoBehaviour
                 var dd = Vector3.Dot(dir, Quaternion.Euler(0,-90,0) * move.normalized);
                 move = Quaternion.Euler(0, -dd * air_str, 0) * move;
             }
-            dir = Vector3.zero;
         }
         if(dir.magnitude > 0.5f)
         {
-            move += dir;
+            move += dir * (grounded? move_speed :air_speed);
         }
-        Vector3 bgalls = move * Time.deltaTime * move_speed * 20;
+        Vector3 bgalls = move * Time.deltaTime * 20;
         rigid.linearVelocity += bgalls;
         rigid.linearVelocity += Vector3.down * (im_walling_it? wall_grav_str : grav_str);
-
+        if (grounded && move.magnitude < 0.0005)
+        {
+            rigid.constraints = Stationary;
+        }
+        else
+        {
+            rigid.constraints = Normal;
+        }
     }
     public bool Jump()
     {
@@ -159,6 +182,7 @@ public class PlayerController3D : MonoBehaviour
             Time.timeScale = 1f;
         }
 #endif
+
     }
     bool locked = false;
     public void ToggleMouseState(bool? over = null)
@@ -178,16 +202,18 @@ public class PlayerController3D : MonoBehaviour
         Wallride = 1 << 2,
         Slide = 1 << 3,
         BunnyHop = 1 << 4,
+        GroundSnap = 1 << 5,
     }
-    bool grounded = false;
+    public bool grounded = false;
     public void CollisionGroundCheck()
     {
-        var a = Physics.RaycastAll(transform.position, Vector3.down, (player_height/2) + 0.3f);
+        var a = Physics.RaycastAll(transform.position, Vector3.down, (player_height/2) + 0.1f);
         for(int i = 0; i < a.Length; i++)
         {
             var dd = a[i];
             if(dd.collider.isTrigger) continue;
-            if(Vector3.Dot(dd.normal, Vector3.up) >= max_dot)
+            if (dd.collider.gameObject == gameObject) continue;
+            if (Vector3.Dot(dd.normal, Vector3.up) >= max_dot)
             {
                 grounded = true;
                 return;
@@ -198,12 +224,17 @@ public class PlayerController3D : MonoBehaviour
         return;
     }
     private GameObject LastWallRidden = null;
+    private Vector3 walldir = Vector3.zero;
+
+
     public void WallCheck()
     {
+        if (!Movements.HasFlag(AllowedMovements.Wallride)) return;
         if (grounded)
         {
             im_walling_it = false;
             LastWallRidden = null;
+            walldir = Vector3.down;
             return;
         }
 
@@ -234,7 +265,7 @@ public class PlayerController3D : MonoBehaviour
 
             if (!im_walling_it && LastWallRidden != dd.collider.gameObject)
             {
-                imgg.y = wall_boost_str;
+                if (Vector3.Dot(dd.normal, walldir) < 0.8f) imgg.y = wall_boost_str + imgg.y/2;
             }
             move = altered * move.magnitude;
             rigid.linearVelocity = imgg + (altered * imxz.magnitude);
@@ -243,16 +274,17 @@ public class PlayerController3D : MonoBehaviour
 
             if (InputBuffer.Instance.GetBuffer("Jump"))
             {
-                Jump();
+                if(Vector3.Dot(dd.normal, walldir) < 0.8f) Jump();
                 InputBuffer.Instance.RemoveBuffer("Jump");
                 im_walling_it = false;
+                walldir = dd.normal;
                 Vector3 dir = Vector3.zero;
                 if (InputManager.IsKey("move_forward", "Player")) dir += HeadXZ.forward;
                 if (InputManager.IsKey("move_back", "Player")) dir += HeadXZ.forward * -1;
                 if (InputManager.IsKey("move_right", "Player")) dir += HeadY.right;
                 if (InputManager.IsKey("move_left", "Player")) dir += HeadY.right * -1;
 
-                rigid.linearVelocity += (dd.normal + dir.normalized).normalized * wall_leave_boost_str;
+                rigid.linearVelocity += dd.normal * wall_leave_boost_str;
             }
 
         };
@@ -261,6 +293,7 @@ public class PlayerController3D : MonoBehaviour
         {
             var dd = a[i];
             if(dd.collider.isTrigger) continue;
+            if (dd.collider.gameObject == gameObject) continue;
             if (!im_walling_it && Vector3.Dot(dd.normal, imxz.normalized) <= 0) LastWallRidden = null;
             if (!im_walling_it && dd.collider.gameObject == LastWallRidden) continue;
             if(Vector3.Dot(dd.normal, HeadY.right * -1) >= 0.45f)
@@ -273,6 +306,7 @@ public class PlayerController3D : MonoBehaviour
         {
             var dd = aa[i];
             if(dd.collider.isTrigger) continue;
+            if (dd.collider.gameObject == gameObject) continue;
             if (!im_walling_it && Vector3.Dot(dd.normal, imxz.normalized) <= 0) LastWallRidden = null;
             if (!im_walling_it && dd.collider.gameObject == LastWallRidden) continue;
             if (Vector3.Dot(dd.normal, HeadY.right) >= 0.45f)
