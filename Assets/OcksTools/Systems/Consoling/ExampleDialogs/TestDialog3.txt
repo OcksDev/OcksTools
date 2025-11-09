@@ -18,7 +18,7 @@
 </> <Animate=Text,ZoomIn> Will this text zoomies? God I mother fucking hope it does.
 </> 
 </> <Name=Boner>
-</> Smell my greasy balls <End=0> 
+</> Smell my greasy balls <End> 
 </> 
 </> <Name=God>
 </> You will literally never see this text in game because the previous dialog line escapes the sequence
