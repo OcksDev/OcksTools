@@ -56,6 +56,8 @@ public class DialogLol : MonoBehaviour
     [HideInInspector]
     public bool CanEscape = false;
     [HideInInspector]
+    public bool CanSkipBack = false;
+    [HideInInspector]
     public string PlaySoundOnType = "";
     private List<string> str = new List<string>();
     private string ActiveFileName = "";
@@ -107,6 +109,9 @@ public class DialogLol : MonoBehaviour
         SetVariable("AttributeInsideVar", "<Name=Bone Eater>");
         SetVariable("NestedAttribute", "<Animate=Text,Rainbow>");
         SetVariable("MassApplyVariable", "ApplyStyle");
+        SetVariable("Green", "255,0");
+        SetVariable("ExtraDialog", "</> <Name=Red></> This is some bonus content!</> </> <Name=Blue></> Sure is!</>");
+        SetVariable("CoolNameColor", "<TitleColor=0,255,255>");
 
         if(GetUseLFS())
         {
@@ -346,6 +351,16 @@ public class DialogLol : MonoBehaviour
                     succeeded_defaulting = true;
                 }
                 break;
+            case "CanSkipBack":
+                // Allows skipping backward in dialog
+                CanSkipBack = data[0] == "True";
+                succeeded = true;
+                if (is_default_set)
+                {
+                    CurrentSettings.Set("CanSkipBack", CanSkip.ToString());
+                    succeeded_defaulting = true;
+                }
+                break;
             case "Skip":
                 // Forces a skip
                 if (LoadingNextDialog)
@@ -521,6 +536,7 @@ public class DialogLol : MonoBehaviour
                 break;
             case "TitleColor":
                 //4 input color formated like 255,255,255,255
+                if (data.Count < 4) data.Add("255");
                 aaa = data[0] + "|" + data[1] + "|" + data[2] + "|" + data[3];
                 tit_color = aaa;
                 succeeded = true;
@@ -537,6 +553,7 @@ public class DialogLol : MonoBehaviour
                 break;
             case "TextColor":
                 //4 input color formated like 255,255,255,255
+                if (data.Count < 4) data.Add("255");
                 aaa = data[0] + "|" + data[1] + "|" + data[2] + "|" + data[3];
                 color = aaa;
                 succeeded = true;
@@ -553,6 +570,7 @@ public class DialogLol : MonoBehaviour
                 break;
             case "BgColor":
                 //4 input color formated like 255,255,255,255
+                if (data.Count < 4) data.Add("255");
                 aaa = data[0] + "|" + data[1] + "|" + data[2] + "|" + data[3];
                 bg_color = aaa;
                 succeeded = true;
@@ -738,35 +756,44 @@ public class DialogLol : MonoBehaviour
     }
     private List<string> VariableParse(string data)
     {
+        try
+        {
+
         //attribute variable format
         //*var_name
 
         //language file system query format
         //!var_name=
-        var st = CleanText(data);
-        List<string> nerds = st.StringToList(",");
+        List<string> nerds = data.StringToList(",");
         List<string> outpi = new List<string>();
         foreach(var a in nerds)
         {
-            var dd = Regex.Match(a, $"{BadGex}+").Value;
-            var prepend = Regex.Replace(dd, $"[!*]+", "");
-            var realdata = Regex.Replace(a, $"{BadGex}+", "");
-            if (dd.Contains("*"))
+            string ba = CleanText(a);
+            var dd = Regex.Match(ba, $"^{BadGex}+");
+            var prepend = Regex.Replace(dd.Value, $"[!*]+", "");
+            var realdata = Regex.Replace(ba, $"{BadGex}+", "");
+            if (dd.Success && dd.Value.Contains("*"))
             {
                 var smegleton = VariableParse(variables[realdata]);
                 foreach(var b in smegleton) { outpi.Add(prepend + b); }
             }
-            else if(dd.Contains("!"))
+            else if(dd.Success && dd.Value.Contains("!"))
             {
                 outpi.Add(prepend + LanguageFileSystem.Instance.GetString("unknown", realdata));
             }
             else
             {
-                outpi.Add(a);
+                outpi.Add(ba);
             }
         }
         return outpi;
 
+        }
+        catch (Exception e)
+        {
+            Console.LogError(e);
+            return null;
+        }
     }
 
     public bool UseEnding(string r)
@@ -817,6 +844,7 @@ public class DialogLol : MonoBehaviour
         if (Settings.CurrentData.ContainsKey("RichTextEnabled")) RichTextEnabled = bool.Parse(Settings.Get("RichTextEnabled"));
         if (Settings.CurrentData.ContainsKey("CanSkip")) CanSkip = bool.Parse(Settings.Get("CanSkip"));
         if (Settings.CurrentData.ContainsKey("CanEscape")) CanEscape = bool.Parse(Settings.Get("CanEscape"));
+        if (Settings.CurrentData.ContainsKey("CanSkipBack")) CanSkipBack = bool.Parse(Settings.Get("CanSkipBack"));
         if (Settings.CurrentData.ContainsKey("InstantShowAllText")) InstantShowAllText = bool.Parse(Settings.Get("InstantShowAllText"));
     }
 
@@ -908,16 +936,32 @@ public class DialogLol : MonoBehaviour
     public List<string> GetFormattedFromFile(string filename, string datat = "Dialog")
     {
         List<string> str = null;
+
+        string ppsex = "";
+
+
         if(GetUseLFS())
         {
-            str =
-        new List<string>(LanguageFileSystem.Instance.GetString(LanguageFileIndexes[filename], "").Split("</>"));
+            ppsex = LanguageFileSystem.Instance.GetString(LanguageFileIndexes[filename], "");
         }
         else
         {
-            str = new List<string>(LanguageFileIndexes[filename].GetDefaultData().Split("</>"));
+            ppsex = LanguageFileIndexes[filename].GetDefaultData();
         }
-        
+
+        var smegglesnin = Regex.Matches(ppsex, @"@<.*?>").ToList().AListToBList((x) => x.Value).RemoveDuplicates();
+        for (int i = 0; i < smegglesnin.Count; i++)
+        {
+            var dingsing = smegglesnin[i];
+            var gar = dingsing.Substring(2);
+            gar = gar.Substring(0,gar.Length-1);
+            var single = variables[gar];
+            ppsex = Regex.Replace(ppsex, Regex.Escape(dingsing), single);
+        }
+
+        str = new List<string>(ppsex.Split("</>"));
+
+
         string d1 = str[0];
         ActiveFileName = d1.Split(Environment.NewLine)[0];
         if(datat != "Choose")str.RemoveAt(0);
@@ -1275,6 +1319,7 @@ public class DialogDefaults
     public bool RichTextEnabled = true;
     public bool CanSkip = true;
     public bool CanEscape = false;
+    public bool CanSkipback = false;
     public bool InstantShowAllText = false;
 
 }
@@ -1301,6 +1346,7 @@ public class DialogSettings
         CurrentData.Add("RichTextEnabled", a.RichTextEnabled.ToString());
         CurrentData.Add("CanSkip", a.CanSkip.ToString());
         CurrentData.Add("CanEscape", a.CanEscape.ToString());
+        CurrentData.Add("CanSkipBack", a.CanSkipback.ToString());
         CurrentData.Add("InstantShowAllText", a.InstantShowAllText.ToString());
     }   
     public string Get(string data)

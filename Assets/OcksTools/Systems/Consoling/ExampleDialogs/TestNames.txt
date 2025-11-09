@@ -1,14 +1,15 @@
 -Test Dialog-
-</> <Name=Red> <&TextColor=255,0,0,255>
+</> <Name=Red> <&TextColor=255,0,0>
 </> Howdy!
 </> 
-</> <Name=Blue> <&TextColor=0,120,255,255>
+</> <Name=Blue> <&TextColor=0,120,255>
 </> Howdy to you as well!
 </> 
+@<ExtraDialog>
 </> <Name=Red>
 </> So what's life like?
 </> 
-</> <Name=Blue>
+</> <Name=Blue> @<CoolNameColor>
 </> Idk
 </> 
 </> <Name=Red>
@@ -27,7 +28,7 @@
 </> See?
 </> 
 </> <Name=Stealer> 
-</> It stays! But now, <&TextColor=0,255,0,255><^*MassApplyVariable=Stealer>everyone is green!
+</> It stays! But now, <&TextColor=0,*Green><^*MassApplyVariable=Stealer>everyone is green!
 </> 
 </> <Name=New Guy>
 </> NOOOOO
