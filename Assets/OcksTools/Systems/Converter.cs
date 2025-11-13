@@ -582,7 +582,8 @@ public static class Converter
         //converts a time (in whole seconds) into a readable format
         //type changes the format type:
         // 0 - 5w 4d 3h 2m 1s
-        // 1 - 5:4:3:2:1
+        // 1 - 05:04:03:02:01
+        // 2 - 5432.1h
         var g = ine;
         string outp = "";
         List<string> things;
@@ -608,6 +609,13 @@ public static class Converter
                     ":",
                 };
                 break;
+            case 2:
+                ine /= 60;
+                var dd = ((double)(ine % 60)) / 60.0;
+                dd *= 10;
+                dd = Math.Round(dd);
+                var hs = ine / 60;
+                return hs.ToString() + "." + ((int)dd).ToString() + "h";
         }
         bool fall = false;
         var x = (g / 604800);

@@ -1,0 +1,4 @@
+
+What are extensions?
+- They are modular parts of my tools package which, for the most part, do not rely upon one another
+They should be able to be added or removed as needed for a given project, and shouldn't cause problems when taken out.

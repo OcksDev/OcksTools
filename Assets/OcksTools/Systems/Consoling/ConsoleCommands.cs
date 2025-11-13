@@ -51,13 +51,17 @@ public class ConsoleCommands : MonoBehaviour
     [AddToEvent("TestEvent")]
     public void Test_Event1()
     {
-        Console.Log("Hello");
+        "Hello".Log();
+        "Hello".LogWarning();
+        "Hello".LogError();
     }
 
     [AddToEvent("TestEvent")]
     public void Test_Event2()
     {
-        Console.Log("World");
+        "Hello".DLog();
+        "Hello".DLogWarning();
+        "Hello".DLogError();
     }
 
 

@@ -1,0 +1,10 @@
+(Scene Name)
+</> speaker name, 20 (chars per second), 0 (seconds delay between words), 0 (seconds delay between lines), 255|255|255|255 (speaker color), 255|222|222|255 (text color), 60|0|0|255 (background color)
+</> text, also you can use - to use the default value
+</> 
+</> Dr. Banana, 20, -, 255|255|255|255, 255|222|222|255, -
+</> Hello my fellow bananas
+</> 
+</> Dr. Banana, -, 0, 255|255|255|255, -, 60|0|0|255
+</> Oh no..
+</> <end>

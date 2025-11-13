@@ -15,7 +15,7 @@ public class DialogLol : MonoBehaviour
     private DialogBoxL pp;
     public List<DialogHolder> DialogFiles = new List<DialogHolder>();
     public List<DialogHolder> ChooseFiles = new List<DialogHolder>();
-    public bool dialogmode = false;
+    public bool dialog_active = false;
     public string filename = "";
     public int linenum = 0;
     public int charnum = -1;
@@ -228,9 +228,15 @@ public class DialogLol : MonoBehaviour
                     }
                     if (charl < fulltext.Length)
                     {
+                        var dd = fulltext.Substring(0, Mathf.Clamp(charl + 1, 0, fulltext.Length));
+                        if (dd.Length > 0) dd = dd.Substring(dd.Length - 1, 1);
                         if (e == " " || e.Contains("\n"))
                         {
                             cp3 = e == " " ? cps2 : cps3;
+                        }
+                        else if (dd != " ")
+                        {
+                            //nothing
                         }
                         else if (e == "," || e == ";" || e == ":")
                         {
@@ -874,7 +880,7 @@ public class DialogLol : MonoBehaviour
         charl = 1;
         linenum= -2;
         cp = 0;
-        dialogmode = false;
+        dialog_active = false;
         datatype = "Dialog";
         waitforinput = false;
         InputManager.RemoveLockLevel("Dialog");
@@ -916,7 +922,7 @@ public class DialogLol : MonoBehaviour
         CurrentSettings = new DialogSettings(TrueDefaults);
         name_to_setting.Clear();
         ResetDialog();
-        dialogmode = true;
+        dialog_active = true;
         DialogBoxObject.SetActive(true);
         filename = dialog;
         datatype = datat;
@@ -975,12 +981,12 @@ public class DialogLol : MonoBehaviour
 
     public void FixedUpdate()
     {
-        DialogBoxObject.SetActive(dialogmode); 
+        DialogBoxObject.SetActive(dialog_active); 
         UpdateClickThing();
     }
     public void UpdateClickThing()
     {
-        if (dialogmode)
+        if (dialog_active)
         {
             if ((charl >= fulltext.Length && AutoSkip < 0) || waitforinput)
             {

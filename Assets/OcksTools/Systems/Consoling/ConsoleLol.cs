@@ -522,14 +522,6 @@ public static class Console
     public static List<string> texts = new List<string>();
     public static List<string> hexes = new List<string>();
     // a shortcut/shorthand for the console, makes writing to the console faster
-    public static void Log(string text = "Logged")
-    {
-        Log(text, "#bdbdbdff");
-    }
-    public static void Log(this object text)
-    {
-        Log(text.ToString(), "#bdbdbdff");
-    }
     public static void Log(this object text, string hex = "\"white\"")
     {
         Log(text.ToString(), hex);
@@ -546,13 +538,29 @@ public static class Console
             hexes.Add(hex);
         }
     }
-    public static void LogError(string text = "Logged")
+    public static void Log(this object text)
     {
-        Log(text, "#ff0000ff");
+        Log(text.ToString(), "#bdbdbdff");
     }
     public static void LogError(this object text)
     {
         Log(text, "#ff0000ff");
+    }
+    public static void LogWarning(this object text)
+    {
+        Log(text, "#ffb861ff");
+    }
+    public static void DLog(this object text)
+    {
+        Debug.Log(text);
+    }
+    public static void DLogError(this object text)
+    {
+        Debug.LogError(text);
+    }
+    public static void DLogWarning(this object text)
+    {
+        Debug.LogWarning(text);
     }
 }
 
