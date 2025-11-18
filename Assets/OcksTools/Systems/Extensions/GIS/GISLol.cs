@@ -232,7 +232,7 @@ public class GISItem
 
         Name = Data["Index"];
         Amount = int.Parse(Data["Count"]);
-
+        ItemData banana;
     }
 
 }
@@ -301,5 +301,26 @@ public class GISDisplayData
     {
         Images = new Sprite[1] { GISLol.Instance.ItemDict[gissy.Name].Sprite };
         Count = gissy.Amount > 0 ? "x" + gissy.Amount : "";
+    }
+}
+
+public interface ItemData
+{
+    public string GetString();
+    public void FromString(string data);
+}
+
+public class ItemExampleData : ItemData
+{
+    public string StoredData;
+
+    public void FromString(string data)
+    {
+        StoredData = data;
+    }
+
+    public string GetString()
+    {
+        return StoredData;
     }
 }
