@@ -123,6 +123,7 @@ public class GISItem
     public int Amount;
     public GISContainer Container;
     public List<GISContainer> Interacted_Containers = new List<GISContainer>();
+    public Dictionary<string,ItemData> ExtraData = new Dictionary<string,ItemData>();
 
     public GISItem()
     {
@@ -196,6 +197,7 @@ public class GISItem
         {
             { "Index", "Empty" },
             { "Count", "0" },
+            { "Extra", "" },
         };
         return e;
     }
@@ -209,6 +211,9 @@ public class GISItem
 
         Data["Index"] = Name.ToString();
         Data["Count"] = Amount.ToString();
+
+        //cursed ass line of code lol
+        Data["Extra"] = ExtraData.ABDictionaryToCDDictionary((x) => x, (x) => x.GetString()).EscapedDictionaryToString();
 
         Dictionary<string, string> bb = def.MergeDictionary(Data);
 
@@ -232,9 +237,22 @@ public class GISItem
 
         Name = Data["Index"];
         Amount = int.Parse(Data["Count"]);
-        ItemData banana;
+        ExtraData = Data["Count"].EscapedStringToDictionary().ABDictionaryToCDDictionary((x, y) => x, (x, y) => ItemDataConvert(x,y));
     }
-
+    public static ItemData MethodHoldover = null;
+    public static ItemData ItemDataConvert(string wish, string data)
+    {
+        switch (wish)
+        {
+            case "Example":
+                return new ItemExampleData().FromString(data);
+            default:
+                GlobalEvent.Set(out MethodHoldover, null, "ItemDataEvent");
+                if(MethodHoldover != null) return MethodHoldover;
+                break;
+        }
+        throw new Exception($"No item data conversion defined for {wish}");
+    }
 }
 
 [Serializable]
@@ -307,16 +325,17 @@ public class GISDisplayData
 public interface ItemData
 {
     public string GetString();
-    public void FromString(string data);
+    public ItemData FromString(string data);
 }
 
 public class ItemExampleData : ItemData
 {
     public string StoredData;
 
-    public void FromString(string data)
+    public ItemData FromString(string data)
     {
         StoredData = data;
+        return this;
     }
 
     public string GetString()
