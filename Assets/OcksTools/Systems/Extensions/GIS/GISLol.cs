@@ -123,7 +123,7 @@ public class GISItem
     public int Amount;
     public GISContainer Container;
     public List<GISContainer> Interacted_Containers = new List<GISContainer>();
-    public Dictionary<string,ItemData> ExtraData = new Dictionary<string,ItemData>();
+    public Dictionary<string,ItemComponent> Components = new Dictionary<string,ItemComponent>();
 
     public GISItem()
     {
@@ -213,7 +213,7 @@ public class GISItem
         Data["Count"] = Amount.ToString();
 
         //cursed ass line of code lol
-        Data["Extra"] = ExtraData.ABDictionaryToCDDictionary((x) => x, (x) => x.GetString()).EscapedDictionaryToString();
+        Data["Extra"] = Components.ABDictionaryToCDDictionary((x) => x, (x) => x.GetString()).EscapedDictionaryToString();
 
         Dictionary<string, string> bb = def.MergeDictionary(Data);
 
@@ -230,28 +230,37 @@ public class GISItem
         return a;
     }
 
-    public void StringToItem(string e)
+    public GISItem StringToItem(string e)
     {
         setdefaultvals();
         Data = Data.MergeDictionary(Converter.EscapedStringToDictionary(e, "~|~", "~o~"));
 
         Name = Data["Index"];
         Amount = int.Parse(Data["Count"]);
-        ExtraData = Data["Count"].EscapedStringToDictionary().ABDictionaryToCDDictionary((x, y) => x, (x, y) => ItemDataConvert(x,y));
+        Components = Data["Extra"].EscapedStringToDictionary().ABDictionaryToCDDictionary((x, y) => x, (x, y) => ItemDataConvert(x,y));
+        return this;
     }
-    public static ItemData MethodHoldover = null;
-    public static ItemData ItemDataConvert(string wish, string data)
+    public static ItemComponent MethodHoldover = null;
+    public static ItemComponent ItemDataConvert(string wish, string data)
     {
         switch (wish)
         {
             case "Example":
-                return new ItemExampleData().FromString(data);
+                return new ItemExampleComponent().FromString(data);
             default:
                 GlobalEvent.Set(out MethodHoldover, null, "ItemDataEvent");
                 if(MethodHoldover != null) return MethodHoldover;
                 break;
         }
         throw new Exception($"No item data conversion defined for {wish}");
+    }
+    public void AddComponent(ItemComponent cum)
+    {
+        Components.Add(cum.GetIdentifier(), cum);
+    }
+    public T GetComponent<T>(string a) where T : ItemComponent
+    {
+        return (T)Components[a];
     }
 }
 
@@ -307,6 +316,7 @@ public class GISItem_Data
         DisplayName = dat[0];
         Description = dat[1];
     }
+
 }
 
 
@@ -322,20 +332,26 @@ public class GISDisplayData
     }
 }
 
-public interface ItemData
+public interface ItemComponent
 {
     public string GetString();
-    public ItemData FromString(string data);
+    public string GetIdentifier();
+    public ItemComponent FromString(string data);
 }
 
-public class ItemExampleData : ItemData
+public class ItemExampleComponent : ItemComponent
 {
     public string StoredData;
 
-    public ItemData FromString(string data)
+    public ItemComponent FromString(string data)
     {
         StoredData = data;
         return this;
+    }
+
+    public string GetIdentifier()
+    {
+        return "Example";
     }
 
     public string GetString()
