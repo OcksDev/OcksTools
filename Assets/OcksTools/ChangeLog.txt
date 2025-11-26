@@ -4,7 +4,7 @@
 - New Object Recorder System
   - Lets you record and playback the history of a gameobject's transform/rigidbody
 - New Render tool
-  - Aggrigates a lot of system/rendering stuff like refreshrate, resolution, anti-aliasing, etc
+  - Aggrigates a lot of system-info/rendering stuff like refreshrate, resolution, anti-aliasing, etc into one easy to view/edit class
 - New 3D things for OcksTools
   - New 3D Movement Controller
 - Dialog Improvements 
@@ -19,6 +19,8 @@
 - Random Functions
   - New Remap(), which converts a number from one range to another.
     - for example, taking 0.2 on the range 0-2 and mapping it to a range of 0-10, resulting in 1
+- New CardCore in Misc
+  - A base system to deal with decks of cards, shuffling, discarding, etc
 - Misc Changes
   - New TimeToRead() format to display time in the format: 5432.1h
   - Some more reorganizing has occured, made extensions a lot clearer

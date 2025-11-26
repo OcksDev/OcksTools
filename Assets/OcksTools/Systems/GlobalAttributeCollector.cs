@@ -35,6 +35,7 @@ public class GlobalAttributeCollector : MonoBehaviour
             {
                 foreach (var a in methods)
                 {
+                    if (Converter.ConversionMethods.ContainsKey(a.a)) continue;
                     var dd = Activator.CreateInstance(a.b.ReflectedType);
                     Converter.ConversionMethods.Add(a.a, (x) => { return a.b.Invoke(dd, new object[] { x }); });
 
