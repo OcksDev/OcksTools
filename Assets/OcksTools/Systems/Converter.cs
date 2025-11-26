@@ -130,6 +130,27 @@ public static class Converter
         }
         return t;
     }
+
+    public static Dictionary<C,D> ABDictionaryToCDDictionary<A,B,C,D>(this Dictionary<A, B> eee, Func<A, C> convertAC, Func<B, D> convertBD)
+    {
+        var d = new Dictionary<C, D>();
+        foreach(var thing in eee)
+        {
+            d.Add(convertAC(thing.Key), convertBD(thing.Value));
+        }
+        return d;
+    }
+    public static Dictionary<C,D> ABDictionaryToCDDictionary<A,B,C,D>(this Dictionary<A, B> eee, Func<A, B, C> convertAC, Func<A, B, D> convertBD)
+    {
+        var d = new Dictionary<C, D>();
+        foreach(var thing in eee)
+        {
+            d.Add(convertAC(thing.Key, thing.Value), convertBD(thing.Key, thing.Value));
+        }
+        return d;
+    }
+
+
     public static Dictionary<A,B> StringDictionaryToABDictionary<A,B>(this Dictionary<string, string> dic)
     {
         var t = new Dictionary<A,B>();
