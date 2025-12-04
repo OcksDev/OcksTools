@@ -57,7 +57,7 @@ public class OcksNetworkVar
         CreateDataHolder();
         if (data == ONVManager.OcksVars[NetID][Name].Data) return;
         ONVManager.OcksVars[NetID][Name].Data = data;
-        ServerGamer.Instance.PassAlongUpdate(ONVManager.OcksVars[NetID][Name]);
+        ServerGamer.Instance.PassAlongUpdate(ONVManager.OcksVars[NetID][Name]); //?
         if (SendToOthers)
         {
             ServerGamer.Instance.SendOcksVar(NetID, Name, data);
