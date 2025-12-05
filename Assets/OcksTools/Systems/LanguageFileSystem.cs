@@ -87,14 +87,7 @@ public class LanguageFileSystem : MonoBehaviour
     public void SetString(string namespac, string key2, string str)
     {
         if(!Data.ContainsKey(namespac)) return;
-        if (!Data[namespac].ContainsKey(key2))
-        {
-            Data[namespac].Add(key2, str);
-        }
-        else
-        {
-            Data[namespac][key2] = str;
-        }
+        Data[namespac].AddOrUpdate(key2, str);
 
     }
 
@@ -120,14 +113,7 @@ public class LanguageFileSystem : MonoBehaviour
 
         System.Action<string, string> desAdd = (x,y) =>
         {
-            if (des.ContainsKey(x))
-            {
-                des[x] = y;
-            }
-            else
-            {
-                des.Add(x, y);
-            }
+            des.AddOrUpdate(x, y);
         };
 
 

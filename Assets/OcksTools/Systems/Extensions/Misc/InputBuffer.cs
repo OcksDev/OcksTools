@@ -34,14 +34,7 @@ public class InputBuffer : MonoBehaviour
             var b = new BufferedInput();
             b.Name = name;
             b.Time = time;
-            if (buffer.ContainsKey(name))
-            {
-                buffer[name] = b;
-            }
-            else
-            {
-                buffer.Add(name, b);
-            }
+            buffer.AddOrUpdate(name, b);
         }
     }
     public void BufferListen(KeyCode key, string ide, string name, float time, bool isdown = true)
@@ -52,14 +45,7 @@ public class InputBuffer : MonoBehaviour
             var b = new BufferedInput();
             b.Name = name;
             b.Time = time;
-            if (buffer.ContainsKey(name))
-            {
-                buffer[name] = b;
-            }
-            else
-            {
-                buffer.Add(name, b);
-            }
+            buffer.AddOrUpdate(name, b);
         }
     }
 

@@ -159,7 +159,7 @@ public class RandomFunctions : MonoBehaviour
 
     public static CompareState CompareTwoVersions(string I_Am, string compared_to)
     {
-        //supports things in the format of v#.#.# or #.#.#
+        //supports things in the format of kv#.#.# or #.#.#
         // There can be any amount of #s, so "v1.2" is valid, so is "1.2.3.4.5",
 
         if(I_Am.Length < 1) return CompareState.Invalid;
@@ -384,16 +384,18 @@ public static class OXFunctions
         var tea = new Dictionary<T, T2>(ti);
         foreach (var t in tee)
         {
-            if (tea.ContainsKey(t.Key))
-            {
-                tea[t.Key] = t.Value;
-            }
-            else
-            {
-                tea.Add(t.Key, t.Value);
-            }
+            tea.AddOrUpdate(t);
         }
         return tea;
+    }
+    public static void AddOrUpdate<T, T2>(this Dictionary<T, T2> ti, T K, T2 V)
+    {
+        if (ti.ContainsKey(K)) ti[K] = V;
+        else ti.Add(K, V);
+    }
+    public static void AddOrUpdate<T, T2>(this Dictionary<T, T2> ti, KeyValuePair<T,T2> kv)
+    {
+        ti.AddOrUpdate(kv.Key,kv.Value);
     }
 
 

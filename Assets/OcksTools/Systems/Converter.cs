@@ -196,14 +196,7 @@ public static class Converter
                     a.Substring(0, i),
                     a.Substring(i + splitter2.Length),
                 };
-                if (dic.ContainsKey(sseexx[0]))
-                {
-                    dic[sseexx[0]] = dic[sseexx[1]];
-                }
-                else
-                {
-                    dic.Add(sseexx[0], sseexx[1]);
-                }
+                dic.AddOrUpdate(sseexx[0], sseexx[1]);
             }
             catch
             {
@@ -258,14 +251,7 @@ public static class Converter
                     UnescapeString(a.Substring(0, i), esc),
                     UnescapeString(a.Substring(i + splitter2.Length), esc),
                 };
-                if (dic.ContainsKey(sseexx[0]))
-                {
-                    dic[sseexx[0]] = dic[sseexx[1]];
-                }
-                else
-                {
-                    dic.Add(sseexx[0], sseexx[1]);
-                }
+                dic.AddOrUpdate(sseexx[0], sseexx[1]);
             }
             catch
             {

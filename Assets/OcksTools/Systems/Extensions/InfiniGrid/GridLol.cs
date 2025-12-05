@@ -215,17 +215,7 @@ public class OcksTileData
     {
         data = GetDataDict();
         var c = Converter.StringToDictionary(e);
-        foreach(var k in c)
-        {
-            if (data.ContainsKey(k.Key))
-            {
-                data[k.Key] = k.Value;
-            }
-            else
-            {
-                data.Add(k.Key,k.Value);
-            }
-        }
+        data.MergeDictionary(c);
 
         pos = Converter.StringToVector3Int(data["pos"]);
         size = Converter.StringToVector2Int(data["size"]);

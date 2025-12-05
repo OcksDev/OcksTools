@@ -19,14 +19,7 @@ public class StoredRandom : MonoBehaviour
 
     public void DefineRandom(string name, int start = -1)
     {
-        if (randoms.ContainsKey(name))
-        {
-            randoms[name] = new OXRandStore(start, name);
-        }
-        else
-        {
-            randoms.Add(name, new OXRandStore(start, name));
-        }
+        randoms.AddOrUpdate(name, new OXRandStore(start, name));
     }
     public void UnallocateRandom(string name)
     {

@@ -740,14 +740,7 @@ public class DialogLol : MonoBehaviour
 
     public void SetVariable(string key, string val)
     {
-        if (variables.ContainsKey(key))
-        {
-            variables[key] = val;
-        }
-        else
-        {
-            variables.Add(key, val);
-        }
+        variables.AddOrUpdate(key, val);
     }
     public string GetVariable(string key, string defaultval = "(No Data)")
     {
@@ -1361,11 +1354,7 @@ public class DialogSettings
     }
     public void Set(string data, string data2)
     {
-        if(!CurrentData.ContainsKey(data)) 
-        { 
-            CurrentData.Add(data, ""); 
-        }
-        CurrentData[data] = data2;
+        CurrentData.AddOrUpdate(data, data2);
     }
     public void CopyFrom(DialogSettings a)
     {

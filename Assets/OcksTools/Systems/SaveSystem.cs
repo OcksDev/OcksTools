@@ -240,15 +240,7 @@ public class SaveSystem : MonoBehaviour
                 ox.Data.Add(key, data);
                 break;
             case SaveMethod.TXTFile:
-                var d = GetDict(dict);
-                if (d.ContainsKey(key))
-                {
-                    d[key] = data;
-                }
-                else
-                {
-                    d.Add(key, data);
-                }
+                GetDict(dict).AddOrUpdate(key,data);
                 break;
             case SaveMethod.PlayerPrefs:
                 PlayerPrefs.SetString($"{dict}_{key}", data);
@@ -270,15 +262,7 @@ public class SaveSystem : MonoBehaviour
                 ox.Data.Add(key, data);
                 break;
             case SaveMethod.TXTFile:
-                var d = GetDict(dict);
-                if (d.ContainsKey(key))
-                {
-                    d[key] = Converter.EscapedListToString(data);
-                }
-                else
-                {
-                    d.Add(key, Converter.EscapedListToString(data));
-                }
+                GetDict(dict).AddOrUpdate(key, Converter.EscapedListToString(data));
                 break;
             case SaveMethod.PlayerPrefs:
                 PlayerPrefs.SetString($"{dict}_{key}", Converter.EscapedListToString(data));
@@ -299,15 +283,7 @@ public class SaveSystem : MonoBehaviour
                 ox.Data.Add(key, data);
                 break;
             case SaveMethod.TXTFile:
-                var d = GetDict(dict);
-                if (d.ContainsKey(key))
-                {
-                    d[key] = Converter.EscapedDictionaryToString(data);
-                }
-                else
-                {
-                    d.Add(key, Converter.EscapedDictionaryToString(data));
-                }
+                GetDict(dict).AddOrUpdate(key, Converter.EscapedDictionaryToString(data));
                 break;
             case SaveMethod.PlayerPrefs:
                 PlayerPrefs.SetString($"{dict}_{key}", Converter.EscapedDictionaryToString(data));

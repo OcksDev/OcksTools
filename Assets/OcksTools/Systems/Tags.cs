@@ -94,14 +94,7 @@ public class Tags : MonoBehaviour
 
     public static void SetRef(string name, GameObject ob)
     {
-        if (refs.ContainsKey(name))
-        {
-            refs[name] = ob;
-        }
-        else
-        {
-            refs.Add(name, ob);
-        }
+        refs.AddOrUpdate(name, ob);
     }
     public static string GenerateID()
     {
