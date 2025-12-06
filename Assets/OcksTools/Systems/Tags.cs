@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 [System.Serializable]
-public class Tags : MonoBehaviour
+public class Tags : SingleInstance<Tags>
 {
     public static Dictionary<string, Dictionary<string, object>> AllTags = new Dictionary<string, Dictionary<string, object>>()
     {
@@ -25,11 +25,9 @@ public class Tags : MonoBehaviour
      * 
      */
 
-    public static Tags Instance;
 
-    public void Awake()
+    public override void Awake2()
     {
-        if(Instance == null) Instance= this;
         foreach(var a in RefedObjects)
         {
             a.Zoink();

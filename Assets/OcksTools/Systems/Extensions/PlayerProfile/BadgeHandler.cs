@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BadgeHandler : MonoBehaviour
+public class BadgeHandler : SingleInstance<BadgeHandler>
 {
 
     public const string Version = "v1.0";
@@ -22,7 +22,7 @@ public class BadgeHandler : MonoBehaviour
     public static Dictionary<string, OXBadge> Badges = new Dictionary<string, OXBadge>();
     public List<OXBadge> GameAuthorizedBadges = new List<OXBadge>();
 
-    private void Awake()
+    public override void Awake2()
     {
 
         FileSystem.LocationEvent.Append("badges", () =>

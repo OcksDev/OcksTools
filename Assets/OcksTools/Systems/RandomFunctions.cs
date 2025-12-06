@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
-public class RandomFunctions : MonoBehaviour
+public class RandomFunctions : SingleInstance<RandomFunctions>
 {
     public delegate void JustFuckingRunTheMethods();
 
@@ -23,12 +23,6 @@ public class RandomFunctions : MonoBehaviour
 
 
 
-    //Default setup to make this a singleton
-    public static RandomFunctions Instance;
-    private void Awake()
-    {
-        if (Instance == null) Instance = this;
-    }
 
     private void OnApplicationQuit()
     {

@@ -1,23 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public class GridLol : MonoBehaviour
+public class GridLol : SingleInstance<GridLol>
 {
     public bool UseTilemapExtension = false;
     public float GeneralScale = 1f;
     public int XPlaceSize = 1;
     public int YPlaceSize = 1;
     public int LayerPlace = 0;
-    public static GridLol Instance;
     public GameObject Highligher;
     public Color32[] HighligherColors;
     public Dictionary<Vector3Int, OcksTileData> Tiles = new Dictionary<Vector3Int, OcksTileData>();
     public GameObject TileToSpawn;
     public List<Color32> colors = new List<Color32>();
     private GridTileMapExtension tileextend;
-    private void Awake()
+    public override void Awake2()
     {
-        Instance = this;
         SaveSystem.SaveAllData.Append("SaveAllTiles", SaveAllTiles);
         SaveSystem.LoadAllData.Append("LoadAllTiles", LoadAllTiles);
         highlighrt = Instantiate(Highligher, transform).GetComponent<SpriteRenderer>();

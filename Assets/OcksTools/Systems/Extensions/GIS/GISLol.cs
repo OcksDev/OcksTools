@@ -5,22 +5,18 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class GISLol : MonoBehaviour
+public class GISLol : SingleInstance<GISLol>
 {
     public bool UseLanguageFile = true;
     public GISItem Mouse_Held_Item;
     public GISDisplay Mouse_Displayer;
     public GameObject MouseFollower;
-    private static GISLol instance;
     public List<GISItem_Data> Items = new List<GISItem_Data>();
     public Dictionary<string,GISItem_Data> ItemDict = new Dictionary<string, GISItem_Data>();
 
 
     public Dictionary<string,GISContainer> All_Containers = new Dictionary<string, GISContainer>();
-    public static GISLol Instance
-    {
-        get { return instance; }
-    }
+    
     bool nono = false;
     public void LoadTempForAll()
     {
@@ -32,9 +28,8 @@ public class GISLol : MonoBehaviour
         }
     }
 
-    private void Awake()
+    public override void Awake2()
     {
-        if (Instance == null) instance = this;
         Mouse_Held_Item = new GISItem();
         foreach(var item in Items)
         {

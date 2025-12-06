@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NotificationSystem : MonoBehaviour
+public class NotificationSystem : SingleInstance<NotificationSystem>
 {
     public int MaxNotifsAtATime = 3;
     public Vector2 PositionOffset = Vector2.zero;
@@ -11,11 +11,8 @@ public class NotificationSystem : MonoBehaviour
     public RectTransform NotifParent;
     List<OXNotif> ActiveNotifs = new List<OXNotif>();
     List<OXNotif> StoredNotifs = new List<OXNotif>();
-    public static NotificationSystem Instance;
-    private void Awake()
+    public override void Awake2()
     {
-        Instance = this;
-
         switch (Direction)
         {
             case Directions.BottomRight:

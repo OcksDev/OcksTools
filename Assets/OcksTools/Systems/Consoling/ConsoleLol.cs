@@ -8,13 +8,13 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.IO;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
-public class ConsoleLol : MonoBehaviour
+public class ConsoleLol : SingleInstance<ConsoleLol>
 {
     public GameObject ConsoleObject;
     public ConsolRefs ConsoleObjectRef;
     public OXLanguageFileIndex LanguageFileIndex;
-    private static ConsoleLol instance;
     public bool UseLanguageFileSystem = true;
     public bool SavePrevCommands = true;
     [HideInInspector]
@@ -47,21 +47,13 @@ public class ConsoleLol : MonoBehaviour
     public static IOrderedEnumerable<KeyValuePair<string, OXCommand>> CommandDict2;
 
 
-    // Start is called before the first frame update
-    public static ConsoleLol Instance
-    {
-        get { return instance; }
 
-        //bug: you can use rich text like <br> and <i> in the console 
-    }
-
-    private void Awake()
+    public override void Awake2()
     {
         prev_commands.Clear();
         BackLog = "";
         ConsoleObjectRef = ConsoleObject.GetComponent<ConsolRefs>();
         ConsoleChange(false);
-        if (Instance == null) instance = this;
 
 
         InputManager.CollectInputAllocs.Append("Console", () =>
@@ -82,7 +74,7 @@ public class ConsoleLol : MonoBehaviour
             l.AddFile(LanguageFileIndex);
         }
 
-        if(Console.texts.Count > 0)
+        if (Console.texts.Count > 0)
         {
             for(int i = 0; i < Console.texts.Count; i++)
             {
@@ -252,7 +244,8 @@ public class ConsoleLol : MonoBehaviour
             ConsoleObjectRef.input.text = "";
             s = inputgaming;
             if (s != "" && (prev_commands.Count == 0 || prev_commands[prev_commands.Count - 1] != s)) prev_commands.Add(s);
-            if(prev_commands.Count > 50)
+            s = Regex.Replace(s, "[<>]", "");
+            if (prev_commands.Count > 50)
             {
                 prev_commands.RemoveAt(0);
             }

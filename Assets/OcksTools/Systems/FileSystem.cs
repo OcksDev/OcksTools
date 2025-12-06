@@ -6,7 +6,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class FileSystem : MonoBehaviour
+public class FileSystem : SingleInstance<FileSystem>
 {
     /* IMPORTANT:
      *    This is not the save system!
@@ -25,7 +25,6 @@ public class FileSystem : MonoBehaviour
     public const string GameTrueName = "Ocks Tools";
 
 
-    private static FileSystem instance;
     private string GameName = "?";
     [HideInInspector]
     public string DirectoryLol = "";
@@ -40,13 +39,8 @@ public class FileSystem : MonoBehaviour
 
     public static OXEvent LocationEvent = new OXEvent();
 
-    public static FileSystem Instance
+    public override void Awake2()
     {
-        get { return instance; }
-    }
-    private void Awake()
-    {
-        if (Instance == null) instance = this;
         AssembleFilePaths();
         CreateFolder(OcksDirectry);
         CreateFolder(GameDirectory);

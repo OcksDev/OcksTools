@@ -2,12 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ProfileHandler : MonoBehaviour
+public class ProfileHandler : SingleInstance<ProfileHandler>
 {
 
     public static string Username = "";
 
-    void Awake()
+    public override void Awake2()
     {
         SaveSystem.LoadAllData.Append(LockIn);
         SaveSystem.SaveAllData.Append(LockOut);

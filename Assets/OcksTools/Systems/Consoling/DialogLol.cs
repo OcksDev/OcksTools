@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-public class DialogLol : MonoBehaviour
+public class DialogLol : SingleInstance<DialogLol>
 {
     public Dictionary<string,OXLanguageFileIndex> LanguageFileIndexes = new Dictionary<string,OXLanguageFileIndex>();
     public bool UseLanguageFileSystem = false;
@@ -65,23 +65,15 @@ public class DialogLol : MonoBehaviour
     private Dictionary<string, string> variables = new Dictionary<string, string>();
     private Dictionary<string, DialogSettings> name_to_setting = new Dictionary<string, DialogSettings>();
 
-    private static DialogLol instance;
 
     public DialogDefaults TrueDefaults;
     private DialogSettings CurrentSettings;
 
 
     // Start is called before the first frame update
-    public static DialogLol Instance
-    {
-        get { return instance; }
 
-        //bug: you can use rich text like <br> and <i> in the console 
-    }
-
-    private void Awake()
+    public override void Awake2()
     {
-        if (Instance == null) instance = this;
         DialogBoxObject.SetActive(true);
 
         InputManager.CollectInputAllocs.Append("Dialog", () =>

@@ -19,12 +19,27 @@ public class GlobalAttributeCollector : MonoBehaviour
 
         assemblies[0] = Assembly.GetExecutingAssembly();
         assemblies[1] = Assembly.Load("OcksTools");
-        assemblies[2] = Assembly.Load("OcksTools.Multiplayer");
-        assemblies[3] = Assembly.Load("OcksTools.NavMesh");
+        try
+        {
+            assemblies[2] = Assembly.Load("OcksTools.Multiplayer");
+        }
+        catch
+        {
+            assemblies[2] = null;
+        }
+        try
+        {
+            assemblies[3] = Assembly.Load("OcksTools.NavMesh");
+        }
+        catch
+        {
+            assemblies[3] = null;
+        }
 
 
         foreach (var ass in assemblies)
         {
+            if(ass == null) continue;
             // object instance = Activator.CreateInstance(t);
             var methods = ass
                 .GetTypes()

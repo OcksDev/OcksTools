@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InputManager : MonoBehaviour
+public class InputManager : SingleInstance<InputManager>
 {
     public static List<string> locklevel = new List<string>();
     public static Dictionary<KeyCode, string> keynames = new Dictionary<KeyCode, string>();

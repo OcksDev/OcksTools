@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static TreeNode;
 
-public class TreeHandler : MonoBehaviour
+public class TreeHandler : SingleInstance<TreeHandler>
 {
     public static Dictionary<string, TreeNode> Nodes = new Dictionary<string, TreeNode>();
     public static Dictionary<string, int> CurrentOwnerships = new Dictionary<string, int>();
@@ -11,12 +11,10 @@ public class TreeHandler : MonoBehaviour
     public static OXEvent SpawnPartners = new OXEvent();
     public static OXEvent SpawnLines = new OXEvent();
     public static OXEvent UpdateLines = new OXEvent();
-    public static TreeHandler Instance;
     public Transform PartnerParent;
     public Transform LineParent;
-    private void Awake()
+    public override void Awake2()
     {
-        if (Instance == null) Instance = this;
         SaveSystem.LoadAllData.Append(LoadAllTree);
         SaveSystem.SaveAllData.Append(SaveAllTree);
     }

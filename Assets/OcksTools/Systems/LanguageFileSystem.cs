@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-public class LanguageFileSystem : MonoBehaviour
+public class LanguageFileSystem : SingleInstance<LanguageFileSystem>
 {
     /* Dependencies:
      *  File System
@@ -14,12 +14,7 @@ public class LanguageFileSystem : MonoBehaviour
     public List<OXLanguageFileIndex> Files = new List<OXLanguageFileIndex>();
     Dictionary<string, Dictionary<string, string>> Data = new Dictionary<string, Dictionary<string, string>>();
 
-    private static LanguageFileSystem instance;
-    public static LanguageFileSystem Instance
-    {
-        get { return instance; }
-    }
-    private void Awake()
+    public override void Awake2()
     {
         if (AllowPublicAccess)
         {
@@ -36,7 +31,6 @@ public class LanguageFileSystem : MonoBehaviour
         {
             ReadFile(file);
         }
-        if (Instance == null) instance = this;
     }
     public void AddFile(OXLanguageFileIndex oxl)
     {

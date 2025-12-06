@@ -3,16 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SpawnSystem : MonoBehaviour
+public class SpawnSystem : SingleInstance<SpawnSystem>
 {
     public List<Pool> Spawnables = new List<Pool>();
     List<string> parentdata = new List<string>();
-    public static SpawnSystem Instance;
     public static Dictionary<string, Pool> SpawnableDict = new Dictionary<string, Pool>();
     public static Action<string> SpawnShareMethod;
-    private void Awake()
+    public override void Awake2()
     {
-        Instance = this;
         foreach(var a in Spawnables)
         {
             SpawnableDict.Add(a.Name, a);
@@ -99,6 +97,11 @@ public class SpawnData
     public SpawnData Parent(Transform p)
     {
         this._parent = p;
+        return this;
+    }
+    public SpawnData Parent(GameObject p)
+    {
+        this._parent = p.transform;
         return this;
     }
     public SpawnData Parent(string id)

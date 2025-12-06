@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
-public class MultiThreaderEnsure : MonoBehaviour
+public class MultiThreaderEnsure : SingleInstance<MultiThreaderEnsure>
 {
     // neither method A, B, or C are nessecarily better than the other
 
@@ -25,10 +25,8 @@ public class MultiThreaderEnsure : MonoBehaviour
 
 
     public static List<IOXThreadPool> Nerds = new List<IOXThreadPool>();
-    public static MultiThreaderEnsure Instance;
-    private void Awake()
+    public override void Awake2()
     {
-        Instance = this;
         for(int i = 0; i < Nerds.Count; i++)
         {
             StartCoroutine(FixSlackers(Nerds[i]));

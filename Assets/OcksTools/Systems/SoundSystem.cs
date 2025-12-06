@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SoundSystem : MonoBehaviour
+public class SoundSystem : SingleInstance<SoundSystem>
 {
 
 
@@ -11,7 +11,6 @@ public class SoundSystem : MonoBehaviour
 
 
 
-    private static SoundSystem instance;
 
     public float MasterVolume = 1;
     public float SFXVolume = 1;
@@ -19,21 +18,17 @@ public class SoundSystem : MonoBehaviour
     public List<OXSoundData> AudioClips = new List<OXSoundData>();
     public Dictionary<string, OXSoundData> AudioClipDict = new Dictionary<string, OXSoundData>();
     private List<AudioSource> AudioSources = new List<AudioSource>();
-    public static SoundSystem Instance
-    {
-        get { return instance; }
-    }   
+  
 
     public OXEvent SoundMod = new OXEvent();
     public OXEvent SoundDictCompile = new OXEvent();
 
-    private void Awake()
+    public override void Awake2()
     {
         foreach (var s in AudioClips)
         {
             AudioClipDict.Add(s.Name, s);
         }
-        if (Instance == null) instance = this;
     }
     private void Start()
     {

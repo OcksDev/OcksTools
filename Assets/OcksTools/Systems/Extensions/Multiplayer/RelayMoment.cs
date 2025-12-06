@@ -11,22 +11,13 @@ using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
 
-public class RelayMoment : MonoBehaviour
+public class RelayMoment : SingleInstance<RelayMoment>
 {
     public string Join_Code = "";
     public GameObject ServerGamerObject;
     public string SignInState = "";
     public TextMeshProUGUI JoinCodeTextDick;
     //Default setup to make this a singleton
-    public static RelayMoment instance;
-    public static RelayMoment Instance
-    {
-        get { return instance; }
-    }
-    private void Awake()
-    {
-        if (Instance == null) instance = this;
-    }
     // Start is called before the first frame update
     async void Start()
     {

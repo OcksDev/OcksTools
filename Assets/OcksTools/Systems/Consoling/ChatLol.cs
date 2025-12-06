@@ -4,25 +4,14 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ChatLol : MonoBehaviour
+public class ChatLol : SingleInstance<ChatLol>
 {
     public GameObject ChatLog;
     public GameObject ChatText;
     public GameObject CameraL;
     public int amnt = 0;
 
-    private static ChatLol instance;
     private VerticalLayoutGroup bonerspawn;
-    public static ChatLol Instance
-    {
-        get { return instance; }
-
-    }
-
-    private void Awake()
-    {
-        if (Instance == null) instance = this;
-    }
     // Start is called before the first frame update
     void Start()
     {

@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 
-public class SaveSystem : MonoBehaviour
+public class SaveSystem : SingleInstance<SaveSystem>
 {
     public SaveMethod SaveMethod_ = SaveMethod.TXTFile;
     public int test = 0;
@@ -17,16 +17,10 @@ public class SaveSystem : MonoBehaviour
 
     public Dictionary<string, Dictionary<string, string>> HoldingData = new Dictionary<string, Dictionary<string, string>>();
 
-    public static SaveSystem Instance;
     public static string ActiveDir;
     private void OnApplicationQuit()
     {
         SaveGame();
-    }
-    private void Awake()
-    {
-        if (Instance == null) Instance = this;
-
     }
     private void Start()
     {

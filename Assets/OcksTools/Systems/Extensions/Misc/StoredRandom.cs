@@ -2,14 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StoredRandom : MonoBehaviour
+public class StoredRandom : SingleInstance<StoredRandom>
 {
     public bool AutoSaveAndLoad = true;
     public Dictionary<string, OXRandStore> randoms = new Dictionary<string, OXRandStore>();
-    public static StoredRandom Instance;
-    private void Awake()
+
+    public override void Awake2()
     {
-        Instance = this;
         if (AutoSaveAndLoad)
         {
             SaveSystem.SaveAllData.Append(SS_SaveRandData);

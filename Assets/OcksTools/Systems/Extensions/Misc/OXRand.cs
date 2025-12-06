@@ -3,13 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class OXRand : MonoBehaviour
+public class OXRand : SingleInstance<OXRand>
 {
-    public static OXRand Instance;
     public List<SpecialRands> SpecialRandoms = new List<SpecialRands>();
-    private void Awake()
+    public override void Awake2()
     {
-        Instance = this;
         foreach(var a in SpecialRandoms)
         {
             specialrands.Add(a.Name, a);

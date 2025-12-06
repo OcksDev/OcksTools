@@ -3,26 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraLol : MonoBehaviour
+public class CameraLol : SingleInstance<CameraLol>
 {
     public bool FollowsMouse = true;
     public float MouseFollowSpeed = 1;
     public float MouseFollowStrength = 1;
-    public static CameraLol instance;
     public Vector3 targetpos = new Vector3(0, 0, 0);
     private Vector3 ppos = new Vector3(0, 0, 0);
     private List<List<float>> shakeo = new List<List<float>>();
     private List<Vector4> shoveo = new List<Vector4>();
     // Start is called before the first frame update
-    public static CameraLol Instance
-    {
-        get { return instance; }
-    }
-
-    private void Awake()
-    {
-        if (Instance == null) instance = this;
-    }
     private void FixedUpdate()
     {
         int i = -1;

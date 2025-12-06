@@ -2,14 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Screenshot : MonoBehaviour
+public class Screenshot : SingleInstance<Screenshot>
 {
-    public static Screenshot Instance;
-    private void Awake()
-    {
-        Instance = this;
-    }
-
     public static void SetConsoleCommandLol()
     {
         var ss = new ScreenshotData("test", 1000, 1000, Camera.main, true);
