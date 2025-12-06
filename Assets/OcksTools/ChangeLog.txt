@@ -23,7 +23,7 @@
 - Random Functions
   - New Remap(), which converts a number from one range to another.
     - for example, taking 0.2 on the range 0-2 and mapping it to a range of 0-10, resulting in 1
-  - New AddOrUpdate() for dictionaries, also refactored a lot of code in OcksTools to use this
+  - New AddOrUpdate() for dictionaries, refactored a lot of code in OcksTools to use this
 - New CardCore in Misc
   - A base system to deal with decks of cards, shuffling, discarding, etc
 - Misc Changes
