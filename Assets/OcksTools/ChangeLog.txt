@@ -13,6 +13,8 @@
   - Entire codebase has been updated to use this
 - New Reactable<> class which hopes to unify all "change/acknowledge" style variables
   - Not implemented into codebase yet, but useful to have
+- New CardCore in Misc
+  - A base system to deal with decks of cards, shuffling, discarding, etc
 - Dialog Improvements 
   - New Macros, formatted like this: @<VariableName>
     - Works like a pre-processed variable, replacing its value prior to any other syntax operations.
@@ -35,8 +37,6 @@
   - New Remap(), which converts a number from one range to another.
     - for example, taking 0.2 on the range 0-2 and mapping it to a range of 0-10, resulting in 1
   - New AddOrUpdate() for dictionaries, refactored a lot of code in OcksTools to use this
-- New CardCore in Misc
-  - A base system to deal with decks of cards, shuffling, discarding, etc
 - Misc Changes
   - New TimeToRead() format to display time in the format: 5432.1h
   - Fixed bug where threads continued to run after runtime closed. (Updating OXTLS to Unity 6.2 partly broke existing multithreading)
