@@ -18,7 +18,7 @@ public class GISDisplay : MonoBehaviour
     {
         GetStuff();
     }
-    GISItem olditem = null;
+    //GISItem olditem = null;
     public void UpdateDisplay(bool force = false)
     {
         if (item == null) item = new GISItem();

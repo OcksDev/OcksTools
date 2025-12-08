@@ -12,7 +12,7 @@ public static class Converter
 
 
     // to use custom objects, mark a function which takes in a string as [ConversionMethod]
-    public static A StringToObject<A>(this string data, string? explicit_type = null)
+    public static A StringToObject<A>(this string data, string explicit_type = null)
     {
         string typename = explicit_type != null ? explicit_type : typeof(A).Name;
         if (!ConversionMethods.ContainsKey(typename))

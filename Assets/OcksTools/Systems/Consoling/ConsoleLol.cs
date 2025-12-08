@@ -94,7 +94,7 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
             for (int i = 0; i < Console.console_backlog.Count; i++)
             {
                 Debug.Log($"{i}: {Console.console_backlog.Count}");
-                ConsoleLog(Console.console_backlog[i].a, Console.console_backlog[i].b);
+                _SuperSecretInternalConsoleLog(Console.console_backlog[i].a, Console.console_backlog[i].b);
             }
             Console.console_backlog.Clear();
         }
@@ -276,7 +276,7 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
                 command.Add("");
                 command_caps.Add("");
             }
-            ConsoleLog("> " + s2, "#7a7a7aff");
+            Console.Log("> " + s2, "#7a7a7aff");
 
             raa = new OXCommandData();
             raa.com = command;
@@ -291,7 +291,7 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
         }
         catch
         {
-            ConsoleLog(lang.GetString("Console", "Error_InvalidCommand"), "#ff0000ff");
+            Console.LogError(lang.GetString("Console", "Error_InvalidCommand"));
         }
 
         comm = prev_commands.Count;
@@ -455,9 +455,9 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
             cum.Execution(raa);
             return;
         }
-        ConsoleLol.Instance.ConsoleLog(LanguageFileSystem.Instance.GetString("Console", "Error_InvalidParameter") + command_caps[lvl], "#ff0000ff");
+        Console.LogError(LanguageFileSystem.Instance.GetString("Console", "Error_InvalidParameter") + command_caps[lvl]);
     }
-    public void ConsoleLog(string text = "Logged", string hex = "\"white\"")
+    public void _SuperSecretInternalConsoleLog(string text = "Logged", string hex = "\"white\"")
     {
         BackLog = BackLog + "<br><color=" + hex + ">" + text;
         if(BackLog.Length > 10000)
@@ -539,7 +539,7 @@ public static class Console
         // hex can also = "\"white\""
         if(ConsoleLol.Instance != null && Thread.CurrentThread == ConsoleLol._mainthread)
         {
-            ConsoleLol.Instance.ConsoleLog(text, hex);
+            ConsoleLol.Instance._SuperSecretInternalConsoleLog(text, hex);
         }
         else
         {

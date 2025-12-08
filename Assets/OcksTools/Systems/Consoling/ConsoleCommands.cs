@@ -378,22 +378,22 @@ public class ConsoleCommands : MonoBehaviour
         {
             string eee = r.raw_caps.Substring(r.raw.IndexOf(r.com[2]) + r.com[2].Length + 1);
             SaveSystem.Instance.SetString(r.com_caps[2], eee);
-            ConsoleLol.Instance.ConsoleLog($"Saved \"{eee}\" into {r.com_caps[2]}");
+            Console.Log($"Saved \"{eee}\" into {r.com_caps[2]}");
         }
         else
         {
-            ConsoleLol.Instance.ConsoleLog(LanguageFileSystem.Instance.GetString("Console", "Error_NoReg"), "#ff0000ff");
+            Console.LogError(LanguageFileSystem.Instance.GetString("Console", "Error_NoReg"));
         }
     }
     public static void Data_Read(OXCommandData r)
     {
         if (r.com[2] != "")
         {
-            ConsoleLol.Instance.ConsoleLog($"{SaveSystem.Instance.GetString(r.com_caps[2], LanguageFileSystem.Instance.GetString("Console", "Error_NoData"))}");
+            Console.Log($"{SaveSystem.Instance.GetString(r.com_caps[2], LanguageFileSystem.Instance.GetString("Console", "Error_NoData"))}");
         }
         else
         {
-            ConsoleLol.Instance.ConsoleLog(LanguageFileSystem.Instance.GetString("Console", "Error_NoReg"), "#ff0000ff");
+            Console.LogError(LanguageFileSystem.Instance.GetString("Console", "Error_NoReg"));
         }
     }
     public static void Data_listall()
@@ -401,10 +401,10 @@ public class ConsoleCommands : MonoBehaviour
         switch (SaveSystem.Instance.SaveMethod_)
         {
             case SaveSystem.SaveMethod.PlayerPrefs:
-                ConsoleLol.Instance.ConsoleLog(LanguageFileSystem.Instance.GetString("Console", "Error_NoDataDump"), "#ff0000ff");
+                Console.LogError(LanguageFileSystem.Instance.GetString("Console", "Error_NoDataDump"));
                 break;
             case SaveSystem.SaveMethod.TXTFile:
-                ConsoleLol.Instance.ConsoleLog($"{Converter.DictionaryToString(SaveSystem.Instance.GetDict(), System.Environment.NewLine, ": ")}");
+                Console.Log($"{Converter.DictionaryToString(SaveSystem.Instance.GetDict(), System.Environment.NewLine, ": ")}");
                 break;
             case SaveSystem.SaveMethod.OXFile:
 
@@ -414,7 +414,7 @@ public class ConsoleCommands : MonoBehaviour
                     if (combined != "") combined += "<br>";
                     combined += a.Key + ": " + a.Value.ToString();
                 }
-                ConsoleLol.Instance.ConsoleLog(combined);
+                Console.Log(combined);
                 break;
         }
     }

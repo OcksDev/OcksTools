@@ -24,7 +24,7 @@ public class ServerGamer : NetworkBehaviour
         SpawnObjectServerRpc(spawndata);
     }
 
-    [ServerRpc(RequireOwnership = false)]
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
     public void SpawnObjectServerRpc(string spawndata)
     {
         SpawnObjectClientRpc(ClientID, spawndata);
@@ -40,7 +40,7 @@ public class ServerGamer : NetworkBehaviour
 
 
 
-    [ServerRpc(RequireOwnership = false)]
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
     public void MessageServerRpc(string id, string type, string data)
     {
         RecieveMessageClientRpc(id, type, data);
@@ -59,7 +59,7 @@ public class ServerGamer : NetworkBehaviour
 
 
     //chat related method
-    [ServerRpc(RequireOwnership = false)]
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
     public void SendChatMessageServerRpc(string id, string message, string hex)
     {
         RecieveChatMessageClientRpc(id, message, hex);
@@ -91,7 +91,7 @@ public class ServerGamer : NetworkBehaviour
     }
 
 
-    [ServerRpc(RequireOwnership = false)]
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
     public void OcksVarServerRpc(string id, string poopid, string name, string data)
     {
         //Console.Log($"(server) incoming request for set data");
@@ -99,7 +99,7 @@ public class ServerGamer : NetworkBehaviour
     }
 
 
-    [ServerRpc(RequireOwnership = false)]
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
     public void AquireOcksVarServerRpc(string id, string poopid, string name)
     {
         //Console.Log($"(server) incoming request for aquire");

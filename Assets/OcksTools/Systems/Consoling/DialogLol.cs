@@ -920,7 +920,7 @@ public class DialogLol : SingleInstance<DialogLol>
     
     private void StartDialogOverhead2()
     {
-        ConsoleLol.Instance.ConsoleLog(datatype + ": " + ActiveFileName, "#bdbdbdff");
+        Console.Log(datatype + ": " + ActiveFileName);
         NextLine();
     }
 

@@ -37,7 +37,7 @@ public class PlayerController3DMid : MonoBehaviour
     }
 
     private bool im_walling_it = false;
-    private Vector3 wall_direction = default;
+    //private Vector3 wall_direction = default;
     bool waswallin = false;
 
     void FixedUpdate()
