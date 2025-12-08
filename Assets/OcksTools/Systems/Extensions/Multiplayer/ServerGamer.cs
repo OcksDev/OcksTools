@@ -28,10 +28,10 @@ public class ServerGamer : NetworkBehaviour
 
     public void handjoib(string spawndata)
     {
-        SpawnObjectCall(spawndata, Style.PeerToHostToPeer);
+        SpawnObjectCall(spawndata);
     }
 
-    public void SpawnObjectCall(string spawndata, Style style = Style.PeerToHostToPeer)
+    public void SpawnObjectCall(string spawndata, Style style = Style.DifferToBase)
     {
         if (style == Style.DifferToBase) style = BaseStyle;
         switch (style)
