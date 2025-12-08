@@ -41,9 +41,10 @@
   - Nodes now have a max level that they can be bought up to
   - Added some helper methods in TreeHandler to make interfacing easier
 - Random Functions
-  - New Remap(), which converts a number from one range to another.
+  - New Remap() extension method which converts a number from one range to another.
     - for example, taking 0.2 on the range 0-2 and mapping it to a range of 0-10, resulting in 1
-  - New AddOrUpdate() for dictionaries, refactored a lot of code in OcksTools to use this
+  - New AddOrUpdate() extension method for dictionaries, refactored a lot of code in OcksTools to use this
+  - New Clean() extension method for string lists, removes empty entries, or things that only contain whitespace
 - Misc Changes
   - New TimeToRead() format to display time in the format: 5432.1h
   - Fixed bug where threads continued to run after runtime closed. (Updating OXTLS to Unity 6.2 partly broke existing multithreading)

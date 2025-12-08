@@ -435,7 +435,7 @@ public static class OXFunctions
     {
         for (int t = 0; t < ti.Count; t++)
         {
-            if (ti[t].Length == 0 || Regex.IsMatch(ti[t], "^[\n \r\t]+$"))
+            if (ti[t] == null || ti[t].Length == 0 || Regex.IsMatch(ti[t], "^[\n \r\t]+$"))
             {
                 ti.RemoveAt(t);
                 t--;
