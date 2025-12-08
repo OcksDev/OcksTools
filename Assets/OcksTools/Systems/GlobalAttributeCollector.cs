@@ -15,26 +15,9 @@ public class GlobalAttributeCollector : MonoBehaviour
     [RuntimeInitializeOnLoadMethod]
     public static void GatherMethods()
     {
-        Assembly[] assemblies = new Assembly[4];
+        Assembly[] assemblies = new Assembly[1];
 
         assemblies[0] = Assembly.GetExecutingAssembly();
-        assemblies[1] = Assembly.Load("OcksTools");
-        try
-        {
-            assemblies[2] = Assembly.Load("OcksTools.Multiplayer");
-        }
-        catch
-        {
-            assemblies[2] = null;
-        }
-        try
-        {
-            assemblies[3] = Assembly.Load("OcksTools.NavMesh");
-        }
-        catch
-        {
-            assemblies[3] = null;
-        }
 
 
         foreach (var ass in assemblies)

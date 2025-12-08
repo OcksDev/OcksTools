@@ -61,8 +61,8 @@ public class RelayMoment : SingleInstance<RelayMoment>
             Join_Code = await RelayService.Instance.GetJoinCodeAsync(allo.AllocationId);
             Debug.Log(Join_Code);
 
-            RelayServerData rsd = new RelayServerData(allo, "dtls");
-            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(rsd);
+            var transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+            transport.SetRelayServerData(AllocationUtils.ToRelayServerData(allo, "dtls"));
 
             NetworkManager.Singleton.StartHost();
             return 1;
@@ -80,9 +80,19 @@ public class RelayMoment : SingleInstance<RelayMoment>
         {
             JoinAllocation ja = await RelayService.Instance.JoinAllocationAsync(joinC);
 
-            RelayServerData rsd = new RelayServerData(ja, "dtls");
+            RelayServerData rsd = new RelayServerData(
+                ja.RelayServer.IpV4,                                      // host
+                (ushort)ja.RelayServer.Port,                              // port
+                ja.AllocationIdBytes,                                     // allocationId
+                ja.ConnectionData,                                        // connectionData
+                ja.HostConnectionData,                                    // hostConnectionData
+                ja.Key,                                                   // key
+                true                                                      // isSecure (dtls)
+            );
 
-            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(rsd);
+            var transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+            Debug.Log("Relay Data = " + AllocationUtils.ToRelayServerData(ja, "dtls"));
+            transport.SetRelayServerData(AllocationUtils.ToRelayServerData(ja, "dtls"));
 
             NetworkManager.Singleton.StartClient();
 

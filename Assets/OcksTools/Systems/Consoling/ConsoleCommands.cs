@@ -38,6 +38,28 @@ public class ConsoleCommands : MonoBehaviour
         GlobalEvent.Set(out cooldata, "new data", "test event");
         Console.Log(cooldata);
     }
+    private static OXThreadPoolA thread_a;
+    public static void Test_threadedlogs()
+    {
+        if(thread_a == null)
+        {
+            Test_createthread();
+            Console.LogWarning("Thread created, please run again");
+            Console.LogWarning("Some logs might not have appeared");
+        }
+        thread_a.Add("1 Banana".Log);
+        thread_a.Add("2 Hello".Log);
+        thread_a.Add("3 PP".Log);
+        thread_a.Add("4 Fart".Log);
+        thread_a.Add("5 Ballz".Log);
+        thread_a.Add("6 Smeg".Log);
+        thread_a.Add("7 Npoopo".Log);
+        thread_a.Add("8 Garzunzulbub".Log);
+    }
+    public static void Test_createthread()
+    {
+        thread_a = new OXThreadPoolA(3);
+    }
     public static void Test_gevent()
     {
         GlobalEvent.Invoke("TestEvent");
@@ -214,6 +236,15 @@ public class ConsoleCommands : MonoBehaviour
             "Roman of 3999: " + Converter.NumToRead("3999", 3)
 
         ), "#bdbdbdff");
+    }
+    public static void LogToFile()
+    {
+        var f = FileSystem.Instance;
+        f.CreateFolder($"{f.GameDirectory}\\Logs");
+        DateTime currentDateTime = DateTime.Now;
+        var x = $"{f.GameDirectory}\\Logs\\{currentDateTime.ToString("MM-dd-yyyy_HH-mm-ss")}.txt";
+        f.WriteFile(x, ConsoleLol.Instance.BackLog.Replace("<br>","\n"), true);
+        Console.Log("Saved console to: " + x);
     }
     public static void Test_refs()
     {

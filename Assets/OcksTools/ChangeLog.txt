@@ -1,6 +1,8 @@
 
 ------------
    v1.1.3
+- OcksTools no longer uses Assembly Definitions
+  - They were too annoying
 - New Object Recorder System
   - Lets you record and playback the history of a gameobject's transform/rigidbody
 - New Render tool
@@ -9,12 +11,21 @@
   - New 3D Movement Controller
 - New SingleInstance<> class which unifies all singleton behavior into one place
   - Entire codebase has been updated to use this
+- New Reactable<> class which hopes to unify all "change/acknowledge" style variables
+  - Not implemented into codebase yet, but useful to have
 - Dialog Improvements 
   - New Macros, formatted like this: @<VariableName>
-    - Works like a pre-processed variable, replacing its value prior to any other syntax opterations.
+    - Works like a pre-processed variable, replacing its value prior to any other syntax operations.
       - Basically you can now add dymanically sized dialogs, attributes, or anything else
   - Fixed some data handling and regexing
   - Renamed dialogmode to dialog_active
+- Console Improvements
+  - New "logtofile" command lets you save the existing console history into a txt file, stored
+  - Fixed bug which allowed you to type richtext into the console window through the input
+  - Console.Log now properly supports multithreading
+- Multiplayer Improvements!
+  - Went through and updated everything to work on Unity 6.2 fully 
+    - Now without relying on github projects or deprecated packages
 - GIS Improvements
   - Items now have an interface based component system (W.I.P)
 - Tree Improvements
@@ -28,7 +39,7 @@
   - A base system to deal with decks of cards, shuffling, discarding, etc
 - Misc Changes
   - New TimeToRead() format to display time in the format: 5432.1h
-  - Fixed bug in console which allowed you to type richtext into the console window through the input
+  - Fixed bug where threads continued to run after runtime closed. (Updating OXTLS to Unity 6.2 partly broke existing multithreading)
   - SpawnData now lets you assign parents using a gameobject directly (previously only accepted transforms)
   - Some new conversion methods
   - Some more reorganizing has occured, made extensions a lot clearer

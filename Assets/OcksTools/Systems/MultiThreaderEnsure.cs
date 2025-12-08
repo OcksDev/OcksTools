@@ -19,6 +19,7 @@ public class MultiThreaderEnsure : SingleInstance<MultiThreaderEnsure>
     //Cons: Threads can sometimes overreach and try to run methods that other threads already are pulling, which could slow down performance slightly. (it shouldn't effect functionality tho)
 
     // OXThreadPoolC = Only takes in on method, every thread just executes that method forever.
+        //   Dont forget to add your own Thread.Sleep into your given executor, type C can and will use maximum power if not otherwise told
 
     //Pros: Threads used as efficiently as you let them, allows for greater control of program flow
     //Cons: Can only run one input method instead of being able to just handle arbitarary inputs at arbitrary times
@@ -32,7 +33,13 @@ public class MultiThreaderEnsure : SingleInstance<MultiThreaderEnsure>
             StartCoroutine(FixSlackers(Nerds[i]));
         }
     }
-
+    //why do threads not get properly stopped when unity runtime stops in the editor?
+    //this is stupid
+    public static bool FUCKING_DIE = false;
+    private void OnApplicationQuit()
+    {
+        FUCKING_DIE = true;
+    }
     // in the case some that threads dont get created properly
     // for some reason Unity makes thread creation unreliable, at least on startup, so this fixes it.
     public IEnumerator FixSlackers(IOXThreadPool pool)
@@ -99,6 +106,7 @@ public class OXThreadPoolA : IOXThreadPool
             ActionPool.Add(i, new Queue<System.Action>());
         while (true)
         {
+            if (MultiThreaderEnsure.FUCKING_DIE) return;
             if (ActionPool[i].Count > 0)
             {
                 ActionPool[i].Dequeue()();
@@ -163,6 +171,7 @@ public class OXThreadPoolB : IOXThreadPool
         bool smegs = true;
         while (true)
         {
+            if (MultiThreaderEnsure.FUCKING_DIE) return;
             if (ActionPool.Count > 0)
             {
                 smegs = false;
@@ -256,6 +265,7 @@ public class OXThreadPoolC : IOXThreadPool
         if (i > ThreadCount) return;
         while (true)
         {
+            if (MultiThreaderEnsure.FUCKING_DIE) return;
             Method(i);
         }
     }

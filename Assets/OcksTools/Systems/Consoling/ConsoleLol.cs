@@ -9,6 +9,7 @@ using UnityEngine.EventSystems;
 using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 public class ConsoleLol : SingleInstance<ConsoleLol>
 {
@@ -46,10 +47,11 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
     public static Dictionary<string,OXCommand> CommandDict = new Dictionary<string,OXCommand>();
     public static IOrderedEnumerable<KeyValuePair<string, OXCommand>> CommandDict2;
 
-
+    public static Thread _mainthread;
 
     public override void Awake2()
     {
+        _mainthread = Thread.CurrentThread;
         prev_commands.Clear();
         BackLog = "";
         ConsoleObjectRef = ConsoleObject.GetComponent<ConsolRefs>();
@@ -74,19 +76,28 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
             l.AddFile(LanguageFileIndex);
         }
 
-        if (Console.texts.Count > 0)
-        {
-            for(int i = 0; i < Console.texts.Count; i++)
-            {
-                ConsoleLog(Console.texts[i], Console.hexes[i]);
-            }
-            Console.texts.Clear();
-            Console.hexes.Clear();
-        }
+        RunThroughConsoleBacklog();
+
         StartCoroutine(AssembleHelpMenu());
 
         LoadConsole("");
 
+    }
+    private void FixedUpdate()
+    {
+        RunThroughConsoleBacklog();
+    }
+    private void RunThroughConsoleBacklog()
+    {
+        if (Console.console_backlog.Count > 0)
+        {
+            for (int i = 0; i < Console.console_backlog.Count; i++)
+            {
+                Debug.Log($"{i}: {Console.console_backlog.Count}");
+                ConsoleLog(Console.console_backlog[i].a, Console.console_backlog[i].b);
+            }
+            Console.console_backlog.Clear();
+        }
     }
 
     private void OnApplicationQuit()
@@ -197,10 +208,13 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
                     .Append(new OXCommand(OXCommand.ExpectedInputType.String).Action(ConsoleCommands.Test_comp))))
             .Append(new OXCommand("roman").Action(ConsoleCommands.Test_roman))
             .Append(new OXCommand("refs").Action(ConsoleCommands.Test_refs))
+            .Append(new OXCommand("threadedlogs").Action(ConsoleCommands.Test_threadedlogs))
             .Append(new OXCommand("destroy").Action(ConsoleCommands.Test_destroy))
             .Append(new OXCommand("read")
                 .Append(new OXCommand(OXCommand.ExpectedInputType.String).Action(ConsoleCommands.Test_read)))
             .Append(new OXCommand("events").Action(ConsoleCommands.Test_events)));
+
+
         Add(new OXCommand("settimescale", "Console", "Message_HelpTime")
             .Append(new OXCommand(OXCommand.ExpectedInputType.Double).Action(ConsoleCommands.settimescale)));
         Add(new OXCommand("joe").Action(ConsoleCommands.joe)
@@ -218,6 +232,8 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
             .Append(new OXCommand("listall").Action(ConsoleCommands.Data_listall))
             );
         Add(new OXCommand("howmanywouldyoutake").Action(() => { Console.Log("49 Bullets!"); }));
+        Add(new OXCommand("logtofile", "Console", "Message_HelpLogToFile")
+            .Action(ConsoleCommands.LogToFile));
     }
     private static OXCommandData raa;
 
@@ -512,23 +528,22 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
 
 public static class Console
 {
-    public static List<string> texts = new List<string>();
-    public static List<string> hexes = new List<string>();
+    public static List<MultiRef<string,string>> console_backlog = new List<MultiRef<string, string>>();
     // a shortcut/shorthand for the console, makes writing to the console faster
-    public static void Log(this object text, string hex = "\"white\"")
+    public static void Log(this object text, string hex = "#bdbdbdff")
     {
         Log(text.ToString(), hex);
     }
-    public static void Log(string text, string hex = "\"white\"")
+    public static void Log(string text, string hex = "#bdbdbdff")
     {
-        if(ConsoleLol.Instance != null)
+        // hex can also = "\"white\""
+        if(ConsoleLol.Instance != null && Thread.CurrentThread == ConsoleLol._mainthread)
         {
             ConsoleLol.Instance.ConsoleLog(text, hex);
         }
         else
         {
-            texts.Add(text);
-            hexes.Add(hex);
+            console_backlog.Add(new MultiRef<string, string>(text,hex));
         }
     }
     public static void Log(this object text)
