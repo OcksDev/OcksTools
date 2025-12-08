@@ -50,7 +50,7 @@
   - SpawnData now lets you assign parents using a gameobject directly (previously only accepted transforms)
   - Some new conversion methods
   - Some more reorganizing has occured, made extensions a lot clearer
-  - Some new testing stuff exist
+  - Some new testing stuff exists
 ------------
 
 ------------
