@@ -424,7 +424,7 @@ public class ConsoleCommands : MonoBehaviour
         int cmds_per_page = 10;
 
         int page = 0;
-        int maxpg = ConsoleLol.CommandDict.Count / cmds_per_page;
+        int maxpg = (ConsoleLol.CommandDict.Count-1) / cmds_per_page;
         try
         {
             page = int.Parse(r.com[1])-1;

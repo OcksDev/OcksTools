@@ -15,20 +15,24 @@
   - Not implemented into codebase yet, but useful to have
 - New CardCore in Misc
   - A base system to deal with decks of cards, shuffling, discarding, etc
-- Dialog Improvements 
+- Dialog Improvements !
   - New Macros, formatted like this: @<VariableName>
     - Works like a pre-processed variable, replacing its value prior to any other syntax operations.
       - Basically you can now add dymanically sized dialogs, attributes, or anything else
   - Fixed some data handling and regexing
   - Renamed dialogmode to dialog_active
-- Console Improvements
+- Console Improvements!
   - New "logtofile" command lets you save the existing console history into a txt file
-  - Fixed bug which allowed you to type richtext into the console window through the input
   - Console.Log now properly supports multithreading
+  - New Append() method in ConsoleLol allows for easier extending of console commands
+  - QOL: Autofill automatically adds a space after filling in text
+  - Fixed bug where you could show an empty help page when the amount of existing commands was a multiple of 10
+  - Fixed bug which allowed you to type richtext into the console window through the input
   - Finally removed ConsoleLol.ConsoleLog, full codebase uses Console.Log now.
 - Multiplayer Improvements!
   - Went through and updated everything to work on Unity 6.2 fully 
     - Now without relying on github projects or deprecated packages
+  - I did some big changes ServerGamer to allow you to switch between two modes of operation: PeerToHostToPeer, and PeerToPeer
 - GIS Improvements
   - Items now have an interface based component system (W.I.P)
 - Tree Improvements

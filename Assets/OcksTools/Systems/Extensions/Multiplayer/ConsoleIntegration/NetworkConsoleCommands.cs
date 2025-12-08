@@ -18,7 +18,8 @@ public class NetworkConsoleCommands : MonoBehaviour
     {
         ConsoleLol.Instance.Add(new OXCommand("host").Action(host));
         ConsoleLol.Instance.Add(new OXCommand("join").Append(new OXCommand(OXCommand.ExpectedInputType.String).Action(join)));
-        ConsoleLol.Instance.Add(new OXCommand("disconnect").Action(host));
+        ConsoleLol.Instance.Add(new OXCommand("disconnect").Action(disconnect));
+        ConsoleLol.Instance.Append("test", new OXCommand("gooner").Action(host));
     }
 
 

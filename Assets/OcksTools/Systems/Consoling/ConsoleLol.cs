@@ -112,6 +112,11 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
         GlobalEvent.Append("Console", SelfCommands);
         GlobalEvent.Invoke("Console");
 
+        yield return new WaitForFixedUpdate();
+        foreach(var a in pathcomps)
+        {
+            RealAppend(a.a, a.b);
+        }
         CommandDict2 = (from entry in CommandDict orderby entry.Key ascending select entry);
     }
 
@@ -382,7 +387,7 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
             var e = ConsoleObjectRef.input.text;
             var a = Converter.StringToList(e, " ");
             var dd = a[a.Count - 1].Length;
-            e += bestmatch.Value.Substring(dd);
+            e += bestmatch.Value.Substring(dd) + " ";
             ConsoleObjectRef.input.text = e;
             NewVal(e);
 
@@ -509,6 +514,30 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
     public void Add(OXCommand x)
     {
         CommandDict.Add(x.Value, x);
+    }
+    public List<MultiRef<string,OXCommand>> pathcomps = new List<MultiRef<string, OXCommand>>();
+    public void Append(string path, OXCommand x)
+    {
+        pathcomps.Add(new MultiRef<string,OXCommand>(path, x));
+    }
+    private void RealAppend(string path, OXCommand x)
+    {
+        // path formatted like "help listall", like how you would type in the console normally
+        var a = path.StringToList(" ").Clean();
+        OXCommand latest = CommandDict[a[0]];
+        a.RemoveAt(0);
+        foreach (var b in a)
+        {
+            foreach (var c in latest.SubCommands)
+            {
+                if (c.Value == b)
+                {
+                    latest = c;
+                    break;
+                }
+            }
+        }
+        latest.Append(x);
     }
 
     public void SaveConsole(string dict)

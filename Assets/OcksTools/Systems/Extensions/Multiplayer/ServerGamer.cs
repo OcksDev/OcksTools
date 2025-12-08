@@ -6,10 +6,17 @@ using UnityEngine;
 public class ServerGamer : NetworkBehaviour
 {
     public string ClientID;
-
+    public Style BaseStyle = Style.PeerToHostToPeer;
     // public NetworkVariable<int> PlayerNum = new NetworkVariable<int>(100, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     // FixedString128Bytes
     public static ServerGamer Instance;
+    public enum Style
+    {
+        DifferToBase,
+        PeerToHostToPeer,
+        PeerToPeer,
+    }
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -21,35 +28,84 @@ public class ServerGamer : NetworkBehaviour
 
     public void handjoib(string spawndata)
     {
-        SpawnObjectServerRpc(spawndata);
+        SpawnObjectPingPongServerRpc(spawndata);
     }
 
+    public void SpawnObjectCall(string spawndata, Style style = Style.PeerToHostToPeer)
+    {
+        if (style == Style.DifferToBase) style = BaseStyle;
+        switch (style)
+        {
+            case Style.PeerToHostToPeer:
+                SpawnObjectPingPongServerRpc(spawndata);
+                break;
+            case Style.PeerToPeer:
+                SpawnObjectPTPServerRpc(spawndata);
+                break;
+            case Style.DifferToBase: Debug.LogError("Base style can not be Differ"); break;
+        }
+    }
+
+
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-    public void SpawnObjectServerRpc(string spawndata)
+    public void SpawnObjectPingPongServerRpc(string spawndata)
     {
         SpawnObjectClientRpc(ClientID, spawndata);
+    }
+
+    [Rpc(SendTo.NotMe, InvokePermission = RpcInvokePermission.Everyone)]
+    public void SpawnObjectPTPServerRpc(string spawndata)
+    {
+        SpawnObjectCode(spawndata);
     }
 
     [ClientRpc]
     public void SpawnObjectClientRpc(string id, string spawndata)
     {
         if (id == ClientID) return;
-
+        SpawnObjectCode(spawndata);
+    }
+    public void SpawnObjectCode(string spawndata)
+    {
         SpawnSystem.Spawn(new SpawnData(spawndata, 0));
     }
 
 
 
+    public void MessageCall(string id, string type, string data, Style style = Style.PeerToHostToPeer)
+    {
+        if (style == Style.DifferToBase) style = BaseStyle;
+        switch (style)
+        {
+            case Style.PeerToHostToPeer:
+                MessagePingPongServerRpc(id,type,data);
+                break;
+            case Style.PeerToPeer:
+                MessagePTPServerRpc(id, type, data);
+                break;
+            case Style.DifferToBase: Debug.LogError("Base style can not be Differ"); break;
+        }
+    }
+
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-    public void MessageServerRpc(string id, string type, string data)
+    public void MessagePingPongServerRpc(string id, string type, string data)
     {
         RecieveMessageClientRpc(id, type, data);
+    }
+    [Rpc(SendTo.NotMe, InvokePermission = RpcInvokePermission.Everyone)]
+    public void MessagePTPServerRpc(string id, string type, string data)
+    {
+        RecieveMessage(id, type, data);
     }
     //chat related method
     [ClientRpc]
     public void RecieveMessageClientRpc(string id, string type, string data)
     {
         if (id == ClientID) return;
+        RecieveMessage(id, type, data);
+    }
+    public void RecieveMessage(string id, string type, string data)
+    {
         switch (type)
         {
             default:

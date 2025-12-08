@@ -431,6 +431,18 @@ public static class OXFunctions
         }
         return true;
     }
+    public static List<string> Clean(this List<string> ti)
+    {
+        for (int t = 0; t < ti.Count; t++)
+        {
+            if (ti[t].Length == 0 || Regex.IsMatch(ti[t], "^[\n \r\t]+$"))
+            {
+                ti.RemoveAt(t);
+                t--;
+            }
+        }
+        return ti;
+    }
     public static bool ListMatchesListOrderless<T>(this List<T> ti, List<T> tee)
     {
         if (ti.Count != tee.Count) return false;
