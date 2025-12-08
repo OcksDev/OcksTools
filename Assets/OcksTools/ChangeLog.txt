@@ -20,7 +20,7 @@
   - Fixed some data handling and regexing
   - Renamed dialogmode to dialog_active
 - Console Improvements
-  - New "logtofile" command lets you save the existing console history into a txt file, stored
+  - New "logtofile" command lets you save the existing console history into a txt file
   - Fixed bug which allowed you to type richtext into the console window through the input
   - Console.Log now properly supports multithreading
 - Multiplayer Improvements!
