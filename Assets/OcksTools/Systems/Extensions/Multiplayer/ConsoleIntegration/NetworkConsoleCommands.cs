@@ -19,7 +19,7 @@ public class NetworkConsoleCommands : MonoBehaviour
         ConsoleLol.Instance.Add(new OXCommand("host").Action(host));
         ConsoleLol.Instance.Add(new OXCommand("join").Append(new OXCommand(OXCommand.ExpectedInputType.String).Action(join)));
         ConsoleLol.Instance.Add(new OXCommand("disconnect").Action(disconnect));
-        ConsoleLol.Instance.Append("test", new OXCommand("gooner").Action(host));
+        ConsoleLol.Instance.Append("test", new OXCommand("objectspawn").Action(objectspawn));
     }
 
 
@@ -28,6 +28,12 @@ public class NetworkConsoleCommands : MonoBehaviour
     public static void host()
     {
         RelayMoment.Instance.GetComponent<PickThingymabob>().MakeGame();
+    }
+    public static void objectspawn()
+    {
+        SpawnSystem.Spawn(new SpawnData("Triangle")
+            .Position(new Vector3(Random.Range(-3f, 3f), Random.Range(-3f, 3f), 0))
+            .MultiplayerShare());
     }
     public static void join(OXCommandData r)
     {

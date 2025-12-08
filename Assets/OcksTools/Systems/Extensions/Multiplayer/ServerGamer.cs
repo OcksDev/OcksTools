@@ -28,7 +28,7 @@ public class ServerGamer : NetworkBehaviour
 
     public void handjoib(string spawndata)
     {
-        SpawnObjectPingPongServerRpc(spawndata);
+        SpawnObjectCall(spawndata, Style.PeerToPeer);
     }
 
     public void SpawnObjectCall(string spawndata, Style style = Style.PeerToHostToPeer)
@@ -37,10 +37,10 @@ public class ServerGamer : NetworkBehaviour
         switch (style)
         {
             case Style.PeerToHostToPeer:
-                SpawnObjectPingPongServerRpc(spawndata);
+                _SpawnObjectPingPongServerRpc(ClientID, spawndata);
                 break;
             case Style.PeerToPeer:
-                SpawnObjectPTPServerRpc(spawndata);
+                _SpawnObjectPTPServerRpc(spawndata);
                 break;
             case Style.DifferToBase: Debug.LogError("Base style can not be Differ"); break;
         }
@@ -48,24 +48,24 @@ public class ServerGamer : NetworkBehaviour
 
 
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-    public void SpawnObjectPingPongServerRpc(string spawndata)
+    public void _SpawnObjectPingPongServerRpc(string id, string spawndata)
     {
-        SpawnObjectClientRpc(ClientID, spawndata);
+        _SpawnObjectClientRpc(id, spawndata);
     }
 
     [Rpc(SendTo.NotMe, InvokePermission = RpcInvokePermission.Everyone)]
-    public void SpawnObjectPTPServerRpc(string spawndata)
+    public void _SpawnObjectPTPServerRpc(string spawndata)
     {
-        SpawnObjectCode(spawndata);
+        _SpawnObjectCode(spawndata);
     }
 
     [ClientRpc]
-    public void SpawnObjectClientRpc(string id, string spawndata)
+    public void _SpawnObjectClientRpc(string id, string spawndata)
     {
         if (id == ClientID) return;
-        SpawnObjectCode(spawndata);
+        _SpawnObjectCode(spawndata);
     }
-    public void SpawnObjectCode(string spawndata)
+    public void _SpawnObjectCode(string spawndata)
     {
         SpawnSystem.Spawn(new SpawnData(spawndata, 0));
     }
@@ -78,33 +78,33 @@ public class ServerGamer : NetworkBehaviour
         switch (style)
         {
             case Style.PeerToHostToPeer:
-                MessagePingPongServerRpc(id,type,data);
+                _MessagePingPongServerRpc(id,type,data);
                 break;
             case Style.PeerToPeer:
-                MessagePTPServerRpc(id, type, data);
+                _MessagePTPServerRpc(id, type, data);
                 break;
             case Style.DifferToBase: Debug.LogError("Base style can not be Differ"); break;
         }
     }
 
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-    public void MessagePingPongServerRpc(string id, string type, string data)
+    public void _MessagePingPongServerRpc(string id, string type, string data)
     {
-        RecieveMessageClientRpc(id, type, data);
+        _RecieveMessageClientRpc(id, type, data);
     }
     [Rpc(SendTo.NotMe, InvokePermission = RpcInvokePermission.Everyone)]
-    public void MessagePTPServerRpc(string id, string type, string data)
+    public void _MessagePTPServerRpc(string id, string type, string data)
     {
-        RecieveMessage(id, type, data);
+        _RecieveMessage(id, type, data);
     }
     //chat related method
     [ClientRpc]
-    public void RecieveMessageClientRpc(string id, string type, string data)
+    public void _RecieveMessageClientRpc(string id, string type, string data)
     {
         if (id == ClientID) return;
-        RecieveMessage(id, type, data);
+        _RecieveMessage(id, type, data);
     }
-    public void RecieveMessage(string id, string type, string data)
+    public void _RecieveMessage(string id, string type, string data)
     {
         switch (type)
         {

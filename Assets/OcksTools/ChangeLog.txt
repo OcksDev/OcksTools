@@ -33,6 +33,8 @@
   - Went through and updated everything to work on Unity 6.2 fully 
     - Now without relying on github projects or deprecated packages
   - I did some big changes ServerGamer to allow you to switch between two modes of operation: PeerToHostToPeer, and PeerToPeer
+    - Not everything has been ported over yet
+  - Fixed spawning objects with the Spawn System across multiplayer, hosts could spawn/share things properly but clients couldn't.
 - GIS Improvements
   - Items now have an interface based component system (W.I.P)
 - Tree Improvements
@@ -48,6 +50,7 @@
   - SpawnData now lets you assign parents using a gameobject directly (previously only accepted transforms)
   - Some new conversion methods
   - Some more reorganizing has occured, made extensions a lot clearer
+  - Some new testing stuff exist
 ------------
 
 ------------
