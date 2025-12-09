@@ -82,6 +82,8 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
 
         LoadConsole("");
 
+        OXFunctions.GetCleanStackTrace().Log();
+
     }
     private void FixedUpdate()
     {
@@ -208,6 +210,7 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
             .Append(new OXCommand("sete").Action(ConsoleCommands.Test_sete))
             .Append(new OXCommand("gevent").Action(ConsoleCommands.Test_gevent))
             .Append(new OXCommand("remap").Action(ConsoleCommands.Test_remap))
+            .Append(new OXCommand("cleanstack").Action(ConsoleCommands.Test_cleanstack))
             .Append(new OXCommand("comp")
                 .Append(new OXCommand(OXCommand.ExpectedInputType.String)
                     .Append(new OXCommand(OXCommand.ExpectedInputType.String).Action(ConsoleCommands.Test_comp))))

@@ -45,6 +45,8 @@
     - for example, taking 0.2 on the range 0-2 and mapping it to a range of 0-10, resulting in 1
   - New AddOrUpdate() extension method for dictionaries, refactored a lot of code in OcksTools to use this
   - New Clean() extension method for string lists, removes empty entries, or things that only contain whitespace
+  - New ShuffleList() extension method for lists, shuffles the list in place
+  - New GetCleanStackTrace() method, returns a cleaned up version of the stack trace without all the internal unity calls and other extra stuff
 - Misc Changes
   - OXEvent now has an additional method InvokeWithHitCheck() which can be used to unify "call all methods then check for success"
   - New TimeToRead() format to display time in the format: 5432.1h

@@ -470,4 +470,41 @@ public static class OXFunctions
     {
         return incoming - 2 * Vector3.Dot(incoming, normal) * normal;
     }
+
+
+    public static string GetCleanStackTrace()
+    {
+        string stack = Environment.StackTrace;
+        stack = Regex.Replace(stack, @".*GetCleanStackTrace \(\).*", "");
+        stack = Regex.Replace(stack, @".*get_StackTrace \(\).*", "");
+        stack = Regex.Replace(stack, @" in .*?.cs", "");
+        stack = Regex.Replace(stack, @" in <.*>", "");
+        stack = Regex.Replace(stack, @" \[0x.*\]", "");
+        stack = Regex.Replace(stack, @"\+<>.* \(", "-[LAMBDA] (");
+        stack = Regex.Replace(stack, @"[\n\r]", "");
+        stack = Regex.Replace(stack, @" at UnityEngine.*", "");
+        stack = Regex.Replace(stack, @"^[ \n\r\t]+", "");
+        stack = Regex.Replace(stack, @"  at ", "\n");
+        stack = Regex.Replace(stack, @"^at ", "");
+        stack = Regex.Replace(stack, @"`.*?\]", "");
+        stack = Regex.Replace(stack, @"System\.", "");
+        stack = Regex.Replace(stack, @"UnityEngine\.", "");
+        stack = Regex.Replace(stack, @"\.ctor", "[CONSTRUCTOR]");
+        stack = Regex.Replace(stack, @":", " : ");
+        return stack;
+    }
+
+    public static List<T> ShuffleList<T>(this List<T> ti)
+    {
+        System.Random rng = new System.Random();
+        int n = ti.Count;
+        while (n > 1)
+        {
+            int k = rng.Next(n--);
+            T temp = ti[n];
+            ti[n] = ti[k];
+            ti[k] = temp;
+        }
+        return ti;
+    }
 }

@@ -38,6 +38,14 @@ public class ConsoleCommands : MonoBehaviour
         GlobalEvent.Set(out cooldata, "new data", "test event");
         Console.Log(cooldata);
     }
+    public static void Test_cleanstack()
+    {
+        var a = new TestClass2(OXFunctions.GetCleanStackTrace, null, Vector3.one, null);
+        "--------------".Log();
+        a.run(OXFunctions.GetCleanStackTrace);
+        "----".Log();
+        new List<string>() { "1", "2", "3", "4", "5" }.ShuffleList().ListToString().Log();
+    }
     private static OXThreadPoolA thread_a;
     public static void Test_threadedlogs()
     {
@@ -562,4 +570,20 @@ public class TestClass
         return a;
     }
 
+}
+
+
+public class TestClass2
+{
+    public TestClass2()
+    {
+    }
+    public TestClass2(Func<string> inp, Action<int,int> g, Vector3 e, OXEvent<int,int> gg)
+    {
+        inp().Log();
+    }
+    public void run(Func<string> inp)
+    {
+        inp().Log();
+    }
 }

@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Xml.Linq;
 using Unity.Netcode;
-using UnityEditor.VersionControl;
 using UnityEngine;
 
 public class ServerGamer : NetworkBehaviour
