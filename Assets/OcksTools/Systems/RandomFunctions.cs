@@ -472,15 +472,35 @@ public static class OXFunctions
     }
 
 
+    public static string GetCleanStackTraceRichtextified()
+    {
+        var a = GetCleanStackTrace().StringToList("\n");
+        List<string> outp = new List<string>();
+        foreach(var s in a)
+        {
+            // ConsoleLol.RecursiveCheck(OXCommand cum, Int32 lvl) : 428
+            string nerd = s.Contains(".")?$"<color=#34c25a>{s.Substring(0,s.IndexOf("."))}</color>." :s;
+            string remain = Regex.Replace(s, @"^.*?\.","");
+            remain = Regex.Replace(remain, @"\(", $"<color=#298ed6>(<color=#6b8fdb>");
+            remain = Regex.Replace(remain, @",", $"</color>,<color=#6b8fdb>");
+            remain = Regex.Replace(remain, @"\)", $"</color>)</color>");
+            remain = Regex.Replace(remain, @"\[", $"<color=#d68829>[");
+            remain = Regex.Replace(remain, @"\]", $"]</color>");
+            remain = Regex.Replace(remain, @" : ", $"<color=#d4d948> : ");
+            outp.Add(nerd + remain + "</color>");
+        }
+        return outp.ListToString("\n");
+    }
+
     public static string GetCleanStackTrace()
     {
         string stack = Environment.StackTrace;
-        stack = Regex.Replace(stack, @".*GetCleanStackTrace \(\).*", "");
+        stack = Regex.Replace(stack, @".*GetCleanStackTrace.*", "");
         stack = Regex.Replace(stack, @".*get_StackTrace \(\).*", "");
         stack = Regex.Replace(stack, @" in .*?.cs", "");
         stack = Regex.Replace(stack, @" in <.*>", "");
         stack = Regex.Replace(stack, @" \[0x.*\]", "");
-        stack = Regex.Replace(stack, @"\+<>.* \(", "-[LAMBDA] (");
+        stack = Regex.Replace(stack, @"\+<>.* \(", ".[LAMBDA] (");
         stack = Regex.Replace(stack, @"[\n\r]", "");
         stack = Regex.Replace(stack, @" at UnityEngine.*", "");
         stack = Regex.Replace(stack, @"^[ \n\r\t]+", "");
@@ -491,6 +511,9 @@ public static class OXFunctions
         stack = Regex.Replace(stack, @"UnityEngine\.", "");
         stack = Regex.Replace(stack, @"\.ctor", "[CONSTRUCTOR]");
         stack = Regex.Replace(stack, @":", " : ");
+        stack = Regex.Replace(stack, @" \(", "(");
+        stack = Regex.Replace(stack, @" .*?,", ",");
+        stack = Regex.Replace(stack, @"(?<!,) .*?\)", ")");
         return stack;
     }
 

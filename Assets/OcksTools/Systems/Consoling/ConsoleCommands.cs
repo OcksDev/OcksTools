@@ -44,7 +44,7 @@ public class ConsoleCommands : MonoBehaviour
         "--------------".Log();
         a.run(OXFunctions.GetCleanStackTrace);
         "----".Log();
-        new List<string>() { "1", "2", "3", "4", "5" }.ShuffleList().ListToString().Log();
+        a.run(OXFunctions.GetCleanStackTraceRichtextified);
     }
     private static OXThreadPoolA thread_a;
     public static void Test_threadedlogs()
