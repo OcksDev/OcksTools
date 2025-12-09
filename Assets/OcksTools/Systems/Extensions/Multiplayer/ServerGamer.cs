@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml.Linq;
 using Unity.Netcode;
+using UnityEditor.VersionControl;
 using UnityEngine;
 
 public class ServerGamer : NetworkBehaviour
@@ -114,19 +116,43 @@ public class ServerGamer : NetworkBehaviour
     }
 
 
+    public void SendChatMessageCall(string id, string message, string hex, Style style = Style.DifferToBase)
+    {
+        if (style == Style.DifferToBase) style = BaseStyle;
+        switch (style)
+        {
+            case Style.PeerToHostToPeer:
+                _SendChatMessagePingPongServerRpc(id, message, hex);
+                break;
+            case Style.PeerToPeer:
+                _SendChatMessagePTPServerRpc(message, hex);
+                break;
+            case Style.DifferToBase: Debug.LogError("Base style can not be Differ"); break;
+        }
+    }
     //chat related method
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-    public void SendChatMessageServerRpc(string id, string message, string hex)
+    public void _SendChatMessagePingPongServerRpc(string id, string message, string hex)
     {
-        RecieveChatMessageClientRpc(id, message, hex);
+        _RecieveChatMessageClientRpc(id, message, hex);
+    }
+    //chat related method
+    [Rpc(SendTo.NotMe, InvokePermission = RpcInvokePermission.Everyone)]
+    public void _SendChatMessagePTPServerRpc(string message, string hex)
+    {
+        _ChatMessageCode(message, hex);
     }
 
     //chat related method
     [ClientRpc]
-    public void RecieveChatMessageClientRpc(string id, string message, string hex)
+    public void _RecieveChatMessageClientRpc(string id, string message, string hex)
     {
         if (id == ClientID) return;
 
+        _ChatMessageCode(message, hex);
+    }
+    public void _ChatMessageCode(string message, string hex)
+    {
         ChatLol.Instance.WriteChat(message, hex);
     }
 
@@ -134,10 +160,20 @@ public class ServerGamer : NetworkBehaviour
 
 
     //OcksNetworkVars
-    public void SendOcksVar(string poopid, string name, string data)
+    public void SendOcksVar(string poopid, string name, string data, Style style = Style.DifferToBase)
     {
         //Console.Log($"Sending {ClientID}, {name}, {data}");
-        OcksVarServerRpc(ClientID, poopid, name, data);
+        if (style == Style.DifferToBase) style = BaseStyle;
+        switch (style)
+        {
+            case Style.PeerToHostToPeer:
+                OcksVarPingPongServerRpc(ClientID, poopid, name, data);
+                break;
+            case Style.PeerToPeer:
+                OcksVarPTPServerRpc(poopid, name, data);
+                break;
+            case Style.DifferToBase: Debug.LogError("Base style can not be Differ"); break;
+        }
     }
     
     public void RequestOcksVar(string poopid, string name)
@@ -148,10 +184,17 @@ public class ServerGamer : NetworkBehaviour
 
 
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-    public void OcksVarServerRpc(string id, string poopid, string name, string data)
+    public void OcksVarPingPongServerRpc(string id, string poopid, string name, string data)
     {
         //Console.Log($"(server) incoming request for set data");
         RecieveOcksVarClientRpc(id, poopid, name, data);
+    }
+
+    [Rpc(SendTo.NotMe, InvokePermission = RpcInvokePermission.Everyone)]
+    public void OcksVarPTPServerRpc(string poopid, string name, string data)
+    {
+        //Console.Log($"(server) incoming request for set data");
+        RecieveOcksVarCode(poopid, name, data);
     }
 
 
@@ -169,17 +212,23 @@ public class ServerGamer : NetworkBehaviour
         //Console.Log($"Recieved {id}, {Name}, {data}");
         if (id == ClientID) return;
         if (id == "Host" && NetworkManager.Singleton.IsHost) return;
+        RecieveOcksVarCode(NetID, Name, data);
+    }
+
+    public void RecieveOcksVarCode(string NetID, string Name, string data)
+    {
         CreateEmpty(NetID, Name);
         //Console.Log($"Changed {NetID} to {data}");
         var a = ONVManager.OcksVars[NetID][Name];
         a.Data = data;
         PassAlongUpdate(a);
     }
+
     public void PassAlongUpdate(OcksNetworkVarData a)
     {
         foreach (var b in a.OcksNetworkVars)
         {
-            if (b != null) b.DataWasChangedByServer();
+            if (b != null) b._DataWasChangedByServer();
         }
     }
     public void CreateEmpty(string NetID, string Name)

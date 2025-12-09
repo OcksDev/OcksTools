@@ -14,8 +14,9 @@ public class OcksNetworkVar
     public bool HasRecievedData = false;
     public NetworkObject NetOb;
     string initdat = "";
-    public event RandomFunctions.JustFuckingRunTheMethods OnInitialDataLoad;
-    public event RandomFunctions.JustFuckingRunTheMethods OnDataChanged;
+    public OXEvent OnInitialDataLoad = new OXEvent();
+    public OXEvent OnDataChanged = new OXEvent();
+    private ServerGamer.Style Style = ServerGamer.Style.DifferToBase;
     public OcksNetworkVar(NetworkObject sexy, string name, string data = "")
     {
         initdat = data;
@@ -40,7 +41,7 @@ public class OcksNetworkVar
             }
         }
     }
-    public void FinishSetup()
+    public void _FinishSetup()
     {
         NetID = NetOb.NetworkObjectId.ToString();
         if (NetOb.IsOwner)
@@ -64,9 +65,9 @@ public class OcksNetworkVar
         }
     }
 
-    public void DataWasChangedByServer()
+    public void _DataWasChangedByServer()
     {
-        Console.Log("Data C");
+        //Console.Log("Data C");
         if (!HasRecievedData)
             OnInitialDataLoad?.Invoke();
         HasRecievedData = true;
@@ -96,4 +97,9 @@ public class OcksNetworkVar
         }
     }
 
+    public OcksNetworkVar SetSharingMethodOverride(ServerGamer.Style style)
+    {
+        Style = style;
+        return this;
+    }
 }

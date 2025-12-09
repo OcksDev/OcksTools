@@ -21,7 +21,7 @@ public class ONVManager : MonoBehaviour
     public IEnumerator Gaming(OcksNetworkVar ONV)
     {
         yield return new WaitUntil(()=>ONV.NetOb.IsSpawned);
-        ONV.FinishSetup();
+        ONV._FinishSetup();
     }
 }
 

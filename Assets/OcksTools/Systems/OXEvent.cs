@@ -103,6 +103,7 @@ public class GlobalMethod<T,T2, T3, T4>
 public class OXEvent
 {
     public Dictionary<string, Action> StoredMethods = new Dictionary<string, Action>();
+    public static bool SuccessfulHit = false;
     public void Append(string name, Action method)
     {
         if (!StoredMethods.ContainsKey(name))
@@ -125,10 +126,11 @@ public class OXEvent
             StoredMethods.Remove(name);
         }
     }
-    public void Invoke()
+    public bool Invoke()
     {
         List<string> killme = new List<string>();
-        foreach(var w in StoredMethods)
+        OXEvent.SuccessfulHit = false;
+        foreach (var w in StoredMethods)
         {
             if(w.Value != null) w.Value();
             else killme.Add(w.Key);
@@ -137,6 +139,7 @@ public class OXEvent
         {
             StoredMethods.Remove(kill);
         }
+        return OXEvent.SuccessfulHit;
     }
 
 }
@@ -166,9 +169,10 @@ public class OXEvent<T>
             StoredMethods.Remove(name);
         }
     }
-    public void Invoke(T a)
+    public bool Invoke(T a)
     {
         List<string> killme = new List<string>();
+        OXEvent.SuccessfulHit = false;
         foreach (var w in StoredMethods)
         {
             if (w.Value != null) w.Value(a);
@@ -178,6 +182,7 @@ public class OXEvent<T>
         {
             StoredMethods.Remove(kill);
         }
+        return OXEvent.SuccessfulHit;
     }
 
 }
@@ -206,9 +211,10 @@ public class OXEvent<T, T2>
             StoredMethods.Remove(name);
         }
     }
-    public void Invoke(T a, T2 b)
+    public bool Invoke(T a, T2 b)
     {
         List<string> killme = new List<string>();
+        OXEvent.SuccessfulHit = false;
         foreach (var w in StoredMethods)
         {
             if (w.Value != null) w.Value(a,b);
@@ -218,6 +224,7 @@ public class OXEvent<T, T2>
         {
             StoredMethods.Remove(kill);
         }
+        return OXEvent.SuccessfulHit;
     }
 
 }
@@ -247,9 +254,10 @@ public class OXEvent<T, T2, T3>
             StoredMethods.Remove(name);
         }
     }
-    public void Invoke(T a, T2 b, T3 c)
+    public bool Invoke(T a, T2 b, T3 c)
     {
         List<string> killme = new List<string>();
+        OXEvent.SuccessfulHit = false;
         foreach (var w in StoredMethods)
         {
             if (w.Value != null) w.Value(a,b,c);
@@ -259,6 +267,7 @@ public class OXEvent<T, T2, T3>
         {
             StoredMethods.Remove(kill);
         }
+        return OXEvent.SuccessfulHit;
     }
 
 }
@@ -288,9 +297,10 @@ public class OXEvent<T, T2, T3, T4>
             StoredMethods.Remove(name);
         }
     }
-    public void Invoke(T a, T2 b, T3 c, T4 d)
+    public bool Invoke(T a, T2 b, T3 c, T4 d)
     {
         List<string> killme = new List<string>();
+        OXEvent.SuccessfulHit = false;
         foreach (var w in StoredMethods)
         {
             if (w.Value != null) w.Value(a,b,c,d);
@@ -300,6 +310,7 @@ public class OXEvent<T, T2, T3, T4>
         {
             StoredMethods.Remove(kill);
         }
+        return OXEvent.SuccessfulHit;
     }
 
 }
@@ -329,9 +340,10 @@ public class OXEvent<T, T2, T3, T4, T5>
             StoredMethods.Remove(name);
         }
     }
-    public void Invoke(T a, T2 b, T3 c, T4 d, T5 e)
+    public bool Invoke(T a, T2 b, T3 c, T4 d, T5 e)
     {
         List<string> killme = new List<string>();
+        OXEvent.SuccessfulHit = false;
         foreach (var w in StoredMethods)
         {
             if (w.Value != null) w.Value(a,b,c,d,e);
@@ -341,6 +353,7 @@ public class OXEvent<T, T2, T3, T4, T5>
         {
             StoredMethods.Remove(kill);
         }
+        return OXEvent.SuccessfulHit;
     }
 
 }
