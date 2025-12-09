@@ -98,7 +98,9 @@ public class GlobalMethod<T,T2, T3, T4>
 }
 
 
-
+/*
+ * WARNING: InvokeWithHitCheck() is NOT thread safe, if using oxevent on other threads: DO NOT USE THIS
+ */
 
 public class OXEvent
 {
@@ -126,24 +128,31 @@ public class OXEvent
             StoredMethods.Remove(name);
         }
     }
-    public bool Invoke()
+    public bool InvokeWithHitCheck()
+    {
+        OXEvent.SuccessfulHit = false;
+        Invoke();
+        return OXEvent.SuccessfulHit;
+    }
+    public void Invoke()
     {
         List<string> killme = new List<string>();
-        OXEvent.SuccessfulHit = false;
         foreach (var w in StoredMethods)
         {
-            if(w.Value != null) w.Value();
+            if (w.Value != null) w.Value();
             else killme.Add(w.Key);
         }
-        foreach(var kill in killme)
+        foreach (var kill in killme)
         {
             StoredMethods.Remove(kill);
         }
-        return OXEvent.SuccessfulHit;
     }
 
 }
 
+/*
+ * WARNING: InvokeWithHitCheck() is NOT thread safe, if using oxevent on other threads: DO NOT USE THIS
+ */
 public class OXEvent<T>
 {
     public Dictionary<string, Action<T>> StoredMethods = new Dictionary<string, Action<T>>();
@@ -169,10 +178,15 @@ public class OXEvent<T>
             StoredMethods.Remove(name);
         }
     }
-    public bool Invoke(T a)
+    public bool InvokeWithHitCheck(T a)
+    {
+        OXEvent.SuccessfulHit = false;
+        Invoke(a);
+        return OXEvent.SuccessfulHit;
+    }
+    public void Invoke(T a)
     {
         List<string> killme = new List<string>();
-        OXEvent.SuccessfulHit = false;
         foreach (var w in StoredMethods)
         {
             if (w.Value != null) w.Value(a);
@@ -182,10 +196,12 @@ public class OXEvent<T>
         {
             StoredMethods.Remove(kill);
         }
-        return OXEvent.SuccessfulHit;
     }
 
 }
+/*
+ * WARNING: InvokeWithHitCheck() is NOT thread safe, if using oxevent on other threads: DO NOT USE THIS
+ */
 public class OXEvent<T, T2>
 {
     public Dictionary<string, Action<T, T2>> StoredMethods = new Dictionary<string, Action<T, T2>>();
@@ -211,10 +227,15 @@ public class OXEvent<T, T2>
             StoredMethods.Remove(name);
         }
     }
-    public bool Invoke(T a, T2 b)
+    public bool InvokeWithHitCheck(T a, T2 b)
+    {
+        OXEvent.SuccessfulHit = false;
+        Invoke(a,b);
+        return OXEvent.SuccessfulHit;
+    }
+    public void Invoke(T a, T2 b)
     {
         List<string> killme = new List<string>();
-        OXEvent.SuccessfulHit = false;
         foreach (var w in StoredMethods)
         {
             if (w.Value != null) w.Value(a,b);
@@ -224,11 +245,13 @@ public class OXEvent<T, T2>
         {
             StoredMethods.Remove(kill);
         }
-        return OXEvent.SuccessfulHit;
     }
 
 }
 
+/*
+ * WARNING: InvokeWithHitCheck() is NOT thread safe, if using oxevent on other threads: DO NOT USE THIS
+ */
 public class OXEvent<T, T2, T3>
 {
     public Dictionary<string, Action<T, T2, T3>> StoredMethods = new Dictionary<string, Action<T, T2, T3>>();
@@ -254,10 +277,15 @@ public class OXEvent<T, T2, T3>
             StoredMethods.Remove(name);
         }
     }
-    public bool Invoke(T a, T2 b, T3 c)
+    public bool InvokeWithHitCheck(T a, T2 b, T3 c)
+    {
+        OXEvent.SuccessfulHit = false;
+        Invoke(a,b,c);
+        return OXEvent.SuccessfulHit;
+    }
+    public void Invoke(T a, T2 b, T3 c)
     {
         List<string> killme = new List<string>();
-        OXEvent.SuccessfulHit = false;
         foreach (var w in StoredMethods)
         {
             if (w.Value != null) w.Value(a,b,c);
@@ -267,11 +295,13 @@ public class OXEvent<T, T2, T3>
         {
             StoredMethods.Remove(kill);
         }
-        return OXEvent.SuccessfulHit;
     }
 
 }
 
+/*
+ * WARNING: InvokeWithHitCheck() is NOT thread safe, if using oxevent on other threads: DO NOT USE THIS
+ */
 public class OXEvent<T, T2, T3, T4>
 {
     public Dictionary<string, Action<T, T2, T3, T4>> StoredMethods = new Dictionary<string, Action<T, T2, T3, T4>>();
@@ -297,10 +327,15 @@ public class OXEvent<T, T2, T3, T4>
             StoredMethods.Remove(name);
         }
     }
-    public bool Invoke(T a, T2 b, T3 c, T4 d)
+    public bool InvokeWithHitCheck(T a, T2 b, T3 c, T4 d)
+    {
+        OXEvent.SuccessfulHit = false;
+        Invoke(a,b,c,d);
+        return OXEvent.SuccessfulHit;
+    }
+    public void Invoke(T a, T2 b, T3 c, T4 d)
     {
         List<string> killme = new List<string>();
-        OXEvent.SuccessfulHit = false;
         foreach (var w in StoredMethods)
         {
             if (w.Value != null) w.Value(a,b,c,d);
@@ -310,11 +345,13 @@ public class OXEvent<T, T2, T3, T4>
         {
             StoredMethods.Remove(kill);
         }
-        return OXEvent.SuccessfulHit;
     }
 
 }
 
+/*
+ * WARNING: InvokeWithHitCheck() is NOT thread safe, if using oxevent on other threads: DO NOT USE THIS
+ */
 public class OXEvent<T, T2, T3, T4, T5>
 {
     public Dictionary<string, Action<T, T2, T3, T4, T5>> StoredMethods = new Dictionary<string, Action<T, T2, T3, T4, T5>>();
@@ -340,10 +377,16 @@ public class OXEvent<T, T2, T3, T4, T5>
             StoredMethods.Remove(name);
         }
     }
-    public bool Invoke(T a, T2 b, T3 c, T4 d, T5 e)
+
+    public bool InvokeWithHitCheck(T a, T2 b, T3 c, T4 d, T5 e)
+    {
+        OXEvent.SuccessfulHit = false;
+        Invoke(a,b,c,d,e);
+        return OXEvent.SuccessfulHit;
+    }
+    public void Invoke(T a, T2 b, T3 c, T4 d, T5 e)
     {
         List<string> killme = new List<string>();
-        OXEvent.SuccessfulHit = false;
         foreach (var w in StoredMethods)
         {
             if (w.Value != null) w.Value(a,b,c,d,e);
@@ -353,7 +396,6 @@ public class OXEvent<T, T2, T3, T4, T5>
         {
             StoredMethods.Remove(kill);
         }
-        return OXEvent.SuccessfulHit;
     }
 
 }

@@ -46,7 +46,7 @@
   - New AddOrUpdate() extension method for dictionaries, refactored a lot of code in OcksTools to use this
   - New Clean() extension method for string lists, removes empty entries, or things that only contain whitespace
 - Misc Changes
-  - OXEvent now has an additional boolean return value on Invoke() which can be used to unify "call all methods then check for success"
+  - OXEvent now has an additional method InvokeWithHitCheck() which can be used to unify "call all methods then check for success"
   - New TimeToRead() format to display time in the format: 5432.1h
   - Fixed bug where threads continued to run after runtime closed. (Updating OXTLS to Unity 6.2 partly broke existing multithreading)
   - SpawnData now lets you assign parents using a gameobject directly (previously only accepted transforms)
