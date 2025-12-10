@@ -21,12 +21,6 @@ public class GISLol : SingleInstance<GISLol>
     
     bool nono = false;
 
-    public void RegisterComponents()
-    {
-        new GISExampleComponent().Init();
-        new GISExampleComponentAlt().Init();
-    }
-
     public void LoadTempForAll()
     {
         if (nono) return;
@@ -54,8 +48,6 @@ public class GISLol : SingleInstance<GISLol>
             InputManager.CreateKeyAllocation("item_alt", KeyCode.LeftShift);
             InputManager.CreateKeyAllocation("item_mod", KeyCode.LeftControl);
         }); 
-
-        RegisterComponents();
     }
 
 
@@ -169,15 +161,13 @@ public class GISItem
          * false - not the same
          * true - are the same
          */
-        bool comp = false;
+        bool comp = Name == sexnut.Name;
 
-        if (Name == sexnut.Name) comp = true;
         if (!usebase && !comp)
         {
             if(sexnut.Components.Count != Components.Count) comp = false;
             else
             {
-                comp = true;
                 foreach (var c in Components)
                 {
                     if (!sexnut.Components.ContainsKey(c.Key))
@@ -350,6 +340,10 @@ public class GISDisplayData
         Count = gissy.Amount > 0 ? "x" + gissy.Amount : "";
     }
 }
+
+/// <summary>
+/// Components have to be initialized in order to register their FromString functions.
+/// </summary>
 public abstract class GISItemComponentBase
 {
     /// <summary>
@@ -377,6 +371,9 @@ public abstract class GISItemComponentBase
     }
     public abstract bool Compare2(GISItemComponentBase data);
 }
+/// <summary>
+/// Components have to be initialized in order to register their FromString functions.
+/// </summary>
 public abstract class GISItemComponent<T> : GISItemComponentBase where T : GISItemComponent<T>
 {
     public void Init()
@@ -396,62 +393,4 @@ public abstract class GISItemComponent<T> : GISItemComponentBase where T : GISIt
     /// Determines if this component is specifically equal to another component of the same type.
     /// </summary>
     public abstract bool EqualsSpecific(T data);
-}
-
-public class GISExampleComponent : GISItemComponent<GISExampleComponent>
-{
-    public int examplevalue;
-    public override string GetIdentifier()
-    {
-        return "Example";
-    }
-    public override GISItemComponentBase FromString(string data)
-    {
-        var a = new GISExampleComponent();
-        a.examplevalue = int.Parse(data);
-        return a;
-    }
-
-    public override string GetString()
-    {
-        return examplevalue.ToString();
-    }
-    public override string ToString()
-    {
-        return $"Example Value: [{examplevalue}]";
-    }
-
-    public override bool EqualsSpecific(GISExampleComponent data)
-    {
-        return examplevalue == data.examplevalue;
-    }
-}
-
-public class GISExampleComponentAlt : GISItemComponent<GISExampleComponentAlt>
-{
-    public string examplevalue;
-    public override string GetIdentifier()
-    {
-        return "ExampleAlt";
-    }
-    public override GISItemComponentBase FromString(string data)
-    {
-        var a = new GISExampleComponentAlt();
-        a.examplevalue = data;
-        return a;
-    }
-
-    public override string GetString()
-    {
-        return examplevalue;
-    }
-    public override string ToString()
-    {
-        return $"Example Alt Value: [{examplevalue}]";
-    }
-
-    public override bool EqualsSpecific(GISExampleComponentAlt data)
-    {
-        return examplevalue == data.examplevalue;
-    }
 }

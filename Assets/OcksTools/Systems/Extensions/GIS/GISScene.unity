@@ -694,6 +694,23 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 283bb50cdbd4db74bbeedb431bd2ab0f, type: 3}
+--- !u!1 &484659963 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 324499805810810543, guid: e0c709a7a21216947a721dc882abbf55, type: 3}
+  m_PrefabInstance: {fileID: 324499805638646590}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &484659972
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 484659963}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21341c26f94dfcf42afa51cddbfb1abd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ExampleComponents
 --- !u!1001 &514389546
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1756,7 +1773,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4007473491773129349, guid: 32aa07c1d97c2ed4cac286e0d66c9ab0, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -35.650024
+      value: -35.649994
       objectReference: {fileID: 0}
     - target: {fileID: 4049151182853182029, guid: 32aa07c1d97c2ed4cac286e0d66c9ab0, type: 3}
       propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
@@ -4192,7 +4209,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 324499805810810543, guid: e0c709a7a21216947a721dc882abbf55, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 484659972}
   m_SourcePrefab: {fileID: 100100000, guid: e0c709a7a21216947a721dc882abbf55, type: 3}
 --- !u!1001 &2827964399349381243
 PrefabInstance:
