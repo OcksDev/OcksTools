@@ -15,6 +15,8 @@
   - Not implemented into codebase yet, but useful to have
 - New CardCore in Misc
   - A base system to deal with decks of cards, shuffling, discarding, etc
+- GIS Improvements!
+  - Items now have an interface based component system (MASSIVE UPDATE LOL)
 - Dialog Improvements!
   - New Macros, formatted like this: @<VariableName>
     - Works like a pre-processed variable, replacing its value prior to any other syntax operations.
@@ -35,8 +37,6 @@
   - I did some big changes ServerGamer to allow you to switch between two modes of operation: PeerToHostToPeer, and PeerToPeer
   - Ocks Network Variables have been updated to use OXEvents and the new sharing modes
   - Fixed spawning objects with the Spawn System across multiplayer, hosts could spawn/share things properly but clients couldn't.
-- GIS Improvements
-  - Items now have an interface based component system (W.I.P)
 - Tree Improvements
   - Nodes now have a max level that they can be bought up to
   - Added some helper methods in TreeHandler to make interfacing easier

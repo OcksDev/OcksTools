@@ -14,6 +14,5 @@ public class SpawnInitial : MonoBehaviour
             .Rotation(transform.rotation)
             .ID(UniqueName)
             );
-        Console.Log("E");
     }
 }

@@ -82,7 +82,6 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
 
         LoadConsole("");
 
-        OXFunctions.GetCleanStackTrace().Log();
 
     }
     private void FixedUpdate()

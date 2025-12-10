@@ -14,10 +14,19 @@ public class GISLol : SingleInstance<GISLol>
     public List<GISItem_Data> Items = new List<GISItem_Data>();
     public Dictionary<string,GISItem_Data> ItemDict = new Dictionary<string, GISItem_Data>();
 
+    public Dictionary<string, Func<string, GISItemComponentBase>> ComponentTransformers = new Dictionary<string, Func<string, GISItemComponentBase>>();
+    public Dictionary<string, string> ClassToIdentifier = new Dictionary<string, string>();
 
     public Dictionary<string,GISContainer> All_Containers = new Dictionary<string, GISContainer>();
     
     bool nono = false;
+
+    public void RegisterComponents()
+    {
+        new GISExampleComponent().Init();
+        new GISExampleComponentAlt().Init();
+    }
+
     public void LoadTempForAll()
     {
         if (nono) return;
@@ -44,7 +53,9 @@ public class GISLol : SingleInstance<GISLol>
             InputManager.CreateKeyAllocation("item_pick", KeyCode.Mouse2);
             InputManager.CreateKeyAllocation("item_alt", KeyCode.LeftShift);
             InputManager.CreateKeyAllocation("item_mod", KeyCode.LeftControl);
-        });
+        }); 
+
+        RegisterComponents();
     }
 
 
@@ -118,8 +129,7 @@ public class GISItem
     public int Amount;
     public GISContainer Container;
     public List<GISContainer> Interacted_Containers = new List<GISContainer>();
-    public Dictionary<string,ItemComponent> Components = new Dictionary<string,ItemComponent>();
-
+    public Dictionary<string, GISItemComponentBase> Components = new Dictionary<string, GISItemComponentBase>();
     public GISItem()
     {
         setdefaultvals();
@@ -164,7 +174,27 @@ public class GISItem
         if (Name == sexnut.Name) comp = true;
         if (!usebase && !comp)
         {
-            //code to further compare goes here
+            if(sexnut.Components.Count != Components.Count) comp = false;
+            else
+            {
+                comp = true;
+                foreach (var c in Components)
+                {
+                    if (!sexnut.Components.ContainsKey(c.Key))
+                    {
+                        comp = false;
+                        break;
+                    }
+                    else
+                    {
+                        if (!c.Value.Compare(sexnut.Components[c.Key]))
+                        {
+                            comp = false;
+                            break;
+                        }
+                    }
+                }
+            }
         }
         return comp;
     }
@@ -235,27 +265,21 @@ public class GISItem
         Components = Data["Extra"].EscapedStringToDictionary().ABDictionaryToCDDictionary((x, y) => x, (x, y) => ItemDataConvert(x,y));
         return this;
     }
-    public static ItemComponent MethodHoldover = null;
-    public static ItemComponent ItemDataConvert(string wish, string data)
+    public static GISItemComponentBase ItemDataConvert(string wish, string data)
     {
-        switch (wish)
+        if (GISLol.Instance.ComponentTransformers.ContainsKey(wish))
         {
-            case "Example":
-                return new ItemExampleComponent().FromString(data);
-            default:
-                GlobalEvent.Set(out MethodHoldover, null, "ItemDataEvent");
-                if(MethodHoldover != null) return MethodHoldover;
-                break;
+            return GISLol.Instance.ComponentTransformers[wish](data);
         }
         throw new Exception($"No item data conversion defined for {wish}");
     }
-    public void AddComponent(ItemComponent cum)
+    public void AddComponent(GISItemComponentBase cum)
     {
         Components.Add(cum.GetIdentifier(), cum);
     }
-    public T GetComponent<T>(string a) where T : ItemComponent
+    public T GetComponent<T>() where T : GISItemComponentBase
     {
-        return (T)Components[a];
+        return (T)Components[GISLol.Instance.ClassToIdentifier[typeof(T).Name]];
     }
 }
 
@@ -326,31 +350,108 @@ public class GISDisplayData
         Count = gissy.Amount > 0 ? "x" + gissy.Amount : "";
     }
 }
-
-public interface ItemComponent
+public abstract class GISItemComponentBase
 {
-    public string GetString();
-    public string GetIdentifier();
-    public ItemComponent FromString(string data);
+    /// <summary>
+    /// Unique identifier for this component type. No two components should share the same identifier.
+    /// </summary>
+    public abstract string GetIdentifier();
+    /// <summary>
+    /// Converts the current component instance into its string representation for serialization.
+    /// </summary>
+    public abstract string GetString();
+
+    /// <summary>
+    /// Creates a new instance by parsing the specified string representation.
+    /// IT DOES NOT set any values on the current instance!
+    /// </summary>
+    public abstract GISItemComponentBase FromString(string data);
+
+    /// <summary>
+    /// Determines if this component is equal to another component.
+    /// </summary>
+    public bool Compare(GISItemComponentBase data)
+    {
+        if (GetIdentifier() != data.GetIdentifier()) return false;
+        return Compare2(data);
+    }
+    public abstract bool Compare2(GISItemComponentBase data);
+}
+public abstract class GISItemComponent<T> : GISItemComponentBase where T : GISItemComponent<T>
+{
+    public void Init()
+    {
+        GISLol.Instance.ComponentTransformers.Add(GetIdentifier(), FromString);
+        GISLol.Instance.ClassToIdentifier.Add(typeof(T).Name, GetIdentifier());
+    }
+    /// <summary>
+    /// Determines if this component is equal to another component.
+    /// </summary>
+    public override bool Compare2(GISItemComponentBase data)
+    {
+        if(GetIdentifier() != data.GetIdentifier()) return false;
+        return EqualsSpecific((T)data);
+    }
+    /// <summary>
+    /// Determines if this component is specifically equal to another component of the same type.
+    /// </summary>
+    public abstract bool EqualsSpecific(T data);
 }
 
-public class ItemExampleComponent : ItemComponent
+public class GISExampleComponent : GISItemComponent<GISExampleComponent>
 {
-    public string StoredData;
-
-    public ItemComponent FromString(string data)
-    {
-        StoredData = data;
-        return this;
-    }
-
-    public string GetIdentifier()
+    public int examplevalue;
+    public override string GetIdentifier()
     {
         return "Example";
     }
-
-    public string GetString()
+    public override GISItemComponentBase FromString(string data)
     {
-        return StoredData;
+        var a = new GISExampleComponent();
+        a.examplevalue = int.Parse(data);
+        return a;
+    }
+
+    public override string GetString()
+    {
+        return examplevalue.ToString();
+    }
+    public override string ToString()
+    {
+        return $"Example Value: [{examplevalue}]";
+    }
+
+    public override bool EqualsSpecific(GISExampleComponent data)
+    {
+        return examplevalue == data.examplevalue;
+    }
+}
+
+public class GISExampleComponentAlt : GISItemComponent<GISExampleComponentAlt>
+{
+    public string examplevalue;
+    public override string GetIdentifier()
+    {
+        return "ExampleAlt";
+    }
+    public override GISItemComponentBase FromString(string data)
+    {
+        var a = new GISExampleComponentAlt();
+        a.examplevalue = data;
+        return a;
+    }
+
+    public override string GetString()
+    {
+        return examplevalue;
+    }
+    public override string ToString()
+    {
+        return $"Example Alt Value: [{examplevalue}]";
+    }
+
+    public override bool EqualsSpecific(GISExampleComponentAlt data)
+    {
+        return examplevalue == data.examplevalue;
     }
 }
