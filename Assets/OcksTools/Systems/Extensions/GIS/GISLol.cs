@@ -386,7 +386,6 @@ public abstract class GISItemComponent<T> : GISItemComponentBase where T : GISIt
     /// </summary>
     public override bool Compare2(GISItemComponentBase data)
     {
-        if(GetIdentifier() != data.GetIdentifier()) return false;
         return EqualsSpecific((T)data);
     }
     /// <summary>
