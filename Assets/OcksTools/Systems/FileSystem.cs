@@ -20,7 +20,7 @@ public class FileSystem : SingleInstance<FileSystem>
 
 
     //change these to match your game
-    public const string GameVer = "v1.1.3";
+    public const string GameVer = "v1.1.4";
     public const string GameFolderName = "OcksTools";
     public const string GameTrueName = "Ocks Tools";
 
