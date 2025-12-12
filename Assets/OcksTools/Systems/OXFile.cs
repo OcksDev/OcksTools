@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -31,8 +30,8 @@ public class OXFile
 
 
         var cd = File.ReadAllBytes(str);
-        if(cd.Length < oxconfirm.Length) return false;
-        for(int i = 0; i < oxconfirm.Length; i++)
+        if (cd.Length < oxconfirm.Length) return false;
+        for (int i = 0; i < oxconfirm.Length; i++)
         {
             if (cd[i] != oxconfirm[i]) return false;
         }
@@ -46,7 +45,7 @@ public class OXFile
         Data.DataRaw = ccd;
 
         Data.DataOXFiles = Data.Get_OXFileData();
-        
+
         return true;
     }
     public void WriteFile(string FileName, bool CanOverride)
@@ -60,9 +59,9 @@ public class OXFile
             SmallObscure(wank, 6969420);
             List<byte> bytes = new List<byte>();
             var oxconfirm = Encoding.UTF8.GetBytes("OXFile");
-            foreach(byte b in oxconfirm) { bytes.Add(b); }
+            foreach (byte b in oxconfirm) { bytes.Add(b); }
             var ver = BitConverter.GetBytes(ParserVersion);
-            foreach(byte b in ver) { bytes.Add(b); }
+            foreach (byte b in ver) { bytes.Add(b); }
             wank = bytes.CombineLists(wank);
             File.WriteAllBytes(FileName, wank.ToArray());
         }
@@ -72,7 +71,7 @@ public class OXFile
     {
         if (!DoObsure) return;
         var rand = new System.Random(seed + thing.Count);
-        for(int i = 0; i < thing.Count; i++)
+        for (int i = 0; i < thing.Count; i++)
         {
             var w = ((byte)rand.Next(0, 256));
             w ^= 85;
@@ -186,8 +185,8 @@ public class OXFileData
             default: DataRaw = null; break;
         }
 
-        end:
-        LengthOffset = index-initiniex;
+    end:
+        LengthOffset = index - initiniex;
     }
 
     public void Add(string Name, string DataIn)
@@ -253,7 +252,7 @@ public class OXFileData
         dat.DataListOXFiles = DataIn;
         Add(Name, dat);
     }
-    
+
     public void Add(string Name, List<string> DataIn)
     {
         var dat = new OXFileData();
@@ -261,7 +260,7 @@ public class OXFileData
         dat.DataListString = DataIn;
         Add(Name, dat);
     }
-    public void Add(string Name, Dictionary<string,string> DataIn)
+    public void Add(string Name, Dictionary<string, string> DataIn)
     {
         var dat = new OXFileData();
         dat.Type = OXFileData.OXFileType.DictStringString;
@@ -280,7 +279,7 @@ public class OXFileData
             default:
                 if (ContainsKey(Name))
                 {
-                    DataOXFiles[Name]= dat;
+                    DataOXFiles[Name] = dat;
                 }
                 else
                 {
@@ -297,7 +296,7 @@ public class OXFileData
         var w2 = DataRaw;
         Func<byte[], int> AppendAll = (x) =>
         {
-            foreach(var a in x)
+            foreach (var a in x)
             {
                 ret.Add(a);
             }
@@ -318,9 +317,9 @@ public class OXFileData
         switch (Type)
         {
             case OXFileType.OXFileData:
-                foreach(var a in DataOXFiles)
+                foreach (var a in DataOXFiles)
                 {
-                    if(a.Value.DataRaw != null && a.Value.DataRaw.Length > 0)
+                    if (a.Value.DataRaw != null && a.Value.DataRaw.Length > 0)
                     {
                         bytes = a.Value.ToByte();
                     }
@@ -329,16 +328,16 @@ public class OXFileData
                         a.Value.DataRaw = a.Value.ByteSizeOfData().ToArray();
                         bytes = a.Value.ToByte();
                     }
-                    foreach(var b in bytes)
+                    foreach (var b in bytes)
                     {
                         ret.Add(b);
                     }
                 }
                 break;
             case OXFileType.ListOXFileData:
-                foreach(var a in DataListOXFiles)
+                foreach (var a in DataListOXFiles)
                 {
-                    if(a.DataRaw != null && a.DataRaw.Length > 0)
+                    if (a.DataRaw != null && a.DataRaw.Length > 0)
                     {
                         bytes = a.ToByte();
                     }
@@ -347,7 +346,7 @@ public class OXFileData
                         a.DataRaw = a.ByteSizeOfData().ToArray();
                         bytes = a.ToByte();
                     }
-                    foreach(var b in bytes)
+                    foreach (var b in bytes)
                     {
                         ret.Add(b);
                     }
@@ -391,7 +390,7 @@ public class OXFileData
             case OXFileType.Raw: //I dont think this will ever be called
                 return DataRaw.ToList();
             case OXFileType.ListString:
-                foreach(var li in DataListString)
+                foreach (var li in DataListString)
                 {
                     var ccc = Encoding.UTF8.GetBytes(li);
                     bytez = BitConverter.GetBytes(ccc.Length);
@@ -407,7 +406,7 @@ public class OXFileData
                 }
                 break;
             case OXFileType.DictStringString:
-                foreach(var li in DataDictStringString)
+                foreach (var li in DataDictStringString)
                 {
                     var ccc = Encoding.UTF8.GetBytes(li.Key);
                     var ccc2 = Encoding.UTF8.GetBytes(li.Value);
@@ -446,19 +445,19 @@ public class OXFileData
     }
     private int Get_Int()
     {
-        return BitConverter.ToInt32(DataRaw,0);
+        return BitConverter.ToInt32(DataRaw, 0);
     }
     private long Get_Long()
     {
-        return BitConverter.ToInt64(DataRaw,0);
+        return BitConverter.ToInt64(DataRaw, 0);
     }
     private float Get_Float()
     {
-        return BitConverter.ToSingle(DataRaw,0);
+        return BitConverter.ToSingle(DataRaw, 0);
     }
     private double Get_Double()
     {
-        return BitConverter.ToDouble(DataRaw,0);
+        return BitConverter.ToDouble(DataRaw, 0);
     }
     private bool Get_Bool()
     {
@@ -500,7 +499,7 @@ public class OXFileData
         var ret = new List<string>();
 
         int index = 0;
-        while (index+3 < DataRaw.Length)
+        while (index + 3 < DataRaw.Length)
         {
             var length = BitConverter.ToInt32(DataRaw, index);
             index += 4;
@@ -511,18 +510,18 @@ public class OXFileData
         return ret;
     }
 
-    private Dictionary<string,string> Get_DictStringString()
+    private Dictionary<string, string> Get_DictStringString()
     {
         var ret = new Dictionary<string, string>();
 
         int index = 0;
-        while (index+3 < DataRaw.Length)
+        while (index + 3 < DataRaw.Length)
         {
             var length = BitConverter.ToInt32(DataRaw, index);
             index += 4;
             var length2 = BitConverter.ToInt32(DataRaw, index);
             index += 4;
-            ret.Add(Encoding.UTF8.GetString(WankFuckYou(DataRaw, index, length)), Encoding.UTF8.GetString(WankFuckYou(DataRaw, index+length, length2)));
+            ret.Add(Encoding.UTF8.GetString(WankFuckYou(DataRaw, index, length)), Encoding.UTF8.GetString(WankFuckYou(DataRaw, index + length, length2)));
             index += length + length2;
         }
 

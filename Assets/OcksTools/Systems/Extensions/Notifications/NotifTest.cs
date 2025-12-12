@@ -1,12 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class NotifTest : MonoBehaviour
 {
     public Sprite Bananal;
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -29,7 +27,7 @@ public class NotifTest : MonoBehaviour
             var not = new OXNotif();
             not.Time = 3;
             not.Title = "Banana";
-            not.Description = new string('A', Random.Range(1,35));
+            not.Description = new string('A', Random.Range(1, 35));
             not.BackgroundColor1 = Random.ColorHSV();
             NotificationSystem.Instance.AddNotif(not);
         }

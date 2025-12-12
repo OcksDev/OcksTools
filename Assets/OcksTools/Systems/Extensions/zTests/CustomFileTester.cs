@@ -1,13 +1,11 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using UnityEngine;
 
 public class CustomFileTester : MonoBehaviour
 {
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         var file = new OXFile();
         if (File.Exists(FileSystem.Instance.FileLocations["OXFileTest"]))
@@ -16,7 +14,7 @@ public class CustomFileTester : MonoBehaviour
             Debug.Log("OXFile Detected!");
             Debug.Log("Version Detected: " + file.FileVersion);
 
-            foreach(var a in file.Data.DataOXFiles)
+            foreach (var a in file.Data.DataOXFiles)
             {
                 switch (a.Value.Type)
                 {
@@ -59,8 +57,8 @@ public class CustomFileTester : MonoBehaviour
             file.Data.Add("Bitch", "DINGLEBERRY");
             file.Data.Add("Hariy", true);
             file.Data.Add("Stinky", false);
-            file.Data.Add("pps", new List<string>() { "cum1","banana","cum2", "cum2", "cum2" });
-            file.Data.Add("dick", new Dictionary<string,string>() { { "Test1", "Cum" }, { "Test2", "WEEE" } });
+            file.Data.Add("pps", new List<string>() { "cum1", "banana", "cum2", "cum2", "cum2" });
+            file.Data.Add("dick", new Dictionary<string, string>() { { "Test1", "Cum" }, { "Test2", "WEEE" } });
 
             var subdata = new OXFileData();
             subdata.Type = OXFileData.OXFileType.OXFileData;

@@ -1,5 +1,4 @@
 using NaughtyAttributes;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -32,22 +31,22 @@ public class OXGenerator_Username : MonoBehaviour
         GetNumberEnder();
 
 
-        for(int i = 0; i < Words.Count; i++)
+        for (int i = 0; i < Words.Count; i++)
         {
             switch (ChosenCap)
             {
                 default:
                     Words[i] = Words[i].ToLower();
-                        break;
+                    break;
                 case CapStyle.SCREAMINGNODIFF:
                 case CapStyle.SCREAMING_UNDERSCORE:
                 case CapStyle.S_P_A_C_E_D:
                     Words[i] = Words[i].ToUpper();
-                        break;
+                    break;
                 case CapStyle.Pascel:
                 case CapStyle.PascelSpace:
-                    Words[i] = Words[i].Substring(0,1).ToUpper() +  Words[i].Substring(1).ToLower();
-                        break;
+                    Words[i] = Words[i].Substring(0, 1).ToUpper() + Words[i].Substring(1).ToLower();
+                    break;
             }
         }
         if (ChosenCap == CapStyle.Firstonly)
@@ -63,7 +62,7 @@ public class OXGenerator_Username : MonoBehaviour
 
 
 
-            string combiner = "";
+        string combiner = "";
         switch (ChosenCap)
         {
             case CapStyle.SCREAMING_UNDERSCORE:
@@ -86,7 +85,7 @@ public class OXGenerator_Username : MonoBehaviour
 
 
 
-        if(main.Length < pp.min || main.Length > pp.max)
+        if (main.Length < pp.min || main.Length > pp.max)
         {
             return Pull(pp);
         }
@@ -106,7 +105,7 @@ public class OXGenerator_Username : MonoBehaviour
                 dd = dd.Substring(0, i) + dd.Substring(i + 1);
                 i--;
             }*/
-            if(Random.Range(0f,1f) <= 0.15f)
+            if (Random.Range(0f, 1f) <= 0.15f)
             {
                 string aa = dd.Substring(i, 1).ToLower();
 
@@ -114,23 +113,23 @@ public class OXGenerator_Username : MonoBehaviour
                 {
                     dd = dd.Substring(0, i) + "0" + dd.Substring(i + 1);
                 }
-                else if(aa == "i")
+                else if (aa == "i")
                 {
                     dd = dd.Substring(0, i) + "1" + dd.Substring(i + 1);
                 }
-                else if(aa == "e")
+                else if (aa == "e")
                 {
                     dd = dd.Substring(0, i) + "3" + dd.Substring(i + 1);
                 }
-                else if(aa == "l")
+                else if (aa == "l")
                 {
                     dd = dd.Substring(0, i) + "1" + dd.Substring(i + 1);
                 }
-                else if(aa == "s")
+                else if (aa == "s")
                 {
                     dd = dd.Substring(0, i) + "5" + dd.Substring(i + 1);
                 }
-                else if(aa == "b")
+                else if (aa == "b")
                 {
                     dd = dd.Substring(0, i) + "8" + dd.Substring(i + 1);
                 }
@@ -214,14 +213,14 @@ public class OXGenerator_Username : MonoBehaviour
 
     private string PullNoun()
     {
-        var a = Converter.StringToList(Nouns.text,System.Environment.NewLine);
+        var a = Converter.StringToList(Nouns.text, System.Environment.NewLine);
         return a[Random.Range(0, a.Count)];
     }
     private string PullNounEnd()
     {
         var dd = PullNoun();
         var zz = PullEnder();
-        List<string> vowel = new List<string>() {"a","e","i","o","u","y"};
+        List<string> vowel = new List<string>() { "a", "e", "i", "o", "u", "y" };
         if (vowel.Contains(dd.Substring(dd.Length - 1).ToString().ToLower()))
         {
             while (vowel.Contains(dd.Substring(dd.Length - 1).ToString().ToLower()))
@@ -230,21 +229,21 @@ public class OXGenerator_Username : MonoBehaviour
             }
         }
 
-        return dd+zz;
+        return dd + zz;
     }
     private string PullName()
     {
-        var a = Converter.StringToList(Names.text,System.Environment.NewLine);
+        var a = Converter.StringToList(Names.text, System.Environment.NewLine);
         return a[Random.Range(0, a.Count)];
     }
     private string PullEnder()
     {
-        var a = Converter.StringToList(Enders.text,System.Environment.NewLine);
+        var a = Converter.StringToList(Enders.text, System.Environment.NewLine);
         return a[Random.Range(0, a.Count)];
     }
     private string PullMod()
     {
-        var a = Converter.StringToList(Mods.text,System.Environment.NewLine);
+        var a = Converter.StringToList(Mods.text, System.Environment.NewLine);
         return a[Random.Range(0, a.Count)];
     }
     private CapStyle GetCap()
@@ -301,7 +300,7 @@ public class OXGenerator_Username : MonoBehaviour
         b.Add(1f, Random.Range(0, 100));
         b.Add(1f, Random.Range(0, 1000));
         b.Add(1f, Random.Range(0, 10000));
-        b.Add(1f, Random.Range(System.DateTime.Now.Year-35, System.DateTime.Now.Year+1));
+        b.Add(1f, Random.Range(System.DateTime.Now.Year - 35, System.DateTime.Now.Year + 1));
 
         Words.Add(WeightedAverageHandler.DrawFromWeights<int>(b).ToString());
     }
@@ -337,5 +336,5 @@ public class GenProfile
         // default is a-z, A-Z, 0-9, _, -
         allow_specialchars = true; return this;
     }*/
-} 
+}
 

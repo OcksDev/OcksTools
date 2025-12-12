@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,23 +8,23 @@ public class NotificationSystem : SingleInstance<NotificationSystem>
     public Directions Direction = Directions.BottomRight;
     public GameObject NotifPrefab;
     public RectTransform NotifParent;
-    List<OXNotif> ActiveNotifs = new List<OXNotif>();
-    List<OXNotif> StoredNotifs = new List<OXNotif>();
+    private List<OXNotif> ActiveNotifs = new List<OXNotif>();
+    private List<OXNotif> StoredNotifs = new List<OXNotif>();
     public override void Awake2()
     {
         switch (Direction)
         {
             case Directions.BottomRight:
-                NotifParent.anchorMin = new Vector2(1,0);
+                NotifParent.anchorMin = new Vector2(1, 0);
                 break;
             case Directions.BottomLeft:
-                NotifParent.anchorMin = new Vector2(0,0);
+                NotifParent.anchorMin = new Vector2(0, 0);
                 break;
             case Directions.TopRight:
                 NotifParent.anchorMin = new Vector2(1, 1);
                 break;
             case Directions.TopLeft:
-                NotifParent.anchorMin = new Vector2(0,1);
+                NotifParent.anchorMin = new Vector2(0, 1);
                 break;
         }
 
@@ -33,7 +32,7 @@ public class NotificationSystem : SingleInstance<NotificationSystem>
     }
     public void AddNotif(OXNotif notif)
     {
-        if(ActiveNotifs.Count >= MaxNotifsAtATime)
+        if (ActiveNotifs.Count >= MaxNotifsAtATime)
         {
             StoredNotifs.Add(notif);
         }
@@ -44,11 +43,11 @@ public class NotificationSystem : SingleInstance<NotificationSystem>
     }
     private void FixedUpdate()
     {
-        for (int i = 0; i < ActiveNotifs.Count;i++)
+        for (int i = 0; i < ActiveNotifs.Count; i++)
         {
             bool marked = ActiveNotifs[i].markedfordeath;
             var banana = CalcPos(i);
-            ActiveNotifs[i].memenotif.self.anchoredPosition = Vector2.Lerp(ActiveNotifs[i].memenotif.self.anchoredPosition, banana, marked?0.15f:0.1f);
+            ActiveNotifs[i].memenotif.self.anchoredPosition = Vector2.Lerp(ActiveNotifs[i].memenotif.self.anchoredPosition, banana, marked ? 0.15f : 0.1f);
             if (!marked && (ActiveNotifs[i].sextimer -= Time.deltaTime) <= 0)
             {
                 ActiveNotifs[i].markedfordeath = true;
@@ -57,7 +56,7 @@ public class NotificationSystem : SingleInstance<NotificationSystem>
             }
             if (marked)
             {
-                if((ActiveNotifs[i].memenotif.self.anchoredPosition-banana).magnitude < 5f)
+                if ((ActiveNotifs[i].memenotif.self.anchoredPosition - banana).magnitude < 5f)
                 {
                     Destroy(ActiveNotifs[i].meme);
                     ActiveNotifs.RemoveAt(i);
@@ -65,9 +64,9 @@ public class NotificationSystem : SingleInstance<NotificationSystem>
                 }
             }
         }
-        if(ActiveNotifs.Count < MaxNotifsAtATime)
+        if (ActiveNotifs.Count < MaxNotifsAtATime)
         {
-            for(int i = 0; i < StoredNotifs.Count && ActiveNotifs.Count < MaxNotifsAtATime;)
+            for (int i = 0; i < StoredNotifs.Count && ActiveNotifs.Count < MaxNotifsAtATime;)
             {
                 PublishNotif(StoredNotifs[0]);
                 StoredNotifs.RemoveAt(0);
@@ -77,7 +76,7 @@ public class NotificationSystem : SingleInstance<NotificationSystem>
 
     public Vector2 CalcPos(int index)
     {
-        if (ActiveNotifs[index].markedfordeath && ActiveNotifs[index].storeddeathlocation != new Vector2(-1,-1))
+        if (ActiveNotifs[index].markedfordeath && ActiveNotifs[index].storeddeathlocation != new Vector2(-1, -1))
         {
             return ActiveNotifs[index].storeddeathlocation;
         }
@@ -89,7 +88,7 @@ public class NotificationSystem : SingleInstance<NotificationSystem>
                 m = -1;
                 m2 = -1;
                 break;
-            case Directions.BottomLeft: 
+            case Directions.BottomLeft:
                 m2 = -1;
                 break;
             case Directions.TopRight:
@@ -103,7 +102,7 @@ public class NotificationSystem : SingleInstance<NotificationSystem>
         target.y += 10;
         target.y *= m;
         target.x *= m2;
-        for(int i = index-1; i >= 0; i--)
+        for (int i = index - 1; i >= 0; i--)
         {
             var bana = 10 + ActiveNotifs[i].memenotif.self.sizeDelta.y;
             target.y += bana * m;
@@ -179,7 +178,7 @@ public class OXNotif
     public Vector2 storeddeathlocation;
     public OXNotif()
     {
-        storeddeathlocation = new Vector2(-1,-1);
+        storeddeathlocation = new Vector2(-1, -1);
         BackgroundColor1 = new Color32(255, 255, 255, 255);
         BackgroundColor2 = new Color32(0, 0, 0, 255);
     }

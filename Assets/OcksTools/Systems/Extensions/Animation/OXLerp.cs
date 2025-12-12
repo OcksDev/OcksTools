@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class OXLerp : MonoBehaviour
@@ -11,7 +10,7 @@ public class OXLerp : MonoBehaviour
         float f = 1 / time;
         while (x < 1)
         {
-            x = Mathf.Clamp01(x+(Time.deltaTime*f));
+            x = Mathf.Clamp01(x + (Time.deltaTime * f));
             method(x);
             yield return null;
         }
@@ -23,7 +22,7 @@ public class OXLerp : MonoBehaviour
         float f = 1 / time;
         while (true)
         {
-            x = (x+Time.deltaTime*f)%1;
+            x = (x + Time.deltaTime * f) % 1;
             method(x);
             yield return null;
         }
@@ -36,7 +35,7 @@ public class OXLerp : MonoBehaviour
         float f = 1 / time;
         while (true)
         {
-            x = x+Time.deltaTime*f;
+            x = x + Time.deltaTime * f;
             method(x);
             yield return null;
         }
@@ -48,19 +47,19 @@ public class OXLerp : MonoBehaviour
         float x = 0f;
         float f = 1 / time;
         int i = 0;
-        while(i < bounces)
+        while (i < bounces)
         {
             while (x < 1)
             {
-                x = Mathf.Clamp01(x + Time.deltaTime*f);
+                x = Mathf.Clamp01(x + Time.deltaTime * f);
                 method(x);
                 yield return null;
             }
             i++;
-            if(i >= bounces) yield break;
+            if (i >= bounces) yield break;
             while (x > 0)
             {
-                x = Mathf.Clamp01(x - Time.deltaTime*f);
+                x = Mathf.Clamp01(x - Time.deltaTime * f);
                 method(x);
                 yield return null;
             }
@@ -76,13 +75,13 @@ public class OXLerp : MonoBehaviour
         {
             while (x < 1)
             {
-                x = Mathf.Clamp01(x + Time.deltaTime*f);
+                x = Mathf.Clamp01(x + Time.deltaTime * f);
                 method(x);
                 yield return null;
             }
             while (x > 0)
             {
-                x = Mathf.Clamp01(x - Time.deltaTime*f);
+                x = Mathf.Clamp01(x - Time.deltaTime * f);
                 method(x);
                 yield return null;
             }

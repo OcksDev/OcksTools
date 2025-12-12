@@ -1,9 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 public class GISSlot : MonoBehaviour
 {
@@ -132,7 +127,7 @@ public class GISSlot : MonoBehaviour
                 }
             }
         }
-        if(nerd != null)
+        if (nerd != null)
         {
             int x = nerd.FindEmptySlot();
             nerd.slots[x].Held_Item = Held_Item;

@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -130,7 +129,7 @@ public class FileSystem : SingleInstance<FileSystem>
         return DDH;
     }
 
-    IEnumerator GetAudioClip(DownloadDataHandler DDH, string fileName)
+    private IEnumerator GetAudioClip(DownloadDataHandler DDH, string fileName)
     {
         DDH.ErrorLol = false;
         UnityWebRequest webRequest = UnityWebRequestMultimedia.GetAudioClip(
@@ -150,7 +149,7 @@ public class FileSystem : SingleInstance<FileSystem>
         DDH.CompletedDownload = true;
     }
 
-    IEnumerator GetImage(DownloadDataHandler DDH, string fileName)
+    private IEnumerator GetImage(DownloadDataHandler DDH, string fileName)
     {
         DDH.ErrorLol = false;
         UnityWebRequest webRequest = UnityWebRequestTexture.GetTexture(

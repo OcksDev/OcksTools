@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -94,6 +93,6 @@ public class ScreenshotData
         Width_PX = width;
         Height_PX = height;
         Camera = cam;
-        UseCameraSizeForImage = usecamsize;    
+        UseCameraSizeForImage = usecamsize;
     }
 }

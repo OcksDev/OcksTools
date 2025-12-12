@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,7 +9,7 @@ public class NodeInitializer : MonoBehaviour
     public List<NodeInitializer> otherInitializers = new List<NodeInitializer>();
     private void Awake()
     {
-        if(InitOnAwake)
+        if (InitOnAwake)
             InitializeNodes();
     }
 
@@ -32,7 +31,7 @@ public class NodeInitializer : MonoBehaviour
                 a.InitializeNode();
             }
         }
-        foreach(var a in otherInitializers)
+        foreach (var a in otherInitializers)
         {
             a.InitializeNodes();
         }

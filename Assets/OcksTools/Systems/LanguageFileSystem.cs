@@ -12,13 +12,13 @@ public class LanguageFileSystem : SingleInstance<LanguageFileSystem>
     public bool EditorAuthorityOnFile = true; //while you are in the editor it will overwrite the lang files on the local machine
     public bool AllowPublicAccess = true; //puts the lang files in a publically readable/modifiable location
     public List<OXLanguageFileIndex> Files = new List<OXLanguageFileIndex>();
-    Dictionary<string, Dictionary<string, string>> Data = new Dictionary<string, Dictionary<string, string>>();
+    private Dictionary<string, Dictionary<string, string>> Data = new Dictionary<string, Dictionary<string, string>>();
 
     public override void Awake2()
     {
         if (AllowPublicAccess)
         {
-            FileSystem.LocationEvent.Append("lang",() =>
+            FileSystem.LocationEvent.Append("lang", () =>
             {
                 var f = FileSystem.Instance;
                 f.FileLocations.Add("Lang", $"{f.GameDirectory}\\Language");
@@ -27,14 +27,14 @@ public class LanguageFileSystem : SingleInstance<LanguageFileSystem>
             FileSystem.Instance.CreateFolder(FileSystem.Instance.FileLocations["Lang"]);
             FileSystem.Instance.CreateFolder($"{FileSystem.Instance.FileLocations["Lang"]}\\{FileSystem.GameVer}");
         }
-        foreach(var file in Files)
+        foreach (var file in Files)
         {
             ReadFile(file);
         }
     }
     public void AddFile(OXLanguageFileIndex oxl)
     {
-        foreach(var f in Files)
+        foreach (var f in Files)
         {
             if (f.FileName == oxl.FileName) return;
         }
@@ -63,9 +63,9 @@ public class LanguageFileSystem : SingleInstance<LanguageFileSystem>
     {
         if (namespac == "unknown" || namespac == "")
         {
-            foreach(var f in Data)
+            foreach (var f in Data)
             {
-                if(f.Value.ContainsKey(key2)) return f.Value[key2];
+                if (f.Value.ContainsKey(key2)) return f.Value[key2];
             }
         }
         return Data[namespac][key2];
@@ -80,7 +80,7 @@ public class LanguageFileSystem : SingleInstance<LanguageFileSystem>
     }
     public void SetString(string namespac, string key2, string str)
     {
-        if(!Data.ContainsKey(namespac)) return;
+        if (!Data.ContainsKey(namespac)) return;
         Data[namespac].AddOrUpdate(key2, str);
 
     }
@@ -105,7 +105,7 @@ public class LanguageFileSystem : SingleInstance<LanguageFileSystem>
         var des = GetDict(file.FileName);
         des.Clear();
 
-        System.Action<string, string> desAdd = (x,y) =>
+        System.Action<string, string> desAdd = (x, y) =>
         {
             des.AddOrUpdate(x, y);
         };
@@ -113,7 +113,7 @@ public class LanguageFileSystem : SingleInstance<LanguageFileSystem>
 
         if (EditorAuthorityOnFile || !AllowPublicAccess)
         {
-            if(AllowPublicAccess)FileSystem.Instance.WriteFile(realme, file.GetDefaultData(), true);
+            if (AllowPublicAccess) FileSystem.Instance.WriteFile(realme, file.GetDefaultData(), true);
             if (file.DontParseDict)
             {
                 des.Add("", f.ReadFile(realme));
@@ -149,7 +149,7 @@ public class LanguageFileSystem : SingleInstance<LanguageFileSystem>
                 desAdd(d.Substring(0, d.IndexOf(": ")), d.Substring(d.IndexOf(": ") + 2));
             }
         }
-        d9:
+    d9:
 
         if (file.DontParseDict)
         {
@@ -176,7 +176,7 @@ public class OXLanguageFileIndex
     public bool DontParseDict = false;
     public string GetDefaultData()
     {
-        if(DefaultFile != null)
+        if (DefaultFile != null)
         {
             return DefaultFile.text;
         }

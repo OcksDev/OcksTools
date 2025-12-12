@@ -5,16 +5,16 @@ using UnityEngine;
 public class ThreadTest : MonoBehaviour
 {
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         StartCoroutine(Pool());
     }
     public static int what = 0;
-    List<Reetypebakakaka> reetypebakakakas = new List<Reetypebakakaka>();
+    private List<Reetypebakakaka> reetypebakakakas = new List<Reetypebakakaka>();
     public IEnumerator Pool()
     {
         OXThreadPoolB pool = new OXThreadPoolB(10);
-        for(int i = 0; i < 26; i++)
+        for (int i = 0; i < 26; i++)
         {
             pool.Add(new Reetypebakakaka(i).print);
         }
@@ -26,7 +26,7 @@ public class ThreadTest : MonoBehaviour
 
 public class Reetypebakakaka
 {
-    int x;
+    private int x;
     public Reetypebakakaka(int x)
     {
         this.x = x;

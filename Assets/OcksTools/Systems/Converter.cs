@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -8,7 +7,7 @@ using UnityEngine;
 public static class Converter
 {
 
-    public static Dictionary<string, Func<string,object>> ConversionMethods = new Dictionary<string, Func<string, object>>();
+    public static Dictionary<string, Func<string, object>> ConversionMethods = new Dictionary<string, Func<string, object>>();
 
 
     // to use custom objects, mark a function which takes in a string as [ConversionMethod]
@@ -64,7 +63,7 @@ public static class Converter
         }
         return a;
     }
-    public static List<B> AListToBList_DownCast<A,B>(this List<A> eee) where A : B
+    public static List<B> AListToBList_DownCast<A, B>(this List<A> eee) where A : B
     {
         var a = new List<B>();
         foreach (var b in eee)
@@ -73,7 +72,7 @@ public static class Converter
         }
         return a;
     }
-    public static List<B> AListToBList<A,B>(this List<A> eee, Func<A,B> convert)
+    public static List<B> AListToBList<A, B>(this List<A> eee, Func<A, B> convert)
     {
         var a = new List<B>();
         foreach (var b in eee)
@@ -82,7 +81,7 @@ public static class Converter
         }
         return a;
     }
-    public static List<B> AListToBList_UpCast<A,B>(this List<A> eee) where B : A
+    public static List<B> AListToBList_UpCast<A, B>(this List<A> eee) where B : A
     {
         var a = new List<B>();
         foreach (var b in eee)
@@ -112,7 +111,7 @@ public static class Converter
     }
 
     public static string ListToString<A>(this List<A> eee, string split = ", ")
-    { 
+    {
         return String.Join(split, eee);
     }
 
@@ -121,9 +120,9 @@ public static class Converter
         return eee.Split(split).ToList();
     }
 
-    public static Dictionary<string,string> ABDictionaryToStringDictionary<A,B>(this Dictionary<A, B> dic)
+    public static Dictionary<string, string> ABDictionaryToStringDictionary<A, B>(this Dictionary<A, B> dic)
     {
-        var t = new Dictionary<string,string>();
+        var t = new Dictionary<string, string>();
         foreach (var key in dic)
         {
             t.Add(key.Key.ToString(), key.Value.ToString());
@@ -131,19 +130,19 @@ public static class Converter
         return t;
     }
 
-    public static Dictionary<C,D> ABDictionaryToCDDictionary<A,B,C,D>(this Dictionary<A, B> eee, Func<A, C> convertAC, Func<B, D> convertBD)
+    public static Dictionary<C, D> ABDictionaryToCDDictionary<A, B, C, D>(this Dictionary<A, B> eee, Func<A, C> convertAC, Func<B, D> convertBD)
     {
         var d = new Dictionary<C, D>();
-        foreach(var thing in eee)
+        foreach (var thing in eee)
         {
             d.Add(convertAC(thing.Key), convertBD(thing.Value));
         }
         return d;
     }
-    public static Dictionary<C,D> ABDictionaryToCDDictionary<A,B,C,D>(this Dictionary<A, B> eee, Func<A, B, C> convertAC, Func<A, B, D> convertBD)
+    public static Dictionary<C, D> ABDictionaryToCDDictionary<A, B, C, D>(this Dictionary<A, B> eee, Func<A, B, C> convertAC, Func<A, B, D> convertBD)
     {
         var d = new Dictionary<C, D>();
-        foreach(var thing in eee)
+        foreach (var thing in eee)
         {
             d.Add(convertAC(thing.Key, thing.Value), convertBD(thing.Key, thing.Value));
         }
@@ -151,29 +150,29 @@ public static class Converter
     }
 
 
-    public static Dictionary<A,B> StringDictionaryToABDictionary<A,B>(this Dictionary<string, string> dic)
+    public static Dictionary<A, B> StringDictionaryToABDictionary<A, B>(this Dictionary<string, string> dic)
     {
-        var t = new Dictionary<A,B>();
+        var t = new Dictionary<A, B>();
         string tA = typeof(A).Name;
         string tB = typeof(B).Name;
         foreach (var key in dic)
         {
-            t.Add(key.Key.StringToObject<A>(tA), 
+            t.Add(key.Key.StringToObject<A>(tA),
                   key.Value.StringToObject<B>(tB));
         }
         return t;
     }
-    public static string DictionaryToRead<A,B>(this Dictionary<A, B> dic)
+    public static string DictionaryToRead<A, B>(this Dictionary<A, B> dic)
     {
         List<string> a = new List<string>();
-        foreach(var b in dic)
+        foreach (var b in dic)
         {
             a.Add("{ " + b.Key.ToString() + ", " + b.Value.ToString() + " }");
         }
         return ListToString(a, "\n");
     }
 
-    public static string DictionaryToString<A,B>(this Dictionary<A, B> dic, string splitter = "<K>", string splitter2 = "<->")
+    public static string DictionaryToString<A, B>(this Dictionary<A, B> dic, string splitter = "<K>", string splitter2 = "<->")
     {
         List<string> list = new List<string>();
         foreach (var a in dic)
@@ -271,7 +270,7 @@ public static class Converter
         var s = StringToList(e.Substring(1, e.Length - 2));
         return new Vector3(float.Parse(s[0]), float.Parse(s[1]), float.Parse(s[2]));
     }
-    
+
     public static Quaternion StringToQuaternion(this string e)
     {
         var s = StringToList(e.Substring(1, e.Length - 2));
@@ -567,9 +566,9 @@ public static class Converter
         }
         return n;
     }
-    public static Dictionary<T,int> ListToDictionary<T>(this List<T> input)
+    public static Dictionary<T, int> ListToDictionary<T>(this List<T> input)
     {
-        var output = new Dictionary<T,int>();
+        var output = new Dictionary<T, int>();
         foreach (var item in input)
         {
             if (output.ContainsKey(item))
@@ -578,7 +577,7 @@ public static class Converter
             }
             else
             {
-                output.Add(item, 1);    
+                output.Add(item, 1);
             }
         }
         return output;

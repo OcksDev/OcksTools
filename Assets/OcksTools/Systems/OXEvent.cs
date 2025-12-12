@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 public static class GlobalEvent
 {
@@ -24,7 +22,7 @@ public static class GlobalEvent
     }
     public static void Invoke(string even)
     {
-        if(Nerds.ContainsKey(even)) Nerds[even].Invoke();
+        if (Nerds.ContainsKey(even)) Nerds[even].Invoke();
     }
 
     public static A Set<A>(out A banana, A newval, string eventt)
@@ -60,7 +58,7 @@ public class GlobalMethod<T>
         if (Nerds.ContainsKey(even)) Nerds[even](a);
     }
 }
-public class GlobalMethod<T,T2>
+public class GlobalMethod<T, T2>
 {
     private static Dictionary<string, System.Action<T, T2>> Nerds = new Dictionary<string, System.Action<T, T2>>();
     public static void Set(string even, Action<T, T2> method)
@@ -69,22 +67,22 @@ public class GlobalMethod<T,T2>
     }
     public static void Run(string even, T a, T2 b)
     {
-        if (Nerds.ContainsKey(even)) Nerds[even](a,b);
+        if (Nerds.ContainsKey(even)) Nerds[even](a, b);
     }
 }
-public class GlobalMethod<T,T2,T3>
+public class GlobalMethod<T, T2, T3>
 {
     private static Dictionary<string, System.Action<T, T2, T3>> Nerds = new Dictionary<string, System.Action<T, T2, T3>>();
     public static void Set(string even, Action<T, T2, T3> method)
     {
         Nerds.Add(even, method);
     }
-    public static void Run(string even, T a,T2 b, T3 c)
+    public static void Run(string even, T a, T2 b, T3 c)
     {
-        if (Nerds.ContainsKey(even)) Nerds[even](a,b,c);
+        if (Nerds.ContainsKey(even)) Nerds[even](a, b, c);
     }
 }
-public class GlobalMethod<T,T2, T3, T4>
+public class GlobalMethod<T, T2, T3, T4>
 {
     private static Dictionary<string, System.Action<T, T2, T3, T4>> Nerds = new Dictionary<string, System.Action<T, T2, T3, T4>>();
     public static void Set(string even, Action<T, T2, T3, T4> method)
@@ -93,7 +91,7 @@ public class GlobalMethod<T,T2, T3, T4>
     }
     public static void Run(string even, T a, T2 b, T3 c, T4 d)
     {
-        if (Nerds.ContainsKey(even)) Nerds[even](a,b,c,d);
+        if (Nerds.ContainsKey(even)) Nerds[even](a, b, c, d);
     }
 }
 
@@ -230,7 +228,7 @@ public class OXEvent<T, T2>
     public bool InvokeWithHitCheck(T a, T2 b)
     {
         OXEvent.SuccessfulHit = false;
-        Invoke(a,b);
+        Invoke(a, b);
         return OXEvent.SuccessfulHit;
     }
     public void Invoke(T a, T2 b)
@@ -238,7 +236,7 @@ public class OXEvent<T, T2>
         List<string> killme = new List<string>();
         foreach (var w in StoredMethods)
         {
-            if (w.Value != null) w.Value(a,b);
+            if (w.Value != null) w.Value(a, b);
             else killme.Add(w.Key);
         }
         foreach (var kill in killme)
@@ -280,7 +278,7 @@ public class OXEvent<T, T2, T3>
     public bool InvokeWithHitCheck(T a, T2 b, T3 c)
     {
         OXEvent.SuccessfulHit = false;
-        Invoke(a,b,c);
+        Invoke(a, b, c);
         return OXEvent.SuccessfulHit;
     }
     public void Invoke(T a, T2 b, T3 c)
@@ -288,7 +286,7 @@ public class OXEvent<T, T2, T3>
         List<string> killme = new List<string>();
         foreach (var w in StoredMethods)
         {
-            if (w.Value != null) w.Value(a,b,c);
+            if (w.Value != null) w.Value(a, b, c);
             else killme.Add(w.Key);
         }
         foreach (var kill in killme)
@@ -330,7 +328,7 @@ public class OXEvent<T, T2, T3, T4>
     public bool InvokeWithHitCheck(T a, T2 b, T3 c, T4 d)
     {
         OXEvent.SuccessfulHit = false;
-        Invoke(a,b,c,d);
+        Invoke(a, b, c, d);
         return OXEvent.SuccessfulHit;
     }
     public void Invoke(T a, T2 b, T3 c, T4 d)
@@ -338,7 +336,7 @@ public class OXEvent<T, T2, T3, T4>
         List<string> killme = new List<string>();
         foreach (var w in StoredMethods)
         {
-            if (w.Value != null) w.Value(a,b,c,d);
+            if (w.Value != null) w.Value(a, b, c, d);
             else killme.Add(w.Key);
         }
         foreach (var kill in killme)
@@ -381,7 +379,7 @@ public class OXEvent<T, T2, T3, T4, T5>
     public bool InvokeWithHitCheck(T a, T2 b, T3 c, T4 d, T5 e)
     {
         OXEvent.SuccessfulHit = false;
-        Invoke(a,b,c,d,e);
+        Invoke(a, b, c, d, e);
         return OXEvent.SuccessfulHit;
     }
     public void Invoke(T a, T2 b, T3 c, T4 d, T5 e)
@@ -389,7 +387,7 @@ public class OXEvent<T, T2, T3, T4, T5>
         List<string> killme = new List<string>();
         foreach (var w in StoredMethods)
         {
-            if (w.Value != null) w.Value(a,b,c,d,e);
+            if (w.Value != null) w.Value(a, b, c, d, e);
             else killme.Add(w.Key);
         }
         foreach (var kill in killme)

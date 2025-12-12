@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -11,11 +9,11 @@ public class ConsoleLogger : MonoBehaviour
     {
         p = GetComponent<TextMeshProUGUI>();
     }
-    float tim = 0;
+    private float tim = 0;
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        if((tim += Time.deltaTime) >= 0.04f)
+        if ((tim += Time.deltaTime) >= 0.04f)
         {
             tim = 0;
             p.text = ConsoleLol.Instance.BackLog;

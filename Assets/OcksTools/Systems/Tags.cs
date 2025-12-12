@@ -1,8 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEditor;
 using UnityEngine;
 [System.Serializable]
 public class Tags : SingleInstance<Tags>
@@ -28,7 +25,7 @@ public class Tags : SingleInstance<Tags>
 
     public override void Awake2()
     {
-        foreach(var a in RefedObjects)
+        foreach (var a in RefedObjects)
         {
             a.Zoink();
         }
@@ -60,7 +57,7 @@ public class Tags : SingleInstance<Tags>
     }
     public static void AddObjectToTag(object a, string namee, string tag)
     {
-        if(!AllTags.ContainsKey(tag) || !AllTagsReverse.ContainsKey(tag)) CreateTag(tag);
+        if (!AllTags.ContainsKey(tag) || !AllTagsReverse.ContainsKey(tag)) CreateTag(tag);
         AllTags[tag].Add(namee, a);
         AllTagsReverse[tag].Add(a, namee);
     }
@@ -74,11 +71,11 @@ public class Tags : SingleInstance<Tags>
         {
             gm = (GameObject)AllTags["Exist"][key];
         }
-        foreach(var a in AllTags)
+        foreach (var a in AllTags)
         {
             if (AllTags[a.Key].ContainsKey(key)) AllTags[a.Key].Remove(key);
         }
-        foreach(var a in AllTagsReverse)
+        foreach (var a in AllTagsReverse)
         {
             if (AllTagsReverse[a.Key].ContainsKey(gm)) AllTagsReverse[a.Key].Remove(gm);
         }

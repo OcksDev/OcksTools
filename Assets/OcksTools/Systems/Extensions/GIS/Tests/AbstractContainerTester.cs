@@ -1,12 +1,11 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class AbstractContainerTester : MonoBehaviour
 {
     private GISContainer pp;
-    void Start()
+    private void Start()
     {
         StartCoroutine(sex());
     }
@@ -16,7 +15,7 @@ public class AbstractContainerTester : MonoBehaviour
         yield return new WaitForFixedUpdate();
         pp = GetComponent<GISContainer>();
         var g = GISLol.Instance;
-        if(pp.slots.Count < 1)
+        if (pp.slots.Count < 1)
         {
             var x = new GISItem(g.Items[1].Name);
             x.Amount = 69;

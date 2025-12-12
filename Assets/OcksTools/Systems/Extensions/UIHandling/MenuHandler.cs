@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 
 public class MenuHandler : MonoBehaviour
 {
@@ -13,13 +12,13 @@ public class MenuHandler : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        foreach(var state in Menus)
+        foreach (var state in Menus)
         {
             if (state.InitialTransforms == null) state.InitialTransforms = new Dictionary<GameObject, MultiRef<Vector3, Vector3, Quaternion>>();
             foreach (var gm in state.Menu)
             {
                 if (gm == null) continue;
-                state.InitialTransforms.Add(gm, new MultiRef<Vector3,Vector3,Quaternion>
+                state.InitialTransforms.Add(gm, new MultiRef<Vector3, Vector3, Quaternion>
                     (
                         gm.transform.localPosition,
                         gm.transform.localScale,
@@ -67,7 +66,7 @@ public class MenuHandler : MonoBehaviour
 
         cum.State = newstate;
         SetStates(cum.Menu, newstate);
-        
+
         if (!forced && newstate && cum.OpeningAnimation != null)
         {
             yield return StartCoroutine(cum.OpeningAnimation(cum.Menu));
@@ -88,7 +87,7 @@ public class MenuHandler : MonoBehaviour
     }
     public static void LoadInitials(MenuState cum)
     {
-        foreach(var gm in cum.Menu)
+        foreach (var gm in cum.Menu)
         {
             var dd = cum.InitialTransforms[gm];
             gm.transform.localPosition = dd.a;
@@ -107,7 +106,7 @@ public class MenuHandler : MonoBehaviour
     }
     private IEnumerator AnimSmegging(MenuState cum, System.Func<List<GameObject>, IEnumerator> anim)
     {
-        if ( cum.AnimLocked) yield break;
+        if (cum.AnimLocked) yield break;
         cum.AnimLocked = true;
         yield return StartCoroutine(anim(cum.Menu));
         cum.AnimLocked = false;
@@ -146,7 +145,7 @@ public class MenuHandler : MonoBehaviour
     }
     public static void SetStates(List<GameObject> gms, bool newstate)
     {
-        foreach(var a in gms) a.SetActive(newstate);
+        foreach (var a in gms) a.SetActive(newstate);
     }
 }
 

@@ -16,7 +16,7 @@ public class TestSnm : MonoBehaviour
             banana = OXLerp.Linear((x) =>
             {
                 transform.position = Vector3.Lerp(d, d2, x);
-            },z);
+            }, z);
         }
         else
         {

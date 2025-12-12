@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -17,7 +16,7 @@ public class Hover : MonoBehaviour
         }
         Instance = this;
     }
-    void Update()
+    private void Update()
     {
         CanHover = true;
     }

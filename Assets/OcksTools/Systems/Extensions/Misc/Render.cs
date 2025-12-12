@@ -60,11 +60,11 @@ public class Render
     }
     public static void SetVSync(bool enabled)
     {
-        QualitySettings.vSyncCount = enabled?1:0;
+        QualitySettings.vSyncCount = enabled ? 1 : 0;
     }
     public static void SetAnisotropicFiltering(bool enabled)
     {
-        QualitySettings.anisotropicFiltering = enabled? AnisotropicFiltering.Enable : AnisotropicFiltering.Enable;
+        QualitySettings.anisotropicFiltering = enabled ? AnisotropicFiltering.Enable : AnisotropicFiltering.Enable;
     }
     public static void SetAntiAliasing(int amount)
     {

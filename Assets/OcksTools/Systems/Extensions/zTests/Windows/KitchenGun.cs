@@ -1,9 +1,9 @@
 #if (UNITY_EDITOR)
 
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
-public class KitchenGun: EditorWindow
+public class KitchenGun : EditorWindow
 {
     [MenuItem("OcksTools/Testing/Kitchen Gun")]
     public static void ShowWindow()

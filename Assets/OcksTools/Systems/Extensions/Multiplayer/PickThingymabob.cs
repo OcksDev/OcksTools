@@ -1,10 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using Unity.Netcode;
-using UnityEngine.UI;
-using TMPro;
 using System.Threading.Tasks;
+using TMPro;
+using Unity.Netcode;
+using UnityEngine;
 
 public class PickThingymabob : MonoBehaviour
 {
@@ -45,13 +42,13 @@ public class PickThingymabob : MonoBehaviour
 
     public async void MakeGame()
     {
-        var x =  await MakeGame2();
-        if(x != "Error")
+        var x = await MakeGame2();
+        if (x != "Error")
         {
             relay = RelayMoment.Instance;
             var p = Instantiate(relay.ServerGamerObject, relay.transform.position, relay.transform.rotation, relay.transform);
             p.GetComponent<NetworkObject>().Spawn();
-            if(relay.JoinCodeTextDick!=null) relay.JoinCodeTextDick.text = relay.Join_Code;
+            if (relay.JoinCodeTextDick != null) relay.JoinCodeTextDick.text = relay.Join_Code;
         }
     }
 

@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,7 +15,7 @@ public class DisplayValue : MonoBehaviour
     public string pre_text = "";
     public string post_text = "";
     // Start is called before the first frame update
-    void Awake()
+    private void Awake()
     {
         if (displayType == DisplayType.Slider) slider = reference.GetComponent<Slider>();
         if (displayType == DisplayType.Switcher) switcher = reference.GetComponent<Switcher>();
@@ -26,7 +24,7 @@ public class DisplayValue : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         Func<string, string> textme = (x) =>
         {
@@ -60,7 +58,7 @@ public class DisplayValue : MonoBehaviour
                 {
                     case DisplayDataType.Text: myself.text = textme(switcher.Items[switcher.index]); break;
                     case DisplayDataType.Text_Full: myself.text = "Unsupported"; break;
-                    case DisplayDataType.Percent: myself.text = textme(((int)((((float)switcher.index)/(switcher.Items.Count-1))*100)).ToString()); break;
+                    case DisplayDataType.Percent: myself.text = textme(((int)((((float)switcher.index) / (switcher.Items.Count - 1)) * 100)).ToString()); break;
                     case DisplayDataType.Value: myself.text = textme(switcher.index.ToString()); break;
                 }
                 break;

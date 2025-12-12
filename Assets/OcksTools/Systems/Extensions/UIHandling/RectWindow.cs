@@ -1,13 +1,13 @@
 #if (UNITY_EDITOR)
 
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 using UnityEngine.UI;
 
-public class RectWindow: EditorWindow
+public class RectWindow : EditorWindow
 {
-    GameObject s;
-    float border;
+    private GameObject s;
+    private float border;
     [MenuItem("OcksTools/Rect Utils %&r", false, 1)]
     public static void ShowWindow()
     {
@@ -73,7 +73,7 @@ public class RectWindow: EditorWindow
     }
 
 
-    void fard()
+    private void fard()
     {
 
         foreach (var f in Selection.gameObjects)
@@ -109,7 +109,7 @@ public class RectWindow: EditorWindow
         }
     }
 
-    void fardgrid(int t)
+    private void fardgrid(int t)
     {
         bool e = t == 0;
         foreach (var f in Selection.gameObjects)
@@ -129,7 +129,7 @@ public class RectWindow: EditorWindow
             }
         }
     }
-    void fardborder(int t)
+    private void fardborder(int t)
     {
         bool e = t == 0;
         foreach (var f in Selection.gameObjects)
@@ -139,7 +139,7 @@ public class RectWindow: EditorWindow
             if (g != null)
             {
                 Undo.RecordObject(g, "Fitted rect transform to parent");
-                if(t != 0)g.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, gp.rect.size.y - (border * 2));
+                if (t != 0) g.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, gp.rect.size.y - (border * 2));
                 if (t != 1) g.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, gp.rect.size.x - (border * 2));
             }
         }

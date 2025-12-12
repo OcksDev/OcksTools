@@ -29,8 +29,8 @@ public class BadgeHandler : SingleInstance<BadgeHandler>
         {
             var f = FileSystem.Instance;
             f.FileLocations.Add("Badges", $"{f.UniversalDirectory}\\Badges");
-            f.FileLocations.Add("Profile_Badges",$"{f.UniversalDirectory}\\Badges\\Badges.ox");
-            f.FileLocations.Add("Profile_Badge_Data",$"{f.UniversalDirectory}\\Badges\\Data");
+            f.FileLocations.Add("Profile_Badges", $"{f.UniversalDirectory}\\Badges\\Badges.ox");
+            f.FileLocations.Add("Profile_Badge_Data", $"{f.UniversalDirectory}\\Badges\\Data");
         });
 
         FileSystem.Instance.AssembleFilePaths();
@@ -161,21 +161,21 @@ public class BadgeHandler : SingleInstance<BadgeHandler>
 
     public static void AttemptGrantBadge(string nerd)
     {
-        if(!Owned_Badges.Contains(nerd)) Owned_Badges.Add(nerd);
+        if (!Owned_Badges.Contains(nerd)) Owned_Badges.Add(nerd);
     }
     public static void AttemptRevokeBadge(string nerd)
     {
-        if(Owned_Badges.Contains(nerd)) Owned_Badges.Remove(nerd);
-        if(Pinned_Badges.Contains(nerd)) Pinned_Badges.Remove(nerd);
+        if (Owned_Badges.Contains(nerd)) Owned_Badges.Remove(nerd);
+        if (Pinned_Badges.Contains(nerd)) Pinned_Badges.Remove(nerd);
     }
-    
+
     public static void AttemptPinBadge(string nerd)
     {
-        if(!Pinned_Badges.Contains(nerd) && Owned_Badges.Contains(nerd)) Pinned_Badges.Add(nerd);
+        if (!Pinned_Badges.Contains(nerd) && Owned_Badges.Contains(nerd)) Pinned_Badges.Add(nerd);
     }
     public static void AttemptUnpinBadge(string nerd)
     {
-        if(Pinned_Badges.Contains(nerd)) Pinned_Badges.Remove(nerd);
+        if (Pinned_Badges.Contains(nerd)) Pinned_Badges.Remove(nerd);
     }
 
 }
@@ -187,7 +187,7 @@ public class OXBadge
     [HideInInspector]
     public string GameOrigin;
     [HideInInspector]
-    public string Version; 
+    public string Version;
     public Sprite Icon;
 }
 

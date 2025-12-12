@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class GlobalCallerHandler
 {
@@ -64,7 +62,7 @@ public class Caller<T_Output> : IMultiCaller
     public T_Output Multicall(Func<T_Output> aa, string index)
     {
         if (!GlobalCallerHandler.all.ContainsKey(this)) GlobalCallerHandler.all.Add(this, false);
-       // bool needsfull = false;
+        // bool needsfull = false;
         if (dict.ContainsKey(index))
         {
             return dict[index];
@@ -80,5 +78,5 @@ public class Caller<T_Output> : IMultiCaller
 }
 public interface IMultiCaller
 {
-    public void ClearDict();
+    void ClearDict();
 }

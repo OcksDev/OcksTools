@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -10,9 +8,9 @@ public class PlayerController : MonoBehaviour
     private Vector3 move = new Vector3(0, 0, 0);
     private void Start()
     {
-        rigid= GetComponent<Rigidbody2D>();
+        rigid = GetComponent<Rigidbody2D>();
     }
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         move *= decay;
         Vector3 dir = new Vector3(0, 0, 0);
@@ -20,7 +18,7 @@ public class PlayerController : MonoBehaviour
         if (InputManager.IsKey("move_back", "Player")) dir += Vector3.down;
         if (InputManager.IsKey("move_right", "Player")) dir += Vector3.right;
         if (InputManager.IsKey("move_left", "Player")) dir += Vector3.left;
-        if(dir.magnitude > 0.5f)
+        if (dir.magnitude > 0.5f)
         {
             dir.Normalize();
             move += dir;

@@ -47,7 +47,7 @@ public class Hand
     }
     public void DiscardHand()
     {
-        foreach(var a in CurrentHand)
+        foreach (var a in CurrentHand)
         {
             Deck.DiscardPile.AddTop(a);
         }

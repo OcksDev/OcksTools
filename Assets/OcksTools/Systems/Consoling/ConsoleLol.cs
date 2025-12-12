@@ -1,15 +1,11 @@
 using System;
-using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using System.IO;
-using System.Reflection;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
+using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class ConsoleLol : SingleInstance<ConsoleLol>
 {
@@ -44,7 +40,7 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
      */
 
     public static OXEvent<List<string>, List<string>> ConsoleHook = new OXEvent<List<string>, List<string>>();
-    public static Dictionary<string,OXCommand> CommandDict = new Dictionary<string,OXCommand>();
+    public static Dictionary<string, OXCommand> CommandDict = new Dictionary<string, OXCommand>();
     public static IOrderedEnumerable<KeyValuePair<string, OXCommand>> CommandDict2;
 
     public static Thread _mainthread;
@@ -71,7 +67,7 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
     {
 
         var l = LanguageFileSystem.Instance;
-        if(l != null && UseLanguageFileSystem)
+        if (l != null && UseLanguageFileSystem)
         {
             l.AddFile(LanguageFileIndex);
         }
@@ -114,7 +110,7 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
         GlobalEvent.Invoke("Console");
 
         yield return new WaitForFixedUpdate();
-        foreach(var a in pathcomps)
+        foreach (var a in pathcomps)
         {
             RealAppend(a.a, a.b);
         }
@@ -135,7 +131,8 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
                 ConsoleObjectRef.fix.Select();
                 ConsoleObjectRef.input.Select();
             }
-        }else if (InputManager.IsKeyDown("console_autofill", "Console"))
+        }
+        else if (InputManager.IsKeyDown("console_autofill", "Console"))
         {
             AutoFill();
         }
@@ -249,7 +246,7 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
     {
         if (InputManager.IsKeyDown("console") || InputManager.IsKeyDown("close_menu") || Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2)) return;
         if (InputManager.IsKeyDown("console_autofill", "Console")) return;
-            try
+        try
         {
             if (botju != null) StopCoroutine(botju);
         }
@@ -278,7 +275,7 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
             command = s.Split(' ').ToList();
             command_caps = s2.Split(' ').ToList();
 
-            for (int i = 0; i<5; i++)
+            for (int i = 0; i < 5; i++)
             {
                 command.Add("");
                 command_caps.Add("");
@@ -291,10 +288,10 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
             raa.raw = s;
             raa.raw_caps = s2;
 
-            RecursiveCheck(CommandDict[command[0]],1);
-            
+            RecursiveCheck(CommandDict[command[0]], 1);
 
-            
+
+
         }
         catch
         {
@@ -335,12 +332,12 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
             }
         }
         int fd = 0;
-        if(bestmatch != null)
+        if (bestmatch != null)
         {
             for (int i = 1; i < a.Count; i++)
             {
                 if (a[i] == "") break;
-                if(i==1 && bestmatch.Value == "help")
+                if (i == 1 && bestmatch.Value == "help")
                 {
                     foreach (var banana in CommandDict2)
                     {
@@ -370,7 +367,7 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
             }
         }
 
-        if(bestmatch != null && fd == a.Count-1)
+        if (bestmatch != null && fd == a.Count - 1)
         {
             ConsoleObjectRef.predictr.text = $"<color=#00000000>{ConsoleObjectRef.input.text}</color>" + besttext.Substring(a[fd].Length);
         }
@@ -384,7 +381,7 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
     }
     public void AutoFill()
     {
-        if(bestmatch != null)
+        if (bestmatch != null)
         {
             var e = ConsoleObjectRef.input.text;
             var a = Converter.StringToList(e, " ");
@@ -457,7 +454,7 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
             }
         }
 
-        if(cum.Execution != null && command[lvl] == "")
+        if (cum.Execution != null && command[lvl] == "")
         {
             cum.Execution(raa);
             return;
@@ -467,10 +464,10 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
     public void _SuperSecretInternalConsoleLog(string text = "Logged", string hex = "\"white\"")
     {
         BackLog = BackLog + "<br><color=" + hex + ">" + text;
-        if(BackLog.Length > 10000)
+        if (BackLog.Length > 10000)
         {
             var pp = BackLog.IndexOf("<br>");
-            BackLog = BackLog.Substring(pp+4);
+            BackLog = BackLog.Substring(pp + 4);
         }
         if (botju != null) StopCoroutine(botju);
         botju = StartCoroutine(BottomJump());
@@ -490,7 +487,7 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
     {
         BackLog = "";
     }
-    void ConsoleChange(bool e = false)
+    private void ConsoleChange(bool e = false)
     {
         enable = e;
         ConsoleObject.SetActive(e);
@@ -517,10 +514,10 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
     {
         CommandDict.Add(x.Value, x);
     }
-    public List<MultiRef<string,OXCommand>> pathcomps = new List<MultiRef<string, OXCommand>>();
+    public List<MultiRef<string, OXCommand>> pathcomps = new List<MultiRef<string, OXCommand>>();
     public void Append(string path, OXCommand x)
     {
-        pathcomps.Add(new MultiRef<string,OXCommand>(path, x));
+        pathcomps.Add(new MultiRef<string, OXCommand>(path, x));
     }
     private void RealAppend(string path, OXCommand x)
     {
@@ -550,7 +547,7 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
     }
     public void LoadConsole(string dict)
     {
-        if(!SavePrevCommands) return;
+        if (!SavePrevCommands) return;
         SaveSystem.Instance.GetDataFromFile("console");
         prev_commands = SaveSystem.Instance.GetList("prev", prev_commands, "console");
     }
@@ -559,7 +556,7 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
 
 public static class Console
 {
-    public static List<MultiRef<string,string>> console_backlog = new List<MultiRef<string, string>>();
+    public static List<MultiRef<string, string>> console_backlog = new List<MultiRef<string, string>>();
     // a shortcut/shorthand for the console, makes writing to the console faster
     public static void Log(this object text, string hex = "#bdbdbdff")
     {
@@ -568,13 +565,13 @@ public static class Console
     public static void Log(string text, string hex = "#bdbdbdff")
     {
         // hex can also = "\"white\""
-        if(ConsoleLol.Instance != null && Thread.CurrentThread == ConsoleLol._mainthread)
+        if (ConsoleLol.Instance != null && Thread.CurrentThread == ConsoleLol._mainthread)
         {
             ConsoleLol.Instance._SuperSecretInternalConsoleLog(text, hex);
         }
         else
         {
-            console_backlog.Add(new MultiRef<string, string>(text,hex));
+            console_backlog.Add(new MultiRef<string, string>(text, hex));
         }
     }
     public static void Log(this object text)
@@ -610,8 +607,8 @@ public class OXCommand
 {
     public string Value;
     public List<OXCommand> SubCommands = new List<OXCommand>();
-    public string ParentLanguage="";
-    public string LanguageIndex="";
+    public string ParentLanguage = "";
+    public string LanguageIndex = "";
     public bool IsLeaf = false;
     public bool NoDesc = false;
     public ExpectedInputType Expected = ExpectedInputType.None;

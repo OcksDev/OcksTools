@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -23,7 +22,7 @@ public class InputBuffer : SingleInstance<InputBuffer>
     public void BufferListen(string key, string ide, string name, float time, bool isdown = true)
     {
         //would be run every frame
-        if(isdown? InputManager.IsKeyDown(key, ide) : InputManager.IsKey(key, ide))
+        if (isdown ? InputManager.IsKeyDown(key, ide) : InputManager.IsKey(key, ide))
         {
             var b = new BufferedInput();
             b.Name = name;
@@ -34,7 +33,7 @@ public class InputBuffer : SingleInstance<InputBuffer>
     public void BufferListen(KeyCode key, string ide, string name, float time, bool isdown = true)
     {
         //would be run every frame
-        if(isdown? InputManager.IsKeyDown(key, ide) : InputManager.IsKey(key, ide))
+        if (isdown ? InputManager.IsKeyDown(key, ide) : InputManager.IsKey(key, ide))
         {
             var b = new BufferedInput();
             b.Name = name;

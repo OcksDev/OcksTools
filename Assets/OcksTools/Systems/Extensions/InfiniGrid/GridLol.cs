@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 public class GridLol : SingleInstance<GridLol>
@@ -19,7 +18,7 @@ public class GridLol : SingleInstance<GridLol>
         SaveSystem.SaveAllData.Append("SaveAllTiles", SaveAllTiles);
         SaveSystem.LoadAllData.Append("LoadAllTiles", LoadAllTiles);
         highlighrt = Instantiate(Highligher, transform).GetComponent<SpriteRenderer>();
-        if(UseTilemapExtension) tileextend = GetComponent<GridTileMapExtension>();
+        if (UseTilemapExtension) tileextend = GetComponent<GridTileMapExtension>();
     }
     private SpriteRenderer highlighrt;
     public void Update()
@@ -78,7 +77,7 @@ public class GridLol : SingleInstance<GridLol>
                 }
             }
         }
-        highlighrt.color = HighligherColors[(antiplace||destroya)?0:1];
+        highlighrt.color = HighligherColors[(antiplace || destroya) ? 0 : 1];
         highlighrt.transform.position = GetPosOfScaled(dummythicccheeks);
         highlighrt.transform.localScale = GetScaleOfScaled(dummythicccheeks);
 
@@ -96,13 +95,13 @@ public class GridLol : SingleInstance<GridLol>
         }
     }
 
-    Vector3 GetPosOfScaled(OcksTileData zi)
+    private Vector3 GetPosOfScaled(OcksTileData zi)
     {
         var aa = (zi.pos + new Vector3((zi.size.x - 1) / 2f, (zi.size.y - 1) / 2f, 1)) * GeneralScale;
         aa.z *= -1;
         return aa;
     }
-    Vector3 GetScaleOfScaled(OcksTileData zi)
+    private Vector3 GetScaleOfScaled(OcksTileData zi)
     {
         return new Vector3(zi.size.x, zi.size.y, 1) * GeneralScale;
     }
@@ -148,7 +147,7 @@ public class GridLol : SingleInstance<GridLol>
     public void LoadAllTiles(string dict)
     {
         var a = SaveSystem.Instance.GetList("InfiniGrid", new List<string>(), dict);
-        foreach(var b in a)
+        foreach (var b in a)
         {
             if (b == "") continue;
             var sex = new OcksTileData();
@@ -167,7 +166,7 @@ public class OcksTileData
     public Vector2Int size = Vector2Int.one;
     public int TileType;
     public TileObject tob;
-    Dictionary<string,string> data = new Dictionary<string,string>();
+    private Dictionary<string, string> data = new Dictionary<string, string>();
     public OcksTileData()
     {
         data = GetDataDict();
@@ -182,8 +181,8 @@ public class OcksTileData
 
     public Vector3Int[] GetUsedTiles()
     {
-        var e = new Vector3Int[size.x*size.y];
-        for(int i = 0; i < size.x; i++)
+        var e = new Vector3Int[size.x * size.y];
+        for (int i = 0; i < size.x; i++)
         {
             for (int j = 0; j < size.y; j++)
             {
@@ -200,7 +199,7 @@ public class OcksTileData
         data["pos"] = pos.ToString();
         data["size"] = size.ToString();
         data["type"] = TileType.ToString();
-        foreach(var a in data)
+        foreach (var a in data)
         {
             if ((!defaul.ContainsKey(a.Key)) || (defaul[a.Key] != a.Value))
             {
@@ -220,7 +219,7 @@ public class OcksTileData
         TileType = int.Parse(data["type"]);
     }
 
-    public Dictionary<string,string> GetDataDict()
+    public Dictionary<string, string> GetDataDict()
     {
         return new Dictionary<string, string>()
         {

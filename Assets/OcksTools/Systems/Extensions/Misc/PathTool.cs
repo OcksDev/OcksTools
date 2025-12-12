@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,10 +16,10 @@ public class PathTool : MonoBehaviour
     {
         if (!DrawGizmo) return;
         CalcFullPath();
-        for(int i = 0; i < Pather.Positions.Count-1; i++)
+        for (int i = 0; i < Pather.Positions.Count - 1; i++)
         {
-            Gizmos.color = new Color32(125,255,255,125);
-            Gizmos.DrawLine(Pather.Positions[i], Pather.Positions[i+1]);
+            Gizmos.color = new Color32(125, 255, 255, 125);
+            Gizmos.DrawLine(Pather.Positions[i], Pather.Positions[i + 1]);
         }
     }
 #endif
@@ -95,8 +93,8 @@ public class OXPath
     public bool AutoEndConnect = true;
     public List<Vector3> Positions = new List<Vector3>();
     private List<Vector3> Positions_re = new List<Vector3>();
-    List<float> floats = new List<float>();
-    float total_dist = 0;
+    private List<float> floats = new List<float>();
+    private float total_dist = 0;
 
     private void Awake()
     {

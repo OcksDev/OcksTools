@@ -1,22 +1,18 @@
 #if (UNITY_EDITOR)
 
-using UnityEngine;
 using UnityEditor;
-using TMPro;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using UnityEngine.Events;
+using UnityEngine;
 
-public class ConsoleSetupWindow: EditorWindow
+public class ConsoleSetupWindow : EditorWindow
 {
-    GameObject s;
-    GameObject s3;
-    string s4 = "s";
-    int c = 0;
-    int c2 = 0;
-    string s_d = "";
-    bool gaming = false;
-    Color32 ba;
+    private GameObject s;
+    private GameObject s3;
+    private string s4 = "s";
+    private int c = 0;
+    private int c2 = 0;
+    private string s_d = "";
+    private bool gaming = false;
+    private Color32 ba;
     [MenuItem("OcksTools/Console/Utils")]
     public static void ShowWindow()
     {
@@ -99,10 +95,10 @@ public class ConsoleSetupWindow: EditorWindow
                 break;
             case 1:
 
-                var f222 = new string[2] { "Dialog", "Choice"};
+                var f222 = new string[2] { "Dialog", "Choice" };
                 c2 = GUILayout.Toolbar(c2, f222);
                 gaming = EditorGUILayout.Toggle(new GUIContent("Editor?", "Check this if your in the editor"), gaming);
-                if(gaming) s3 = (GameObject)EditorGUILayout.ObjectField(new GUIContent("Dialog Manager", "The Dialog Manager GameObject used for managing dialog."), s3, typeof(GameObject), true);
+                if (gaming) s3 = (GameObject)EditorGUILayout.ObjectField(new GUIContent("Dialog Manager", "The Dialog Manager GameObject used for managing dialog."), s3, typeof(GameObject), true);
                 GUILayout.Space(5);
                 switch (c2)
                 {
@@ -178,7 +174,7 @@ public class ConsoleSetupWindow: EditorWindow
                 }
                 break;
         }
-        
+
     }
 }
 #endif

@@ -1,11 +1,10 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class RandTester : MonoBehaviour
 {
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         StartCoroutine(WaitLol());
     }
@@ -22,7 +21,7 @@ public class RandTester : MonoBehaviour
 
         StoredRandom.Instance.UnallocateRandom("Gaming");
 
-        if(!StoredRandom.Instance.randoms.ContainsKey("Shungite")) StoredRandom.Instance.DefineRandom("Shungite", 420);
+        if (!StoredRandom.Instance.randoms.ContainsKey("Shungite")) StoredRandom.Instance.DefineRandom("Shungite", 420);
         Debug.Log($"Shungite: {StoredRandom.Instance.GetRand("Shungite").Next()}");
     }
 }

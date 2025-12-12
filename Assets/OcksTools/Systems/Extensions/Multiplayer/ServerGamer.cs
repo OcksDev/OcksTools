@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
@@ -78,7 +77,7 @@ public class ServerGamer : NetworkBehaviour
         switch (style)
         {
             case Style.PeerToHostToPeer:
-                _MessagePingPongServerRpc(id,type,data);
+                _MessagePingPongServerRpc(id, type, data);
                 break;
             case Style.PeerToPeer:
                 _MessagePTPServerRpc(id, type, data);
@@ -173,7 +172,7 @@ public class ServerGamer : NetworkBehaviour
             case Style.DifferToBase: Debug.LogError("Base style can not be Differ"); break;
         }
     }
-    
+
     public void RequestOcksVar(string poopid, string name)
     {
         //Console.Log($"Requesting {ClientID} at {name}");

@@ -3,7 +3,7 @@ using UnityEngine;
 public class testSystemData : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Start()
     {
         Debug.Log(Render.GetMonitorRefreshRate());
         Debug.Log(Render.GetTargetFramerate());

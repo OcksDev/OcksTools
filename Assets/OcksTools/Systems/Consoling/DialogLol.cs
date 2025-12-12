@@ -1,14 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class DialogLol : SingleInstance<DialogLol>
 {
-    public Dictionary<string,OXLanguageFileIndex> LanguageFileIndexes = new Dictionary<string,OXLanguageFileIndex>();
+    public Dictionary<string, OXLanguageFileIndex> LanguageFileIndexes = new Dictionary<string, OXLanguageFileIndex>();
     public bool UseLanguageFileSystem = false;
     public static string BadGex = @"[\^*!&,]";
     public GameObject DialogBoxObject;
@@ -84,7 +83,7 @@ public class DialogLol : SingleInstance<DialogLol>
     }
 
 
-    void Start()
+    private void Start()
     {
         ResetDialog();
 
@@ -105,28 +104,28 @@ public class DialogLol : SingleInstance<DialogLol>
         SetVariable("ExtraDialog", "</> <Name=Red></> This is some bonus content!</> </> <Name=Blue></> Sure is!</>");
         SetVariable("CoolNameColor", "<TitleColor=0,255,255>");
 
-        if(GetUseLFS())
+        if (GetUseLFS())
         {
             FileSystem.Instance.CreateFolder($"{FileSystem.Instance.FileLocations["Lang"]}\\{FileSystem.GameVer}\\Dialog");
         }
 
-        foreach(var a in DialogFiles)
+        foreach (var a in DialogFiles)
         {
             var d = new OXLanguageFileIndex();
             d.FileName = $"Dialog\\{a.Name}";
             d.DefaultFile = a.File;
             d.DontParseDict = true;
-            LanguageFileIndexes.Add(a.Name,d);
+            LanguageFileIndexes.Add(a.Name, d);
         }
-        foreach(var a in ChooseFiles)
+        foreach (var a in ChooseFiles)
         {
             var d = new OXLanguageFileIndex();
             d.FileName = $"Dialog\\{a.Name}";
             d.DefaultFile = a.File;
             d.DontParseDict = true;
-            LanguageFileIndexes.Add(a.Name,d);
+            LanguageFileIndexes.Add(a.Name, d);
         }
-        if(GetUseLFS())
+        if (GetUseLFS())
         {
             foreach (var a in LanguageFileIndexes)
             {
@@ -136,18 +135,18 @@ public class DialogLol : SingleInstance<DialogLol>
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (InputManager.IsKeyDown("dialog_skip", "Dialog"))
         {
-            if(datatype != "Choose")
+            if (datatype != "Choose")
             {
                 attemptskip = true;
             }
         }
         if (InputManager.IsKeyDown("dialog_skip_back", "Dialog"))
         {
-            if(datatype != "Choose")
+            if (datatype != "Choose")
             {
                 backwardskip = true;
                 attemptskip = true;
@@ -161,7 +160,7 @@ public class DialogLol : SingleInstance<DialogLol>
             }
             else
             {
-                if(!CanSkip && charl < fulltext.Length)
+                if (!CanSkip && charl < fulltext.Length)
                 {
                     goto ex;
                 }
@@ -177,11 +176,12 @@ public class DialogLol : SingleInstance<DialogLol>
             {
                 NextLine();
             }
-        }else if(attemptskip && waitforinput)
+        }
+        else if (attemptskip && waitforinput)
         {
             waitforinput = false;
         }
-        ex:
+    ex:
         attemptskip = false;
         backwardskip = false;
         if (CanEscape && InputManager.IsKeyDown("close_menu", "Dialog"))
@@ -207,16 +207,16 @@ public class DialogLol : SingleInstance<DialogLol>
             {
                 cp += cp2;
                 if (cp < 0) charl += Math.Abs((int)(cp / cp2));
-                if(!waited)charl += 1;
+                if (!waited) charl += 1;
                 waited = false;
                 cp = cp2;
                 upt();
                 if (cp3 <= 0)
                 {
                     string e = GetText();
-                    if(e.Length > 0)
+                    if (e.Length > 0)
                     {
-                        e = e.Substring(e.Length-1,1);
+                        e = e.Substring(e.Length - 1, 1);
                     }
                     if (charl < fulltext.Length)
                     {
@@ -250,16 +250,16 @@ public class DialogLol : SingleInstance<DialogLol>
         {
             cp3 -= Time.deltaTime;
         }
-        if(AutoSkip >= 0 && !isautoproc && charl >= fulltext.Length && datatype != "Choose")
+        if (AutoSkip >= 0 && !isautoproc && charl >= fulltext.Length && datatype != "Choose")
         {
             banna = StartCoroutine(AutoSkipe());
         }
     }
-    Coroutine banna;
+    private Coroutine banna;
     public IEnumerator AutoSkipe()
     {
         isautoproc = true;
-        if(AutoSkip > 0) yield return new WaitForSeconds(AutoSkip);
+        if (AutoSkip > 0) yield return new WaitForSeconds(AutoSkip);
         cp = 0;
         NextLine();
         isautoproc = false;
@@ -269,13 +269,13 @@ public class DialogLol : SingleInstance<DialogLol>
         isautoproc = false;
         if (banna != null) StopCoroutine(banna);
     }
-    bool isautoproc = false;
+    private bool isautoproc = false;
     public void PlaySoundPreset(string index)
     {
         switch (index)
         {
             case "A":
-                SoundSystem.Instance.PlaySound(new OXSound("A",0.2f).Pitch(0.5f).Clipping());
+                SoundSystem.Instance.PlaySound(new OXSound("A", 0.2f).Pitch(0.5f).Clipping());
                 break;
             default:
                 Debug.LogWarning("Failed to find a sound preset with the index of " + index);
@@ -327,7 +327,7 @@ public class DialogLol : SingleInstance<DialogLol>
         is_named_set = key.Contains("&");
 
         key = Regex.Replace(key, BadGex, "");
-        for(int i = 0; i < data.Count; i++)
+        for (int i = 0; i < data.Count; i++)
         {
             data[i] = Regex.Replace(data[i], BadGex, "");
         }
@@ -485,7 +485,7 @@ public class DialogLol : SingleInstance<DialogLol>
                 }
                 if (!LoadingNextDialog)
                 {
-                    ApplyAttribute("Skip","");
+                    ApplyAttribute("Skip", "");
                 }
                 break;
             case "Speed":
@@ -655,7 +655,8 @@ public class DialogLol : SingleInstance<DialogLol>
             case "Animate":
                 // Animates part of the text using animations from TextAnimator.cs
                 // Animate=Text, Wave, 10
-                var e = new Func<GameObject>(() => { 
+                var e = new Func<GameObject>(() =>
+                {
                     switch (data[0])
                     {
                         case "Text": return pp.TextObject;
@@ -664,8 +665,8 @@ public class DialogLol : SingleInstance<DialogLol>
                         case "C2": return pp.q_gameobjects[1];
                         case "C3": return pp.q_gameobjects[2];
                         case "C4": return pp.q_gameobjects[3];
-                        default: return pp.TextObject; 
-                    } 
+                        default: return pp.TextObject;
+                    }
                 })();
                 var animat = e.GetComponent<TextAnimator>();
                 string h = "";
@@ -713,15 +714,15 @@ public class DialogLol : SingleInstance<DialogLol>
                 succeeded = true;
                 break;
             default:
-                if(!ignorewarning)Debug.LogWarning("Unknown Dialog Attribute: \"" + key + "\"  (Dialog File: " + ActiveFileName + ")");
+                if (!ignorewarning) Debug.LogWarning("Unknown Dialog Attribute: \"" + key + "\"  (Dialog File: " + ActiveFileName + ")");
                 break;
         }
 
-        if(!succeeded_defaulting && is_default_set)
+        if (!succeeded_defaulting && is_default_set)
         {
             Debug.LogWarning("Invalid default assignment: \"" + key + "\"  (Dialog File: " + ActiveFileName + ")\n(this attribute can not be used to set a default value)");
         }
-        if(!succeeded_named && is_named_set)
+        if (!succeeded_named && is_named_set)
         {
             Debug.LogWarning("Invalid named default assignment: \"" + key + "\"  (Dialog File: " + ActiveFileName + ")\n(this attribute can not be used to set a name based default value)");
         }
@@ -750,34 +751,34 @@ public class DialogLol : SingleInstance<DialogLol>
         try
         {
 
-        //attribute variable format
-        //*var_name
+            //attribute variable format
+            //*var_name
 
-        //language file system query format
-        //!var_name=
-        List<string> nerds = data.StringToList(",");
-        List<string> outpi = new List<string>();
-        foreach(var a in nerds)
-        {
-            string ba = CleanText(a);
-            var dd = Regex.Match(ba, $"^{BadGex}+");
-            var prepend = Regex.Replace(dd.Value, $"[!*]+", "");
-            var realdata = Regex.Replace(ba, $"{BadGex}+", "");
-            if (dd.Success && dd.Value.Contains("*"))
+            //language file system query format
+            //!var_name=
+            List<string> nerds = data.StringToList(",");
+            List<string> outpi = new List<string>();
+            foreach (var a in nerds)
             {
-                var smegleton = VariableParse(variables[realdata]);
-                foreach(var b in smegleton) { outpi.Add(prepend + b); }
+                string ba = CleanText(a);
+                var dd = Regex.Match(ba, $"^{BadGex}+");
+                var prepend = Regex.Replace(dd.Value, $"[!*]+", "");
+                var realdata = Regex.Replace(ba, $"{BadGex}+", "");
+                if (dd.Success && dd.Value.Contains("*"))
+                {
+                    var smegleton = VariableParse(variables[realdata]);
+                    foreach (var b in smegleton) { outpi.Add(prepend + b); }
+                }
+                else if (dd.Success && dd.Value.Contains("!"))
+                {
+                    outpi.Add(prepend + LanguageFileSystem.Instance.GetString("unknown", realdata));
+                }
+                else
+                {
+                    outpi.Add(ba);
+                }
             }
-            else if(dd.Success && dd.Value.Contains("!"))
-            {
-                outpi.Add(prepend + LanguageFileSystem.Instance.GetString("unknown", realdata));
-            }
-            else
-            {
-                outpi.Add(ba);
-            }
-        }
-        return outpi;
+            return outpi;
 
         }
         catch (Exception e)
@@ -798,9 +799,9 @@ public class DialogLol : SingleInstance<DialogLol>
             {
                 h = r.Substring(i);
                 var ind = h.IndexOf(">");
-                var e = r.Substring(i + 1, ind-1);
+                var e = r.Substring(i + 1, ind - 1);
                 int ind2 = e.IndexOf("=");
-                if(ind2 > -1)
+                if (ind2 > -1)
                 {
                     //Debug.Log(e.Substring(0, ind2));
                     ApplyAttribute(e.Substring(0, ind2), e.Substring(ind2 + 1));
@@ -812,7 +813,7 @@ public class DialogLol : SingleInstance<DialogLol>
                     didf = foundendcall;
                 }
 
-                i += ind +1;
+                i += ind + 1;
             }
         }
 
@@ -821,7 +822,7 @@ public class DialogLol : SingleInstance<DialogLol>
 
     public void ParseFromSettings(DialogSettings Settings)
     {
-        if(Settings.CurrentData.ContainsKey("cps")) cps = float.Parse(Settings.Get("cps"));
+        if (Settings.CurrentData.ContainsKey("cps")) cps = float.Parse(Settings.Get("cps"));
         if (Settings.CurrentData.ContainsKey("cps2")) cps2 = float.Parse(Settings.Get("cps2"));
         if (Settings.CurrentData.ContainsKey("cps3")) cps3 = float.Parse(Settings.Get("cps3"));
         if (Settings.CurrentData.ContainsKey("pps")) pps = float.Parse(Settings.Get("pps"));
@@ -848,7 +849,7 @@ public class DialogLol : SingleInstance<DialogLol>
         if (pp != null)
         {
             int i = 0;
-            while(i < pp.qs.Count)
+            while (i < pp.qs.Count)
             {
                 pp.qs[i] = "";
                 i++;
@@ -863,7 +864,7 @@ public class DialogLol : SingleInstance<DialogLol>
         charnum = 0;
         fulltext = "?";
         charl = 1;
-        linenum= -2;
+        linenum = -2;
         cp = 0;
         dialog_active = false;
         datatype = "Dialog";
@@ -911,13 +912,13 @@ public class DialogLol : SingleInstance<DialogLol>
         DialogBoxObject.SetActive(true);
         filename = dialog;
         datatype = datat;
-       // charl = -1;
+        // charl = -1;
         InputManager.AddLockLevel("Dialog");
         //just closes the OcksTools Console when opening any dialog.
         ConsoleLol.Instance.CloseConsole();
 
     }
-    
+
     private void StartDialogOverhead2()
     {
         Console.Log(datatype + ": " + ActiveFileName);
@@ -931,7 +932,7 @@ public class DialogLol : SingleInstance<DialogLol>
         string ppsex = "";
 
 
-        if(GetUseLFS())
+        if (GetUseLFS())
         {
             ppsex = LanguageFileSystem.Instance.GetString(LanguageFileIndexes[filename], "");
         }
@@ -945,7 +946,7 @@ public class DialogLol : SingleInstance<DialogLol>
         {
             var dingsing = smegglesnin[i];
             var gar = dingsing.Substring(2);
-            gar = gar.Substring(0,gar.Length-1);
+            gar = gar.Substring(0, gar.Length - 1);
             var single = variables[gar];
             ppsex = Regex.Replace(ppsex, Regex.Escape(dingsing), single);
         }
@@ -955,7 +956,7 @@ public class DialogLol : SingleInstance<DialogLol>
 
         string d1 = str[0];
         ActiveFileName = d1.Split(Environment.NewLine)[0];
-        if(datat != "Choose")str.RemoveAt(0);
+        if (datat != "Choose") str.RemoveAt(0);
         for (int i = 0; i < str.Count; i++)
         {
             if (str[i].Length > 0 && str[i][0] == ' ') str[i] = str[i].Substring(1);
@@ -966,7 +967,7 @@ public class DialogLol : SingleInstance<DialogLol>
 
     public void FixedUpdate()
     {
-        DialogBoxObject.SetActive(dialog_active); 
+        DialogBoxObject.SetActive(dialog_active);
         UpdateClickThing();
     }
     public void UpdateClickThing()
@@ -1000,7 +1001,7 @@ public class DialogLol : SingleInstance<DialogLol>
     {
     ithoughtifartedbutishit:
         //Debug.Log(charl);
-        if (RichTextEnabled && charl < fulltext.Length && charl >= 0 &&e.Substring(charl, 1) == "<" && (cp3 <= 0 || waitoverride))
+        if (RichTextEnabled && charl < fulltext.Length && charl >= 0 && e.Substring(charl, 1) == "<" && (cp3 <= 0 || waitoverride))
         {
             var h = e.Substring(charl);
             var ii = h.IndexOf('>');
@@ -1015,7 +1016,7 @@ public class DialogLol : SingleInstance<DialogLol>
                     var sh = e.Substring(oldcharl + 1, ii - 1);
                     string[] stuff = sh.Split('=');
                     var charlpreatt = charl;
-                    if(waitoverride && VariableParse(stuff[0])[0] == "Wait")
+                    if (waitoverride && VariableParse(stuff[0])[0] == "Wait")
                     {
                         fulltext = fulltext.Substring(0, oldcharl) + fulltext.Substring(charlpreatt);
                         var off = charl - charlpreatt;
@@ -1024,8 +1025,8 @@ public class DialogLol : SingleInstance<DialogLol>
                     }
                     else
                     {
-                        bool jjj = stuff.Length >1 && ApplyAttribute(stuff[0], stuff[1], true);
-                        if(stuff.Length == 1) jjj = ApplyAttribute(stuff[0], "", true);
+                        bool jjj = stuff.Length > 1 && ApplyAttribute(stuff[0], stuff[1], true);
+                        if (stuff.Length == 1) jjj = ApplyAttribute(stuff[0], "", true);
                         if (jjj)
                         {
                             string mid = "";
@@ -1034,7 +1035,7 @@ public class DialogLol : SingleInstance<DialogLol>
                             {
                                 mid = VariableParse(stuff[1])[0];
                             }
-                            else if(voop == "br")
+                            else if (voop == "br")
                             {
                                 mid = "\n";
                             }
@@ -1057,9 +1058,9 @@ public class DialogLol : SingleInstance<DialogLol>
                             emu = voop;
                         }
                     }
-                    
+
                 }
-                catch(Exception ezez)
+                catch (Exception ezez)
                 {
                     try
                     {
@@ -1071,7 +1072,7 @@ public class DialogLol : SingleInstance<DialogLol>
                         Debug.LogWarning($"Something went fucked trying to parse a dialog attribute\n{ezez}");
                     }
                 }
-                if(emu != "Wait")
+                if (emu != "Wait")
                 {
                     goto ithoughtifartedbutishit;
                 }
@@ -1161,7 +1162,7 @@ public class DialogLol : SingleInstance<DialogLol>
                                 {
                                     string he = attribute.Substring(0, attribute.IndexOf(">"));
                                     List<string> he2 = new List<string>(he.Split("="));
-                                    if(he2.Count > 1)
+                                    if (he2.Count > 1)
                                     {
                                         ApplyAttribute(he2[0], he2[1]);
                                     }
@@ -1169,7 +1170,7 @@ public class DialogLol : SingleInstance<DialogLol>
                                     {
                                         ApplyAttribute(he2[0], "");
                                     }
-                                } 
+                                }
                             }
                             if (InstantShowAllText)
                             {
@@ -1181,7 +1182,7 @@ public class DialogLol : SingleInstance<DialogLol>
                             pp.color = color;
                             pp.tit_color = tit_color;
                             pp.bg_color = bg_color;
-                            if(!InstantShowAllText) pp.UpdateText(); // Why does this break InstantShowAllText?
+                            if (!InstantShowAllText) pp.UpdateText(); // Why does this break InstantShowAllText?
                             pp.UpdateColor();
                             UpdateClickThing();
                         }
@@ -1275,7 +1276,7 @@ public class DialogLol : SingleInstance<DialogLol>
 
     public bool GetUseLFS()
     {
-        if(!UseLanguageFileSystem) return false;
+        if (!UseLanguageFileSystem) return false;
         return LanguageFileSystem.Instance != null;
     }
 
@@ -1290,7 +1291,7 @@ public class DialogLol : SingleInstance<DialogLol>
 public class DialogHolder
 {
     public string Name;
-    public TextAsset File; 
+    public TextAsset File;
 }
 
 [System.Serializable]
@@ -1339,7 +1340,7 @@ public class DialogSettings
         CurrentData.Add("CanEscape", a.CanEscape.ToString());
         CurrentData.Add("CanSkipBack", a.CanSkipback.ToString());
         CurrentData.Add("InstantShowAllText", a.InstantShowAllText.ToString());
-    }   
+    }
     public string Get(string data)
     {
         return CurrentData[data];
@@ -1351,7 +1352,7 @@ public class DialogSettings
     public void CopyFrom(DialogSettings a)
     {
         CurrentData.Clear();
-        foreach(var b in a.CurrentData)
+        foreach (var b in a.CurrentData)
         {
             CurrentData.Add(b.Key, b.Value);
         }

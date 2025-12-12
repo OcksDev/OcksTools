@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,7 +7,7 @@ public class GISDisplay : MonoBehaviour
     public GISItem item;
     public GameObject[] displays;
     public TextMeshProUGUI amnt;
-    public bool  IsPhysical = false;
+    public bool IsPhysical = false;
     public bool UpdateOnFixedUpdate = true;
     private bool hasfoundcomponents = false;
     private SpriteRenderer[] spriteRenderer;
@@ -28,7 +26,7 @@ public class GISDisplay : MonoBehaviour
             if (olditem == item) return;
             olditem = item;
         }*/
-            
+
 
 
         if (!hasfoundcomponents) GetStuff();
@@ -36,7 +34,7 @@ public class GISDisplay : MonoBehaviour
         amnt.text = data.Count;
         if (IsPhysical)
         {
-            for(int i = 0; i < data.Images.Length; i++)
+            for (int i = 0; i < data.Images.Length; i++)
             {
                 spriteRenderer[i].sprite = data.Images[i];
             }
@@ -76,8 +74,8 @@ public class GISDisplay : MonoBehaviour
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    private void FixedUpdate()
     {
-        if(UpdateOnFixedUpdate)UpdateDisplay();
+        if (UpdateOnFixedUpdate) UpdateDisplay();
     }
 }

@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -22,7 +21,7 @@ public class GlobalAttributeCollector : MonoBehaviour
 
         foreach (var ass in assemblies)
         {
-            if(ass == null) continue;
+            if (ass == null) continue;
             // object instance = Activator.CreateInstance(t);
             var methods = ass
                 .GetTypes()
@@ -63,7 +62,7 @@ public class GlobalAttributeCollector : MonoBehaviour
                 }
             }
         }
-        
+
 
 
     }
@@ -71,10 +70,10 @@ public class GlobalAttributeCollector : MonoBehaviour
 }
 public static class Freakybob
 {
-    public static List<MultiRef<string,MethodInfo>> ToMultiref(this IEnumerable<MethodInfo> banana, Func<MethodInfo,string> nutt)
+    public static List<MultiRef<string, MethodInfo>> ToMultiref(this IEnumerable<MethodInfo> banana, Func<MethodInfo, string> nutt)
     {
-        var dd = new List<MultiRef<string,MethodInfo>>();
-        foreach(var z in banana)
+        var dd = new List<MultiRef<string, MethodInfo>>();
+        foreach (var z in banana)
         {
             dd.Add(new MultiRef<string, MethodInfo>(z.ReflectedType.Name, z));
         }

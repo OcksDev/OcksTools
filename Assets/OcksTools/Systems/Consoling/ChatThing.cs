@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,18 +11,18 @@ public class ChatThing : MonoBehaviour
     private VerticalLayoutGroup penis;
     private TextMeshProUGUI bonbon;
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
 
         // to do for v2: fix multiline text sometimes causing text to flow offscreen
 
         penis = GetComponentInParent<VerticalLayoutGroup>();
         dt = deatht;
-        bonbon= GetComponent<TextMeshProUGUI>();
+        bonbon = GetComponent<TextMeshProUGUI>();
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         dt -= Time.deltaTime;
         if (dt < 0)
@@ -32,7 +30,7 @@ public class ChatThing : MonoBehaviour
             var fsex = bonbon.color;
             fsex.a -= (1 / fadet) * Time.deltaTime;
             bonbon.color = fsex;
-            if(fsex.a <= 0.1f)
+            if (fsex.a <= 0.1f)
             {
                 Destroy(gameObject);
             }
@@ -45,6 +43,6 @@ public class ChatThing : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        
+
     }
 }

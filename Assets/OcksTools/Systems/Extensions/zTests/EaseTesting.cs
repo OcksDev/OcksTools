@@ -20,21 +20,22 @@ public class EaseTesting : MonoBehaviour
 
 
         var pp = peb.transform.position;
-        yield return StartCoroutine(OXLerp.Bounce((x) => {
+        yield return StartCoroutine(OXLerp.Bounce((x) =>
+        {
             peb.transform.position = Vector3.LerpUnclamped(pp, Vector3.zero, RandomFunctions.EaseInAndOut(x));
         }, 4, 1));
-        StartCoroutine(OXLerp.BounceInfinite((x) => 
+        StartCoroutine(OXLerp.BounceInfinite((x) =>
         {
             peb.transform.position = Vector3.LerpUnclamped(pp, Vector3.zero, RandomFunctions.EaseInAndOut(x));
         }));
         StartCoroutine(OXLerp.LinearInfniteLooped((x) =>
         {
-            peb2.transform.position = (Quaternion.Euler(0, 0, RandomFunctions.EaseInAndOut(x)*360) * Vector3.right) * 2.5f;
+            peb2.transform.position = (Quaternion.Euler(0, 0, RandomFunctions.EaseInAndOut(x) * 360) * Vector3.right) * 2.5f;
         }, 3f));
 
     }
 
-    void Update()
+    private void Update()
     {
         timer = timer + Time.deltaTime * speed;
         timer %= 1;
@@ -48,7 +49,7 @@ public class EaseTesting : MonoBehaviour
     private void sex(int index, float perc)
     {
         var x = gameObjects[index].transform.position;
-        x.x = perc*14;
+        x.x = perc * 14;
         x.x -= 7;
         gameObjects[index].transform.position = x;
     }

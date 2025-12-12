@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,12 +14,12 @@ public class CameraLol : SingleInstance<CameraLol>
     private void FixedUpdate()
     {
         int i = -1;
-        foreach(var shake in shakeo)
+        foreach (var shake in shakeo)
         {
             i++;
             shake[0] *= shake[1];
         }
-        while (i>=0)
+        while (i >= 0)
         {
             if (shakeo.Count > 0 && shakeo[i][0] <= 0.01f)
             {

@@ -1,9 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 public class GISLol : SingleInstance<GISLol>
 {
@@ -12,20 +9,20 @@ public class GISLol : SingleInstance<GISLol>
     public GISDisplay Mouse_Displayer;
     public GameObject MouseFollower;
     public List<GISItem_Data> Items = new List<GISItem_Data>();
-    public Dictionary<string,GISItem_Data> ItemDict = new Dictionary<string, GISItem_Data>();
+    public Dictionary<string, GISItem_Data> ItemDict = new Dictionary<string, GISItem_Data>();
 
     public Dictionary<string, Func<string, GISItemComponentBase>> ComponentTransformers = new Dictionary<string, Func<string, GISItemComponentBase>>();
     public Dictionary<string, string> ClassToIdentifier = new Dictionary<string, string>();
 
-    public Dictionary<string,GISContainer> All_Containers = new Dictionary<string, GISContainer>();
-    
-    bool nono = false;
+    public Dictionary<string, GISContainer> All_Containers = new Dictionary<string, GISContainer>();
+
+    private bool nono = false;
 
     public void LoadTempForAll()
     {
         if (nono) return;
         nono = true;
-        foreach(var con in All_Containers)
+        foreach (var con in All_Containers)
         {
             if (con.Value != null && !con.Value.IsAbstract) con.Value.LoadTempContents();
         }
@@ -34,7 +31,7 @@ public class GISLol : SingleInstance<GISLol>
     public override void Awake2()
     {
         Mouse_Held_Item = new GISItem();
-        foreach(var item in Items)
+        foreach (var item in Items)
         {
             ItemDict.Add(item.Name, item);
         }
@@ -47,7 +44,7 @@ public class GISLol : SingleInstance<GISLol>
             InputManager.CreateKeyAllocation("item_pick", KeyCode.Mouse2);
             InputManager.CreateKeyAllocation("item_alt", KeyCode.LeftShift);
             InputManager.CreateKeyAllocation("item_mod", KeyCode.LeftControl);
-        }); 
+        });
     }
 
 
@@ -67,7 +64,7 @@ public class GISLol : SingleInstance<GISLol>
             }
             file.DefaultString = Converter.EscapedDictionaryToString(dat, Environment.NewLine, ": ");
             l.ReadFile(file);
-            foreach(var a in l.GetDict("Items"))
+            foreach (var a in l.GetDict("Items"))
             {
                 ItemDict[a.Key].SetLangData(a.Value);
                 Debug.Log(ItemDict[a.Key].DisplayName + ": " + ItemDict[a.Key].Description);
@@ -165,7 +162,7 @@ public class GISItem
 
         if (!usebase && !comp)
         {
-            if(sexnut.Components.Count != Components.Count) comp = false;
+            if (sexnut.Components.Count != Components.Count) comp = false;
             else
             {
                 foreach (var c in Components)
@@ -232,7 +229,7 @@ public class GISItem
 
         Dictionary<string, string> bb = def.MergeDictionary(Data);
 
-        if (bb["Index"]=="Empty") bb = new Dictionary<string, string>(); //no need to store this, saves a large amount of space
+        if (bb["Index"] == "Empty") bb = new Dictionary<string, string>(); //no need to store this, saves a large amount of space
         if (bb.ContainsKey("Count") && bb["Count"] == "1") bb.Remove("Count"); //no need to store this, saves a minimal amount of space
         e = Converter.EscapedDictionaryToString(bb, "~|~", "~o~");
         return e;
@@ -252,7 +249,7 @@ public class GISItem
 
         Name = Data["Index"];
         Amount = int.Parse(Data["Count"]);
-        Components = Data["Extra"].EscapedStringToDictionary().ABDictionaryToCDDictionary((x, y) => x, (x, y) => ItemDataConvert(x,y));
+        Components = Data["Extra"].EscapedStringToDictionary().ABDictionaryToCDDictionary((x, y) => x, (x, y) => ItemDataConvert(x, y));
         return this;
     }
     public static GISItemComponentBase ItemDataConvert(string wish, string data)
@@ -311,8 +308,8 @@ public class GISItem_Data
     }
     public string GetLangData()
     {
-        List<string> d = new List<string>() 
-        { 
+        List<string> d = new List<string>()
+        {
             DisplayName,
             Description,
         };

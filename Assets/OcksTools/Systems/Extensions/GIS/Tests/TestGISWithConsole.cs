@@ -45,7 +45,7 @@ public class TestGISWithConsole : MonoBehaviour
             Console.Log($"c equals d: {c.Compare(d)}");
 
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             Console.LogError(e);
         }

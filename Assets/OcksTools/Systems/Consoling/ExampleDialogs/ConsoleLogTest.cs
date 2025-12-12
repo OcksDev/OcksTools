@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -8,7 +6,7 @@ public class ConsoleLogTest : MonoBehaviour
     public int amnt = 1;
     public bool weewee = false;
     public TextMeshProUGUI textMeshProUGUI;
-    void Update()
+    private void Update()
     {
         if (weewee)
         {

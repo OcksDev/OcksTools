@@ -19,7 +19,7 @@ public class MultiThreaderEnsure : SingleInstance<MultiThreaderEnsure>
     //Cons: Threads can sometimes overreach and try to run methods that other threads already are pulling, which could slow down performance slightly. (it shouldn't effect functionality tho)
 
     // OXThreadPoolC = Only takes in on method, every thread just executes that method forever.
-        //   Dont forget to add your own Thread.Sleep into your given executor, type C can and will use maximum power if not otherwise told
+    //   Dont forget to add your own Thread.Sleep into your given executor, type C can and will use maximum power if not otherwise told
 
     //Pros: Threads used as efficiently as you let them, allows for greater control of program flow
     //Cons: Can only run one input method instead of being able to just handle arbitarary inputs at arbitrary times
@@ -28,7 +28,7 @@ public class MultiThreaderEnsure : SingleInstance<MultiThreaderEnsure>
     public static List<IOXThreadPool> Nerds = new List<IOXThreadPool>();
     public override void Awake2()
     {
-        for(int i = 0; i < Nerds.Count; i++)
+        for (int i = 0; i < Nerds.Count; i++)
         {
             StartCoroutine(FixSlackers(Nerds[i]));
         }
@@ -80,8 +80,8 @@ public class OXThreadPoolA : IOXThreadPool
             MultiThreaderEnsure.Nerds.Add(this);
         }
     }
-    int gg = 0;
-    int PullNextThread()
+    private int gg = 0;
+    private int PullNextThread()
     {
         gg = OXFunctions.Mod(gg + 1, ThreadCount);
         if (!allconfirmed && !SuccessfulThreads.Contains(gg) && SuccessfulThreads.Count > 0)
@@ -241,8 +241,8 @@ public class OXThreadPoolC : IOXThreadPool
             MultiThreaderEnsure.Nerds.Add(this);
         }
     }
-    int gg = 0;
-    int PullNextThread()
+    private int gg = 0;
+    private int PullNextThread()
     {
         gg = OXFunctions.Mod(gg + 1, ThreadCount);
         if (!allconfirmed && !SuccessfulThreads.Contains(gg) && SuccessfulThreads.Count > 0)
@@ -291,8 +291,8 @@ public class OXThreadPoolC : IOXThreadPool
 
 public interface IOXThreadPool
 {
-    public void Add(System.Action gaming);
-    public bool CheckAll();
+    void Add(System.Action gaming);
+    bool CheckAll();
 
 }
 

@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,7 +7,7 @@ public class EntityOXS : MonoBehaviour
     public double Health = 100;
     public double Shield = 100;
     public double Max_Health = 100;
-    public double Max_Shield = 100; 
+    public double Max_Shield = 100;
     public List<EffectProfile> Effects = new List<EffectProfile>();
     public void Hit(DamageProfile hit)
     {
@@ -51,7 +49,7 @@ public class EntityOXS : MonoBehaviour
     {
         Health = System.Math.Clamp(Health, 0, Max_Health);
         Shield = System.Math.Clamp(Shield, 0, Max_Shield);
-        for(int i = 0; i < Effects.Count; i++)
+        for (int i = 0; i < Effects.Count; i++)
         {
             Effects[i].TimeRemaining -= Time.deltaTime;
             if (Effects[i].TimeRemaining <= 0)
@@ -166,7 +164,7 @@ public class DamageProfile
     public double Damage;
     public List<EffectProfile> Effects = new List<EffectProfile>();
     public Dictionary<string, int> Procs = new Dictionary<string, int>();
-    public DamageProfile(UnityEngine.Object OB, DamageType How,DamageType What, double damage)
+    public DamageProfile(UnityEngine.Object OB, DamageType How, DamageType What, double damage)
     {
         SourceObject = OB;
         HowDamageWasDealt = How;
@@ -225,7 +223,7 @@ public class EffectProfile
         Name = type;
         Duration = time;
         CombineMethod = add_method;
-        Stack =stacks;
+        Stack = stacks;
         SetData();
     }
     public EffectProfile()

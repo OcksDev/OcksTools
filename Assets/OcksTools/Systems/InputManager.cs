@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,7 +11,7 @@ public class InputManager : SingleInstance<InputManager>
     public static Dictionary<string, string> gamekeynames = new Dictionary<string, string>();
     public static OXEvent CollectInputAllocs = new OXEvent();
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         AssembleTheCodes();
         ResetLockLevel();
@@ -121,7 +119,7 @@ public class InputManager : SingleInstance<InputManager>
     {
         // ide = {"a", "b"}  locklevel = {"a", "b", "c"} returns: true
         // ide = {"a", "b", "no"}  locklevel = {"a", "b"} returns: false
-        return locklevel.Count==0 || ide.Count == 0 || ide[0] == "" 
+        return locklevel.Count == 0 || ide.Count == 0 || ide[0] == ""
             || ide.AllItemsFromListInList(locklevel);
     }
 
@@ -137,7 +135,7 @@ public class InputManager : SingleInstance<InputManager>
 
     public static void SetLockLevel(string e)
     {
-        locklevel = new List<string>() {e};
+        locklevel = new List<string>() { e };
     }
 
     public static bool AddLockLevel(string e)
@@ -201,7 +199,7 @@ public class InputManager : SingleInstance<InputManager>
     }
     public static bool IsKeyDown(KeyCode baller, string ide)
     {
-        return IsKeyDown(baller, new List<string>() { ide});
+        return IsKeyDown(baller, new List<string>() { ide });
     }
     public static bool IsKey(KeyCode baller, string ide)
     {
@@ -228,7 +226,7 @@ public class InputManager : SingleInstance<InputManager>
         if (!IsDie(ide)) return false;
         if (!GetSelected(ide)) return false;
         var keys = gamekeys[baller];
-        foreach(var key in keys)
+        foreach (var key in keys)
         {
             if (Input.GetKeyDown(key)) return true;
         }
@@ -258,7 +256,7 @@ public class InputManager : SingleInstance<InputManager>
     }
     public static bool IsKeyDown(string baller, string a = "")
     {
-        return IsKeyDown(baller, new List<string>() { a});
+        return IsKeyDown(baller, new List<string>() { a });
     }
     public static bool IsKey(string baller, string a = "")
     {

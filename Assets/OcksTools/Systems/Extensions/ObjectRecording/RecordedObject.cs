@@ -33,7 +33,7 @@ public class RecordedObject : MonoBehaviour
         if (body2d != null) body2d.simulated = true;
         if (gam != null) StopCoroutine(gam);
         Timer.StartRecording(Time.time);
-        if(RecordOptions.HasFlag(ThingsToRecord.Position)) Position.StartRecording(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.Position)) Position.StartRecording(Time.time);
         if (RecordOptions.HasFlag(ThingsToRecord.Scale)) Scale.StartRecording(Time.time);
         if (RecordOptions.HasFlag(ThingsToRecord.Rotation)) Rotation.StartRecording(Time.time);
         if (RecordOptions.HasFlag(ThingsToRecord.Velocity)) Velocity.StartRecording(Time.time);
@@ -78,7 +78,7 @@ public class RecordedObject : MonoBehaviour
         status = 0;
         if (body != null) body.isKinematic = false;
         if (body2d != null) body2d.simulated = true;
-        if(gam != null) StopCoroutine(gam);
+        if (gam != null) StopCoroutine(gam);
     }
     public void Poll()
     {
@@ -93,7 +93,7 @@ public class RecordedObject : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        if(UseFixedUpdate) PollAll = Poll;
+        if (UseFixedUpdate) PollAll = Poll;
     }
     private void Update()
     {
@@ -128,7 +128,7 @@ public class RecordedObject : MonoBehaviour
                 Poll();
             }
         }
-        if(status == RecordingStatus.Playing)
+        if (status == RecordingStatus.Playing)
         {
             if (RecordOptions.HasFlag(ThingsToRecord.Position))
             {
@@ -241,7 +241,7 @@ public class RecordedObject : MonoBehaviour
 public class DataRecord<T>
 {
     public List<MultiRef<float, T>> record = new List<MultiRef<float, T>>();
-    float starttime = 0;    
+    private float starttime = 0;
     public void StartRecording(float t)
     {
         record.Clear();
@@ -257,7 +257,7 @@ public class DataRecord<T>
     public void PollData(T data, float time)
     {
         time -= starttime;
-        if(record.Count == 0)
+        if (record.Count == 0)
         {
             record.Add(new MultiRef<float, T>(time, data));
             return;
@@ -265,17 +265,17 @@ public class DataRecord<T>
         var dingle = record.Last();
         if (!data.Equals(dingle.b))
         {
-            var dif = time- record.Last().a;
-            if(dif > (delta+0.001f))
+            var dif = time - record.Last().a;
+            if (dif > (delta + 0.001f))
             {
-                record.Add(new MultiRef<float, T>(time-delta, dingle.b));
+                record.Add(new MultiRef<float, T>(time - delta, dingle.b));
             }
             record.Add(new MultiRef<float, T>(time, data));
         }
     }
-    int last = 0;
+    private int last = 0;
     public float playback_speed = 1;
-    bool reversed = false;
+    private bool reversed = false;
     public T StartPlayback(float t, float speed = 1)
     {
         playback_speed = speed;
@@ -287,7 +287,7 @@ public class DataRecord<T>
         {
             return StartPlaybackReverse(t);
         }
-        else if(speed==0)
+        else if (speed == 0)
         {
             throw new Exception("Can not play record at zero speed lol");
         }
@@ -298,9 +298,9 @@ public class DataRecord<T>
         playback_speed *= -1;
         reversed = true;
         last = record.Count - 1;
-        return record[record.Count-1].b;
+        return record[record.Count - 1].b;
     }
-    public MultiRef<float,T,T>? PollPlayback(float time)
+    public MultiRef<float, T, T>? PollPlayback(float time)
     {
         if (reversed) return PollPlaybackReversed(time);
         time -= starttime;
@@ -309,22 +309,22 @@ public class DataRecord<T>
         if (record[last].a <= time)
         {
             last++;
-            var dif = record[last].a - record[last-1].a;
+            var dif = record[last].a - record[last - 1].a;
             dif /= playback_speed;
-            return new MultiRef<float, T, T>(dif,record[last-1].b, record[last].b);
+            return new MultiRef<float, T, T>(dif, record[last - 1].b, record[last].b);
         }
         return null;
     }
-    private MultiRef<float,T,T>? PollPlaybackReversed(float time)
+    private MultiRef<float, T, T>? PollPlaybackReversed(float time)
     {
-        var st = ((starttime - time) * playback_speed) + record[record.Count-1].a;
+        var st = ((starttime - time) * playback_speed) + record[record.Count - 1].a;
         if (last == 0) return null;
         if (record[last].a >= st)
         {
             last--;
-            var dif = Mathf.Abs(record[last+1].a - record[last].a);
+            var dif = Mathf.Abs(record[last + 1].a - record[last].a);
             dif /= playback_speed;
-            return new MultiRef<float, T, T>(dif,record[last+1].b, record[last].b);
+            return new MultiRef<float, T, T>(dif, record[last + 1].b, record[last].b);
         }
         return null;
     }

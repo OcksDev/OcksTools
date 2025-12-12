@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -49,7 +48,7 @@ public class ConsoleCommands : MonoBehaviour
     private static OXThreadPoolA thread_a;
     public static void Test_threadedlogs()
     {
-        if(thread_a == null)
+        if (thread_a == null)
         {
             Test_createthread();
             Console.LogWarning("Thread created, please run again");
@@ -74,8 +73,8 @@ public class ConsoleCommands : MonoBehaviour
     }
     public static void Test_remap()
     {
-        Console.Log(0.5.Remap(0,1,0,10));
-        Console.Log(5.0.Remap(0,10,0,1));
+        Console.Log(0.5.Remap(0, 1, 0, 10));
+        Console.Log(5.0.Remap(0, 10, 0, 1));
     }
 
     [AddToEvent("TestEvent")]
@@ -100,7 +99,7 @@ public class ConsoleCommands : MonoBehaviour
     {
         var a = SpawnSystem.Spawn(new SpawnData("Circle")
             .Parent("Holder")
-            .Data(new Dictionary<string, string>() { {"TestOB", "Circle" }})
+            .Data(new Dictionary<string, string>() { { "TestOB", "Circle" } })
             .MultiplayerShare()
             );
         if (r.com[2] == "p")
@@ -120,7 +119,7 @@ public class ConsoleCommands : MonoBehaviour
             ChatLol.Instance.WriteChat("Chat Test Lol", "#" + UnityEngine.Random.ColorHSV().ColorToString());
         }
     }
-    
+
     public static void Test_listall()
     {
         foreach (var d in Tags.AllTags["Exist"])
@@ -251,7 +250,7 @@ public class ConsoleCommands : MonoBehaviour
         f.CreateFolder($"{f.GameDirectory}\\Logs");
         DateTime currentDateTime = DateTime.Now;
         var x = $"{f.GameDirectory}\\Logs\\{currentDateTime.ToString("MM-dd-yyyy_HH-mm-ss")}.txt";
-        f.WriteFile(x, ConsoleLol.Instance.BackLog.Replace("<br>","\n"), true);
+        f.WriteFile(x, ConsoleLol.Instance.BackLog.Replace("<br>", "\n"), true);
         Console.Log("Saved console to: " + x);
     }
     public static void Test_refs()
@@ -272,8 +271,8 @@ public class ConsoleCommands : MonoBehaviour
     }
     public static void Test_destroy()
     {
-        var a = new Dictionary<string,object>(Tags.AllTags["Exist"]);
-        foreach(var b in a)
+        var a = new Dictionary<string, object>(Tags.AllTags["Exist"]);
+        foreach (var b in a)
         {
             var penis = (GameObject)b.Value;
             var d = SpawnSystem.GetData(penis).data;
@@ -432,18 +431,18 @@ public class ConsoleCommands : MonoBehaviour
         int cmds_per_page = 10;
 
         int page = 0;
-        int maxpg = (ConsoleLol.CommandDict.Count-1) / cmds_per_page;
+        int maxpg = (ConsoleLol.CommandDict.Count - 1) / cmds_per_page;
         try
         {
-            page = int.Parse(r.com[1])-1;
-            page= System.Math.Clamp(page, 0, maxpg);
+            page = int.Parse(r.com[1]) - 1;
+            page = System.Math.Clamp(page, 0, maxpg);
         }
         catch
         {
 
         }
 
-        Console.Log(LanguageFileSystem.Instance.GetString("Console", "Message_Help") + $"({page+1}/{maxpg+1})");
+        Console.Log(LanguageFileSystem.Instance.GetString("Console", "Message_Help") + $"({page + 1}/{maxpg + 1})");
 
         try
         {
@@ -477,7 +476,7 @@ public class ConsoleCommands : MonoBehaviour
         }
 
         string laste = "";
-        foreach(var a in r.com)
+        foreach (var a in r.com)
         {
             if (a == "") break;
             laste = a;
@@ -490,7 +489,7 @@ public class ConsoleCommands : MonoBehaviour
             Console.LogError(LanguageFileSystem.Instance.GetString("Console", "Error_HelpInspect") + laste);
             return;
         }
-        if(ccccc == m)
+        if (ccccc == m)
         {
             RecursiveHelp(ccccc, " - " + m.Value);
         }
@@ -578,7 +577,7 @@ public class TestClass2
     public TestClass2()
     {
     }
-    public TestClass2(Func<string> inp, Action<int,int> g, Vector3 e, OXEvent<int,int> gg)
+    public TestClass2(Func<string> inp, Action<int, int> g, Vector3 e, OXEvent<int, int> gg)
     {
         inp().Log();
     }

@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,7 +17,7 @@ public class SoundSystem : SingleInstance<SoundSystem>
     public List<OXSoundData> AudioClips = new List<OXSoundData>();
     public Dictionary<string, OXSoundData> AudioClipDict = new Dictionary<string, OXSoundData>();
     private List<AudioSource> AudioSources = new List<AudioSource>();
-  
+
 
     public OXEvent SoundMod = new OXEvent();
     public OXEvent SoundDictCompile = new OXEvent();
@@ -69,7 +68,7 @@ public class SoundSystem : SingleInstance<SoundSystem>
         }
         SoundMod.Invoke();
         sound._volume *= pvolume;
-        if(sound._pos == null) sound.psource = FindOpenSource(sound, findexisting);
+        if (sound._pos == null) sound.psource = FindOpenSource(sound, findexisting);
     }
 
     public AudioSource FindOpenSource(OXSound sound, bool findexisting = false)
@@ -102,7 +101,7 @@ public class SoundSystem : SingleInstance<SoundSystem>
 
     public OXSound PlaySound(OXSound sound)
     {
-        ModSound(sound,sound._clipping);
+        ModSound(sound, sound._clipping);
         var volume = 1f;
         var p = sound.psource;
         p.pitch = sound._pitch;
@@ -116,7 +115,7 @@ public class SoundSystem : SingleInstance<SoundSystem>
         volume *= MasterVolume;
         volume *= sound._volume;
         p.volume = volume;
-        if(sound._pos != null)
+        if (sound._pos != null)
         {
             AudioSource.PlayClipAtPoint(p.clip, sound._pos.Value, volume);
         }
@@ -179,7 +178,7 @@ public class OXSound
         _pan = v;
         return this;
     }
-    public OXSound RandomPitch(float min,float max)
+    public OXSound RandomPitch(float min, float max)
     {
         _rand_min = min;
         _rand_max = max;

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Grapple : MonoBehaviour
@@ -12,13 +10,13 @@ public class Grapple : MonoBehaviour
     public float rg_max_vel = 10f;
     public float movespeed = 0.2f;
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         rig = GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         // the vector3 called "b" is the target position, so you just change this to change the swing point
         var b = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -35,7 +33,7 @@ public class Grapple : MonoBehaviour
             c.z = 0;
             Debug.DrawLine(transform.position, c, new Color32(255, 255, 255, 255), 0.02f);
         }
-        if(Mathf.Abs(rig.linearVelocity.x) > rg_max_vel)
+        if (Mathf.Abs(rig.linearVelocity.x) > rg_max_vel)
         {
             var bb = rig.linearVelocity;
             bb.x *= 0.97f;

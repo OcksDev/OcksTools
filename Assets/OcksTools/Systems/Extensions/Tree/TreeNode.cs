@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -40,7 +39,7 @@ public class TreeNode : MonoBehaviour
     {
         InitializeNode();
     }
-    bool hasinit = false;
+    private bool hasinit = false;
     public void InitializeNode()
     {
         if (hasinit) return;
@@ -63,7 +62,7 @@ public class TreeNode : MonoBehaviour
             {
                 case ViewStates.Locked:
                     lockedview = true;
-                    if(t.MeetsReqs(LockPrerequisites, UnlockRequirement))
+                    if (t.MeetsReqs(LockPrerequisites, UnlockRequirement))
                     {
                         ViewState = ViewStates.Available;
                         goto Ragg;
@@ -85,7 +84,7 @@ public class TreeNode : MonoBehaviour
         {
             ViewState = StartState;
         }
-         canseeme = false;
+        canseeme = false;
         switch (ViewState)
         {
             case ViewStates.Locked:
@@ -106,16 +105,16 @@ public class TreeNode : MonoBehaviour
     public void PropogatedUpdate()
     {
         UpdateState();
-        foreach(var a in RelateNodes)
+        foreach (var a in RelateNodes)
         {
             TreeHandler.Nodes[a].UpdateState();
         }
-        foreach(var a in RelatedUpdates)
+        foreach (var a in RelatedUpdates)
         {
             TreeHandler.Nodes[a].UpdateState();
         }
         UpdateAllLines();
-        foreach(var a in RelateNodes)
+        foreach (var a in RelateNodes)
         {
             if (Prerequisites.Contains(a)) continue;
             TreeHandler.Nodes[a].UpdateAllLines();
@@ -173,7 +172,7 @@ public class TreeNode : MonoBehaviour
     }
     public void SpawnLines()
     {
-        foreach(var a in RelateNodes)
+        foreach (var a in RelateNodes)
         {
             if (Prerequisites.Contains(a)) continue;
             var li = Instantiate(LineObject, transform.position, Quaternion.identity, TreeHandler.Instance.LineParent.transform);

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,7 +11,7 @@ public class SettingInput : MonoBehaviour
     private KeybindInput ky;
     [HideInInspector]
     public bool fard;
-    bool hasattached = false;
+    private bool hasattached = false;
     private void OnEnable()
     {
         slider = GetComponent<Slider>();

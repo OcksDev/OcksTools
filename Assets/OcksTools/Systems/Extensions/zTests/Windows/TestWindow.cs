@@ -1,13 +1,13 @@
 #if (UNITY_EDITOR)
 
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 public class TestWindow : EditorWindow
 {
-    string test = "";
-    string test2 = "";
-    int sel = 0;
+    private string test = "";
+    private string test2 = "";
+    private int sel = 0;
     [MenuItem("OcksTools/Testing/Sex %g")]
     public static void ShowWindow()
     {

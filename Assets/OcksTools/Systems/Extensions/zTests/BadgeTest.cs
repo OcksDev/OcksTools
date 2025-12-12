@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,14 +7,14 @@ public class BadgeTest : MonoBehaviour
     public GameObject SpawnUnder;
     public GameObject BadgeThing;
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         StartCoroutine(wai());
     }
     public IEnumerator wai()
     {
         yield return new WaitForSeconds(1);
-        foreach(var a in BadgeHandler.Badges)
+        foreach (var a in BadgeHandler.Badges)
         {
             var b = Instantiate(BadgeThing, Vector3.zero, Quaternion.identity, SpawnUnder.transform).GetComponent<Image>();
             b.sprite = a.Value.Icon;

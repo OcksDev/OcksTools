@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ColorShift : MonoBehaviour
@@ -9,14 +7,14 @@ public class ColorShift : MonoBehaviour
     private SpriteRenderer boner;
     public int state = 0;
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         boner = GetComponent<SpriteRenderer>();
         state = 0;
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         var f = boner.color;
         var game = Time.time * speed;

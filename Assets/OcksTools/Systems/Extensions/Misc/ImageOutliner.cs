@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,13 +18,13 @@ public class ImageOutliner : MonoBehaviour
     public Texture2D tex2;
     public Image gaming2;
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        
+
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -53,8 +51,8 @@ public class ImageOutliner : MonoBehaviour
         ss.TakeScreenshot(e);
 
         var colors = tex.GetPixels32();
-        
-        for(int i = 0; i < colors.Length; i++)
+
+        for (int i = 0; i < colors.Length; i++)
         {
             if (colors[i].a >= 200)
             {

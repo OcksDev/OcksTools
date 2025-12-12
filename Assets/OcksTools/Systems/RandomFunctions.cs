@@ -1,14 +1,11 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 
 //using Unity.Netcode;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public class RandomFunctions : SingleInstance<RandomFunctions>
 {
@@ -46,7 +43,7 @@ public class RandomFunctions : SingleInstance<RandomFunctions>
         return f;
     }
 
-    public static Dictionary<string,string> GenerateBlankHiddenData()
+    public static Dictionary<string, string> GenerateBlankHiddenData()
     {
         return new Dictionary<string, string>()
         {
@@ -74,7 +71,7 @@ public class RandomFunctions : SingleInstance<RandomFunctions>
         // should work the same as SpreadCalc(), except that it expands up to a point first
         buffer = Math.Clamp(buffer, 2, 1000000);
         float f = (total_arc * (buffer - 1));
-        if(max > 1) f /= (max - 1);
+        if (max > 1) f /= (max - 1);
         float spread = f;
         SpreadCalc(index, max, spread, fix);
     }
@@ -82,7 +79,7 @@ public class RandomFunctions : SingleInstance<RandomFunctions>
     public static string CharPrepend(string input, int length, char nerd = '0')
     {
         var e = length - input.Length;
-        if(e <= 0)
+        if (e <= 0)
         {
             return input;
         }
@@ -126,21 +123,21 @@ public class RandomFunctions : SingleInstance<RandomFunctions>
     public static float EaseInAndOut(float perc, float pow = 3)
     {
         //using values like 0.4 make it go fast at the start, slow down in the middle, then speed up again at the end
-        if(perc <= 0.5f)
+        if (perc <= 0.5f)
         {
-            return Mathf.Pow(2*perc, pow)/2;
+            return Mathf.Pow(2 * perc, pow) / 2;
         }
         else
         {
-            return (2-Mathf.Pow(2 * (1-perc), pow)) / 2;
+            return (2 - Mathf.Pow(2 * (1 - perc), pow)) / 2;
         }
     }
     public static float EaseBounce(float perc, int bounces = 4, float pow = 5)
     {
-        var a = perc * (bounces+0.5f);
+        var a = perc * (bounces + 0.5f);
         var x = Mathf.Abs(Mathf.Cos(Mathf.PI * a));
         x /= Mathf.Pow(pow + 1, Mathf.Floor(a + 0.5f));
-        return 1-x;
+        return 1 - x;
     }
     public static float EaseOvershoot(float perc, float quantity = 4, float pow = 1)
     {
@@ -148,7 +145,7 @@ public class RandomFunctions : SingleInstance<RandomFunctions>
         var x = Mathf.Cos(Mathf.PI * perc * quantity);
         x *= 1 - perc;
         x /= (pow * perc) + 1;
-        return 1-x;
+        return 1 - x;
     }
 
     public static CompareState CompareTwoVersions(string I_Am, string compared_to)
@@ -156,11 +153,11 @@ public class RandomFunctions : SingleInstance<RandomFunctions>
         //supports things in the format of kv#.#.# or #.#.#
         // There can be any amount of #s, so "v1.2" is valid, so is "1.2.3.4.5",
 
-        if(I_Am.Length < 1) return CompareState.Invalid;
-        if(compared_to.Length < 1) return CompareState.Invalid;
-        if (I_Am.ToLower()[0]=='v') I_Am = I_Am.Substring(1);
-        if (compared_to.ToLower()[0]=='v') compared_to = compared_to.Substring(1);
-        List<string> p = Converter.StringToList(I_Am,".");
+        if (I_Am.Length < 1) return CompareState.Invalid;
+        if (compared_to.Length < 1) return CompareState.Invalid;
+        if (I_Am.ToLower()[0] == 'v') I_Am = I_Am.Substring(1);
+        if (compared_to.ToLower()[0] == 'v') compared_to = compared_to.Substring(1);
+        List<string> p = Converter.StringToList(I_Am, ".");
         List<string> p2 = Converter.StringToList(compared_to, ".");
         int amnt = System.Math.Max(p.Count, p2.Count);
         for (int i = 0; i < amnt; i++)
@@ -186,11 +183,11 @@ public class RandomFunctions : SingleInstance<RandomFunctions>
                     var b2 = Regex.Match(p2[i], "^[0-9]+");
                     var a3 = Regex.Match(p[i], "[a-zA-Z]+$");
                     var b3 = Regex.Match(p2[i], "[a-zA-Z]+$");
-                    if(a.Success || b.Success)
+                    if (a.Success || b.Success)
                     {
                         //return CompareState.Greater;
                         if (!a2.Success) return CompareState.Lesser;
-                        if(!b2.Success) return CompareState.Greater;
+                        if (!b2.Success) return CompareState.Greater;
 
                         if (int.Parse(a2.Value) < int.Parse(b2.Value))
                         {
@@ -209,7 +206,7 @@ public class RandomFunctions : SingleInstance<RandomFunctions>
                             x *= 10;
                         }
                         x = 1;
-                        for(int j = 0; j < b3.Length; j++)
+                        for (int j = 0; j < b3.Length; j++)
                         {
                             t2 += b3.Value[j] * x;
                             x *= 10;
@@ -387,9 +384,9 @@ public static class OXFunctions
         if (ti.ContainsKey(K)) ti[K] = V;
         else ti.Add(K, V);
     }
-    public static void AddOrUpdate<T, T2>(this Dictionary<T, T2> ti, KeyValuePair<T,T2> kv)
+    public static void AddOrUpdate<T, T2>(this Dictionary<T, T2> ti, KeyValuePair<T, T2> kv)
     {
-        ti.AddOrUpdate(kv.Key,kv.Value);
+        ti.AddOrUpdate(kv.Key, kv.Value);
     }
 
 
@@ -476,11 +473,11 @@ public static class OXFunctions
     {
         var a = GetCleanStackTrace().StringToList("\n");
         List<string> outp = new List<string>();
-        foreach(var s in a)
+        foreach (var s in a)
         {
             // ConsoleLol.RecursiveCheck(OXCommand cum, Int32 lvl) : 428
-            string nerd = s.Contains(".")?$"<color=#34c25a>{s.Substring(0,s.IndexOf("."))}</color>." :s;
-            string remain = Regex.Replace(s, @"^.*?\.","");
+            string nerd = s.Contains(".") ? $"<color=#34c25a>{s.Substring(0, s.IndexOf("."))}</color>." : s;
+            string remain = Regex.Replace(s, @"^.*?\.", "");
             remain = Regex.Replace(remain, @"\(", $"<color=#298ed6>(<color=#6b8fdb>");
             remain = Regex.Replace(remain, @",", $"</color>,<color=#6b8fdb>");
             remain = Regex.Replace(remain, @"\)", $"</color>)</color>");

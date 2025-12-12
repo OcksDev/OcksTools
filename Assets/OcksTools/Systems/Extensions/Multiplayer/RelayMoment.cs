@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using TMPro;
 using Unity.Netcode;
@@ -19,7 +17,7 @@ public class RelayMoment : SingleInstance<RelayMoment>
     public TextMeshProUGUI JoinCodeTextDick;
     //Default setup to make this a singleton
     // Start is called before the first frame update
-    async void Start()
+    private async void Start()
     {
         await SignIn();
     }
@@ -33,7 +31,8 @@ public class RelayMoment : SingleInstance<RelayMoment>
             SignInState = "Connecting";
             await UnityServices.InitializeAsync();
 
-            AuthenticationService.Instance.SignedIn += () => {
+            AuthenticationService.Instance.SignedIn += () =>
+            {
                 Debug.Log("Shitted fardly");
             };
 

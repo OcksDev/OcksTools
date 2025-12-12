@@ -1,14 +1,11 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class WeightedAverageHandler
 {
     public static T DrawFromWeights<T>(WeightedAverage nerds, int? seed = null)
     {
         float get = 0;
-        if(seed != null)
+        if (seed != null)
         {
             get = (float)(new System.Random(seed.Value).NextDouble());
         }
@@ -21,7 +18,7 @@ public class WeightedAverageHandler
         float sum = 0;
         float tot = 0;
         foreach (var dd in deez) sum += (float)dd[0];
-        for (int i = 0; i < deez.Count;i++)
+        for (int i = 0; i < deez.Count; i++)
         {
             var x = ((float)deez[i][0]) / sum;
             deez[i][0] = x;
@@ -31,7 +28,7 @@ public class WeightedAverageHandler
                 return (T)deez[i][1];
             }
         }
-        return (T)deez[deez.Count-1][1];
+        return (T)deez[deez.Count - 1][1];
     }
 }
 public class WeightedAverage
@@ -41,5 +38,5 @@ public class WeightedAverage
     {
         lists.Add(new List<object>() { weight, n });
         return this;
-    } 
+    }
 }

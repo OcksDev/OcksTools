@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
@@ -13,7 +12,7 @@ public class OcksNetworkVar
     public string NetID = "Unassigned";
     public bool HasRecievedData = false;
     public NetworkObject NetOb;
-    string initdat = "";
+    private string initdat = "";
     public OXEvent OnInitialDataLoad = new OXEvent();
     public OXEvent OnDataChanged = new OXEvent();
     private ServerGamer.Style Style = ServerGamer.Style.DifferToBase;
@@ -23,7 +22,7 @@ public class OcksNetworkVar
         NetOb = sexy;
         //Name = Tags.GenerateID();
         Name = name;
-        if(sexy == null)
+        if (sexy == null)
         {
             NetID = "Global";
             CreateDataHolder();
@@ -31,7 +30,7 @@ public class OcksNetworkVar
         }
         else
         {
-            if(ONVManager.Instance != null)
+            if (ONVManager.Instance != null)
             {
                 ONVManager.Instance.StartCoroutine(ONVManager.Instance.Gaming(this));
             }

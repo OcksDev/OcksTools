@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ManualRoomCreator : MonoBehaviour
@@ -53,8 +51,8 @@ public class ManualRoomCreator : MonoBehaviour
         room.CompileUsedDoors();
 
         int sz = RoomGen.RoomColliders.GetLength(0) / 2;
-        room.pos = new Vector2 (sz, sz);
+        room.pos = new Vector2(sz, sz);
         return room;
     }
-    
+
 }

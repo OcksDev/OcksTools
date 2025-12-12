@@ -1,24 +1,23 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class SpawnSystem : SingleInstance<SpawnSystem>
 {
     public List<Pool> Spawnables = new List<Pool>();
-    List<string> parentdata = new List<string>();
+    private List<string> parentdata = new List<string>();
     public static Dictionary<string, Pool> SpawnableDict = new Dictionary<string, Pool>();
     public static Action<string> SpawnShareMethod;
     public override void Awake2()
     {
-        foreach(var a in Spawnables)
+        foreach (var a in Spawnables)
         {
             SpawnableDict.Add(a.Name, a);
         }
     }
     public static GameObject BasicSpawn(string nerd, Vector3 pos = default, Quaternion rot = default, Transform parent = null)
     {
-        if(parent != null)
+        if (parent != null)
         {
             return Instantiate(SpawnableDict[nerd].Object, pos, rot, parent);
         }
@@ -78,7 +77,7 @@ public class SpawnData
         this.nerd = nerd;
         _IDValue = Tags.GenerateID();
     }
-    public SpawnData(string nerd,int i)
+    public SpawnData(string nerd, int i)
     {
         //parse data from nerd
         FromString(nerd);
@@ -117,7 +116,7 @@ public class SpawnData
     }
     public SpawnData MultiplayerShare()
     {
-        _share = true; 
+        _share = true;
         return this;
     }
     public SpawnData DontSpawn(GameObject a)
@@ -126,7 +125,7 @@ public class SpawnData
         GameObject = a;
         return this;
     }
-    public SpawnData Data(Dictionary<string,string> d)
+    public SpawnData Data(Dictionary<string, string> d)
     {
         this.data = d;
         return this;
@@ -140,10 +139,10 @@ public class SpawnData
 
     public string ConvertToString()
     {
-        Dictionary<string,string> da = new Dictionary<string,string>();
+        Dictionary<string, string> da = new Dictionary<string, string>();
         da.Add("nerd", nerd);
         da.Add("ID", _IDValue);
-        if(_pos != default)da.Add("pos", _pos.ToString());
+        if (_pos != default) da.Add("pos", _pos.ToString());
         if (_rot != Quaternion.identity) da.Add("rot", _rot.ToString());
         if (_parent != null)
         {
@@ -157,7 +156,7 @@ public class SpawnData
                 da.Add("par_id", _parentrefid);
             }
         }
-        if(data.Count > 0)da.Add("dat", Converter.EscapedDictionaryToString(data, "!", "?"));
+        if (data.Count > 0) da.Add("dat", Converter.EscapedDictionaryToString(data, "!", "?"));
 
         // deliberately not saving share
 
@@ -166,7 +165,7 @@ public class SpawnData
 
     public void FromString(string a)
     {
-        Dictionary<string,string> da = Converter.EscapedStringToDictionary(a, ":", ";");
+        Dictionary<string, string> da = Converter.EscapedStringToDictionary(a, ":", ";");
         nerd = da["nerd"];
         _IDValue = da["ID"];
         if (da.ContainsKey("pos")) _pos = Converter.StringToVector3(da["pos"]);

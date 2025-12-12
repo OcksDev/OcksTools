@@ -1,12 +1,12 @@
 #if (UNITY_EDITOR)
 
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
-public class MultiplayerWindow: EditorWindow
+public class MultiplayerWindow : EditorWindow
 {
-    string s2 = "";
-    bool seeking = false;
+    private string s2 = "";
+    private bool seeking = false;
     [MenuItem("OcksTools/Multiplayer/Utils")]
     public static void ShowWindow()
     {

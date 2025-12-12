@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Netcode;
-using Unity.Networking;
 using UnityEngine;
 
 public class PlayerControllerMulti : NetworkBehaviour
@@ -18,7 +15,7 @@ public class PlayerControllerMulti : NetworkBehaviour
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         if (!Owner) return;
         move *= 0.8f;

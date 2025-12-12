@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,14 +7,14 @@ public class GISItemBar : MonoBehaviour
     public GameObject DisplayPrefab;
     private List<GISDisplay> shites = new List<GISDisplay>();
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         //updates the display on start
         UpdateDisplay();
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         //updates the display every fixed update
         UpdateDisplay();
@@ -26,14 +25,16 @@ public class GISItemBar : MonoBehaviour
         var e = shites.Count;
         var s = Container.slots.Count;
         var i = e - s;
-        if(i > 0)
+        if (i > 0)
         {
-            for(int z = 0; z < i; z++)
+            for (int z = 0; z < i; z++)
             {
                 Destroy(shites[0].gameObject);
                 shites.RemoveAt(0);
             }
-        }else if(i < 0){
+        }
+        else if (i < 0)
+        {
             i *= -1;
             for (int z = 0; z < i; z++)
             {
@@ -43,9 +44,9 @@ public class GISItemBar : MonoBehaviour
             }
         }
 
-        for(int iz = 0; iz < shites.Count; iz++)
+        for (int iz = 0; iz < shites.Count; iz++)
         {
-            shites[iz].item= Container.slots[iz].Held_Item;
+            shites[iz].item = Container.slots[iz].Held_Item;
             shites[iz].UpdateDisplay();
         }
     }

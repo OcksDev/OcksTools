@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static TreeNode;
@@ -81,7 +80,7 @@ public class TreeHandler : SingleInstance<TreeHandler>
     }
     public static int GetNodeLevel(string node)
     {
-        if(!CurrentOwnerships.ContainsKey(node)) return 0;
+        if (!CurrentOwnerships.ContainsKey(node)) return 0;
         return CurrentOwnerships[node];
     }
     public static int GetNodeLevel(TreeNode node)
@@ -108,8 +107,8 @@ public class TreeHandler : SingleInstance<TreeHandler>
         {
             case LevelReq.FirstLevel: return CurrentOwnerships[node.Name] >= 1;
             case LevelReq.MaxLevel: return CurrentOwnerships[node.Name] >= node.MaxLevel;
-                
-                default : return false; // not reachable code lol
+
+            default: return false; // not reachable code lol
         }
     }
 }

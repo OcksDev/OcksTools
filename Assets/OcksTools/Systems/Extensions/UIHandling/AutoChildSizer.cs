@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class AutoChildSizer : MonoBehaviour
@@ -17,7 +15,7 @@ public class AutoChildSizer : MonoBehaviour
      * 1 = Y axis
      * 2 = All axis
      */
-    void Start()
+    private void Start()
     {
         if (!OverrideParent)
         {
@@ -31,14 +29,14 @@ public class AutoChildSizer : MonoBehaviour
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         if (!UseLateUpdate)
         {
             segs();
         }
     }
-    void LateUpdate()
+    private void LateUpdate()
     {
         if (UseLateUpdate)
         {

@@ -11,7 +11,7 @@ public class RoomLol : MonoBehaviour
     public Room[] RoomNerds;
     public List<GameObject> SpawnedRooms = new List<GameObject>();
     public int[,] RoomColliders = new int[200, 200];
-    private List<Room> AllRooms= new List<Room>();
+    private List<Room> AllRooms = new List<Room>();
     private List<Room> LeftRooms = new List<Room>();
     private List<Room> RightRooms = new List<Room>();
     private List<Room> UpRooms = new List<Room>();
@@ -23,7 +23,7 @@ public class RoomLol : MonoBehaviour
     public void ClearRooms()
     {
         RoomColliders = new int[200, 200];
-        foreach(var r in SpawnedRooms)
+        foreach (var r in SpawnedRooms)
         {
             Destroy(r);
         }
@@ -46,11 +46,11 @@ public class RoomLol : MonoBehaviour
         cycles = 0;
         ClearRooms();
         PopulateRooms();
-        int sz = RoomColliders.GetLength(0)/2;
-        var crs = GenerateFromRooms(RoomDensity, RoomColliders, RoomDirecton.None, new Vector2(sz,sz));
+        int sz = RoomColliders.GetLength(0) / 2;
+        var crs = GenerateFromRooms(RoomDensity, RoomColliders, RoomDirecton.None, new Vector2(sz, sz));
         PlaceFromCoolRoom(crs, gameObject);
 
-        Debug.Log($"Build Stats: [{runs}], [{cycles}]" );
+        Debug.Log($"Build Stats: [{runs}], [{cycles}]");
 
     }
     public void PopulateRooms()
@@ -58,7 +58,7 @@ public class RoomLol : MonoBehaviour
         //change rooms to use here
         AllRooms = new List<Room>();
 
-        for(int i = 0; i < RoomNerds.Length;i++)
+        for (int i = 0; i < RoomNerds.Length; i++)
         {
             RoomNerds[i].SetData(i);
             AllRooms.Add(RoomNerds[i]);
@@ -89,7 +89,7 @@ public class RoomLol : MonoBehaviour
         CoolRoom ret = new CoolRoom();
 
         runs++;
-        if (lvl < 1) 
+        if (lvl < 1)
         {
             ret.WasChill = true;
             return ret;
@@ -112,7 +112,7 @@ public class RoomLol : MonoBehaviour
                 available_rooms = new List<Room>(AllRooms);
                 break;
             case RoomDirecton.Top:
-                available_rooms = new List<Room>(lvl ==  1? EndDownRooms : DownRooms);
+                available_rooms = new List<Room>(lvl == 1 ? EndDownRooms : DownRooms);
                 break;
             case RoomDirecton.Bottom:
                 available_rooms = new List<Room>(lvl == 1 ? EndUpRooms : UpRooms);
@@ -150,7 +150,7 @@ public class RoomLol : MonoBehaviour
 
             };
             var aaa = getamnt(dir);
-            for(int doorindexlol = 0; doorindexlol < aaa; doorindexlol++)
+            for (int doorindexlol = 0; doorindexlol < aaa; doorindexlol++)
             {
                 cycles++;
                 bool keepgoing = true;
@@ -293,7 +293,7 @@ public class RoomLol : MonoBehaviour
 
 
         }
-        exitee:
+    exitee:
         //Debug.Log("Shit dawg " + lvl + ", " + found_place + ", " + dir);
         ret.WasChill = found_place;
         return ret;
@@ -345,7 +345,7 @@ public class RoomLol : MonoBehaviour
         var sp = cr.room.RoomObject;
         var aaaaaaaaa = ((new Vector3(cr.pos.x, cr.pos.y, z) - new Vector3(sz, sz, 0)) * DistanceScaler);
         aaaaaaaaa.y *= -1;
-        var gm = Instantiate(sp, CenterSpawn + aaaaaaaaa + new Vector3(((cr.room.RoomSize.x*DistanceScaler)/2) - 0.5f, ((cr.room.RoomSize.y * -DistanceScaler) / 2) - 0.5f, 0), parent.transform.rotation, parent.transform);
+        var gm = Instantiate(sp, CenterSpawn + aaaaaaaaa + new Vector3(((cr.room.RoomSize.x * DistanceScaler) / 2) - 0.5f, ((cr.room.RoomSize.y * -DistanceScaler) / 2) - 0.5f, 0), parent.transform.rotation, parent.transform);
         SpawnedRooms.Add(gm);
         cr.iroom = gm.GetComponent<I_Room>();
         if (cr.daddy != null) cr.iroom.RelatedRooms.Add(cr.daddy.iroom);
@@ -383,7 +383,7 @@ public class Room
 
     public void SetData(int index)
     {
-        RoomID= index;
+        RoomID = index;
     }
 
     /*

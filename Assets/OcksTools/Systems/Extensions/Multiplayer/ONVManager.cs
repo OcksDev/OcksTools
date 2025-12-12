@@ -12,7 +12,7 @@ public class ONVManager : MonoBehaviour
     public void Awake()
     {
         Instance = this;
-        foreach(var a in UndefinedVars)
+        foreach (var a in UndefinedVars)
         {
             StartCoroutine(Gaming(a));
         }
@@ -20,7 +20,7 @@ public class ONVManager : MonoBehaviour
     }
     public IEnumerator Gaming(OcksNetworkVar ONV)
     {
-        yield return new WaitUntil(()=>ONV.NetOb.IsSpawned);
+        yield return new WaitUntil(() => ONV.NetOb.IsSpawned);
         ONV._FinishSetup();
     }
 }

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
 
@@ -28,7 +26,7 @@ public class Git : MonoBehaviour
 
         gitProcess.WaitForExit();
         gitProcess.Close();
-        if (stderr_str != null && stderr_str.Length>3) return $"{stderr_str}";
+        if (stderr_str != null && stderr_str.Length > 3) return $"{stderr_str}";
         return stdout_str;
     }
 

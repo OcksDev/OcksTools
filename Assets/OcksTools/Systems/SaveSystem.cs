@@ -1,8 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using UnityEngine;
 
 public class SaveSystem : SingleInstance<SaveSystem>
@@ -185,7 +183,7 @@ public class SaveSystem : SingleInstance<SaveSystem>
     }
 
 
-    public Dictionary<string,string> GetDict(string key, Dictionary<string, string> defaul = null, string dict = "def")
+    public Dictionary<string, string> GetDict(string key, Dictionary<string, string> defaul = null, string dict = "def")
     {
         //use this method to properly query data 
         switch (SaveMethod_)
@@ -215,14 +213,14 @@ public class SaveSystem : SingleInstance<SaveSystem>
                 }
             case SaveMethod.PlayerPrefs:
                 var cd = Converter.EscapedStringToDictionary(PlayerPrefs.GetString($"{dict}_{key}", ""));
-                return cd.Count > 0?cd:defaul;
+                return cd.Count > 0 ? cd : defaul;
         }
         return null; //code never reaches here but it makes the compiler shut up
     }
 
     public Dictionary<A, B> GetDict<A, B>(string key, Dictionary<A, B> defaul = null, string dict = "def")
     {
-        return GetDict(key, defaul.ABDictionaryToStringDictionary(), dict).StringDictionaryToABDictionary<A,B>();
+        return GetDict(key, defaul.ABDictionaryToStringDictionary(), dict).StringDictionaryToABDictionary<A, B>();
     }
 
     public void SetString(string key, string data, string dict = "def")
@@ -234,7 +232,7 @@ public class SaveSystem : SingleInstance<SaveSystem>
                 ox.Data.Add(key, data);
                 break;
             case SaveMethod.TXTFile:
-                GetDict(dict).AddOrUpdate(key,data);
+                GetDict(dict).AddOrUpdate(key, data);
                 break;
             case SaveMethod.PlayerPrefs:
                 PlayerPrefs.SetString($"{dict}_{key}", data);
@@ -267,8 +265,8 @@ public class SaveSystem : SingleInstance<SaveSystem>
     {
         SetList(key, data.AListToStringList(), dict);
     }
-    
-    public void SetDict(string key, Dictionary<string,string> data, string dict = "def")
+
+    public void SetDict(string key, Dictionary<string, string> data, string dict = "def")
     {
         switch (SaveMethod_)
         {
@@ -285,7 +283,7 @@ public class SaveSystem : SingleInstance<SaveSystem>
         }
     }
 
-    public void SetDict<A,B>(string key, Dictionary<A, B> data, string dict = "def")
+    public void SetDict<A, B>(string key, Dictionary<A, B> data, string dict = "def")
     {
         SetDict(key, data.ABDictionaryToStringDictionary(), dict);
     }

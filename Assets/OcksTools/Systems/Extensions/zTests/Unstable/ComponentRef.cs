@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -7,7 +6,7 @@ using UnityEngine;
 public class ComponentRef : MonoBehaviour
 {
     public List<string> Components = new List<string>();
-    void Awake()
+    private void Awake()
     {
         OXComponent.StoreComponents(gameObject, Components);
     }
@@ -32,7 +31,7 @@ public class OXComponent
     public static void StoreComponent<T>(GameObject sus) where T : Component
     {
         StoreComponent(sus.GetComponent<T>());
-        
+
     }
     public static void StoreComponent<T>(T sus) where T : Component
     {
@@ -43,7 +42,7 @@ public class OXComponent
         string name = typeof(T).Name;
         if (!StoredComps[sus.gameObject].ContainsKey(name))
         {
-            if(sus != null) StoredComps[sus.gameObject].Add(name, sus);
+            if (sus != null) StoredComps[sus.gameObject].Add(name, sus);
         }
     }
     public static void StoreComponentsInChildren<T>(GameObject sus) where T : Component
@@ -139,8 +138,8 @@ public class OXComponent
         for (int i = 0; i < e; i++)
         {
             var weenis = GetComponentsInChildrenRecursive<T>(sussy.transform.GetChild(i).gameObject, storeifnull);
-            if(weenis.Count > 0)
-            founds = founds.CombineLists(weenis);
+            if (weenis.Count > 0)
+                founds = founds.CombineLists(weenis);
         }
         comp = GetComponent<T>(sussy, storeifnull);
         if (comp != null)
@@ -149,7 +148,7 @@ public class OXComponent
     }
     public static void CleanUp()
     {
-        for(int i = 0; i < StoredComps.Count; i++)
+        for (int i = 0; i < StoredComps.Count; i++)
         {
             var wee = StoredComps.ElementAt(i);
             if (wee.Key == null)
@@ -158,8 +157,8 @@ public class OXComponent
                 i--;
             }
         }
-        Dictionary<GameObject,int> recheck = new Dictionary<GameObject,int> ();
-        for(int i = 0; i < StoredComps.Count; i++)
+        Dictionary<GameObject, int> recheck = new Dictionary<GameObject, int>();
+        for (int i = 0; i < StoredComps.Count; i++)
         {
             var kp = StoredComps.ElementAt(i);
             for (int j = 0; j < StoredComps[kp.Key].Count; j++)

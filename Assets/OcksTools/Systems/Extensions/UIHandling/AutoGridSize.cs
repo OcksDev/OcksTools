@@ -1,9 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.Device;
 using UnityEngine.UI;
 
 public class AutoGridSize : MonoBehaviour
@@ -17,21 +12,21 @@ public class AutoGridSize : MonoBehaviour
      * 0 = X axis
      * 1 = Y axis
      */
-    void Start()
+    private void Start()
     {
         yeet = GetComponent<GridLayoutGroup>();
-        ss = GetComponent<RectTransform>(); 
+        ss = GetComponent<RectTransform>();
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         if (!UseLateUpdate)
         {
             segs();
         }
     }
-    void LateUpdate()
+    private void LateUpdate()
     {
         if (UseLateUpdate)
         {

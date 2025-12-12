@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,7 +11,7 @@ public class ChatLol : SingleInstance<ChatLol>
 
     private VerticalLayoutGroup bonerspawn;
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         bonerspawn = ChatLog.GetComponentInChildren<VerticalLayoutGroup>();
     }
@@ -39,7 +37,7 @@ public class ChatLol : SingleInstance<ChatLol>
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         amnt = ChatLog.GetComponentsInChildren<ChatThing>().Length;
     }

@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -25,16 +24,16 @@ public class StoredRandom : SingleInstance<StoredRandom>
         randoms.Remove(name);
     }
 
-    public System.Random GetRand(string a) 
+    public System.Random GetRand(string a)
     {
         randoms[a].Hits++;
-        return randoms[a].Rand; 
-    }   
+        return randoms[a].Rand;
+    }
 
     public string ExportToString()
     {
         List<string> list = new List<string>();
-        foreach(var a in randoms)
+        foreach (var a in randoms)
         {
             list.Add(a.Value.ConvertToString());
         }
@@ -50,7 +49,7 @@ public class StoredRandom : SingleInstance<StoredRandom>
             return;
         }
         List<string> list = Converter.StringToList(aa, "||");
-        foreach(var a in list)
+        foreach (var a in list)
         {
             var e = new OXRandStore(a);
             randoms.Add(e.Name, e);
@@ -111,7 +110,7 @@ public class OXRandStore
         Hits = int.Parse(dat[1]);
         Initial = int.Parse(dat[2]);
         Rand = new System.Random(Initial);
-        for(int i = 0; i < Hits; i++) // I cant think of a better way to do this lol
+        for (int i = 0; i < Hits; i++) // I cant think of a better way to do this lol
         {
             Rand.Next();
         }

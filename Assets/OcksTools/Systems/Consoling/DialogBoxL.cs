@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -24,13 +23,13 @@ public class DialogBoxL : MonoBehaviour
     private Color32 ti_co;
     private Color32 bg_co;
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         img = GetComponent<Image>();
         b1 = TextObject.GetComponent<TextMeshProUGUI>();
         b2 = TitleObject.GetComponent<TextMeshProUGUI>();
         int i = 0;
-        foreach(var f in q_gameobjects)
+        foreach (var f in q_gameobjects)
         {
             q_tmps.Add(f.GetComponent<TextMeshProUGUI>());
             i++;
@@ -39,7 +38,7 @@ public class DialogBoxL : MonoBehaviour
     }
     private void OnEnable()
     {
-        if(b1 != null)
+        if (b1 != null)
         {
             qs.Clear();
             qs.Add("");

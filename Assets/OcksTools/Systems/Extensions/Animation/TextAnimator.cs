@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -8,7 +7,7 @@ public class TextAnimator : MonoBehaviour
     private TMP_Text sexy;
     public List<TextAnim> anims = new List<TextAnim>();
     private List<List<Color32>> pp = new List<List<Color32>>();
-    float halfpi;
+    private float halfpi;
     private void Start()
     {
         halfpi = Mathf.PI / 2;
@@ -35,7 +34,7 @@ public class TextAnimator : MonoBehaviour
     }
     private void Update()
     {
-        if(anims.Count > 0)
+        if (anims.Count > 0)
         {
             var delt = Time.deltaTime;
             sexy.ForceMeshUpdate();
@@ -159,7 +158,7 @@ public class TextAnimator : MonoBehaviour
                                 }
                                 break;
                             case "ZoomIn":
-                                sp[i] += delt*2;
+                                sp[i] += delt * 2;
                                 if (sp[i] <= 1)
                                 {
                                     var avg = Vector3.Lerp(verts[charinfo.vertexIndex + 0], verts[charinfo.vertexIndex + 2], 0.5f);
@@ -171,7 +170,7 @@ public class TextAnimator : MonoBehaviour
                                 }
                                 break;
                             case "FadeIn":
-                                sp[i] += delt*3;
+                                sp[i] += delt * 3;
                                 for (int j2 = 0; j2 < 4; j2++)
                                 {
                                     var ween = (Color)coilo[charinfo.vertexIndex + j2];
@@ -184,7 +183,7 @@ public class TextAnimator : MonoBehaviour
                                 for (int j = 0; j < 4; j++)
                                 {
                                     var orig = verts[charinfo.vertexIndex + j];
-                                    verts[charinfo.vertexIndex + j] = orig + new Vector3(0, -(sp[i] * sp[i])*90, 0);
+                                    verts[charinfo.vertexIndex + j] = orig + new Vector3(0, -(sp[i] * sp[i]) * 90, 0);
                                 }
                                 break;
                         }
