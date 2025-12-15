@@ -71,7 +71,7 @@ public class SpawnData
     public string _parentrefid = "";
     public bool _share;
     public bool _dospawn = true;
-    public Dictionary<string, string> data = new Dictionary<string, string>();
+    public Dictionary<string, string> _data = new Dictionary<string, string>();
     public SpawnData(string nerd)
     {
         this.nerd = nerd;
@@ -127,7 +127,7 @@ public class SpawnData
     }
     public SpawnData Data(Dictionary<string, string> d)
     {
-        this.data = d;
+        this._data = d;
         return this;
     }
     public SpawnData ID(string i)
@@ -156,7 +156,7 @@ public class SpawnData
                 da.Add("par_id", _parentrefid);
             }
         }
-        if (data.Count > 0) da.Add("dat", Converter.EscapedDictionaryToString(data, "!", "?"));
+        if (_data.Count > 0) da.Add("dat", Converter.EscapedDictionaryToString(_data, "!", "?"));
 
         // deliberately not saving share
 
@@ -170,7 +170,7 @@ public class SpawnData
         _IDValue = da["ID"];
         if (da.ContainsKey("pos")) _pos = Converter.StringToVector3(da["pos"]);
         if (da.ContainsKey("rot")) _rot = Converter.StringToQuaternion(da["rot"]);
-        if (da.ContainsKey("dat")) data = Converter.EscapedStringToDictionary(da["dat"], "!", "?");
+        if (da.ContainsKey("dat")) _data = Converter.EscapedStringToDictionary(da["dat"], "!", "?");
         if (da.ContainsKey("par"))
         {
 

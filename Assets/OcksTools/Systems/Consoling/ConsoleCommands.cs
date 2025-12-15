@@ -275,7 +275,7 @@ public class ConsoleCommands : MonoBehaviour
         foreach (var b in a)
         {
             var penis = (GameObject)b.Value;
-            var d = SpawnSystem.GetData(penis).data;
+            var d = SpawnSystem.GetData(penis)._data;
 
             if (d.ContainsKey("TestOB"))
             {
