@@ -16771,6 +16771,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 722801243}
     m_Modifications:
+    - target: {fileID: 723590928795476931, guid: f6c91053f4d25dd4eac36815a56e81cb, type: 3}
+      propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
+      value: 1801810542
+      objectReference: {fileID: 0}
+    - target: {fileID: 2165515077404014056, guid: f6c91053f4d25dd4eac36815a56e81cb, type: 3}
+      propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
+      value: 1801810542
+      objectReference: {fileID: 0}
     - target: {fileID: 2508634535104828721, guid: f6c91053f4d25dd4eac36815a56e81cb, type: 3}
       propertyPath: m_Name
       value: DialogBox
@@ -16778,6 +16786,10 @@ PrefabInstance:
     - target: {fileID: 2508634535104828721, guid: f6c91053f4d25dd4eac36815a56e81cb, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4223091734441748598, guid: f6c91053f4d25dd4eac36815a56e81cb, type: 3}
+      propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
+      value: 1801810542
       objectReference: {fileID: 0}
     - target: {fileID: 4700751391501385358, guid: f6c91053f4d25dd4eac36815a56e81cb, type: 3}
       propertyPath: m_Pivot.x
@@ -16862,6 +16874,22 @@ PrefabInstance:
     - target: {fileID: 4700751391501385358, guid: f6c91053f4d25dd4eac36815a56e81cb, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4782922034334356749, guid: f6c91053f4d25dd4eac36815a56e81cb, type: 3}
+      propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
+      value: 1801810542
+      objectReference: {fileID: 0}
+    - target: {fileID: 6358906131921363457, guid: f6c91053f4d25dd4eac36815a56e81cb, type: 3}
+      propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
+      value: 1801810542
+      objectReference: {fileID: 0}
+    - target: {fileID: 6950703002276087521, guid: f6c91053f4d25dd4eac36815a56e81cb, type: 3}
+      propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
+      value: 1801810542
+      objectReference: {fileID: 0}
+    - target: {fileID: 7092111823915733999, guid: f6c91053f4d25dd4eac36815a56e81cb, type: 3}
+      propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
+      value: 1801810542
       objectReference: {fileID: 0}
     - target: {fileID: 7446680019455591542, guid: f6c91053f4d25dd4eac36815a56e81cb, type: 3}
       propertyPath: m_AnchoredPosition.x
