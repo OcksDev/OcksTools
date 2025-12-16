@@ -139,7 +139,7 @@ public class RandomFunctions : SingleInstance<RandomFunctions>
         x /= Mathf.Pow(pow + 1, Mathf.Floor(a + 0.5f));
         return 1 - x;
     }
-    public static float EaseOvershoot(float perc, float quantity = 4, float pow = 1)
+    public static float EaseOscillate(float perc, float quantity = 4, float pow = 1)
     {
         pow *= 5;
         var x = Mathf.Cos(Mathf.PI * perc * quantity);
@@ -147,7 +147,15 @@ public class RandomFunctions : SingleInstance<RandomFunctions>
         x /= (pow * perc) + 1;
         return 1 - x;
     }
+    //pow shouldn't be less than 2
+    public static float EaseOvershoot(float perc, float magnification = 2, float pow = 2)
+    {
+        var x = (1 - perc);
+        x = Mathf.Pow(x, pow);
+        var a = Mathf.Pow(magnification, pow);
+        return x * a * perc * perc + (1 - x);
 
+    }
     public static CompareState CompareTwoVersions(string I_Am, string compared_to)
     {
         //supports things in the format of kv#.#.# or #.#.#

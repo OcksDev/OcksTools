@@ -8,7 +8,7 @@ public class OXDefaultAnimations
     {
         yield return OXLerp.Linear((x) =>
         {
-            float overshoot = RandomFunctions.EaseOvershoot(x, 4, 2f);
+            float overshoot = RandomFunctions.EaseOscillate(x, 4, 2f);
             foreach (var a in cum)
             {
                 a.transform.localScale = Vector3.one * overshoot;
@@ -21,8 +21,8 @@ public class OXDefaultAnimations
         {
             float off = 0.15f;
             var y = x * (1 + off);
-            float overshoot1 = RandomFunctions.EaseOvershoot(Mathf.Clamp01(y), 4, 2f);
-            float overshoot2 = RandomFunctions.EaseOvershoot(Mathf.Clamp01(y - off), 4, 2f);
+            float overshoot1 = RandomFunctions.EaseOscillate(Mathf.Clamp01(y), 4, 2f);
+            float overshoot2 = RandomFunctions.EaseOscillate(Mathf.Clamp01(y - off), 4, 2f);
             foreach (var a in cum)
             {
                 a.transform.localScale = new Vector3(1 * overshoot2, 1 * overshoot1, 1);
@@ -35,8 +35,8 @@ public class OXDefaultAnimations
         {
             float off = 0.15f;
             var y = x * (1 + off);
-            float overshoot1 = RandomFunctions.EaseOvershoot(Mathf.Clamp01(y), 4, 2f);
-            float overshoot2 = RandomFunctions.EaseOvershoot(Mathf.Clamp01(y - off), 4, 2f);
+            float overshoot1 = RandomFunctions.EaseOscillate(Mathf.Clamp01(y), 4, 2f);
+            float overshoot2 = RandomFunctions.EaseOscillate(Mathf.Clamp01(y - off), 4, 2f);
             foreach (var a in cum)
             {
                 a.transform.localScale = new Vector3(1 * overshoot1, 1 * overshoot2, 1);

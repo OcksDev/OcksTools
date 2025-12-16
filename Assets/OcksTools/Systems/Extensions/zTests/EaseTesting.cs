@@ -44,7 +44,7 @@ public class EaseTesting : MonoBehaviour
         sex(2, RandomFunctions.EaseOut(timer));
         sex(3, RandomFunctions.EaseInAndOut(timer));
         sex(4, RandomFunctions.EaseBounce(timer));
-        sex(5, RandomFunctions.EaseOvershoot(timer));
+        sex(5, RandomFunctions.EaseOscillate(timer));
     }
     private void sex(int index, float perc)
     {
