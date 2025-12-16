@@ -12,6 +12,7 @@ public class SaveSystem : SingleInstance<SaveSystem>
     private Dictionary<string, OXFile> OXFiles = new Dictionary<string, OXFile>();
     public static OXEvent<string> SaveAllData = new OXEvent<string>();
     public static OXEvent<string> LoadAllData = new OXEvent<string>();
+    public static OXEvent<string> LoadAllData_EarlyCall = new OXEvent<string>();
 
     public Dictionary<string, Dictionary<string, string>> HoldingData = new Dictionary<string, Dictionary<string, string>>();
 
@@ -67,7 +68,7 @@ public class SaveSystem : SingleInstance<SaveSystem>
         TestBool = bool.Parse(GetString("test_bool", "False", dict));
         testkeybind = InputManager.namekeys[GetString("test_keybind", "NONE", dict)];
         //ConsoleLol.Instance.ConsoleLog(Prefix(i) + "test_num");
-
+        LoadAllData_EarlyCall.Invoke(dict);
         LoadAllData.Invoke(dict);
     }
     public void SaveGame(string dict = "def")
