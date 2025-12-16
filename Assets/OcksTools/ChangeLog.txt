@@ -1,6 +1,8 @@
 
 ------------
    v1.1.4
+- New default assets
+  - Also organized existing image assets better
 - Misc
   - zExtensions changed to a separate folder called Plugins
   - New plugin added: ulayout
