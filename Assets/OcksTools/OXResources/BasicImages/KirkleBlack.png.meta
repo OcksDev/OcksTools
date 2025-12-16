@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: bac06b1342a79e04aad23bc51943bb49
+guid: b74338fbf5090d649917fc93a47d5aef
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3769376316692434514
-    second: Kirkle 1_0
+      213: -6496910144843714582
+    second: Kirkle (8)_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,7 +113,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Kirkle 1_0
+      name: Kirkle (8)_0
       rect:
         serializedVersion: 2
         x: 7
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ea1f6c2063c70bbc0800000000000000
-      internalID: -3769376316692434514
+      spriteID: aef65f635a656d5a0800000000000000
+      internalID: -6496910144843714582
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Kirkle 1_0: -3769376316692434514
+      Kirkle (8)_0: -6496910144843714582
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
