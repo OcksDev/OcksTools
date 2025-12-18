@@ -26,16 +26,37 @@ namespace Poke.UI {
         
         private TMP_Text _text;
         private DrivenRectTransformTracker _rectTracker;
-
+        private bool _updateMesh;
+        
         protected override void Awake() {
             base.Awake();
             _text = GetComponent<TMP_Text>();
+            
             _rectTracker = new DrivenRectTransformTracker();
         }
 
-        public override void Update() {
-            base.Update();
-            
+        protected override void OnEnable() {
+            base.OnEnable();
+            _text.OnPreRenderText += Resize;
+        }
+
+        protected override void OnDisable() {
+            base.OnDisable();
+            _text.OnPreRenderText -= Resize;
+        }
+
+        public void Start() {
+            Resize(_text.textInfo);
+        }
+
+        private void LateUpdate() {
+            if(_updateMesh) {
+                _text.ForceMeshUpdate();
+                _updateMesh = false;
+            }
+        }
+
+        private void Resize(TMP_TextInfo textInfo) {
             _text.textWrappingMode = m_sizing.x == SizingMode.Grow ? TextWrappingModes.Normal : TextWrappingModes.NoWrap;
 
             bool fitX = m_sizing.x == SizingMode.FitContent && m_sizing.x != SizingMode.Grow;
@@ -50,7 +71,11 @@ namespace Poke.UI {
             if(m_maxFontSize > 0) {
                 _text.fontSizeMax = m_maxFontSize;
             }
-            Vector2 size = _text.GetPreferredValues(_text.text);
+
+            Vector2 size = default;
+            if(fitX || fitY) {
+                size = _text.GetPreferredValues();
+            }
             
             // X Pass
             if(fitX) {
@@ -60,13 +85,15 @@ namespace Poke.UI {
             // Y Pass
             if(fitY) {
                 float height = 0;
-                for(int i = 0; i < _text.textInfo.lineCount; i++) {
-                    float lineHeight = _text.textInfo.lineInfo[i].lineHeight;
+                for(int i = 0; i < textInfo.lineCount; i++) {
+                    float lineHeight = textInfo.lineInfo[i].lineHeight;
                     height += lineHeight;
                 }
                 size.y = height;
                 _rect.sizeDelta = _rect.sizeDelta.With(y: size.y);
             }
+
+            _updateMesh = true;
         }
     }
 }

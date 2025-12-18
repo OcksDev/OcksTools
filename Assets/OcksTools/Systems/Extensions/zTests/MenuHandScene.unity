@@ -1988,18 +1988,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: OcksTools::MenuHandler
   Menus:
   - Name: m1
-    Menu:
+    OptOutTransformRecord: 0
+    Objects:
     - {fileID: 1096861365}
     State: 0
     AnimLocked: 0
   - Name: m2
-    Menu:
-    - {fileID: 1418274993}
+    OptOutTransformRecord: 0
+    Objects:
     - {fileID: 254651571}
+    - {fileID: 1418274993}
     State: 1
     AnimLocked: 0
   - Name: m3
-    Menu:
+    OptOutTransformRecord: 0
+    Objects:
     - {fileID: 881362162}
     State: 0
     AnimLocked: 0

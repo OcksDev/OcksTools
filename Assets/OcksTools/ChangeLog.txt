@@ -2,13 +2,20 @@
 ------------
    v1.1.4
 - New Achievement system
-- New default assets
+- New Default Assets
   - Also organized existing image assets better
+- Menu Handler Improvements
+  - New boolean to opt-out of automatic transform recording/resetting on open/close
+  - "Menu" field renamed to "Objects" for clarity
+  - Now uses SingleInstance<>, I forgot to do this last update lol
 - Misc
   - zExtensions changed to a separate folder called Plugins
-  - New plugin added: ulayout
-  - SpawnData data field renamed to _data
-  - Save systemn now has an event that is called before the normal loading event
+    - New plugin added: ulayout
+  - SpawnData "data" field renamed to "_data"
+  - Hover now uses SingleInstance<>
+  - Save system now has an event that is called before the normal loading event
+  - Unstable folder renamed to UnstableOrUnfinished
+  - Reactive Data has been removed as it's functionality is covered by Reactable<>
 ------------
 
 ------------

@@ -2,20 +2,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class Hover : MonoBehaviour
+public class Hover : SingleInstance<Hover>
 {
     public static List<GameObject> AllHovers = new List<GameObject>();
     public static bool CanHover = false;
-    public static Hover Instance;
-    private void Awake()
-    {
-        if (Instance != null)
-        {
-            Destroy(this);
-            return;
-        }
-        Instance = this;
-    }
     private void Update()
     {
         CanHover = true;

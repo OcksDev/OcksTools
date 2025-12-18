@@ -2,32 +2,33 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MenuHandler : MonoBehaviour
+public class MenuHandler : SingleInstance<MenuHandler>
 {
     public List<MenuState> Menus = new List<MenuState>();
     public static Dictionary<string, MenuState> BaseMenuStates = new Dictionary<string, MenuState>();
     public static Dictionary<string, MenuState> CurrentMenuStates = new Dictionary<string, MenuState>();
-    public static MenuHandler Instance;
     public static OXEvent MenuMethods = new OXEvent();
     private void Awake()
     {
-        Instance = this;
         foreach (var state in Menus)
         {
             if (state.InitialTransforms == null) state.InitialTransforms = new Dictionary<GameObject, MultiRef<Vector3, Vector3, Quaternion>>();
-            foreach (var gm in state.Menu)
+            if (!state.OptOutTransformRecord)
             {
-                if (gm == null) continue;
-                state.InitialTransforms.Add(gm, new MultiRef<Vector3, Vector3, Quaternion>
-                    (
-                        gm.transform.localPosition,
-                        gm.transform.localScale,
-                        gm.transform.localRotation
-                    ));
+                foreach (var gm in state.Objects)
+                {
+                    if (gm == null) continue;
+                    state.InitialTransforms.Add(gm, new MultiRef<Vector3, Vector3, Quaternion>
+                        (
+                            gm.transform.localPosition,
+                            gm.transform.localScale,
+                            gm.transform.localRotation
+                        ));
+                }
             }
             BaseMenuStates.Add(state.Name, state);
             CurrentMenuStates.Add(state.Name, new MenuState(state));
-            SetStates(state.Menu, state.State);
+            SetStates(state.Objects, state.State);
         }
     }
 
@@ -57,19 +58,19 @@ public class MenuHandler : MonoBehaviour
         if (!forced && cum.AnimLocked) yield break;
 
         cum.AnimLocked = true;
-        LoadInitials(cum);
+        if (!cum.OptOutTransformRecord) LoadInitials(cum);
 
         if (!forced && !newstate && cum.ClosingAnimation != null)
         {
-            yield return StartCoroutine(cum.ClosingAnimation(cum.Menu));
+            yield return StartCoroutine(cum.ClosingAnimation(cum.Objects));
         }
 
         cum.State = newstate;
-        SetStates(cum.Menu, newstate);
+        SetStates(cum.Objects, newstate);
 
         if (!forced && newstate && cum.OpeningAnimation != null)
         {
-            yield return StartCoroutine(cum.OpeningAnimation(cum.Menu));
+            yield return StartCoroutine(cum.OpeningAnimation(cum.Objects));
         }
 
 
@@ -87,7 +88,7 @@ public class MenuHandler : MonoBehaviour
     }
     public static void LoadInitials(MenuState cum)
     {
-        foreach (var gm in cum.Menu)
+        foreach (var gm in cum.Objects)
         {
             var dd = cum.InitialTransforms[gm];
             gm.transform.localPosition = dd.a;
@@ -108,7 +109,7 @@ public class MenuHandler : MonoBehaviour
     {
         if (cum.AnimLocked) yield break;
         cum.AnimLocked = true;
-        yield return StartCoroutine(anim(cum.Menu));
+        yield return StartCoroutine(anim(cum.Objects));
         cum.AnimLocked = false;
     }
 
@@ -153,9 +154,11 @@ public class MenuHandler : MonoBehaviour
 public class MenuState
 {
     public string Name;
-    public List<GameObject> Menu;
+    public bool OptOutTransformRecord = false;
+    public List<GameObject> Objects;
     [HideInInspector]
     public Dictionary<GameObject, MultiRef<Vector3, Vector3, Quaternion>> InitialTransforms;
+    [HideInInspector]
     public bool State;
     public System.Func<List<GameObject>, IEnumerator> OpeningAnimation;
     public System.Func<List<GameObject>, IEnumerator> ClosingAnimation;
@@ -166,14 +169,15 @@ public class MenuState
     public MenuState(MenuState a)
     {
         Name = a.Name;
-        Menu = a.Menu;
+        Objects = a.Objects;
         State = a.State;
+        OptOutTransformRecord = a.OptOutTransformRecord;
         InitialTransforms = a.InitialTransforms;
     }
     public MenuState(List<GameObject> nerds)
     {
         Name = "-TEMP-";
-        Menu = nerds;
+        Objects = nerds;
         State = true;
     }
 }

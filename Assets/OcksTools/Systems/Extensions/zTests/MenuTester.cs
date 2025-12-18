@@ -27,7 +27,7 @@ public class MenuTester : MonoBehaviour
 
     public IEnumerator m3open(MenuState cum)
     {
-        var d = cum.Menu[0].transform;
+        var d = cum.Objects[0].transform;
         for (int i = 0; i < 25; i++)
         {
             d.localScale = Vector3.one * ((float)i) / 25;
@@ -37,7 +37,7 @@ public class MenuTester : MonoBehaviour
     }
     public IEnumerator m3close(MenuState cum)
     {
-        var d = cum.Menu[0].transform;
+        var d = cum.Objects[0].transform;
         for (int i = 0; i < 25; i++)
         {
             d.localScale = Vector3.one * ((float)(25 - i)) / 25;
