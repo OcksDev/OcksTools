@@ -109,6 +109,50 @@ public struct BigAssNumber
         return false;
     }
 
+    public static bool operator >(BigAssNumber a, BigAssNumber b)
+    {
+        if (a.Exponent == b.Exponent)
+        {
+            return a.Mantissa > b.Mantissa;
+        }
+        return a.Exponent > b.Exponent;
+    }
+
+    public static bool operator <(BigAssNumber a, BigAssNumber b)
+    {
+        if (a.Exponent == b.Exponent)
+        {
+            return a.Mantissa < b.Mantissa;
+        }
+        return a.Exponent < b.Exponent;
+    }
+
+    public static bool operator >=(BigAssNumber a, BigAssNumber b)
+    {
+        if (a.Exponent == b.Exponent)
+        {
+            return a.Mantissa >= b.Mantissa;
+        }
+        return a.Exponent >= b.Exponent;
+    }
+
+    public static bool operator <=(BigAssNumber a, BigAssNumber b)
+    {
+        if (a.Exponent == b.Exponent)
+        {
+            return a.Mantissa <= b.Mantissa;
+        }
+        return a.Exponent <= b.Exponent;
+    }
+    public static bool operator ==(BigAssNumber a, BigAssNumber b)
+    {
+        return a.Exponent == b.Exponent && a.Mantissa == b.Mantissa;
+    }
+    public static bool operator !=(BigAssNumber a, BigAssNumber b)
+    {
+        return a.Exponent != b.Exponent || a.Mantissa != b.Mantissa;
+    }
+
     public void FullResolveExpChange()
     {
         double abs = Math.Abs(Mantissa);
@@ -127,6 +171,7 @@ public struct BigAssNumber
     {
         return Mantissa * Math.Pow(10, Exponent);
     }
+
     public void FromDouble(double num)
     {
         Exponent = (long)Math.Log10(num);
@@ -134,9 +179,24 @@ public struct BigAssNumber
     }
 
 
+
     public override string ToString()
     {
         return $"{Mantissa}e{Exponent}";
+    }
+
+    public static BigAssNumber FromString(string a)
+    {
+        var split = a.Split('e');
+        var d = new BigAssNumber(double.Parse(split[0]), long.Parse(split[1]));
+        return d;
+    }
+
+    public static BigAssNumber FromDoubleAsString(string a)
+    {
+        var d = new BigAssNumber(1, a.Length - 1);
+        d.Mantissa = double.Parse(a.Substring(0, 1) + "." + a.Substring(1));
+        return d;
     }
 
     private static readonly double[] Pow10Cache =
