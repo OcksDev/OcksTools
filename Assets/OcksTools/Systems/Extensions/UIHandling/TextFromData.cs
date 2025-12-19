@@ -53,6 +53,9 @@ public class TextFromData : MonoBehaviour
                 a += "<br>" + Converter.NumToRead("3", 3);
                 a += "<br>" + Converter.NumToRead("19", 3);
                 break;
+            case "FPS":
+                a = "FPS: " + FPSLightweightReader.Instance.LastOutgoingFPS;
+                break;
         }
 
         jessie.text = a;

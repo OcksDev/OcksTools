@@ -3,6 +3,8 @@
    v1.1.4
 - New Achievement system
 - New Big Ass Number type for storing some big ass numbers
+- New FPS Lightweight Reader which can be easily interfaced with and tweaked
+  - Also provided a canvas prefab in Misc to easily throw into any scene to get FPS readings
 - New Default Assets
   - Also organized existing image assets better
 - Menu Handler Improvements
