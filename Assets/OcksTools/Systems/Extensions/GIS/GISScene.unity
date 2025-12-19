@@ -1773,7 +1773,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4007473491773129349, guid: 32aa07c1d97c2ed4cac286e0d66c9ab0, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -35.649994
+      value: -35.650024
       objectReference: {fileID: 0}
     - target: {fileID: 4049151182853182029, guid: 32aa07c1d97c2ed4cac286e0d66c9ab0, type: 3}
       propertyPath: 'm_ActiveFontFeatures.Array.data[0]'

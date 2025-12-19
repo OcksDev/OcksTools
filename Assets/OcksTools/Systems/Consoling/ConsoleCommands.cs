@@ -45,6 +45,25 @@ public class ConsoleCommands : MonoBehaviour
         "----".Log();
         a.run(OXFunctions.GetCleanStackTraceRichtextified);
     }
+    public static void Test_bigassnum()
+    {
+        var d = new BigAssNumber(100);
+        var e = new BigAssNumber(1000);
+        var a1 = new BigAssNumber(9500);
+        var a2 = new BigAssNumber(800);
+        $"d-e: {d - e}".Log();
+        (d+e).ToString().Log();
+        (e+d).ToString().Log();
+        e -= d;
+        (e).ToString().Log();
+        $"a1: {a1}".Log();
+        $"a2: {a2}".Log();
+        $"a1+a2: {a1 + a2}".Log();
+        $"a1-a2: {a1 - a2}".Log();
+        $"{new BigAssNumber(100).Logarithm(10)}".Log();
+        $"{new BigAssNumber(100) * new BigAssNumber(100)}".Log();
+        $"{new BigAssNumber(1000) / new BigAssNumber(100)}".Log();
+    }
     private static OXThreadPoolA thread_a;
     public static void Test_threadedlogs()
     {
