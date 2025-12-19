@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 
+// max value is 9.999*10^(2^63)
 public struct BigAssNumber
 {
     public double Mantissa;
@@ -144,8 +145,7 @@ public static class BigAssNumberStuff
     {
         d.Exponent *= amnt;
         d.Mantissa = Math.Pow(d.Mantissa, amnt);
-        d.QuickResolveExpChange();
-        d.QuickResolveExpChange();
+        d.RepeatedResolveExpChange();
         return d;
     }
 }

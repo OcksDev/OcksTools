@@ -2,6 +2,7 @@
 ------------
    v1.1.4
 - New Achievement system
+- New Big Ass Number type for storing some big ass numbers
 - New Default Assets
   - Also organized existing image assets better
 - Menu Handler Improvements
