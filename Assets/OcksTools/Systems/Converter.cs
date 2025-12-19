@@ -566,6 +566,34 @@ public static class Converter
         }
         return n;
     }
+    public static string NumToRead(this BigAssNumber d, int decimals = 0, bool shifttofitsmaller = true)
+    {
+        List<string> bingle = new List<string>() { "", "K", "M", "B", "T", "Qa", "Qn", "Sx", "Sp", "Oc", "No", };
+        List<string> bingle2 = new List<string>() { "", "De", "Vt", "Tg", "Qt", "Qg", "St", "Sg", "Og", "Nt", };
+        List<string> bingle3 = new List<string>() { "", "Ce" };
+        if (d.Exponent == 0) return d.Mantissa.ToString($"F{decimals}");
+        if (d.Exponent == 1) return (d.Mantissa * 10).ToString($"F{decimals}");
+        if (d.Exponent == 2) return (d.Mantissa * 100).ToString($"F{decimals}");
+        if (d.Exponent > 20)
+        {
+            bingle[1] = "U";
+            bingle[2] = "D";
+            bingle.RemoveAt(3);
+        }
+        var x = (Math.Max(d.Exponent - 3, 0) / 300);
+        if (x >= 2)
+        {
+            return $"{d.Mantissa.ToString("F2")}e+{d.Exponent}";
+        }
+        var f = "F2";
+        var shi = d.Exponent % 3;
+        if (shifttofitsmaller) f = $"F{2 - shi}";
+        string initalpart = (d.Mantissa * Math.Pow(10, shi)).ToString(f);
+        string endpart = bingle[(int)(d.Exponent / 3).Mod(bingle.Count)];
+        endpart += bingle2[(int)(Math.Max(d.Exponent - 3, 0) / 30).Mod(bingle2.Count)];
+        endpart += bingle3[(int)x.Mod(bingle3.Count)];
+        return initalpart + endpart;
+    }
     public static Dictionary<T, int> ListToDictionary<T>(this List<T> input)
     {
         var output = new Dictionary<T, int>();
