@@ -5710,6 +5710,7 @@ GameObject:
   m_Component:
   - component: {fileID: 948439482}
   - component: {fileID: 948439481}
+  - component: {fileID: 948439483}
   m_Layer: 0
   m_Name: SpawnHolder
   m_TagString: Untagged
@@ -5745,6 +5746,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &948439483
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 948439480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ec02c0ae140428418fd5bd96180b234, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ConsoleCommands
+  banana:
+    Mantissa: 0
+    Magnitude: 3
+    Exponent: 0
+  bananas: []
 --- !u!224 &961238631 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3332608965407837335, guid: 17f0f174fc041b740b3b846f1b7593c9, type: 3}

@@ -52,6 +52,8 @@ public class ConsoleCommands : MonoBehaviour
         var a1 = new BigAssNumber(9500);
         var a2 = new BigAssNumber(800);
         $"d-e: {d - e}".Log();
+        $"{new BigAssNumber(6.5, Number.Magnitudes.Qn).NumToRead()}".Log();
+        $"{new BigAssNumber(6.5, Number.Magnitudes.Qn).ToDouble()}".Log();
         (d + e).ToString().Log();
         (e + d).ToString().Log();
         e -= d;
