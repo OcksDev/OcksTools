@@ -15,7 +15,7 @@ public class BigAssNumberInspectorMaker
         }
         else
         {
-            return new BigAssNumber(Mantissa, Magnitude);
+            return new BigAssNumber(Mantissa, Magnitude, true);
         }
     }
 }
@@ -39,7 +39,7 @@ public struct BigAssNumber
         Mantissa = man;
         Exponent = exp;
     }
-    public BigAssNumber(double man, Number.Magnitudes exp)
+    public BigAssNumber(double man, Number.Magnitudes exp, bool distinctionlol)
     {
         Mantissa = man;
         Exponent = (int)exp;
