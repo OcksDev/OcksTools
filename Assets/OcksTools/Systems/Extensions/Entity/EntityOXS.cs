@@ -158,13 +158,13 @@ public class EntityOXS : MonoBehaviour
 
 public class DamageProfile
 {
-    public UnityEngine.Object SourceObject;
+    public Object SourceObject;
     public DamageType HowDamageWasDealt = DamageType.Unknown;
     public DamageType WhatWasTheDamage = DamageType.Unknown;
     public double Damage;
     public List<EffectProfile> Effects = new List<EffectProfile>();
     public Dictionary<string, int> Procs = new Dictionary<string, int>();
-    public DamageProfile(UnityEngine.Object OB, DamageType How, DamageType What, double damage)
+    public DamageProfile(Object OB, DamageType How, DamageType What, double damage)
     {
         SourceObject = OB;
         HowDamageWasDealt = How;

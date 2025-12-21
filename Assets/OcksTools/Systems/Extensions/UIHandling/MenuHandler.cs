@@ -8,7 +8,7 @@ public class MenuHandler : SingleInstance<MenuHandler>
     public static Dictionary<string, MenuState> BaseMenuStates = new Dictionary<string, MenuState>();
     public static Dictionary<string, MenuState> CurrentMenuStates = new Dictionary<string, MenuState>();
     public static OXEvent MenuMethods = new OXEvent();
-    private void Awake()
+    public override void Awake2()
     {
         foreach (var state in Menus)
         {
