@@ -1,0 +1,5 @@
+Why is the code for this in a sub-folder?
+
+Because of some wacky ass unity shenanigans which mean that it wont compile correctly if I don't.
+
+Supposedly anyway, I haven't tested taking them out and building, but frankly I don't care enough to try.

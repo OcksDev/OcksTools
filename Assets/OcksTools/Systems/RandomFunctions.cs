@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using UnityEditor;
+
 
 
 //using Unity.Netcode;
@@ -329,6 +331,34 @@ public class RandomFunctions : SingleInstance<RandomFunctions>
         float rotation_z = Mathf.Atan2(difference.y, difference.x) * Mathf.Rad2Deg;
         var sex = Quaternion.Euler(0f, 0f, rotation_z + offset2);
         return sex;
+    }
+
+
+    public static T LoadResourceByPathEditor<T>(string assetPath) where T : ScriptableObject
+    {
+        // The path must be relative to the project folder and use forward slashes. 
+        // Example path: "Assets/Data/PlayerData.asset"
+        T scriptableObject = AssetDatabase.LoadAssetAtPath<T>(assetPath);
+
+        if (scriptableObject == null)
+        {
+            UnityEngine.Debug.LogError($"Failed to load ScriptableObject at path: {assetPath}");
+        }
+
+        return scriptableObject;
+    }
+    public static T LoadResourceByPathRuntime<T>(string assetPath) where T : ScriptableObject
+    {
+        // The path must be relative to the Resources folder, using forward slashes.
+        // Example path: "Assets/Resources/Data/PlayerData.asset" -> "Data/PlayerData"
+        T scriptableObject = Resources.Load<T>(assetPath);
+
+        if (scriptableObject == null)
+        {
+            UnityEngine.Debug.LogError($"Failed to load ScriptableObject at path: {assetPath}");
+        }
+
+        return scriptableObject;
     }
 
 
