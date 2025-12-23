@@ -8,7 +8,8 @@ public class BuildNumber : IPreprocessBuildWithReport
 
     public void OnPreprocessBuild(BuildReport report)
     {
-        var dingle = RandomFunctions.LoadResourceByPathEditor<BuildNumberHolder>("Assets/OcksTools/Systems/Extensions/BuildNumberCounter/TheNumber.asset");
+        //var dingle = RandomFunctions.LoadResourceByPathEditor<BuildNumberHolder>("Assets/OcksTools/Systems/Extensions/BuildNumberCounter/TheNumber.asset");
+        var dingle = RandomFunctions.LoadResourceByPathEditor<BuildNumberHolder>("Assets/Resources/TheNumber.asset");
         dingle.BuildNumber++;
         EditorUtility.SetDirty(dingle);
         AssetDatabase.SaveAssets();

@@ -348,6 +348,9 @@ public class RandomFunctions : SingleInstance<RandomFunctions>
         return scriptableObject;
     }
 #endif
+
+
+    //Why do you not specify the file type in the string path? 
     public static T LoadResourceByPathRuntime<T>(string assetPath) where T : ScriptableObject
     {
         // The path must be relative to the Resources folder, using forward slashes.
