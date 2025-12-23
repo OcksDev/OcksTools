@@ -22,7 +22,7 @@
   - Fixed thing where hit was not using the CalcDamage() method, it just wasn't being used for some reason
 - Misc
   - zExtensions changed to a separate folder called Plugins
-    - New plugin added: ulayout
+    - New plugin added: ulayout (v1.4.2)
   - SpawnData "data" field renamed to "_data"
   - Hover now uses SingleInstance<>
   - Save system now has an event that is called before the normal loading event
