@@ -333,7 +333,7 @@ public class RandomFunctions : SingleInstance<RandomFunctions>
         return sex;
     }
 
-
+#if UNITY_EDITOR
     public static T LoadResourceByPathEditor<T>(string assetPath) where T : ScriptableObject
     {
         // The path must be relative to the project folder and use forward slashes. 
@@ -347,6 +347,7 @@ public class RandomFunctions : SingleInstance<RandomFunctions>
 
         return scriptableObject;
     }
+#endif
     public static T LoadResourceByPathRuntime<T>(string assetPath) where T : ScriptableObject
     {
         // The path must be relative to the Resources folder, using forward slashes.

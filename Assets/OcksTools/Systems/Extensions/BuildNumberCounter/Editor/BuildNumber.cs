@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 
@@ -7,8 +8,10 @@ public class BuildNumber : IPreprocessBuildWithReport
 
     public void OnPreprocessBuild(BuildReport report)
     {
-        var dingle = RandomFunctions.LoadResourceByPathEditor<BuildNumberHolder>("Assets/OcksTools/Systems/Extensions/Misc/Editor/TheNumber.asset");
+        var dingle = RandomFunctions.LoadResourceByPathEditor<BuildNumberHolder>("Assets/OcksTools/Systems/Extensions/BuildNumberCounter/TheNumber.asset");
         dingle.BuildNumber++;
+        EditorUtility.SetDirty(dingle);
+        AssetDatabase.SaveAssets();
     }
 
 }
