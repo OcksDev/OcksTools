@@ -41,11 +41,10 @@ public class ImageOutliner : MonoBehaviour
         float h = ((float)tex2.height) / 100f;
         h *= 600f / tex2.height;
         gaming2.transform.localScale = new Vector3(w, h, 1);
-        var e = new ScreenshotData();
-        e.Camera = Camera.main;
-        e.Height_PX = tex.height;
-        e.Width_PX = tex.width;
-        e.Name = "OriginalImage";
+        var e = new ScreenshotData("OriginalImage")
+            .WidthPX(tex.width)
+            .HeightPX(tex.height)
+            .Camera(Camera.main);
 
         gaming2.sprite = Converter.Texture2DToSprite(tex2);
         ss.TakeScreenshot(e);
@@ -62,7 +61,7 @@ public class ImageOutliner : MonoBehaviour
         tex.SetPixels32(colors);
         tex.Apply();
         gaming2.sprite = Converter.Texture2DToSprite(tex);
-        e.Name = "OutlinedImage";
+        e._Name = "OutlinedImage";
         ss.TakeScreenshot(e);
     }
 }

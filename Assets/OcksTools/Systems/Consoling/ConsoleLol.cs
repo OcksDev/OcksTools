@@ -227,7 +227,6 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
         Add(new OXCommand("help", "Console", "Message_HelpHelp").Action(ConsoleCommands.Help)
             .Append(new OXCommand(OXCommand.ExpectedInputType.Long).Action(ConsoleCommands.Help))
             .Append(new OXCommand(OXCommand.ExpectedInputType.String).Action(ConsoleCommands.HelpSpecif)));
-        Add(new OXCommand("screenshot", "Console", "Message_HelpScreenshot").Action(ConsoleCommands.ScreenShot));
         Add(new OXCommand("dialog", "Console", "Message_HelpDialog")
             .Append(new OXCommand(OXCommand.ExpectedInputType.String).Action(ConsoleCommands.Dialog)));
         Add(new OXCommand("clear", "Console", "Message_HelpClear").Action(ConsoleCommands.Clear));

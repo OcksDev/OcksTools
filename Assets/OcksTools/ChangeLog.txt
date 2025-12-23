@@ -12,6 +12,10 @@
   - New boolean to opt-out of automatic transform recording/resetting on open/close
   - "Menu" field renamed to "Objects" for clarity
   - Now uses SingleInstance<>, I forgot to do this last update lol
+- Screenshot Improvements
+  - Screenshot command now dynamically adds itself when the behavior exists
+  - New events added for pre-render and post-render.
+  - ScreenshotData now uses the modular construction design pattern
 - Misc
   - zExtensions changed to a separate folder called Plugins
     - New plugin added: ulayout

@@ -382,22 +382,6 @@ public class ConsoleCommands : MonoBehaviour
 
     public static System.Action ScreenshotAction;
 
-    public static void ScreenShot()
-    {
-        if (ScreenshotAction != null)
-        {
-            ConsoleLol.Instance.ClearConsole();
-            ScreenshotAction();
-        }
-        else
-        {
-            Console.Log((
-
-                LanguageFileSystem.Instance.GetString("Console", "Error_NoScreenshot")
-
-            ), "#bdbdbdff");
-        }
-    }
 
     public static void settimescale(OXCommandData r)
     {
