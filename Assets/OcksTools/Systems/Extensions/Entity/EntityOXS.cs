@@ -9,9 +9,14 @@ public class EntityOXS : MonoBehaviour
     public double Max_Health = 100;
     public double Max_Shield = 100;
     public List<EffectProfile> Effects = new List<EffectProfile>();
+    public OXEvent<EntityOXS, DamageProfile> OnHitEvent = new OXEvent<EntityOXS, DamageProfile>();
+    public OXEvent<EntityOXS, DamageProfile> OnHealEvent = new OXEvent<EntityOXS, DamageProfile>();
+    public OXEvent<EntityOXS> OnKillEvent = new OXEvent<EntityOXS>();
+    public OXEvent<EntityOXS, EffectProfile> OnEffectGain = new OXEvent<EntityOXS, EffectProfile>();
     public void Hit(DamageProfile hit)
     {
-        var dmg = hit.Damage;
+        OnHitEvent.Invoke(this, hit);
+        var dmg = hit.CalcDamage();
         foreach (var effect in hit.Effects)
         {
             AddEffect(effect);
@@ -24,25 +29,28 @@ public class EntityOXS : MonoBehaviour
         Shield = System.Math.Clamp(Shield, 0, Max_Shield);
     }
 
-    public void Heal(double amount)
+    public void Heal(DamageProfile amount)
     {
         var oldh = Health;
-        Health = System.Math.Clamp(Health + amount, 0, Max_Health);
-        var change = amount - (Health - oldh);
+        var heal = amount.CalcDamage();
+        Health = System.Math.Clamp(Health + heal, 0, Max_Health);
+        var change = heal - (Health - oldh);
         var olds = Shield;
         Shield = System.Math.Clamp(Shield + change, 0, Max_Shield);
         var change2 = change - (Shield - olds);
 
-        // Amount Healed: RandomFunctions.Instance.NumToRead(((System.Numerics.BigInteger)System.Math.Round(amount - change2)).ToString())
+        // Amount Healed: RandomFunctions.Instance.NumToRead(((System.Numerics.BigInteger)System.Math.Round()).ToString())
 
         if (Health != oldh || Shield != olds)
         {
             //runs if heal was successful
+            OnHealEvent.Invoke(this, amount);
         }
     }
 
     public void Kill()
     {
+        OnKillEvent.Invoke(this);
         Destroy(gameObject);
     }
     private void Update()
@@ -91,6 +99,8 @@ public class EntityOXS : MonoBehaviour
 
     public void AddEffect(EffectProfile eff)
     {
+        OnEffectGain.Invoke(this, eff);
+
         eff.TimeRemaining = eff.Duration;
         EffectProfile s = GetEffect(eff.Name);
         if (s != null)
@@ -159,22 +169,22 @@ public class EntityOXS : MonoBehaviour
 public class DamageProfile
 {
     public Object SourceObject;
-    public DamageType HowDamageWasDealt = DamageType.Unknown;
-    public DamageType WhatWasTheDamage = DamageType.Unknown;
+    public DamageType HowItWasDealt = DamageType.Unknown;
+    public DamageType WhatItWas = DamageType.Unknown;
     public double Damage;
     public List<EffectProfile> Effects = new List<EffectProfile>();
     public Dictionary<string, int> Procs = new Dictionary<string, int>();
     public DamageProfile(Object OB, DamageType How, DamageType What, double damage)
     {
         SourceObject = OB;
-        HowDamageWasDealt = How;
-        WhatWasTheDamage = What;
+        HowItWasDealt = How;
+        WhatItWas = What;
         Damage = damage;
     }
     public DamageProfile(DamageProfile pp)
     {
         SourceObject = pp.SourceObject;
-        HowDamageWasDealt = pp.HowDamageWasDealt;
+        HowItWasDealt = pp.HowItWasDealt;
         Damage = pp.Damage;
         Procs = new Dictionary<string, int>(pp.Procs);
         Effects = new List<EffectProfile>(pp.Effects);
@@ -203,6 +213,7 @@ public class DamageProfile
         Air,
         Dark,
         Light,
+        Healing,
     }
 
 }

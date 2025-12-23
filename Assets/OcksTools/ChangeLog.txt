@@ -16,6 +16,10 @@
   - Screenshot command now dynamically adds itself when the behavior exists
   - New events added for pre-render and post-render.
   - ScreenshotData now uses the modular construction design pattern
+- Entity Improvements
+  - New events added for on hit, on heal, on kill, and on effect gain
+  - Some variables renamed in the Damage Profile class
+  - Fixed thing where hit was not using the CalcDamage() method, it just wasn't being used for some reason
 - Misc
   - zExtensions changed to a separate folder called Plugins
     - New plugin added: ulayout
