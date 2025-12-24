@@ -154,11 +154,10 @@ public class MenuHandler : SingleInstance<MenuHandler>
 public class MenuState
 {
     public string Name;
-    public bool OptOutTransformRecord = false;
     public List<GameObject> Objects;
     [HideInInspector]
     public Dictionary<GameObject, MultiRef<Vector3, Vector3, Quaternion>> InitialTransforms;
-    [HideInInspector]
+    public bool OptOutTransformRecord = false;
     public bool State;
     public System.Func<List<GameObject>, IEnumerator> OpeningAnimation;
     public System.Func<List<GameObject>, IEnumerator> ClosingAnimation;
