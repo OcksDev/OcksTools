@@ -28,6 +28,7 @@
   - Save system now has an event that is called before the normal loading event
   - Unstable folder renamed to UnstableOrUnfinished
   - New Random Functions to dynamically load assets via string path, varient for editor and for runtime
+  - New GetOrDefine extension method for dictionaries
   - Reactive Data has been removed as it's functionality is covered by Reactable<>
 ------------
 

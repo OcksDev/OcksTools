@@ -430,6 +430,15 @@ public static class OXFunctions
     {
         ti.AddOrUpdate(kv.Key, kv.Value);
     }
+    public static T2 GetOrDefine<T, T2>(this Dictionary<T, T2> ti, T inp, T2 def)
+    {
+        if (!ti.ContainsKey(inp))
+        {
+            ti.Add(inp, def);
+            return def;
+        }
+        return ti[inp];
+    }
 
 
 

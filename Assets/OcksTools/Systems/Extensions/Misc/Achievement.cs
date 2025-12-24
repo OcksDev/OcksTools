@@ -37,6 +37,10 @@ public class Achievement : SingleInstance<Achievement>
             GetAchievementData(name).Progress.IsCompleted = true;
         }
     }
+    public static void Revoke(string name)
+    {
+        if (AchievementDict.ContainsKey(name)) AchievementDict.Remove(name);
+    }
     public static void Define(string name, bool saved = true)
     {
         if (AchievementDict.ContainsKey(name))
