@@ -108,7 +108,7 @@ public class PlayerController3D : MonoBehaviour
         if (!grounded) return false;
         return Jump();
     }
-
+    public GameObject nerd = null;
     private float rot_y = 0;
     private float rot_x = 0;
     private void Update()
@@ -116,7 +116,11 @@ public class PlayerController3D : MonoBehaviour
         if (Movements.HasFlag(AllowedMovements.Jump)) InputBuffer.Instance.BufferListen("jump", "Player", "Jump", 0.1f);
         CollisionGroundCheck();
 
-
+        if (InputManager.IsKeyDown(KeyCode.G))
+        {
+            var g = Instantiate(nerd, HeadY.position + HeadY.forward * 2f, Quaternion.identity);
+            DumbPhysics.MoveAndSlide(g.GetComponent<BoxCollider>(), HeadY.forward, 10, ~0, out RaycastHit banana);
+        }
 
 
         var x = Input.GetAxis("Mouse X") * mouse_sense;
