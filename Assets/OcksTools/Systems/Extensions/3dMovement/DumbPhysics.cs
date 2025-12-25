@@ -4,7 +4,7 @@ public static class DumbPhysics
 {
     private const float Skin = 0.001f;
 
-    public static Vector3 MoveAndSlide(
+    public static Vector3 SweepCollider(
         Collider collider,
         Vector3 direction,
         float distance,
@@ -91,8 +91,8 @@ public static class DumbPhysics
             : distance;
 
         Vector3 movement = direction * moveDistance;
-        collider.transform.position += movement;
+        //collider.transform.position += movement;
 
-        return collider.transform.position;
+        return movement;
     }
 }

@@ -25,6 +25,7 @@
     - New plugin added: ulayout (v1.4.2)
   - SpawnData "data" field renamed to "_data"
   - Hover now uses SingleInstance<>
+  - New 3D stuff, namely a SweepCollider static method
   - Save system now has an event that is called before the normal loading event
   - Unstable folder renamed to UnstableOrUnfinished
   - New Random Functions to dynamically load assets via string path, varient for editor and for runtime

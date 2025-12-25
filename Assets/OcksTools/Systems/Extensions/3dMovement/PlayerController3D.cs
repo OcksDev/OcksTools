@@ -119,7 +119,7 @@ public class PlayerController3D : MonoBehaviour
         if (InputManager.IsKeyDown(KeyCode.G))
         {
             var g = Instantiate(nerd, HeadY.position + HeadY.forward * 2f, Quaternion.identity);
-            DumbPhysics.MoveAndSlide(g.GetComponent<BoxCollider>(), HeadY.forward, 10, ~0, out RaycastHit banana);
+            g.transform.position = DumbPhysics.SweepCollider(g.GetComponent<BoxCollider>(), HeadY.forward, 10, ~0, out RaycastHit banana);
         }
 
 
