@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using static SaveSystem;
 
 public class SaveSystem : SingleInstance<SaveSystem>
 {
@@ -387,5 +388,49 @@ public class SaveSystem : SingleInstance<SaveSystem>
         OXFile,
         PlayerPrefs,
     }
+    public static SaveProfile SaveProfileGlobal = null;
+    public static Dictionary<string, SaveProfile> SaveProfiles = new Dictionary<string, SaveProfile>();
+    public static SaveProfile Profile(string name)
+    {
+        if (SaveProfiles.ContainsKey(name))
+        {
+            return SaveProfiles[name];
+        }
+        var p = new SaveProfile();
+        p.ProfileName = name;
+        SaveProfiles.Add(name, p);
+        return p;
+    }
+    public static SaveProfile GlobalProfile()
+    {
+        if (SaveProfileGlobal != null) return SaveProfileGlobal;
+        var p = new SaveProfile();
+        p.IsGlobal = true;
+        p.ProfileName = "GlobalProfile";
+        SaveProfileGlobal = p;
+        return p;
+    }
+}
 
+public class SaveProfile
+{
+    public string ProfileName = "-";
+    public bool IsGlobal = false;
+
+    public void SetString(string key, string data, string dict = "def")
+    {
+        switch (SaveSystem.Instance.SaveMethod_)
+        {
+            case SaveMethod.OXFile:
+                var ox = SaveSystem.Instance.GetDictOX(dict);
+                ox.Data.Add(key, data);
+                break;
+            case SaveMethod.TXTFile:
+                SaveSystem.Instance.GetDict(dict).AddOrUpdate(key, data);
+                break;
+            case SaveMethod.PlayerPrefs:
+                PlayerPrefs.SetString($"{dict}_{key}", data);
+                break;
+        }
+    }
 }
