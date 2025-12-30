@@ -399,7 +399,7 @@ public class ConsoleCommands : MonoBehaviour
         if (r.com[2] != "")
         {
             string eee = r.raw_caps.Substring(r.raw.IndexOf(r.com[2]) + r.com[2].Length + 1);
-            SaveSystem.Instance.SetString(r.com_caps[2], eee);
+            SaveSystem.ActiveProf.SetString(r.com_caps[2], eee);
             Console.Log($"Saved \"{eee}\" into {r.com_caps[2]}");
         }
         else
@@ -411,7 +411,7 @@ public class ConsoleCommands : MonoBehaviour
     {
         if (r.com[2] != "")
         {
-            Console.Log($"{SaveSystem.Instance.GetString(r.com_caps[2], LanguageFileSystem.Instance.GetString("Console", "Error_NoData"))}");
+            Console.Log($"{SaveSystem.ActiveProf.GetString(r.com_caps[2], LanguageFileSystem.Instance.GetString("Console", "Error_NoData"))}");
         }
         else
         {
@@ -426,12 +426,12 @@ public class ConsoleCommands : MonoBehaviour
                 Console.LogError(LanguageFileSystem.Instance.GetString("Console", "Error_NoDataDump"));
                 break;
             case SaveSystem.SaveMethod.TXTFile:
-                Console.Log($"{Converter.DictionaryToString(SaveSystem.Instance.GetDict(), System.Environment.NewLine, ": ")}");
+                Console.Log($"{Converter.DictionaryToString(SaveSystem.ActiveProf.SavedData, System.Environment.NewLine, ": ")}");
                 break;
             case SaveSystem.SaveMethod.OXFile:
 
                 string combined = "";
-                foreach (var a in SaveSystem.Instance.GetDictOX().Data.DataOXFiles)
+                foreach (var a in SaveSystem.ActiveProf.GetOX().Data.DataOXFiles)
                 {
                     if (combined != "") combined += "<br>";
                     combined += a.Key + ": " + a.Value.ToString();

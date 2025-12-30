@@ -78,7 +78,7 @@ public class GISContainer : MonoBehaviour
     public IEnumerator WaitForSaveSystem()
     {
         yield return new WaitUntil(() => { return SaveSystem.Instance.LoadedData; });
-        LoadContents();
+        LoadContents(SaveSystem.ActiveProf);
         LoadedData = true;
     }
     public void Update()
@@ -158,12 +158,12 @@ public class GISContainer : MonoBehaviour
         return i;
     }
 
-    public void SaveContents(string dict)
+    public void SaveContents(SaveProfile dict)
     {
         if (SaveLoadData)
         {
             GISLol.Instance.LoadTempForAll();
-            SaveSystem.Instance.SetList(GetName(), slots.AListToBList((x) => x.Held_Item), dict);
+            dict.SetList(GetName(), slots.AListToBList((x) => x.Held_Item));
         }
     }
 
@@ -179,7 +179,7 @@ public class GISContainer : MonoBehaviour
             SaveSystem.SaveAllData.Append($"{GetName()}_save", SaveContents);
         }
     }
-    public void LoadContents()
+    public void LoadContents(SaveProfile dict)
     {
         if (SaveLoadData)
         {
@@ -189,7 +189,7 @@ public class GISContainer : MonoBehaviour
             }
             List<string> a = new List<string>();
             List<string> b = new List<string>();
-            var gg = SaveSystem.Instance.GetList("cnt_" + Name, new List<GISItem>());
+            var gg = dict.GetList(GetName(), new List<GISItem>());
             if (gg.Count > 0)
             {
                 int i = 0;
@@ -400,7 +400,7 @@ public class GISContainer : MonoBehaviour
     {
         ClearSlots();
         GenerateSlots(amount);
-        LoadContents();
+        LoadContents(SaveSystem.ActiveProf);
     }
 
     public int IndexOf(GISItem item, bool truecompare = false)

@@ -12,25 +12,27 @@ public class ProfileHandler : SingleInstance<ProfileHandler>
     }
 
 
-    public void LockIn(string dict)
+    public void LockIn(SaveProfile dict)
     {
         var s = SaveSystem.Instance;
-        s.GetDataFromFile("ox_profile");
-        if (s.GetString("Username", "", "ox_profile") == "")
+        var d = SaveSystem.Profile("ox_profile");
+        s.GetDataFromFile(d);
+        if (d.GetString("Username", "") == "")
         {
-            s.SetString("Username", $"Guest{RandomFunctions.CharPrepend(Random.Range(0, 1000000).ToString(), 6, '0')}", "ox_profile");
+            d.SetString("Username", $"Guest{RandomFunctions.CharPrepend(Random.Range(0, 1000000).ToString(), 6, '0')}");
         }
-        Username = s.GetString("Username", "", "ox_profile");
+        Username = d.GetString("Username", "");
         Console.Log("Logged In User: " + Username);
     }
-    public void LockOut(string dict)
+    public void LockOut(SaveProfile dict)
     {
         var s = SaveSystem.Instance;
         if (Username == "") return;
+        var d = SaveSystem.Profile("ox_profile");
 
-        s.SetString("Username", Username, "ox_profile");
+        d.SetString("Username", Username);
 
-        s.SaveDataToFile("ox_profile");
+        s.SaveDataToFile(d);
     }
 
 }

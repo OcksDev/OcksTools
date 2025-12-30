@@ -71,13 +71,13 @@ public class Achievement : SingleInstance<Achievement>
         SaveSystem.LoadAllData_EarlyCall.Append(LoadAchievements);
         CompileDict();
     }
-    public void SaveAchievements(string a)
+    public void SaveAchievements(SaveProfile a)
     {
-        SaveSystem.Instance.SetString("Achievements", Achievements.ListToString(), a);
+        a.SetString("Achievements", Achievements.ListToString());
     }
-    public void LoadAchievements(string a)
+    public void LoadAchievements(SaveProfile a)
     {
-        Achievements = SaveSystem.Instance.GetString("Achievements", a).StringToList().AListToBList(x =>
+        Achievements = a.GetString("Achievements").StringToList().AListToBList(x =>
         {
             AchievementData ad = new AchievementData();
             ad.FromString(x);

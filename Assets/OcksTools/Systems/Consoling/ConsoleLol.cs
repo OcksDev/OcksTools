@@ -76,7 +76,7 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
 
         StartCoroutine(AssembleHelpMenu());
 
-        LoadConsole("");
+        LoadConsole(null);
 
 
     }
@@ -99,7 +99,7 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
 
     private void OnApplicationQuit()
     {
-        SaveConsole("");
+        SaveConsole(null);
     }
 
     public IEnumerator AssembleHelpMenu()
@@ -539,17 +539,19 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
         latest.Append(x);
     }
 
-    public void SaveConsole(string dict)
+    public void SaveConsole(SaveProfile dict)
     {
         if (!SavePrevCommands) return;
-        SaveSystem.Instance.SetList("prev", prev_commands, "console");
-        SaveSystem.Instance.SaveDataToFile("console");
+        var d = SaveSystem.Profile("console");
+        d.SetList("prev", prev_commands);
+        SaveSystem.Instance.SaveDataToFile(d);
     }
-    public void LoadConsole(string dict)
+    public void LoadConsole(SaveProfile dict)
     {
         if (!SavePrevCommands) return;
-        SaveSystem.Instance.GetDataFromFile("console");
-        prev_commands = SaveSystem.Instance.GetList("prev", prev_commands, "console");
+        var d = SaveSystem.Profile("console");
+        SaveSystem.Instance.GetDataFromFile(d);
+        prev_commands = d.GetList("prev", prev_commands);
     }
 
 }

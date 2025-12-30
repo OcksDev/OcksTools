@@ -56,13 +56,13 @@ public class StoredRandom : SingleInstance<StoredRandom>
         }
     }
 
-    public void SS_SaveRandData(string dict)
+    public void SS_SaveRandData(SaveProfile dict)
     {
-        SaveSystem.Instance.SetString("Randoms", ExportToString(), dict);
+        dict.SetString("Randoms", ExportToString());
     }
-    public void SS_LoadRandData(string dict)
+    public void SS_LoadRandData(SaveProfile dict)
     {
-        ImportFromString(SaveSystem.Instance.GetString("Randoms", "", dict));
+        ImportFromString(dict.GetString("Randoms", ""));
     }
 
 

@@ -10,14 +10,15 @@ public class SaveSystem : SingleInstance<SaveSystem>
     public int test = 0;
     public bool TestBool = false;
     public KeyCode testkeybind = 0;
-    private Dictionary<string, OXFile> OXFiles = new Dictionary<string, OXFile>();
-    public static OXEvent<string> SaveAllData = new OXEvent<string>();
-    public static OXEvent<string> LoadAllData = new OXEvent<string>();
-    public static OXEvent<string> LoadAllData_EarlyCall = new OXEvent<string>();
+    public static OXEvent<SaveProfile> SaveAllData = new OXEvent<SaveProfile>();
+    public static OXEvent<SaveProfile> LoadAllData = new OXEvent<SaveProfile>();
+    public static OXEvent<SaveProfile> LoadAllData_EarlyCall = new OXEvent<SaveProfile>();
 
-    public Dictionary<string, Dictionary<string, string>> HoldingData = new Dictionary<string, Dictionary<string, string>>();
+    public static SaveProfile SaveProfileGlobal = null;
+    public static Dictionary<string, SaveProfile> SaveProfiles = new Dictionary<string, SaveProfile>();
 
     public static string ActiveDir;
+    public static SaveProfile ActiveProf;
     private void OnApplicationQuit()
     {
         SaveGame();
@@ -30,8 +31,10 @@ public class SaveSystem : SingleInstance<SaveSystem>
     public bool LoadedData = false;
     public void LoadGame(string dict = "Profile1")
     {
+        var prof = Profile(dict);
         LoadedData = true;
         ActiveDir = dict;
+        ActiveProf = prof;
 
         InputManager.AssembleTheCodes();
         var s = SoundSystem.Instance;
@@ -39,10 +42,10 @@ public class SaveSystem : SingleInstance<SaveSystem>
         Dictionary<string, string> dic = new Dictionary<string, string>();
 
 
+        GetDataFromFile(GlobalProfile());
+        GetDataFromFile(prof);
 
-        GetDataFromFile(dict);
-
-        dic = GetDict("keybinds", new Dictionary<string, string>(), dict);
+        dic = prof.GetDict("keybinds", new Dictionary<string, string>());
         List<KeyCode> shungite = new List<KeyCode>();
         if (dic.Count > 0)
         {
@@ -60,20 +63,21 @@ public class SaveSystem : SingleInstance<SaveSystem>
 
         if (s != null)
         {
-            s.MasterVolume = float.Parse(GetString("snd_mas", "1", dict));
-            s.SFXVolume = float.Parse(GetString("snd_sfx", "1", dict));
-            s.MusicVolume = float.Parse(GetString("snd_mus", "1", dict));
+            s.MasterVolume = float.Parse(prof.GetString("snd_mas", "1"));
+            s.SFXVolume = float.Parse(prof.GetString("snd_sfx", "1"));
+            s.MusicVolume = float.Parse(prof.GetString("snd_mus", "1"));
         }
 
-        test = int.Parse(GetString("test_num", "0", dict));
-        TestBool = bool.Parse(GetString("test_bool", "False", dict));
-        testkeybind = InputManager.namekeys[GetString("test_keybind", "NONE", dict)];
+        test = int.Parse(prof.GetString("test_num", "0"));
+        TestBool = bool.Parse(prof.GetString("test_bool", "False"));
+        testkeybind = InputManager.namekeys[prof.GetString("test_keybind", "NONE")];
         //ConsoleLol.Instance.ConsoleLog(Prefix(i) + "test_num");
-        LoadAllData_EarlyCall.Invoke(dict);
-        LoadAllData.Invoke(dict);
+        LoadAllData_EarlyCall.Invoke(prof);
+        LoadAllData.Invoke(prof);
     }
     public void SaveGame(string dict = "Profile1")
     {
+        var prof = Profile(dict);
         var s = SoundSystem.Instance;
         List<string> list = new List<string>();
         Dictionary<string, string> dic = new Dictionary<string, string>();
@@ -88,226 +92,44 @@ public class SaveSystem : SingleInstance<SaveSystem>
             }
             dic.Add(a.Key, Converter.ListToString(list));
         }
-        SetDict("keybinds", dic, dict);
+        prof.SetDict("keybinds", dic);
         //PlayerPrefs.SetInt("UnitySelectMonitor", index); // sets the monitor that unity uses
 
         if (s != null)
         {
-            SetString("snd_mas", s.MasterVolume.ToString(), dict);
-            SetString("snd_sfx", s.SFXVolume.ToString(), dict);
-            SetString("snd_mus", s.MusicVolume.ToString(), dict);
+            prof.SetString("snd_mas", s.MasterVolume.ToString());
+            prof.SetString("snd_sfx", s.SFXVolume.ToString());
+            prof.SetString("snd_mus", s.MusicVolume.ToString());
         }
 
-        SetString("test_num", test.ToString(), dict);
-        SetString("test_bool", TestBool.ToString(), dict);
-        SetString("test_keybind", InputManager.keynames[testkeybind], dict);
+        prof.SetString("test_num", test.ToString());
+        prof.SetString("test_bool", TestBool.ToString());
+        prof.SetString("test_keybind", InputManager.keynames[testkeybind]);
 
-        SaveAllData.Invoke(dict);
+        SaveAllData.Invoke(prof);
 
-        SaveDataToFile(dict);
-    }
-
-    public string GetString(string key, string defaul = "", string dict = "def")
-    {
-        //use this method to properly query data 
-        switch (SaveMethod_)
-        {
-            case SaveMethod.OXFile:
-                var ox = GetDictOX(dict);
-                if (!ox.Data.ContainsKey(key)) return defaul;
-                var x = ox.Data[key].DataString;
-                if (x != null && x != "")
-                {
-                    return x;
-                }
-                else
-                {
-                    return defaul;
-                }
-            case SaveMethod.TXTFile:
-                var d = GetDict(dict);
-                if (d.ContainsKey(key))
-                {
-                    return d[key];
-                }
-                else
-                {
-                    return defaul;
-                }
-            case SaveMethod.PlayerPrefs:
-                return PlayerPrefs.GetString($"{dict}_{key}", defaul);
-        }
-        return ""; //code never reaches here but it makes the compiler shut up
-    }
-    public A GetObject<A>(string key, A defaul = default, string dict = "def")
-    {
-        return GetString(key, defaul.ToString(), dict).StringToObject<A>();
-    }
-
-    public List<string> GetList(string key, List<string> defaul = null, string dict = "def")
-    {
-        //use this method to properly query data 
-        switch (SaveMethod_)
-        {
-            case SaveMethod.OXFile:
-                var ox = GetDictOX(dict);
-                if (!ox.Data.ContainsKey(key)) return defaul;
-                var x = ox.Data[key].DataListString;
-                if (x != null && x.Count > 0)
-                {
-                    return x;
-                }
-                else
-                {
-                    return defaul;
-                }
-            case SaveMethod.TXTFile:
-                var d = GetDict(dict);
-                if (d.ContainsKey(key))
-                {
-                    var cd2 = Converter.EscapedStringToList(d[key]);
-                    return cd2.Count > 0 ? cd2 : defaul;
-                }
-                else
-                {
-                    return defaul;
-                }
-            case SaveMethod.PlayerPrefs:
-                var cd = Converter.EscapedStringToList(PlayerPrefs.GetString($"{dict}_{key}", ""));
-                return cd.Count > 0 ? cd : defaul;
-        }
-        return null; //code never reaches here but it makes the compiler shut up
-    }
-
-    public List<A> GetList<A>(string key, List<A> defaul = null, string dict = "def")
-    {
-        return GetList(key, defaul.AListToStringList(), dict).StringListToAList<A>();
+        SaveDataToFile(GlobalProfile());
+        SaveDataToFile(prof);
     }
 
 
-    public Dictionary<string, string> GetDict(string key, Dictionary<string, string> defaul = null, string dict = "def")
-    {
-        //use this method to properly query data 
-        switch (SaveMethod_)
-        {
-            case SaveMethod.OXFile:
-                var ox = GetDictOX(dict);
-                if (!ox.Data.ContainsKey(key)) return defaul;
-                var x = ox.Data[key].DataDictStringString;
-                if (x != null && x.Count > 0)
-                {
-                    return x;
-                }
-                else
-                {
-                    return defaul;
-                }
-            case SaveMethod.TXTFile:
-                var d = GetDict(dict);
-                if (d.ContainsKey(key))
-                {
-                    var cd2 = Converter.EscapedStringToDictionary(d[key]);
-                    return cd2.Count > 0 ? cd2 : defaul;
-                }
-                else
-                {
-                    return defaul;
-                }
-            case SaveMethod.PlayerPrefs:
-                var cd = Converter.EscapedStringToDictionary(PlayerPrefs.GetString($"{dict}_{key}", ""));
-                return cd.Count > 0 ? cd : defaul;
-        }
-        return null; //code never reaches here but it makes the compiler shut up
-    }
-
-    public Dictionary<A, B> GetDict<A, B>(string key, Dictionary<A, B> defaul = null, string dict = "def")
-    {
-        return GetDict(key, defaul.ABDictionaryToStringDictionary(), dict).StringDictionaryToABDictionary<A, B>();
-    }
-
-    public void SetString(string key, string data, string dict = "def")
-    {
-        switch (SaveMethod_)
-        {
-            case SaveMethod.OXFile:
-                var ox = GetDictOX(dict);
-                ox.Data.Add(key, data);
-                break;
-            case SaveMethod.TXTFile:
-                GetDict(dict).AddOrUpdate(key, data);
-                break;
-            case SaveMethod.PlayerPrefs:
-                PlayerPrefs.SetString($"{dict}_{key}", data);
-                break;
-        }
-    }
-    public void SetObject<A>(string key, A data, string dict = "def")
-    {
-        SetString(key, data.ToString(), dict);
-    }
-
-
-    public void SetList(string key, List<string> data, string dict = "def")
-    {
-        switch (SaveMethod_)
-        {
-            case SaveMethod.OXFile:
-                var ox = GetDictOX(dict);
-                ox.Data.Add(key, data);
-                break;
-            case SaveMethod.TXTFile:
-                GetDict(dict).AddOrUpdate(key, Converter.EscapedListToString(data));
-                break;
-            case SaveMethod.PlayerPrefs:
-                PlayerPrefs.SetString($"{dict}_{key}", Converter.EscapedListToString(data));
-                break;
-        }
-    }
-    public void SetList<A>(string key, List<A> data, string dict = "def")
-    {
-        SetList(key, data.AListToStringList(), dict);
-    }
-
-    public void SetDict(string key, Dictionary<string, string> data, string dict = "def")
-    {
-        switch (SaveMethod_)
-        {
-            case SaveMethod.OXFile:
-                var ox = GetDictOX(dict);
-                ox.Data.Add(key, data);
-                break;
-            case SaveMethod.TXTFile:
-                GetDict(dict).AddOrUpdate(key, Converter.EscapedDictionaryToString(data));
-                break;
-            case SaveMethod.PlayerPrefs:
-                PlayerPrefs.SetString($"{dict}_{key}", Converter.EscapedDictionaryToString(data));
-                break;
-        }
-    }
-
-    public void SetDict<A, B>(string key, Dictionary<A, B> data, string dict = "def")
-    {
-        SetDict(key, data.ABDictionaryToStringDictionary(), dict);
-    }
-
-
-    public void SaveDataToFile(string dict = "def")
+    public void SaveDataToFile(SaveProfile prof)
     {
         var f = FileSystem.Instance;
         f.AssembleFilePaths();
         switch (SaveMethod_)
         {
             case SaveMethod.TXTFile:
-                f.WriteFile(DictNameToFilePath(dict), Converter.DictionaryToString(GetDict(dict), Environment.NewLine, ": "), true);
+                f.WriteFile(PathOfProfile(prof), Converter.DictionaryToString(prof.SavedData, Environment.NewLine, ": "), true);
                 break;
             case SaveMethod.OXFile:
-                var ox = GetDictOX(dict);
-                ox.WriteFile(DictNameToFilePath(dict), true);
+                var ox = prof.GetOX();
+                ox.WriteFile(PathOfProfile(prof), true);
                 break;
         }
     }
 
-    public string DictNameToFilePath(string e)
+    public string PathOfProfile(SaveProfile prof)
     {
         string str = ".txt";
         switch (SaveMethod_)
@@ -315,47 +137,24 @@ public class SaveSystem : SingleInstance<SaveSystem>
             case SaveMethod.OXFile: str = ".ox"; break;
         }
         var f = FileSystem.Instance;
-        switch (e)
+        if (prof.IsGlobal)
         {
-            case "def": return $"{f.GameDirectory}\\Game_Data{str}";
+            return $"{f.GameDirectory}\\Global_Data{str}";
+        }
+        switch (prof.Name)
+        {
             case "ox_profile": return $"{f.UniversalDirectory}\\Player_Data.txt";
             case "console": return $"{f.GameDirectory}\\Console_Data{str}";
-            default: return $"{f.GameDirectory}\\Data_{e}{str}";
+            default: return $"{f.GameDirectory}\\Data_{prof.Name}{str}";
         }
     }
 
-
-    public Dictionary<string, string> GetDict(string name = "def")
-    {
-        if (HoldingData.ContainsKey(name))
-        {
-            return HoldingData[name];
-        }
-        else
-        {
-            HoldingData.Add(name, new Dictionary<string, string>());
-            return HoldingData[name];
-        }
-    }
-    public OXFile GetDictOX(string name = "def")
-    {
-        if (OXFiles.ContainsKey(name))
-        {
-            return OXFiles[name];
-        }
-        else
-        {
-            OXFiles.Add(name, new OXFile());
-            return OXFiles[name];
-        }
-    }
-
-    public void GetDataFromFile(string dict = "def")
+    public void GetDataFromFile(SaveProfile prof)
     {
         var f = FileSystem.Instance;
         f.AssembleFilePaths();
-        var fp = DictNameToFilePath(dict);
-        var des = GetDict(dict);
+        var fp = PathOfProfile(prof);
+        var des = prof.SavedData;
         des.Clear();
         if (!File.Exists(fp))
         {
@@ -375,7 +174,7 @@ public class SaveSystem : SingleInstance<SaveSystem>
                 }
                 break;
             case SaveMethod.OXFile:
-                var ox = GetDictOX(dict);
+                var ox = prof.GetOX();
                 ox.ReadFile(fp);
                 break;
         }
@@ -388,8 +187,6 @@ public class SaveSystem : SingleInstance<SaveSystem>
         OXFile,
         PlayerPrefs,
     }
-    public static SaveProfile SaveProfileGlobal = null;
-    public static Dictionary<string, SaveProfile> SaveProfiles = new Dictionary<string, SaveProfile>();
     public static SaveProfile Profile(string name)
     {
         if (SaveProfiles.ContainsKey(name))
@@ -438,7 +235,7 @@ public class SaveProfile
                 }
                 else
                 {
-                    PlayerPrefs.SetString($"{Name}_{key}", data);
+                    PlayerPrefs.SetString($"={Name}_{key}", data);
                 }
                 break;
         }
@@ -462,7 +259,7 @@ public class SaveProfile
                 }
                 else
                 {
-                    PlayerPrefs.SetString($"{Name}_{key}", Converter.EscapedDictionaryToString(data));
+                    PlayerPrefs.SetString($"={Name}_{key}", Converter.EscapedDictionaryToString(data));
                 }
                 break;
         }
@@ -487,7 +284,7 @@ public class SaveProfile
                 }
                 else
                 {
-                    PlayerPrefs.SetString($"{Name}_{key}", Converter.EscapedListToString(data));
+                    PlayerPrefs.SetString($"={Name}_{key}", Converter.EscapedListToString(data));
                 }
                 break;
         }
@@ -506,6 +303,147 @@ public class SaveProfile
     {
         SetDict(key, data.ABDictionaryToStringDictionary());
     }
+
+
+
+    public string GetString(string key, string defaul = "")
+    {
+        //use this method to properly query data 
+        switch (SaveMethod)
+        {
+            case SaveMethod.OXFile:
+                var ox = GetOX();
+                if (!ox.Data.ContainsKey(key)) return defaul;
+                var x = ox.Data[key].DataString;
+                if (x != null && x != "")
+                {
+                    return x;
+                }
+                else
+                {
+                    return defaul;
+                }
+            case SaveMethod.TXTFile:
+                if (SavedData.ContainsKey(key))
+                {
+                    return SavedData[key];
+                }
+                else
+                {
+                    return defaul;
+                }
+            case SaveMethod.PlayerPrefs:
+                if (IsGlobal)
+                {
+                    return PlayerPrefs.GetString($"_Global_{key}", defaul);
+                }
+                else
+                {
+                    return PlayerPrefs.GetString($"={Name}_{key}", defaul);
+                }
+        }
+        return ""; //code never reaches here but it makes the compiler shut up
+    }
+
+    public List<string> GetList(string key, List<string> defaul = null)
+    {
+        //use this method to properly query data 
+        switch (SaveMethod)
+        {
+            case SaveMethod.OXFile:
+                var ox = GetOX();
+                if (!ox.Data.ContainsKey(key)) return defaul;
+                var x = ox.Data[key].DataListString;
+                if (x != null && x.Count > 0)
+                {
+                    return x;
+                }
+                else
+                {
+                    return defaul;
+                }
+            case SaveMethod.TXTFile:
+                if (SavedData.ContainsKey(key))
+                {
+                    var cd2 = Converter.EscapedStringToList(SavedData[key]);
+                    return cd2.Count > 0 ? cd2 : defaul;
+                }
+                else
+                {
+                    return defaul;
+                }
+            case SaveMethod.PlayerPrefs:
+                if (IsGlobal)
+                {
+                    var cd = Converter.EscapedStringToList(PlayerPrefs.GetString($"_Global_{key}", ""));
+                    return cd.Count > 0 ? cd : defaul;
+                }
+                else
+                {
+                    var cd = Converter.EscapedStringToList(PlayerPrefs.GetString($"={Name}_{key}", ""));
+                    return cd.Count > 0 ? cd : defaul;
+                }
+        }
+        return null; //code never reaches here but it makes the compiler shut up
+    }
+
+
+
+    public Dictionary<string, string> GetDict(string key, Dictionary<string, string> defaul = null)
+    {
+        //use this method to properly query data 
+        switch (SaveMethod)
+        {
+            case SaveMethod.OXFile:
+                var ox = GetOX();
+                if (!ox.Data.ContainsKey(key)) return defaul;
+                var x = ox.Data[key].DataDictStringString;
+                if (x != null && x.Count > 0)
+                {
+                    return x;
+                }
+                else
+                {
+                    return defaul;
+                }
+            case SaveMethod.TXTFile:
+                if (SavedData.ContainsKey(key))
+                {
+                    var cd2 = Converter.EscapedStringToDictionary(SavedData[key]);
+                    return cd2.Count > 0 ? cd2 : defaul;
+                }
+                else
+                {
+                    return defaul;
+                }
+            case SaveMethod.PlayerPrefs:
+                if (IsGlobal)
+                {
+                    var cd = Converter.EscapedStringToDictionary(PlayerPrefs.GetString($"_Global_{key}", ""));
+                    return cd.Count > 0 ? cd : defaul;
+                }
+                else
+                {
+                    var cd = Converter.EscapedStringToDictionary(PlayerPrefs.GetString($"={Name}_{key}", ""));
+                    return cd.Count > 0 ? cd : defaul;
+                }
+        }
+        return null; //code never reaches here but it makes the compiler shut up
+    }
+
+    public A GetObject<A>(string key, A defaul = default)
+    {
+        return GetString(key, defaul.ToString()).StringToObject<A>();
+    }
+    public List<A> GetList<A>(string key, List<A> defaul = null)
+    {
+        return GetList(key, defaul.AListToStringList()).StringListToAList<A>();
+    }
+    public Dictionary<A, B> GetDict<A, B>(string key, Dictionary<A, B> defaul = null)
+    {
+        return GetDict(key, defaul.ABDictionaryToStringDictionary()).StringDictionaryToABDictionary<A, B>();
+    }
+
 
 
     private OXFile OXFile = null;

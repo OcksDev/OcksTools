@@ -132,7 +132,7 @@ public class GridLol : SingleInstance<GridLol>
         }
     }
 
-    public void SaveAllTiles(string dict)
+    public void SaveAllTiles(SaveProfile dict)
     {
         Dictionary<OcksTileData, int> fuckyou = new Dictionary<OcksTileData, int>();
         List<string> boners = new List<string>();
@@ -142,11 +142,11 @@ public class GridLol : SingleInstance<GridLol>
             fuckyou.Add(tile.Value, 0);
             boners.Add(tile.Value.TileToString());
         }
-        SaveSystem.Instance.SetList("InfiniGrid", boners, dict);
+        dict.SetList("InfiniGrid", boners);
     }
-    public void LoadAllTiles(string dict)
+    public void LoadAllTiles(SaveProfile dict)
     {
-        var a = SaveSystem.Instance.GetList("InfiniGrid", new List<string>(), dict);
+        var a = dict.GetList("InfiniGrid", new List<string>());
         foreach (var b in a)
         {
             if (b == "") continue;

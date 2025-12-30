@@ -41,7 +41,7 @@ public class BadgeHandler : SingleInstance<BadgeHandler>
         SaveSystem.SaveAllData.Append(LockOut2);
     }
 
-    public void LockIn2(string dict)
+    public void LockIn2(SaveProfile dict)
     {
 
         foreach (var a in GameAuthorizedBadges)
@@ -116,12 +116,10 @@ public class BadgeHandler : SingleInstance<BadgeHandler>
     }
 
 
-    public void LockOut2(string dict)
+    public void LockOut2(SaveProfile dict)
     {
         AuthorizeBadgePush();
         WriteAllBadgeData();
-
-
     }
     public void WriteAllBadgeData()
     {

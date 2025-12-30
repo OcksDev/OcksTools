@@ -17,10 +17,10 @@ public class TreeHandler : SingleInstance<TreeHandler>
         SaveSystem.LoadAllData.Append(LoadAllTree);
         SaveSystem.SaveAllData.Append(SaveAllTree);
     }
-    public void LoadAllTree(string dict)
+    public void LoadAllTree(SaveProfile dict)
     {
         //phase 1 - load all the values
-        CurrentOwnerships = SaveSystem.Instance.GetDict("TreeData", new Dictionary<string, int>(), dict);
+        CurrentOwnerships = dict.GetDict("TreeData", new Dictionary<string, int>());
         //phase 2 - the canvas partner objects
         SpawnPartners.Invoke();
         //phase 3 - update the state of nodes to make sure they all know their state
@@ -42,9 +42,9 @@ public class TreeHandler : SingleInstance<TreeHandler>
         //phase 6 - set the state of every line object
         UpdateLines.Invoke();
     }
-    public void SaveAllTree(string dict)
+    public void SaveAllTree(SaveProfile dict)
     {
-        SaveSystem.Instance.SetDict("TreeData", CurrentOwnerships, dict);
+        dict.SetDict("TreeData", CurrentOwnerships);
     }
 
     public bool MeetsReqs(List<string> Prerequisites, TreeNode.ViewReq ViewRequirement)

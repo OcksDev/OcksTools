@@ -8,6 +8,10 @@
 - New Build Number Counter system, just tracks the amount of times the project has been built
 - New Default Assets
   - Also organized existing image assets better
+- Save System Improvements
+  - Massively improved readability/interfacing of saving/loading, now abstracted into "SaveProfile"s
+    - Also has a GlobalProfile
+    - Reworked entire codebase to use the new system
 - Menu Handler Improvements
   - New boolean to opt-out of automatic transform recording/resetting on open/close
   - "Menu" field renamed to "Objects" for clarity
@@ -20,6 +24,8 @@
   - New events added for on hit, on heal, on kill, and on effect gain
   - Some variables renamed in the Damage Profile class
   - Fixed thing where hit was not using the CalcDamage() method, it just wasn't being used for some reason
+- GIS Improvements
+  - Fixed a big big where items stacked with exactly 1 would not save/load properly (and this has been here since v1.1.2, whoops!)
 - Misc
   - zExtensions changed to a separate folder called Plugins
     - New plugin added: ulayout (v1.4.2)

@@ -89,7 +89,7 @@ public class GISLol : SingleInstance<GISLol>
         nono = false;
     }
 
-    public void SaveAll(string dict)
+    public void SaveAll(SaveProfile dict)
     {
         foreach (var c in All_Containers)
         {
@@ -208,7 +208,7 @@ public class GISItem
         var e = new Dictionary<string, string>()
         {
             { "Index", "Empty" },
-            { "Count", "0" },
+            { "Count", "1" },
             { "Extra", "" },
         };
         return e;
@@ -223,7 +223,7 @@ public class GISItem
 
         Data["Index"] = Name.ToString();
         Data["Count"] = Amount.ToString();
-
+        Debug.Log($"{Name} -  {Amount}");
         //cursed ass line of code lol
         Data["Extra"] = Components.ABDictionaryToCDDictionary((x) => x, (x) => x.GetString()).EscapedDictionaryToString();
 
@@ -248,8 +248,11 @@ public class GISItem
         Data = Data.MergeDictionary(Converter.EscapedStringToDictionary(e, "~|~", "~o~"));
 
         Name = Data["Index"];
-        Amount = int.Parse(Data["Count"]);
+        if (Name != "Empty") Amount = int.Parse(Data["Count"]);
+        else Amount = 0;
+
         Components = Data["Extra"].EscapedStringToDictionary().ABDictionaryToCDDictionary((x, y) => x, (x, y) => ItemDataConvert(x, y));
+
         return this;
     }
     public static GISItemComponentBase ItemDataConvert(string wish, string data)

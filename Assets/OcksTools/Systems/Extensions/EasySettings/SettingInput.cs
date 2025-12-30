@@ -25,7 +25,7 @@ public class SettingInput : MonoBehaviour
         }
         else
         {
-            ReadValue(SaveSystem.ActiveDir);
+            ReadValue(SaveSystem.Profile(SaveSystem.ActiveDir));
         }
     }
     public void ToggleVal()
@@ -60,7 +60,7 @@ public class SettingInput : MonoBehaviour
         }
     }
 
-    public void ReadValue(string dict)
+    public void ReadValue(SaveProfile dict)
     {
         switch (Type)
         {
