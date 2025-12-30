@@ -28,7 +28,7 @@ public class SaveSystem : SingleInstance<SaveSystem>
     }
     [HideInInspector]
     public bool LoadedData = false;
-    public void LoadGame(string dict = "def")
+    public void LoadGame(string dict = "Profile1")
     {
         LoadedData = true;
         ActiveDir = dict;
@@ -72,7 +72,7 @@ public class SaveSystem : SingleInstance<SaveSystem>
         LoadAllData_EarlyCall.Invoke(dict);
         LoadAllData.Invoke(dict);
     }
-    public void SaveGame(string dict = "def")
+    public void SaveGame(string dict = "Profile1")
     {
         var s = SoundSystem.Instance;
         List<string> list = new List<string>();
@@ -396,17 +396,15 @@ public class SaveSystem : SingleInstance<SaveSystem>
         {
             return SaveProfiles[name];
         }
-        var p = new SaveProfile();
-        p.ProfileName = name;
+        var p = new SaveProfile(name, Instance.SaveMethod_);
         SaveProfiles.Add(name, p);
         return p;
     }
     public static SaveProfile GlobalProfile()
     {
         if (SaveProfileGlobal != null) return SaveProfileGlobal;
-        var p = new SaveProfile();
+        var p = new SaveProfile("GlobalProfile", Instance.SaveMethod_);
         p.IsGlobal = true;
-        p.ProfileName = "GlobalProfile";
         SaveProfileGlobal = p;
         return p;
     }
@@ -414,23 +412,111 @@ public class SaveSystem : SingleInstance<SaveSystem>
 
 public class SaveProfile
 {
-    public string ProfileName = "-";
+    public string Name = "-";
+    public SaveMethod SaveMethod = SaveMethod.TXTFile;
     public bool IsGlobal = false;
-
-    public void SetString(string key, string data, string dict = "def")
+    public Dictionary<string, string> SavedData = new Dictionary<string, string>();
+    public SaveProfile(string name, SaveMethod sm)
     {
-        switch (SaveSystem.Instance.SaveMethod_)
+        Name = name;
+        SaveMethod = sm;
+    }
+    public void SetString(string key, string data)
+    {
+        switch (SaveMethod)
         {
             case SaveMethod.OXFile:
-                var ox = SaveSystem.Instance.GetDictOX(dict);
-                ox.Data.Add(key, data);
+                GetOX().Data.Add(key, data);
                 break;
             case SaveMethod.TXTFile:
-                SaveSystem.Instance.GetDict(dict).AddOrUpdate(key, data);
+                SavedData.AddOrUpdate(key, data);
                 break;
             case SaveMethod.PlayerPrefs:
-                PlayerPrefs.SetString($"{dict}_{key}", data);
+                if (IsGlobal)
+                {
+                    PlayerPrefs.SetString($"_Global_{key}", data);
+                }
+                else
+                {
+                    PlayerPrefs.SetString($"{Name}_{key}", data);
+                }
                 break;
         }
     }
+
+
+    public void SetDict(string key, Dictionary<string, string> data)
+    {
+        switch (SaveMethod)
+        {
+            case SaveMethod.OXFile:
+                GetOX().Data.Add(key, data);
+                break;
+            case SaveMethod.TXTFile:
+                SavedData.AddOrUpdate(key, Converter.EscapedDictionaryToString(data));
+                break;
+            case SaveMethod.PlayerPrefs:
+                if (IsGlobal)
+                {
+                    PlayerPrefs.SetString($"_Global_{key}", Converter.EscapedDictionaryToString(data));
+                }
+                else
+                {
+                    PlayerPrefs.SetString($"{Name}_{key}", Converter.EscapedDictionaryToString(data));
+                }
+                break;
+        }
+    }
+
+
+
+    public void SetList(string key, List<string> data)
+    {
+        switch (SaveMethod)
+        {
+            case SaveMethod.OXFile:
+                GetOX().Data.Add(key, data);
+                break;
+            case SaveMethod.TXTFile:
+                SavedData.AddOrUpdate(key, Converter.EscapedListToString(data));
+                break;
+            case SaveMethod.PlayerPrefs:
+                if (IsGlobal)
+                {
+                    PlayerPrefs.SetString($"_Global_{key}", Converter.EscapedListToString(data));
+                }
+                else
+                {
+                    PlayerPrefs.SetString($"{Name}_{key}", Converter.EscapedListToString(data));
+                }
+                break;
+        }
+    }
+    public void SetObject<A>(string key, A data)
+    {
+        SetString(key, data.ToString());
+    }
+
+    public void SetList<A>(string key, List<A> data)
+    {
+        SetList(key, data.AListToStringList());
+    }
+
+    public void SetDict<A, B>(string key, Dictionary<A, B> data)
+    {
+        SetDict(key, data.ABDictionaryToStringDictionary());
+    }
+
+
+    private OXFile OXFile = null;
+    public OXFile GetOX()
+    {
+        if (OXFile != null)
+        {
+            return OXFile;
+        }
+        OXFile = new OXFile();
+        return OXFile;
+    }
+
 }
