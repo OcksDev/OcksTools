@@ -12,6 +12,7 @@
   - Massively improved readability/interfacing of saving/loading, now abstracted into "SaveProfile"s
     - Also has a GlobalProfile
     - Reworked entire codebase to use the new system
+  - Added an event that is called before the normal loading event
 - Menu Handler Improvements
   - New boolean to opt-out of automatic transform recording/resetting on open/close
   - "Menu" field renamed to "Objects" for clarity
@@ -32,7 +33,6 @@
   - SpawnData "data" field renamed to "_data"
   - Hover now uses SingleInstance<>
   - New 3D stuff, namely a SweepCollider static method
-  - Save system now has an event that is called before the normal loading event
   - Unstable folder renamed to UnstableOrUnfinished
   - New Random Functions to dynamically load assets via string path, varient for editor and for runtime
   - New GetOrDefine extension method for dictionaries
