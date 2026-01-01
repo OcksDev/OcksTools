@@ -87,7 +87,6 @@ public class FileSystem : SingleInstance<FileSystem>
         }
 
 
-
         //Environment.NewLine
     }
     public string ReadFile(string FileName)
@@ -105,10 +104,26 @@ public class FileSystem : SingleInstance<FileSystem>
         //string fullpath = Path.Combine(DirectoryLol, FolderName);
         Directory.CreateDirectory(FolderName);
     }
+    public string[] ReadFilePathsInFolder(string FolderPath)
+    {
+        return Directory.GetFiles(FolderPath);
+    }
+    public string[] ReadFolderPathsInFolder(string FolderPath)
+    {
+        return Directory.GetDirectories(FolderPath);
+    }
+    public DateTime ReadFileLastWriteTime(string file)
+    {
+        return File.GetLastWriteTime(file);
+    }
 
     public void DeleteFile(string file)
     {
         File.Delete(file);
+    }
+    public void DeleteFolder(string FolderPath)
+    {
+        Directory.Delete(FolderPath);
     }
     public DownloadDataHandler DownloadFile(int type, string filelocation)
     {

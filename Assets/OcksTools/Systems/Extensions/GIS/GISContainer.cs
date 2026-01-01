@@ -1,3 +1,4 @@
+using NaughtyAttributes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,13 +11,22 @@ public class GISContainer : MonoBehaviour
     public bool SaveLoadData = true;
     [Tooltip("Uses the GISItems however doesn't use slots")]
     public bool IsAbstract = false;
+    [HideIf("IsAbstract")]
     public bool CanShiftClickItems = true;
+    [HideIf("IsAbstract")]
     public bool CanCtrlClickItems = true;
+    [HideIf("IsAbstract")]
+    public bool CanDoubleClickItems = true;
     public int CtrlClickPriority = 0;
+    [HideIf("IsAbstract")]
     public bool AutomaticallyAddChildren = true;
     public bool GenerateRandomItems = false;
+    [HideIf("IsAbstract")]
     public bool GenerateSlotObjects = true;
+    [HideIf("IsAbstract")]
+    [ShowIf("GenerateSlotObjects")]
     public int GenerateXSlots = 20;
+    [HideIf("IsAbstract")]
     public GameObject SlotPrefab;
     public List<GISSlot> slots = new List<GISSlot>();
     [HideInInspector]

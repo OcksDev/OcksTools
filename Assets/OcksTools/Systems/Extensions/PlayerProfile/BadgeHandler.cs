@@ -52,7 +52,7 @@ public class BadgeHandler : SingleInstance<BadgeHandler>
         }
 
 
-        var all = System.IO.Directory.GetFiles(FileSystem.Instance.FileLocations["Profile_Badge_Data"]);
+        var all = FileSystem.Instance.ReadFilePathsInFolder(FileSystem.Instance.FileLocations["Profile_Badge_Data"]);
         foreach (var a in all)
         {
             var z = a.Substring(a.LastIndexOf("\\") + 1);

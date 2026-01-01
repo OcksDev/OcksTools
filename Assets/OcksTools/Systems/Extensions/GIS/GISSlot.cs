@@ -10,6 +10,7 @@ public class GISSlot : MonoBehaviour
     private float DoubleClickTimer = -69f;
     private RectTransform erect;
     public OXEvent<GISSlot> OnInteractEvent = new OXEvent<GISSlot>();
+    public OXEvent<GISSlot> OnFilterCheck = new OXEvent<GISSlot>();
     public void Awake()
     {
         if (Held_Item == null)
@@ -34,7 +35,7 @@ public class GISSlot : MonoBehaviour
                 if (Held_Item.Name != "Empty") return true;
                 break;
         }
-        return false;
+        return OnFilterCheck.InvokeWithHitCheck(this);
     }
 
     public void OnInteract()
@@ -193,9 +194,28 @@ public class GISSlot : MonoBehaviour
         var g = GISLol.Instance;
         Held_Item.AddConnection(Conte);
         SaveItemContainerData();
+
+        if (DoubleClickTimer >= 0)
+        {
+            var d = g.Mouse_Held_Item.Name;
+            var K = g.ItemDict[d].MaxAmount;
+            if (g.Mouse_Held_Item.Name == "Empty")
+            {
+                DoubleClickTimer = -69f;
+            }
+            else if (K != 0 && g.Mouse_Held_Item.Amount >= K)
+            {
+                DoubleClickTimer = -69f;
+            }
+            else if (Conte.AmountOfItem(g.Mouse_Held_Item) == 0)
+            {
+                DoubleClickTimer = -69f;
+            }
+        }
+
         if (DoubleClickTimer < 0)
         {
-            DoubleClickTimer = 0.2f;
+            if (Conte.CanDoubleClickItems) DoubleClickTimer = 0.2f;
             var a = g.Mouse_Held_Item;
 
             if (Held_Item.Compare(a))
