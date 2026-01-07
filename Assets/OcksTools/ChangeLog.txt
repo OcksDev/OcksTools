@@ -8,6 +8,17 @@
 - New Build Number Counter system, just tracks the amount of times the project has been built
 - New Default Assets
   - Also organized existing image assets better
+- Entity Improvements!
+  - New events added for on hit, on heal, on kill, and on effect gain
+  - Completely abtracted effect system into its own class
+    - Also clarified effect combining methods by using an enum
+    - Added new methods to directly remove or clear effects
+  - Made EntityOXS no longer rely on MonoBehaviour
+  - Added new monobehavior script called EntityObject which interfaces with EntityOXS
+  - Some variables renamed in the Damage Profile class
+  - Fixed thing where hit was not using the CalcDamage() method, it just wasn't being used for some reason
+  - Fixed DamageProfile to now use System.Object instead of UnityEngine.Object
+  - Removed vestigial effect list from DamageProfile
 - Save System Improvements
   - Massively improved readability/interfacing of saving/loading, now abstracted into "SaveProfile"s
     - Also has a GlobalProfile
@@ -21,10 +32,6 @@
   - Screenshot command now dynamically adds itself when the behavior exists
   - New events added for pre-render and post-render.
   - ScreenshotData now uses the modular construction design pattern
-- Entity Improvements
-  - New events added for on hit, on heal, on kill, and on effect gain
-  - Some variables renamed in the Damage Profile class
-  - Fixed thing where hit was not using the CalcDamage() method, it just wasn't being used for some reason
 - GIS Improvements
   - Added toggle to disable double clicking items in containers
   - Improved container dev interface readability using NaughtyAttributes to hide unneeded variables when not in use
