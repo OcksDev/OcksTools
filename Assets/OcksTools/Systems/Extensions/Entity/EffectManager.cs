@@ -24,10 +24,27 @@ public static class ExtensionForEntityOXSForEffects
         }
         else
         {
+            var a = new EntityEffectMiddleMan(nerd);
+            EffectsGlobal.Add(nerd, a);
             nerd.OnKillEvent.Append("CleanUpEffects", CleanUpEffects);
-            return new EntityEffectMiddleMan(nerd);
+            return a;
         }
     }
+    public static EntityEffectMiddleManReadOnly EffectReadOnly(this EntityOXS nerd)
+    {
+        if (EffectsGlobal.ContainsKey(nerd))
+        {
+            return EffectsGlobal[nerd];
+        }
+        else
+        {
+            var a = new EntityEffectMiddleMan(nerd);
+            EffectsGlobal.Add(nerd, a);
+            nerd.OnKillEvent.Append("CleanUpEffects", CleanUpEffects);
+            return a;
+        }
+    }
+
     public static void CleanUpEffects(EntityOXS nerd)
     {
         if (EffectsTicking.ContainsKey(nerd))
@@ -38,11 +55,9 @@ public static class ExtensionForEntityOXSForEffects
     }
 }
 
-public struct EntityEffectMiddleMan
+public class EntityEffectMiddleMan : EntityEffectMiddleManReadOnly
 {
-    private EntityOXS entity;
-    public List<EffectProfile> Effects;
-    public EntityEffectMiddleMan(EntityOXS e)
+    public EntityEffectMiddleMan(EntityOXS e) : base(e)
     {
         entity = e;
         Effects = new List<EffectProfile>();
@@ -64,23 +79,6 @@ public struct EntityEffectMiddleMan
         }
         CheckExistence();
     }
-
-    public EffectProfile Get(string name)
-    {
-        foreach (var ef in Effects)
-        {
-            if (name == ef.Name)
-            {
-                return ef;
-            }
-        }
-        return null;
-    }
-    public EffectProfile Get(EffectProfile eff)
-    {
-        return Get(eff.Name);
-    }
-
 
     public void Add(EffectProfile eff)
     {
@@ -182,4 +180,30 @@ public struct EntityEffectMiddleMan
             ExtensionForEntityOXSForEffects.EffectsTicking.Remove(entity);
         }
     }
+}
+public class EntityEffectMiddleManReadOnly
+{
+    public EntityOXS entity;
+    public List<EffectProfile> Effects;
+    public EntityEffectMiddleManReadOnly(EntityOXS e)
+    {
+        entity = e;
+        Effects = new List<EffectProfile>();
+    }
+    public EffectProfile Get(string name)
+    {
+        foreach (var ef in Effects)
+        {
+            if (name == ef.Name)
+            {
+                return ef;
+            }
+        }
+        return null;
+    }
+    public EffectProfile Get(EffectProfile eff)
+    {
+        return Get(eff.Name);
+    }
+
 }
