@@ -15,12 +15,6 @@ public class Tags : SingleInstance<Tags>
     [HideInInspector]
     public static Dictionary<string, GameObject> refs = new Dictionary<string, GameObject>();
     public List<OXTagRefThing> RefedObjects = new List<OXTagRefThing>();
-    /*
-     * Tags Help:
-     * To check if a gameobject has a certain tag: see if the tag list contains the string ID of the gameobject(s)
-     * string ID of a gamobject should be stored in SpawnData.Data[0]
-     * 
-     */
 
 
     public override void Awake2()

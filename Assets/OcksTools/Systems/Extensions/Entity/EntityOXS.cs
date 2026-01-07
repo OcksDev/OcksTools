@@ -39,7 +39,7 @@ public class EntityOXS : MonoBehaviour
         Shield = System.Math.Clamp(Shield + change, 0, Max_Shield);
         var change2 = change - (Shield - olds);
 
-        // Amount Healed: RandomFunctions.Instance.NumToRead(((System.Numerics.BigInteger)System.Math.Round()).ToString())
+        // Amount Healed: amount - change2
 
         if (Health != oldh || Shield != olds)
         {

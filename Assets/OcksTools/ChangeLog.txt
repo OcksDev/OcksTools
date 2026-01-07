@@ -29,15 +29,15 @@
   - Added toggle to disable double clicking items in containers
   - Improved container dev interface readability using NaughtyAttributes to hide unneeded variables when not in use
   - Improved feel of GISSlot interaction (double clicking detection had made some left clicks not do anything in the case that both the clicks were fast enough and that no more items could be stacked onto the currently held item)
-  - Fixed a big big where items stacked with exactly 1 would not save/load properly (and this has been here since v1.1.2, whoops!)
+  - Fixed a big big where items stacked with exactly 1 would not save/load properly (whoops!)
 - File System Improvements
   - Added some extra methods from the File and Directory classes to agrigate common file tasks
 - Misc
   - zExtensions changed to a separate folder called Plugins
     - New plugin added: ulayout (v1.4.2)
-  - SpawnData "data" field renamed to "_data"
   - Hover now uses SingleInstance<>
   - New 3D stuff, namely a SweepCollider static method
+  - Cleaned up some stuff in SpawnData and the Spawn System
   - Unstable folder renamed to UnstableOrUnfinished
   - New Random Functions to dynamically load assets via string path, varient for editor and for runtime
   - New GetOrDefine extension method for dictionaries

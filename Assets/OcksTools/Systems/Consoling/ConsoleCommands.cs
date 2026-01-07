@@ -135,7 +135,7 @@ public class ConsoleCommands : MonoBehaviour
             );
         if (r.com[2] == "p")
         {
-            Console.Log(SpawnSystem.GetData(a).ConvertToString());
+            Console.Log(SpawnSystem.GetSpawnData(a).ConvertToString());
         }
     }
     public static void Test_read(OXCommandData r)
@@ -306,7 +306,7 @@ public class ConsoleCommands : MonoBehaviour
         foreach (var b in a)
         {
             var penis = (GameObject)b.Value;
-            var d = SpawnSystem.GetData(penis)._data;
+            var d = SpawnSystem.GetSpawnData(penis).GetData();
 
             if (d.ContainsKey("TestOB"))
             {

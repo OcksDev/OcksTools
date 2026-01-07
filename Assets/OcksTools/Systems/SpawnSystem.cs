@@ -5,7 +5,6 @@ using UnityEngine;
 public class SpawnSystem : SingleInstance<SpawnSystem>
 {
     public List<Pool> Spawnables = new List<Pool>();
-    private List<string> parentdata = new List<string>();
     public static Dictionary<string, Pool> SpawnableDict = new Dictionary<string, Pool>();
     public static Action<string> SpawnShareMethod;
     public override void Awake2()
@@ -53,7 +52,7 @@ public class SpawnSystem : SingleInstance<SpawnSystem>
         Tags.ClearAllOf(Tags.GetIDOf(nerd));
         Destroy(nerd);
     }
-    public static SpawnData GetData(GameObject nerd)
+    public static SpawnData GetSpawnData(GameObject nerd)
     {
         return Tags.GetFromTag<SpawnData>("Spawns", Tags.GetIDOf(nerd));
     }
@@ -88,9 +87,9 @@ public class SpawnData
         this._pos = pos;
         return this;
     }
-    public SpawnData Rotation(Quaternion pos)
+    public SpawnData Rotation(Quaternion rot)
     {
-        this._rot = pos;
+        this._rot = rot;
         return this;
     }
     public SpawnData Parent(Transform p)
@@ -136,6 +135,10 @@ public class SpawnData
         return this;
     }
 
+    public Dictionary<string, string> GetData()
+    {
+        return _data;
+    }
 
     public string ConvertToString()
     {
