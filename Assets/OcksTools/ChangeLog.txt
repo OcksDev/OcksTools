@@ -43,6 +43,7 @@
   - zExtensions changed to a separate folder called Plugins
     - New plugin added: ulayout (v1.4.2)
   - Hover now uses SingleInstance<>
+  - Fixed one line of broken code in InifiGrid that prevented it from loading
   - New 3D stuff, namely a SweepCollider static method
   - Cleaned up some stuff in SpawnData and the Spawn System
   - Unstable folder renamed to UnstableOrUnfinished

@@ -113,6 +113,7 @@ public class GridLol : SingleInstance<GridLol>
             tileextend.TileMap.SetTile(zi.pos, tileextend.TileToSpawn);
             tileextend.TileMap.SetTileFlags(zi.pos, UnityEngine.Tilemaps.TileFlags.None);
             tileextend.TileMap.SetColor(zi.pos, colors[zi.TileType]);
+            Debug.Log("Spawned tile at " + zi.pos);
             foreach (var b in zi.GetUsedTiles())
             {
                 Tiles.Add(b, zi);
@@ -212,11 +213,12 @@ public class OcksTileData
     {
         data = GetDataDict();
         var c = Converter.StringToDictionary(e);
-        data.MergeDictionary(c);
-
+        data = data.MergeDictionary(c);
         pos = Converter.StringToVector3Int(data["pos"]);
         size = Converter.StringToVector2Int(data["size"]);
         TileType = int.Parse(data["type"]);
+        Debug.Log(data.DictionaryToRead());
+        Debug.Log(pos);
     }
 
     public Dictionary<string, string> GetDataDict()
