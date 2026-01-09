@@ -42,6 +42,7 @@
 - Misc
   - zExtensions changed to a separate folder called Plugins
     - New plugin added: ulayout (v1.4.2)
+  - Updated Navmesh components to latest version
   - Hover now uses SingleInstance<>
   - Fixed one line of broken code in InifiGrid that prevented it from loading
   - New 3D stuff, namely a SweepCollider static method
