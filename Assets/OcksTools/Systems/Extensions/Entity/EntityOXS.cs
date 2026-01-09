@@ -76,6 +76,7 @@ public class DamageProfile
     public DamageType WhatItWas = DamageType.Unknown;
     public double Damage;
     public HashSet<string> Procs = new HashSet<string>();
+    public OXEvent<DamageProfile> DamageCalcEvent = new OXEvent<DamageProfile>();
     public DamageProfile(object OB, DamageType How, DamageType What, double damage)
     {
         SourceObject = OB;
@@ -93,10 +94,11 @@ public class DamageProfile
     public double CalcDamage()
     {
         var x = Damage;
-
-        //do some damage calculaations
-
-        return x;
+        DamageCalcEvent.Invoke(this);
+        var damage = Damage;
+        Damage = x;
+        //do some other damage calculaations
+        return damage;
     }
     public enum DamageType // add more as needed
     {
