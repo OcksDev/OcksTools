@@ -146,6 +146,10 @@ public class OXEvent
         }
     }
 
+    public bool Contains(string name)
+    {
+        return StoredMethods.ContainsKey(name);
+    }
 }
 
 /*
@@ -196,6 +200,10 @@ public class OXEvent<T>
         }
     }
 
+    public bool Contains(string name)
+    {
+        return StoredMethods.ContainsKey(name);
+    }
 }
 /*
  * WARNING: InvokeWithHitCheck() is NOT thread safe, if using oxevent on other threads: DO NOT USE THIS
@@ -243,6 +251,10 @@ public class OXEvent<T, T2>
         {
             StoredMethods.Remove(kill);
         }
+    }
+    public bool Contains(string name)
+    {
+        return StoredMethods.ContainsKey(name);
     }
 
 }
@@ -295,6 +307,10 @@ public class OXEvent<T, T2, T3>
         }
     }
 
+    public bool Contains(string name)
+    {
+        return StoredMethods.ContainsKey(name);
+    }
 }
 
 /*
@@ -345,6 +361,10 @@ public class OXEvent<T, T2, T3, T4>
         }
     }
 
+    public bool Contains(string name)
+    {
+        return StoredMethods.ContainsKey(name);
+    }
 }
 
 /*
@@ -396,6 +416,10 @@ public class OXEvent<T, T2, T3, T4, T5>
         }
     }
 
+    public bool Contains(string name)
+    {
+        return StoredMethods.ContainsKey(name);
+    }
 }
 
 

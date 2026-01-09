@@ -98,23 +98,23 @@ public class DamageProfile
 
         return x;
     }
-    public enum DamageType
+    public enum DamageType // add more as needed
     {
-        Unknown,
-        Magic,
-        Melee,
-        Ranged,
-        Trap,
-        Fall,
-        World,
-        Fire,
-        Ice,
-        Water,
-        Earth,
-        Air,
-        Dark,
-        Light,
-        Healing,
+        Unknown = 0,
+        Magic = 1,
+        Melee = 2,
+        Ranged = 3,
+        Trap = 4,
+        Fall = 5,
+        World = 6,
+        Fire = 7,
+        Ice = 8,
+        Water = 9,
+        Earth = 10,
+        Air = 11,
+        Dark = 12,
+        Light = 13,
+        Healing = 14,
     }
 
 }

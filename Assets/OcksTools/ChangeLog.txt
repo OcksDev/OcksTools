@@ -43,6 +43,7 @@
   - zExtensions changed to a separate folder called Plugins
     - New plugin added: ulayout (v1.4.2)
   - Updated Navmesh components to latest version
+  - OXEvents now have a Contains method to check if a method is already registered
   - Hover now uses SingleInstance<>
   - Fixed one line of broken code in InifiGrid that prevented it from loading
   - New 3D stuff, namely a SweepCollider static method
