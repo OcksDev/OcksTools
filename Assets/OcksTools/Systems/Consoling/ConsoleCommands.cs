@@ -30,13 +30,6 @@ public class ConsoleCommands : MonoBehaviour
         dd.ListToString().Log();
 
     }
-    public static void Test_sete()
-    {
-        string cooldata = "original";
-        Console.Log(cooldata);
-        GlobalEvent.Set(out cooldata, "new data", "test event");
-        Console.Log(cooldata);
-    }
     public static void Test_cleanstack()
     {
         var a = new TestClass2(OXFunctions.GetCleanStackTrace, null, Vector3.one, null);

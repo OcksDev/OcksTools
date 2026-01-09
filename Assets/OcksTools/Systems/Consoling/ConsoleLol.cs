@@ -203,7 +203,6 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
             .Append(new OXCommand("escape").Action(ConsoleCommands.Test_escape))
             .Append(new OXCommand("max").Action(ConsoleCommands.Test_max))
             .Append(new OXCommand("dict").Action(ConsoleCommands.Test_dict))
-            .Append(new OXCommand("sete").Action(ConsoleCommands.Test_sete))
             .Append(new OXCommand("gevent").Action(ConsoleCommands.Test_gevent))
             .Append(new OXCommand("remap").Action(ConsoleCommands.Test_remap))
             .Append(new OXCommand("bigassnum").Action(ConsoleCommands.Test_bigassnum))

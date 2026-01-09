@@ -25,13 +25,6 @@ public static class GlobalEvent
         if (Nerds.ContainsKey(even)) Nerds[even].Invoke();
     }
 
-    public static A Set<A>(out A banana, A newval, string eventt)
-    {
-        banana = newval;
-        Invoke(eventt);
-        return banana;
-    }
-
 }
 
 /*
@@ -557,6 +550,103 @@ public class OXEventLayered<T, T2, T3>
         foreach (var aa in StoredEvents)
         {
             aa.b.Invoke(a, b, c);
+        }
+    }
+}
+
+public class OXEventLayered<T, T2, T3, T4>
+{
+    public List<MultiRef<int, OXEvent<T, T2, T3, T4>>> StoredEvents = new List<MultiRef<int, OXEvent<T, T2, T3, T4>>>();
+    public void Append(int layer, string name, Action<T, T2, T3, T4> method)
+    {
+        MultiRef<int, OXEvent<T, T2, T3, T4>> w;
+        for (int i = 0; i < StoredEvents.Count; i++)
+        {
+            w = StoredEvents[i];
+            if (w.a == layer)
+            {
+                w.b.Append(method);
+                return;
+            }
+            else if (w.a > layer)
+            {
+                var x = new OXEvent<T, T2, T3, T4>();
+                StoredEvents.Insert(i, new MultiRef<int, OXEvent<T, T2, T3, T4>>(layer, x));
+                x.Append(method);
+                return;
+            }
+        }
+        var x2 = new OXEvent<T, T2, T3, T4>();
+        StoredEvents.Add(new MultiRef<int, OXEvent<T, T2, T3, T4>>(layer, x2));
+        x2.Append(method);
+    }
+    public void Append(int layer, Action<T, T2, T3, T4> method)
+    {
+        var dd = Tags.GenerateID();
+        Append(layer, dd, method);
+    }
+    public void Append(string name, Action<T, T2, T3, T4> method)
+    {
+        Append(0, name, method);
+    }
+    public void Append(Action<T, T2, T3, T4> method)
+    {
+        Append(0, method);
+    }
+    public void Invoke(T a, T2 b, T3 c, T4 d)
+    {
+        foreach (var aa in StoredEvents)
+        {
+            aa.b.Invoke(a, b, c, d);
+        }
+    }
+}
+
+
+public class OXEventLayered<T, T2, T3, T4, T5>
+{
+    public List<MultiRef<int, OXEvent<T, T2, T3, T4, T5>>> StoredEvents = new List<MultiRef<int, OXEvent<T, T2, T3, T4, T5>>>();
+    public void Append(int layer, string name, Action<T, T2, T3, T4, T5> method)
+    {
+        MultiRef<int, OXEvent<T, T2, T3, T4, T5>> w;
+        for (int i = 0; i < StoredEvents.Count; i++)
+        {
+            w = StoredEvents[i];
+            if (w.a == layer)
+            {
+                w.b.Append(method);
+                return;
+            }
+            else if (w.a > layer)
+            {
+                var x = new OXEvent<T, T2, T3, T4, T5>();
+                StoredEvents.Insert(i, new MultiRef<int, OXEvent<T, T2, T3, T4, T5>>(layer, x));
+                x.Append(method);
+                return;
+            }
+        }
+        var x2 = new OXEvent<T, T2, T3, T4, T5>();
+        StoredEvents.Add(new MultiRef<int, OXEvent<T, T2, T3, T4, T5>>(layer, x2));
+        x2.Append(method);
+    }
+    public void Append(int layer, Action<T, T2, T3, T4, T5> method)
+    {
+        var dd = Tags.GenerateID();
+        Append(layer, dd, method);
+    }
+    public void Append(string name, Action<T, T2, T3, T4, T5> method)
+    {
+        Append(0, name, method);
+    }
+    public void Append(Action<T, T2, T3, T4, T5> method)
+    {
+        Append(0, method);
+    }
+    public void Invoke(T a, T2 b, T3 c, T4 d, T5 e)
+    {
+        foreach (var aa in StoredEvents)
+        {
+            aa.b.Invoke(a, b, c, d, e);
         }
     }
 }
