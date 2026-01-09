@@ -10,9 +10,8 @@ public class SaveSystem : SingleInstance<SaveSystem>
     public int test = 0;
     public bool TestBool = false;
     public KeyCode testkeybind = 0;
-    public static OXEvent<SaveProfile> SaveAllData = new OXEvent<SaveProfile>();
-    public static OXEvent<SaveProfile> LoadAllData = new OXEvent<SaveProfile>();
-    public static OXEvent<SaveProfile> LoadAllData_EarlyCall = new OXEvent<SaveProfile>();
+    public static OXEventLayered<SaveProfile> SaveAllData = new OXEventLayered<SaveProfile>();
+    public static OXEventLayered<SaveProfile> LoadAllData = new OXEventLayered<SaveProfile>();
 
     public static SaveProfile SaveProfileGlobal = null;
     public static Dictionary<string, SaveProfile> SaveProfiles = new Dictionary<string, SaveProfile>();
@@ -72,7 +71,6 @@ public class SaveSystem : SingleInstance<SaveSystem>
         TestBool = bool.Parse(prof.GetString("test_bool", "False"));
         testkeybind = InputManager.namekeys[prof.GetString("test_keybind", "NONE")];
         //ConsoleLol.Instance.ConsoleLog(Prefix(i) + "test_num");
-        LoadAllData_EarlyCall.Invoke(prof);
         LoadAllData.Invoke(prof);
     }
     public void SaveGame(string dict = "Profile1")

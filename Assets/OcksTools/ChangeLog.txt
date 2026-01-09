@@ -26,7 +26,7 @@
   - Massively improved readability/interfacing of saving/loading, now abstracted into "SaveProfile"s
     - Also has a GlobalProfile
     - Reworked entire codebase to use the new system
-  - Added an event that is called before the normal loading event
+  - Events changed to now use Layered OXEvents
 - Menu Handler Improvements
   - New boolean to opt-out of automatic transform recording/resetting on open/close
   - "Menu" field renamed to "Objects" for clarity
@@ -39,7 +39,7 @@
   - Added toggle to disable double clicking items in containers
   - Improved container dev interface readability using NaughtyAttributes to hide unneeded variables when not in use
   - Improved feel of GISSlot interaction (double clicking detection had made some left clicks not do anything in the case that both the clicks were fast enough and that no more items could be stacked onto the currently held item)
-  - Fixed a big big where items stacked with exactly 1 would not save/load properly (whoops!)
+  - Fixed a big bug where items stacked with exactly 1 would not save/load properly (whoops!)
 - File System Improvements
   - Added some extra methods from the File and Directory classes to agrigate common file tasks
 - Misc

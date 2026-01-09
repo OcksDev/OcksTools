@@ -68,7 +68,7 @@ public class Achievement : SingleInstance<Achievement>
     public override void Awake2()
     {
         SaveSystem.SaveAllData.Append(SaveAchievements);
-        SaveSystem.LoadAllData_EarlyCall.Append(LoadAchievements);
+        SaveSystem.LoadAllData.Append(-69, LoadAchievements);
         CompileDict();
     }
     public void SaveAchievements(SaveProfile a)
