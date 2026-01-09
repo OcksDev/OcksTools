@@ -1,4 +1,5 @@
 using UnityEngine;
+using static EntityOXS;
 
 public class EntityObject : MonoBehaviour
 {
@@ -7,13 +8,13 @@ public class EntityObject : MonoBehaviour
     {
         if (Entity.IsDead)
         {
-            KillSelf(Entity);
+            KillSelf(Entity, new MultiRef<object, EntityType>(null, EntityType.World));
             return;
         }
-        Entity.OnKillEventFinal.Append("KillSelf", KillSelf);
+        Entity.OnKillEvent.Append(99999, "KillSelf", KillSelf);
     }
 
-    public void KillSelf(EntityOXS a)
+    public void KillSelf(EntityOXS a, MultiRef<object, EntityType> b)
     {
         Destroy(gameObject);
     }

@@ -34,68 +34,6 @@ public static class GlobalEvent
 
 }
 
-public class GlobalMethod
-{
-    private static Dictionary<string, System.Action> Nerds = new Dictionary<string, System.Action>();
-    public static void Set(string even, Action method)
-    {
-        Nerds.Add(even, method);
-    }
-    public static void Run(string even)
-    {
-        if (Nerds.ContainsKey(even)) Nerds[even]();
-    }
-}
-public class GlobalMethod<T>
-{
-    private static Dictionary<string, System.Action<T>> Nerds = new Dictionary<string, System.Action<T>>();
-    public static void Set(string even, Action<T> method)
-    {
-        Nerds.Add(even, method);
-    }
-    public static void Run(string even, T a)
-    {
-        if (Nerds.ContainsKey(even)) Nerds[even](a);
-    }
-}
-public class GlobalMethod<T, T2>
-{
-    private static Dictionary<string, System.Action<T, T2>> Nerds = new Dictionary<string, System.Action<T, T2>>();
-    public static void Set(string even, Action<T, T2> method)
-    {
-        Nerds.Add(even, method);
-    }
-    public static void Run(string even, T a, T2 b)
-    {
-        if (Nerds.ContainsKey(even)) Nerds[even](a, b);
-    }
-}
-public class GlobalMethod<T, T2, T3>
-{
-    private static Dictionary<string, System.Action<T, T2, T3>> Nerds = new Dictionary<string, System.Action<T, T2, T3>>();
-    public static void Set(string even, Action<T, T2, T3> method)
-    {
-        Nerds.Add(even, method);
-    }
-    public static void Run(string even, T a, T2 b, T3 c)
-    {
-        if (Nerds.ContainsKey(even)) Nerds[even](a, b, c);
-    }
-}
-public class GlobalMethod<T, T2, T3, T4>
-{
-    private static Dictionary<string, System.Action<T, T2, T3, T4>> Nerds = new Dictionary<string, System.Action<T, T2, T3, T4>>();
-    public static void Set(string even, Action<T, T2, T3, T4> method)
-    {
-        Nerds.Add(even, method);
-    }
-    public static void Run(string even, T a, T2 b, T3 c, T4 d)
-    {
-        if (Nerds.ContainsKey(even)) Nerds[even](a, b, c, d);
-    }
-}
-
-
 /*
  * WARNING: InvokeWithHitCheck() is NOT thread safe, if using oxevent on other threads: DO NOT USE THIS
  */
@@ -431,3 +369,195 @@ public class AddToEvent : Attribute
         dingle = a;
     }
 }
+
+
+public class OXEventLayered
+{
+    public List<MultiRef<int, OXEvent>> StoredEvents = new List<MultiRef<int, OXEvent>>();
+    public void Append(int layer, string name, Action method)
+    {
+        MultiRef<int, OXEvent> w;
+        for (int i = 0; i < StoredEvents.Count; i++)
+        {
+            w = StoredEvents[i];
+            if (w.a == layer)
+            {
+                w.b.Append(method);
+                return;
+            }
+            else if (w.a > layer)
+            {
+                var x = new OXEvent();
+                StoredEvents.Insert(i, new MultiRef<int, OXEvent>(layer, x));
+                x.Append(method);
+                return;
+            }
+        }
+        var x2 = new OXEvent();
+        StoredEvents.Add(new MultiRef<int, OXEvent>(layer, x2));
+        x2.Append(method);
+    }
+    public void Append(int layer, Action method)
+    {
+        var dd = Tags.GenerateID();
+        Append(layer, dd, method);
+    }
+    public void Append(string name, Action method)
+    {
+        Append(0, name, method);
+    }
+    public void Append(Action method)
+    {
+        Append(0, method);
+    }
+    public void Invoke()
+    {
+        foreach (var aa in StoredEvents)
+        {
+            aa.b.Invoke();
+        }
+    }
+}
+public class OXEventLayered<T>
+{
+    public List<MultiRef<int, OXEvent<T>>> StoredEvents = new List<MultiRef<int, OXEvent<T>>>();
+    public void Append(int layer, string name, Action<T> method)
+    {
+        MultiRef<int, OXEvent<T>> w;
+        for (int i = 0; i < StoredEvents.Count; i++)
+        {
+            w = StoredEvents[i];
+            if (w.a == layer)
+            {
+                w.b.Append(method);
+                return;
+            }
+            else if (w.a > layer)
+            {
+                var x = new OXEvent<T>();
+                StoredEvents.Insert(i, new MultiRef<int, OXEvent<T>>(layer, x));
+                x.Append(method);
+                return;
+            }
+        }
+        var x2 = new OXEvent<T>();
+        StoredEvents.Add(new MultiRef<int, OXEvent<T>>(layer, x2));
+        x2.Append(method);
+    }
+    public void Append(int layer, Action<T> method)
+    {
+        var dd = Tags.GenerateID();
+        Append(layer, dd, method);
+    }
+    public void Append(string name, Action<T> method)
+    {
+        Append(0, name, method);
+    }
+    public void Append(Action<T> method)
+    {
+        Append(0, method);
+    }
+    public void Invoke(T a)
+    {
+        foreach (var aa in StoredEvents)
+        {
+            aa.b.Invoke(a);
+        }
+    }
+}
+public class OXEventLayered<T, T2>
+{
+    public List<MultiRef<int, OXEvent<T, T2>>> StoredEvents = new List<MultiRef<int, OXEvent<T, T2>>>();
+    public void Append(int layer, string name, Action<T, T2> method)
+    {
+        MultiRef<int, OXEvent<T, T2>> w;
+        for (int i = 0; i < StoredEvents.Count; i++)
+        {
+            w = StoredEvents[i];
+            if (w.a == layer)
+            {
+                w.b.Append(method);
+                return;
+            }
+            else if (w.a > layer)
+            {
+                var x = new OXEvent<T, T2>();
+                StoredEvents.Insert(i, new MultiRef<int, OXEvent<T, T2>>(layer, x));
+                x.Append(method);
+                return;
+            }
+        }
+        var x2 = new OXEvent<T, T2>();
+        StoredEvents.Add(new MultiRef<int, OXEvent<T, T2>>(layer, x2));
+        x2.Append(method);
+    }
+    public void Append(int layer, Action<T, T2> method)
+    {
+        var dd = Tags.GenerateID();
+        Append(layer, dd, method);
+    }
+    public void Append(string name, Action<T, T2> method)
+    {
+        Append(0, name, method);
+    }
+    public void Append(Action<T, T2> method)
+    {
+        Append(0, method);
+    }
+    public void Invoke(T a, T2 b)
+    {
+        foreach (var aa in StoredEvents)
+        {
+            aa.b.Invoke(a, b);
+        }
+    }
+}
+
+public class OXEventLayered<T, T2, T3>
+{
+    public List<MultiRef<int, OXEvent<T, T2, T3>>> StoredEvents = new List<MultiRef<int, OXEvent<T, T2, T3>>>();
+    public void Append(int layer, string name, Action<T, T2, T3> method)
+    {
+        MultiRef<int, OXEvent<T, T2, T3>> w;
+        for (int i = 0; i < StoredEvents.Count; i++)
+        {
+            w = StoredEvents[i];
+            if (w.a == layer)
+            {
+                w.b.Append(method);
+                return;
+            }
+            else if (w.a > layer)
+            {
+                var x = new OXEvent<T, T2, T3>();
+                StoredEvents.Insert(i, new MultiRef<int, OXEvent<T, T2, T3>>(layer, x));
+                x.Append(method);
+                return;
+            }
+        }
+        var x2 = new OXEvent<T, T2, T3>();
+        StoredEvents.Add(new MultiRef<int, OXEvent<T, T2, T3>>(layer, x2));
+        x2.Append(method);
+    }
+    public void Append(int layer, Action<T, T2, T3> method)
+    {
+        var dd = Tags.GenerateID();
+        Append(layer, dd, method);
+    }
+    public void Append(string name, Action<T, T2, T3> method)
+    {
+        Append(0, name, method);
+    }
+    public void Append(Action<T, T2, T3> method)
+    {
+        Append(0, method);
+    }
+    public void Invoke(T a, T2 b, T3 c)
+    {
+        foreach (var aa in StoredEvents)
+        {
+            aa.b.Invoke(a, b, c);
+        }
+    }
+}
+

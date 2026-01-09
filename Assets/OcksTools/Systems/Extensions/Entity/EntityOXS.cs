@@ -1,5 +1,7 @@
+using NaughtyAttributes;
 using System.Collections.Generic;
 using UnityEngine;
+using static EntityOXS;
 
 [System.Serializable]
 public class EntityOXS : MonoBehaviour
@@ -9,16 +11,20 @@ public class EntityOXS : MonoBehaviour
     public double Shield = 100;
     public double Max_Health = 0;
     public double Max_Shield = 0;
-    public OXEvent<EntityOXS, DamageProfile> OnHitEvent = new OXEvent<EntityOXS, DamageProfile>();
-    public OXEvent<EntityOXS, DamageProfile> OnHealEvent = new OXEvent<EntityOXS, DamageProfile>();
-    public OXEvent<EntityOXS> OnKillEvent = new OXEvent<EntityOXS>();
-    public OXEvent<EntityOXS, EffectProfile> OnEffectGain = new OXEvent<EntityOXS, EffectProfile>();
-    public OXEvent<EntityOXS> OnKillEventFinal = new OXEvent<EntityOXS>();
+    public OXEventLayered<EntityOXS, DamageProfile> OnHitEvent = new OXEventLayered<EntityOXS, DamageProfile>();
+    public OXEventLayered<EntityOXS, DamageProfile> OnHealEvent = new OXEventLayered<EntityOXS, DamageProfile>();
+    public OXEventLayered<EntityOXS, MultiRef<object, EntityType>> OnKillEvent = new OXEventLayered<EntityOXS, MultiRef<object, EntityType>>();
+    public OXEventLayered<EntityOXS, EffectProfile> OnEffectGain = new OXEventLayered<EntityOXS, EffectProfile>();
     public bool IsDead = false;
+    private object KillerObject = null;
+    private EntityType KillerType = EntityType.World;
     public void Hit(DamageProfile hit)
     {
         OnHitEvent.Invoke(this, hit);
-        var dmg = hit.CalcDamage();
+        var dmg = hit.CalcAmount();
+        KillerObject = hit.SourceObject;
+        KillerType = hit.SourceType;
+
         Shield -= dmg;
         if (Shield < 0)
         {
@@ -34,7 +40,7 @@ public class EntityOXS : MonoBehaviour
     public void Heal(DamageProfile amount)
     {
         var oldh = Health;
-        var heal = amount.CalcDamage();
+        var heal = amount.CalcAmount();
         Health = System.Math.Clamp(Health + heal, 0, Max_Health);
         var change = heal - (Health - oldh);
         var olds = Shield;
@@ -54,51 +60,59 @@ public class EntityOXS : MonoBehaviour
     {
         if (IsDead) return;
         IsDead = true;
-        OnKillEvent.Invoke(this);
-        OnKillEventFinal.Invoke(this);
+        var mf = new MultiRef<object, EntityType>(KillerObject, KillerType);
+        OnKillEvent.Invoke(this, mf);
     }
 
     public enum EntityType
     {
-        Enemy,
-        Player,
-        NPC,
-        World,
+        Enemy = 0,
+        Player = 1,
+        NPC = 2,
+        World = 3,
     }
 
 }
 
-
+[System.Serializable]
 public class DamageProfile
 {
-    public object SourceObject;
+    public double Value;
+    public object SourceObject = null;
+    public EntityType SourceType = EntityType.World;
     public DamageType HowItWasDealt = DamageType.Unknown;
     public DamageType WhatItWas = DamageType.Unknown;
-    public double Damage;
     public HashSet<string> Procs = new HashSet<string>();
-    public OXEvent<DamageProfile> DamageCalcEvent = new OXEvent<DamageProfile>();
-    public DamageProfile(object OB, DamageType How, DamageType What, double damage)
+    public OXEventLayered<DamageProfile> CalcEvent = new OXEventLayered<DamageProfile>();
+    public DamageProfile(object src_orbject, EntityType src_type, DamageType How, DamageType What, double TheValue)
     {
-        SourceObject = OB;
+        SourceObject = src_orbject;
+        SourceType = src_type;
         HowItWasDealt = How;
         WhatItWas = What;
-        Damage = damage;
+        Value = TheValue;
+    }
+    public DamageProfile(DamageType How, DamageType What, double TheValue)
+    {
+        HowItWasDealt = How;
+        WhatItWas = What;
+        Value = TheValue;
     }
     public DamageProfile(DamageProfile pp)
     {
         SourceObject = pp.SourceObject;
         HowItWasDealt = pp.HowItWasDealt;
-        Damage = pp.Damage;
+        Value = pp.Value;
         Procs = new HashSet<string>(pp.Procs);
     }
-    public double CalcDamage()
+    public double CalcAmount()
     {
-        var x = Damage;
-        DamageCalcEvent.Invoke(this);
-        var damage = Damage;
-        Damage = x;
-        //do some other damage calculaations
-        return damage;
+        var x = Value;
+        CalcEvent.Invoke(this);
+        var output_value = Value;
+        Value = x;
+        //do some other calculaations
+        return output_value;
     }
     public enum DamageType // add more as needed
     {
@@ -121,6 +135,7 @@ public class DamageProfile
 
 }
 
+[System.Serializable]
 public class EffectProfile
 {
     //data you pass in
@@ -128,9 +143,12 @@ public class EffectProfile
     public float Duration;
     public CombineMethods CombineMethod = CombineMethods.Replace;
     //other data
+    [ReadOnly]
     public int Stack = 1;
+    [ReadOnly]
     public float TimeRemaining;
     //non-transferable data
+    [HideInInspector]
     public int MaxStack;
     public EffectProfile(string type, float time, CombineMethods add_method = CombineMethods.Replace, int stacks = 1)
     {

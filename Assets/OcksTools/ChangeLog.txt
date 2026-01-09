@@ -3,22 +3,25 @@
    v1.1.4
 - New Achievement system
 - New Big Ass Number type for storing some big ass numbers
+- New OXEventLayered which allows for multiple OXEvents to be set up to execute in specified order
 - New FPS Lightweight Reader which can be easily interfaced with and tweaked
   - Also provided a canvas prefab in Misc to easily throw into any scene to get FPS readings
 - New Build Number Counter system, just tracks the amount of times the project has been built
 - New Default Assets
   - Also organized existing image assets better
 - Entity Improvements!
-  - New events added for on hit, on heal, on kill, and on effect gain
+  - New layered events added for on hit, on heal, on kill, and on effect gain
   - Completely abtracted effect system into its own class
     - Also clarified effect combining methods by using an enum
     - Added new methods to directly remove or clear effects
   - Made EntityOXS no longer rely on MonoBehaviour
   - Added new monobehavior script called EntityObject which interfaces with EntityOXS
+  - Damage Profile now has a layered event called when calculating its value
   - Some variables renamed in the Damage Profile class
   - Fixed thing where hit was not using the CalcDamage() method, it just wasn't being used for some reason
   - Fixed DamageProfile to now use System.Object instead of UnityEngine.Object
   - Removed vestigial effect list from DamageProfile
+  - Both DamageProfile and EffectProfile now have inspector readouts for easier debugging
 - Save System Improvements
   - Massively improved readability/interfacing of saving/loading, now abstracted into "SaveProfile"s
     - Also has a GlobalProfile
@@ -52,6 +55,7 @@
   - New Random Functions to dynamically load assets via string path, varient for editor and for runtime
   - New GetOrDefine extension method for dictionaries
   - Reactive Data has been removed as it's functionality is covered by Reactable<>
+  - Global Methods have been moved to UnstableOrUnfinished
 ------------
 
 ------------
