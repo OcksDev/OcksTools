@@ -14,7 +14,7 @@ public class CustomFileTester : MonoBehaviour
             Debug.Log("OXFile Detected!");
             Debug.Log("Version Detected: " + file.FileVersion);
 
-            foreach (var a in file.Data.DataOXFiles)
+            /*foreach (var a in file.Data.DataOXFiles)
             {
                 switch (a.Value.Type)
                 {
@@ -49,7 +49,7 @@ public class CustomFileTester : MonoBehaviour
                         }
                         break;
                 }
-            }
+            }*/
         }
         else
         {

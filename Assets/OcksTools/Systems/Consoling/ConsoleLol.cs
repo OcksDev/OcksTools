@@ -205,7 +205,6 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
             .Append(new OXCommand("dict").Action(ConsoleCommands.Test_dict))
             .Append(new OXCommand("gevent").Action(ConsoleCommands.Test_gevent))
             .Append(new OXCommand("remap").Action(ConsoleCommands.Test_remap))
-            .Append(new OXCommand("bigassnum").Action(ConsoleCommands.Test_bigassnum))
             .Append(new OXCommand("cleanstack").Action(ConsoleCommands.Test_cleanstack))
             .Append(new OXCommand("comp")
                 .Append(new OXCommand(OXCommand.ExpectedInputType.String)
@@ -298,8 +297,11 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
         }
 
         comm = prev_commands.Count;
-        ConsoleObjectRef.fix.Select();
-        ConsoleObjectRef.input.Select();
+        if (enable)
+        {
+            ConsoleObjectRef.fix.Select();
+            ConsoleObjectRef.input.Select();
+        }
     }
 
     private OXCommand bestmatch;

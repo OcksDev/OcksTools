@@ -7,8 +7,8 @@ public class SettingInput : MonoBehaviour
     public Color32[] color32s = null;
     private Slider slider;
     private Image img;
-    private Switcher sw;
-    private KeybindInput ky;
+    private Switcher switcher;
+    private KeybindInput keybinder;
     [HideInInspector]
     public bool fard;
     private bool hasattached = false;
@@ -16,8 +16,8 @@ public class SettingInput : MonoBehaviour
     {
         slider = GetComponent<Slider>();
         img = GetComponent<Image>();
-        sw = GetComponent<Switcher>();
-        ky = GetComponent<KeybindInput>();
+        switcher = GetComponent<Switcher>();
+        keybinder = GetComponent<KeybindInput>();
         if (!hasattached)
         {
             hasattached = true;
@@ -52,10 +52,10 @@ public class SettingInput : MonoBehaviour
                 SaveSystem.Instance.TestBool = fard;
                 break;
             case "TestSwitcher":
-                SaveSystem.Instance.test = sw.index;
+                SaveSystem.Instance.test = switcher.index;
                 break;
             case "TestKeybind":
-                SaveSystem.Instance.testkeybind = ky.keyCode;
+                SaveSystem.Instance.testkeybind = keybinder.keyCode;
                 break;
         }
     }
@@ -81,11 +81,11 @@ public class SettingInput : MonoBehaviour
                 UpdateValue();
                 break;
             case "TestSwitcher":
-                sw.index = SaveSystem.Instance.test;
+                switcher.index = SaveSystem.Instance.test;
                 UpdateValue();
                 break;
             case "TestKeybind":
-                ky.keyCode = SaveSystem.Instance.testkeybind;
+                keybinder.keyCode = SaveSystem.Instance.testkeybind;
                 UpdateValue();
                 break;
         }

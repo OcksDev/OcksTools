@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using UnityEngine;
 [System.Serializable]
 public class BigAssNumberInspectorMaker
 {
@@ -18,6 +19,8 @@ public class BigAssNumberInspectorMaker
             return new BigAssNumber(Mantissa, (long)Magnitude);
         }
     }
+
+
 }
 
 
@@ -431,5 +434,52 @@ public static class Number
         NoNt = 300,
 
         Ce = 303
+    }
+}
+
+
+
+public class _ConsoleForBigAssNumber
+{
+    [RuntimeInitializeOnLoadMethod]
+    public static void Gaming()
+    {
+        GlobalEvent.Append("Console", BuildBigAssCums);
+    }
+    public static void BuildBigAssCums()
+    {
+        ConsoleLol.Instance.Append("test", new OXCommand("bigass").Action(ConsoleScreenShot));
+    }
+
+    public static void ConsoleScreenShot()
+    {
+        var d = new BigAssNumber(100);
+        var e = new BigAssNumber(1000);
+        var a1 = new BigAssNumber(9500);
+        var a2 = new BigAssNumber(800);
+        $"d-e: {d - e}".Log();
+        $"{new BigAssNumber(6.5, (long)Number.Magnitudes.Qn).NumToRead()}".Log();
+        $"{new BigAssNumber(6.5, (long)Number.Magnitudes.Qn).ToDouble()}".Log();
+        (d + e).ToString().Log();
+        (e + d).ToString().Log();
+        e -= d;
+        (e).ToString().Log();
+        $"a1: {a1}".Log();
+        $"a2: {a2}".Log();
+        $"a1+a2: {a1 + a2}".Log();
+        $"a1-a2: {a1 - a2}".Log();
+        $"{new BigAssNumber(100).Logarithm(10)}".Log();
+        $"{new BigAssNumber(100) * new BigAssNumber(100)}".Log();
+        $"{new BigAssNumber(1000) / new BigAssNumber(100)}".Log();
+        "----".Log();
+        $"{new BigAssNumber(100000).ToDouble()}".Log();
+        $"{new BigAssNumber(200000).Pow(1)}".Log();
+        $"{new BigAssNumber(200000) - new BigAssNumber(200000)} = 0".Log();
+        $"{new BigAssNumber(200000).Pow(2)} = {new BigAssNumber(200000).Pow(2.0)}".Log();
+        $"{new BigAssNumber(200000).Pow(2.5)}".Log();
+        $"{new BigAssNumber(2000).Pow(2.5).ToDouble()} = {Math.Pow(2000, 2.5)}".Log();
+        $"super big thing: {new BigAssNumber(10000000).NumToRead()}".Log();
+        $"super big thing: {new BigAssNumber(double.MaxValue).NumToRead()}".Log();
+        $"super big thing: {new BigAssNumber(double.MaxValue).Pow(1000).NumToRead()}".Log();
     }
 }
