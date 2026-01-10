@@ -735,7 +735,7 @@ public struct MultiRef<A, B, C, D>
 }
 
 [System.Serializable]
-public class SerializableDictionary<A, B>
+public class CompileableDictionary<A, B>
 {
     public List<MultiRef<A, B>> List = new List<MultiRef<A, B>>();
     public Dictionary<A, B> Dict = new Dictionary<A, B>();

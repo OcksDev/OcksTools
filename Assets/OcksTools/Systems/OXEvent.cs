@@ -381,14 +381,14 @@ public class OXEventLayered
             else if (w.a > layer)
             {
                 var x = new OXEvent();
-                StoredEvents.Insert(i, new MultiRef<int, OXEvent>(layer, x));
                 x.Append(method);
+                StoredEvents.Insert(i, new MultiRef<int, OXEvent>(layer, x));
                 return;
             }
         }
         var x2 = new OXEvent();
-        StoredEvents.Add(new MultiRef<int, OXEvent>(layer, x2));
         x2.Append(method);
+        StoredEvents.Add(new MultiRef<int, OXEvent>(layer, x2));
     }
     public void Append(int layer, Action method)
     {
@@ -428,14 +428,14 @@ public class OXEventLayered<T>
             else if (w.a > layer)
             {
                 var x = new OXEvent<T>();
-                StoredEvents.Insert(i, new MultiRef<int, OXEvent<T>>(layer, x));
                 x.Append(method);
+                StoredEvents.Insert(i, new MultiRef<int, OXEvent<T>>(layer, x));
                 return;
             }
         }
         var x2 = new OXEvent<T>();
-        StoredEvents.Add(new MultiRef<int, OXEvent<T>>(layer, x2));
         x2.Append(method);
+        StoredEvents.Add(new MultiRef<int, OXEvent<T>>(layer, x2));
     }
     public void Append(int layer, Action<T> method)
     {
@@ -475,14 +475,14 @@ public class OXEventLayered<T, T2>
             else if (w.a > layer)
             {
                 var x = new OXEvent<T, T2>();
-                StoredEvents.Insert(i, new MultiRef<int, OXEvent<T, T2>>(layer, x));
                 x.Append(method);
+                StoredEvents.Insert(i, new MultiRef<int, OXEvent<T, T2>>(layer, x));
                 return;
             }
         }
         var x2 = new OXEvent<T, T2>();
-        StoredEvents.Add(new MultiRef<int, OXEvent<T, T2>>(layer, x2));
         x2.Append(method);
+        StoredEvents.Add(new MultiRef<int, OXEvent<T, T2>>(layer, x2));
     }
     public void Append(int layer, Action<T, T2> method)
     {
@@ -523,14 +523,14 @@ public class OXEventLayered<T, T2, T3>
             else if (w.a > layer)
             {
                 var x = new OXEvent<T, T2, T3>();
-                StoredEvents.Insert(i, new MultiRef<int, OXEvent<T, T2, T3>>(layer, x));
                 x.Append(method);
+                StoredEvents.Insert(i, new MultiRef<int, OXEvent<T, T2, T3>>(layer, x));
                 return;
             }
         }
         var x2 = new OXEvent<T, T2, T3>();
-        StoredEvents.Add(new MultiRef<int, OXEvent<T, T2, T3>>(layer, x2));
         x2.Append(method);
+        StoredEvents.Add(new MultiRef<int, OXEvent<T, T2, T3>>(layer, x2));
     }
     public void Append(int layer, Action<T, T2, T3> method)
     {
@@ -571,14 +571,14 @@ public class OXEventLayered<T, T2, T3, T4>
             else if (w.a > layer)
             {
                 var x = new OXEvent<T, T2, T3, T4>();
-                StoredEvents.Insert(i, new MultiRef<int, OXEvent<T, T2, T3, T4>>(layer, x));
                 x.Append(method);
+                StoredEvents.Insert(i, new MultiRef<int, OXEvent<T, T2, T3, T4>>(layer, x));
                 return;
             }
         }
         var x2 = new OXEvent<T, T2, T3, T4>();
-        StoredEvents.Add(new MultiRef<int, OXEvent<T, T2, T3, T4>>(layer, x2));
         x2.Append(method);
+        StoredEvents.Add(new MultiRef<int, OXEvent<T, T2, T3, T4>>(layer, x2));
     }
     public void Append(int layer, Action<T, T2, T3, T4> method)
     {
@@ -620,14 +620,14 @@ public class OXEventLayered<T, T2, T3, T4, T5>
             else if (w.a > layer)
             {
                 var x = new OXEvent<T, T2, T3, T4, T5>();
-                StoredEvents.Insert(i, new MultiRef<int, OXEvent<T, T2, T3, T4, T5>>(layer, x));
                 x.Append(method);
+                StoredEvents.Insert(i, new MultiRef<int, OXEvent<T, T2, T3, T4, T5>>(layer, x));
                 return;
             }
         }
         var x2 = new OXEvent<T, T2, T3, T4, T5>();
-        StoredEvents.Add(new MultiRef<int, OXEvent<T, T2, T3, T4, T5>>(layer, x2));
         x2.Append(method);
+        StoredEvents.Add(new MultiRef<int, OXEvent<T, T2, T3, T4, T5>>(layer, x2));
     }
     public void Append(int layer, Action<T, T2, T3, T4, T5> method)
     {
