@@ -671,3 +671,10 @@ public class OXCommandData
     public string raw_caps = "";
 }
 
+public class ConsoleCommandBuilder
+{
+    public static void Build(Action build)
+    {
+        GlobalEvent.Append("Console", build);
+    }
+}

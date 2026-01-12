@@ -5,13 +5,11 @@ public class BuildNumberConsoleHook : MonoBehaviour
     [RuntimeInitializeOnLoadMethod]
     public static void Gaming()
     {
-        GlobalEvent.Append("Console", BuildNumCums);
-    }
-    public static void BuildNumCums()
-    {
-
-        ConsoleLol.Instance.Add(new OXCommand("version")
-            .Action(LogVersion));
+        ConsoleCommandBuilder.Build(() =>
+        {
+            ConsoleLol.Instance.Add(new OXCommand("version")
+                .Action(LogVersion));
+        });
     }
     public static void LogVersion()
     {

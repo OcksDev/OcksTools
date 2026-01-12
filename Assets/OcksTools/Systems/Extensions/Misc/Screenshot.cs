@@ -7,13 +7,11 @@ public class Screenshot : SingleInstance<Screenshot>
     [RuntimeInitializeOnLoadMethod]
     public static void Gaming()
     {
-        GlobalEvent.Append("Console", BuildScreenshotCums);
+        ConsoleCommandBuilder.Build(() =>
+        {
+            ConsoleLol.Instance.Add(new OXCommand("screenshot", "Console", "Message_HelpScreenshot").Action(ConsoleScreenShot));
+        });
     }
-    public static void BuildScreenshotCums()
-    {
-        ConsoleLol.Instance.Add(new OXCommand("screenshot", "Console", "Message_HelpScreenshot").Action(ConsoleScreenShot));
-    }
-
     public static void ConsoleScreenShot()
     {
         ConsoleLol.Instance.CloseConsole();

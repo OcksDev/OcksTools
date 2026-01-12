@@ -78,19 +78,18 @@ public class _ConsoleRenderQueryererr
     [RuntimeInitializeOnLoadMethod]
     public static void Gaming()
     {
-        GlobalEvent.Append("Console", BuildRenderCums);
-    }
-    public static void BuildRenderCums()
-    {
-        ConsoleLol.Instance.Add(new OXCommand("query")
-            .Append(new OXCommand("fps").Action(() => Console.Log(Render.GetTargetFramerate())))
-            .Append(new OXCommand("vsync").Action(() => Console.Log(Render.GetVSync())))
-            .Append(new OXCommand("fullscreen").Action(() => Console.Log(Render.GetFullscreen())))
-            .Append(new OXCommand("anistropic").Action(() => Console.Log(Render.GetAnisotropicFiltering())))
-            .Append(new OXCommand("antialiasing").Action(() => Console.Log(Render.GetAntiAliasing())))
-            .Append(new OXCommand("hz").Action(() => Console.Log(Render.GetMonitorRefreshRate())))
-            .Append(new OXCommand("monitor_size").Action(() => Console.Log(Render.GetMonitorSize())))
-            .Append(new OXCommand("window_size").Action(() => Console.Log(Render.GetWindowSize())))
-            );
+        ConsoleCommandBuilder.Build(() =>
+        {
+            ConsoleLol.Instance.Add(new OXCommand("query")
+                .Append(new OXCommand("fps").Action(() => Console.Log(Render.GetTargetFramerate())))
+                .Append(new OXCommand("vsync").Action(() => Console.Log(Render.GetVSync())))
+                .Append(new OXCommand("fullscreen").Action(() => Console.Log(Render.GetFullscreen())))
+                .Append(new OXCommand("anistropic").Action(() => Console.Log(Render.GetAnisotropicFiltering())))
+                .Append(new OXCommand("antialiasing").Action(() => Console.Log(Render.GetAntiAliasing())))
+                .Append(new OXCommand("hz").Action(() => Console.Log(Render.GetMonitorRefreshRate())))
+                .Append(new OXCommand("monitor_size").Action(() => Console.Log(Render.GetMonitorSize())))
+                .Append(new OXCommand("window_size").Action(() => Console.Log(Render.GetWindowSize())))
+                );
+        });
     }
 }

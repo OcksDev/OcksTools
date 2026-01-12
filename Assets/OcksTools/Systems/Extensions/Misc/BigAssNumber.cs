@@ -444,11 +444,10 @@ public class _ConsoleForBigAssNumber
     [RuntimeInitializeOnLoadMethod]
     public static void Gaming()
     {
-        GlobalEvent.Append("Console", BuildBigAssCums);
-    }
-    public static void BuildBigAssCums()
-    {
-        ConsoleLol.Instance.Append("test", new OXCommand("bigass").Action(ConsoleScreenShot));
+        ConsoleCommandBuilder.Build(() =>
+        {
+            ConsoleLol.Instance.Append("test", new OXCommand("bigass").Action(ConsoleScreenShot));
+        });
     }
 
     public static void ConsoleScreenShot()
