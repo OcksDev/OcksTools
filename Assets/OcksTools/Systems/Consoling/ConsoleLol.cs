@@ -261,7 +261,10 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
         {
             ConsoleObjectRef.input.text = "";
             s = inputgaming;
-            if (s != "" && (prev_commands.Count == 0 || prev_commands[prev_commands.Count - 1] != s)) prev_commands.Add(s);
+            if (s != "" && (prev_commands.Count == 0 || prev_commands[prev_commands.Count - 1] != s))
+            {
+                prev_commands.Add(s);
+            }
             s = Regex.Replace(s, "[<>]", "");
             if (prev_commands.Count > 50)
             {
@@ -286,7 +289,9 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
             raa.raw = s;
             raa.raw_caps = s2;
 
-            RecursiveCheck(CommandDict[command[0]], 1);
+            OXCommand d = null;
+            d = CommandDict[command[0]];
+            RecursiveCheck(d, 1);
 
 
 
@@ -305,7 +310,7 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
     }
 
     private OXCommand bestmatch;
-    public void NewVal(string e)
+    public string NewVal(string e, bool ReturnInstead)
     {
         OldS = e;
         comm = prev_commands.Count;
@@ -318,8 +323,8 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
         {
             if (c == "")
             {
-                ConsoleObjectRef.predictr.text = "";
-                return;
+                if (!ReturnInstead) ConsoleObjectRef.predictr.text = "";
+                return "";
             }
         }
 
@@ -370,13 +375,14 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
 
         if (bestmatch != null && fd == a.Count - 1)
         {
-            ConsoleObjectRef.predictr.text = $"<color=#00000000>{ConsoleObjectRef.input.text}</color>" + besttext.Substring(a[fd].Length);
+            if (!ReturnInstead) ConsoleObjectRef.predictr.text = $"<color=#00000000>{ConsoleObjectRef.input.text}</color>" + besttext.Substring(a[fd].Length);
+            return besttext.Substring(a[fd].Length);
         }
         else
         {
             bestmatch = null;
-            ConsoleObjectRef.predictr.text = "";
-            return;
+            if (!ReturnInstead) ConsoleObjectRef.predictr.text = "";
+            return "";
         }
 
     }
@@ -389,7 +395,7 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
             var dd = a[a.Count - 1].Length;
             e += bestmatch.Value.Substring(dd) + " ";
             ConsoleObjectRef.input.text = e;
-            NewVal(e);
+            NewVal(e, false);
 
 
             ConsoleObjectRef.input.MoveTextEnd(false);
@@ -497,7 +503,7 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
             InputManager.AddLockLevel("Console");
             FixLol();
             ConsoleObjectRef.input.text = "";
-            NewVal("");
+            NewVal("", false);
         }
         else
         {

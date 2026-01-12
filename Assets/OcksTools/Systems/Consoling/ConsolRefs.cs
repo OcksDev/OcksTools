@@ -17,6 +17,6 @@ public class ConsolRefs : MonoBehaviour
     }
     public void NewVal()
     {
-        ConsoleLol.Instance.NewVal(input.text);
+        ConsoleLol.Instance.NewVal(input.text, false);
     }
 }
