@@ -12,24 +12,31 @@ public class MenuHandler : SingleInstance<MenuHandler>
     {
         foreach (var state in Menus)
         {
-            if (state.InitialTransforms == null) state.InitialTransforms = new Dictionary<GameObject, MultiRef<Vector3, Vector3, Quaternion>>();
-            if (!state.OptOutTransformRecord)
-            {
-                foreach (var gm in state.Objects)
-                {
-                    if (gm == null) continue;
-                    state.InitialTransforms.Add(gm, new MultiRef<Vector3, Vector3, Quaternion>
-                        (
-                            gm.transform.localPosition,
-                            gm.transform.localScale,
-                            gm.transform.localRotation
-                        ));
-                }
-            }
-            BaseMenuStates.Add(state.Name, state);
-            CurrentMenuStates.Add(state.Name, new MenuState(state));
-            SetStates(state.Objects, state.State);
+            InitializeMenu(state);
         }
+    }
+
+    public static void InitializeMenu(MenuState state)
+    {
+        if (state.Objects.Count == 0) Debug.LogWarning($"Menu {state.Name} has no objects assigned at initilization");
+        if (state.Name == "") state.Name = state.Objects[0].name;
+        if (state.InitialTransforms == null) state.InitialTransforms = new Dictionary<GameObject, MultiRef<Vector3, Vector3, Quaternion>>();
+        if (!state.OptOutTransformRecord)
+        {
+            foreach (var gm in state.Objects)
+            {
+                if (gm == null) continue;
+                state.InitialTransforms.Add(gm, new MultiRef<Vector3, Vector3, Quaternion>
+                    (
+                        gm.transform.localPosition,
+                        gm.transform.localScale,
+                        gm.transform.localRotation
+                    ));
+            }
+        }
+        BaseMenuStates.Add(state.Name, state);
+        CurrentMenuStates.Add(state.Name, new MenuState(state));
+        SetStates(state.Objects, state.State);
     }
 
     private void Start()
