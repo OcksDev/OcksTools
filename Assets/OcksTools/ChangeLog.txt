@@ -53,6 +53,7 @@
   - New 3D stuff, namely a SweepCollider static method
   - Render now adds a "query" command to console when possible
   - Cleaned up some stuff in SpawnData and the Spawn System
+  - Menu Handler now has a new interfacing method and also has been made slightly more flexible
   - Unstable folder renamed to UnstableOrUnfinished
   - New Random Functions to dynamically load assets via string path, varient for editor and for runtime
   - New GetOrDefine extension method for dictionaries
