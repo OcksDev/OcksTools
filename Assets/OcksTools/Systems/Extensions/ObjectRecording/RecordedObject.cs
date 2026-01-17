@@ -73,12 +73,29 @@ public class RecordedObject : MonoBehaviour
         if (RecordOptions.HasFlag(ThingsToRecord.AngVelocity2D)) AngVelocity2D.StopRecording(Time.time);
         status = RecordingStatus.None;
     }
+
     public void StopPlayback()
     {
-        status = 0;
+        status = RecordingStatus.None;
         if (body != null) body.isKinematic = false;
         if (body2d != null) body2d.simulated = true;
         if (gam != null) StopCoroutine(gam);
+    }
+    public void StopPlaybackAndPickupRecording()
+    {
+        if (status != RecordingStatus.Playing) throw new Exception("Pickup recording when playing back!");
+        status = RecordingStatus.Recording;
+        if (body != null) body.isKinematic = false;
+        if (body2d != null) body2d.simulated = true;
+        if (gam != null) StopCoroutine(gam);
+        Timer.ResumeRecording(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.Position)) Position.ResumeRecording(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.Scale)) Scale.ResumeRecording(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.Rotation)) Rotation.ResumeRecording(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.Velocity)) Velocity.ResumeRecording(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.AngVelocity)) AngVelocity.ResumeRecording(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.Velocity2D)) Velocity2D.ResumeRecording(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.AngVelocity2D)) AngVelocity2D.ResumeRecording(Time.time);
     }
     public void Poll()
     {
@@ -91,6 +108,73 @@ public class RecordedObject : MonoBehaviour
         if (RecordOptions.HasFlag(ThingsToRecord.Velocity2D)) Velocity2D.PollData(body2d.linearVelocity, Time.time);
         if (RecordOptions.HasFlag(ThingsToRecord.AngVelocity2D)) AngVelocity2D.PollData(body2d.angularVelocity, Time.time);
     }
+
+    public void _Pause()
+    {
+        status = RecordingStatus.None;
+        Timer.Pause(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.Position)) Position.Pause(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.Scale)) Scale.Pause(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.Rotation)) Rotation.Pause(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.Velocity)) Velocity.Pause(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.AngVelocity)) AngVelocity.Pause(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.Velocity2D)) Velocity2D.Pause(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.AngVelocity2D)) AngVelocity2D.Pause(Time.time);
+    }
+
+    public void _Unpause()
+    {
+        Timer.Unpause(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.Position)) Position.Unpause(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.Scale)) Scale.Unpause(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.Rotation)) Rotation.Unpause(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.Velocity)) Velocity.Unpause(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.AngVelocity)) AngVelocity.Unpause(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.Velocity2D)) Velocity2D.Unpause(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.AngVelocity2D)) AngVelocity2D.Unpause(Time.time);
+    }
+
+    public void _Unpause2()
+    {
+        Timer.Unpause(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.Position)) Position.UnpauseWithLeap(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.Scale)) Scale.UnpauseWithLeap(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.Rotation)) Rotation.UnpauseWithLeap(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.Velocity)) Velocity.UnpauseWithLeap(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.AngVelocity)) AngVelocity.UnpauseWithLeap(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.Velocity2D)) Velocity2D.UnpauseWithLeap(Time.time);
+        if (RecordOptions.HasFlag(ThingsToRecord.AngVelocity2D)) AngVelocity2D.UnpauseWithLeap(Time.time);
+    }
+
+    public void UnpausePlayback()
+    {
+        if (body != null) body.isKinematic = true;
+        if (body2d != null) body2d.simulated = false;
+        _Unpause();
+        status = RecordingStatus.Playing;
+        if (gam != null) StopCoroutine(gam);
+        gam = StartCoroutine(Gamin());
+    }
+
+    public void PausePlayback()
+    {
+        if (body != null) body.isKinematic = false;
+        if (body2d != null) body2d.simulated = true;
+        _Pause();
+        if (gam != null) StopCoroutine(gam);
+    }
+
+    public void PauseRecording()
+    {
+        _Pause();
+    }
+
+    public void UnpauseRecording()
+    {
+        _Unpause2();
+        status = RecordingStatus.Recording;
+    }
+
     private void FixedUpdate()
     {
         if (UseFixedUpdate) PollAll = Poll;
@@ -99,11 +183,19 @@ public class RecordedObject : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            StartRecording();
-        }
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            StopRecording();
+            if (status == RecordingStatus.None)
+            {
+                StartRecording();
+            }
+            else if (status == RecordingStatus.Recording)
+            {
+
+                StopRecording();
+            }
+            else
+            {
+                Debug.LogWarning("Can not start recording while playing back!");
+            }
         }
         if (Input.GetKeyDown(KeyCode.R))
         {
@@ -112,6 +204,32 @@ public class RecordedObject : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.T))
         {
             StartPlayback(-1);
+        }
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            StopPlaybackAndPickupRecording();
+        }
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            if (status == RecordingStatus.None)
+            {
+                UnpausePlayback();
+            }
+            else
+            {
+                PausePlayback();
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            if (status == RecordingStatus.None)
+            {
+                UnpauseRecording();
+            }
+            else
+            {
+                PauseRecording();
+            }
         }
         if (status == RecordingStatus.Recording)
         {
@@ -242,6 +360,7 @@ public class DataRecord<T>
 {
     public List<MultiRef<float, T>> record = new List<MultiRef<float, T>>();
     private float starttime = 0;
+    private float pause_progress = 0;
     public void StartRecording(float t)
     {
         record.Clear();
@@ -252,6 +371,28 @@ public class DataRecord<T>
         time -= starttime;
         var dingle = record.Last();
         record.Add(new MultiRef<float, T>(time, dingle.b));
+    }
+    public void ResumeRecording(float time)
+    {
+        if (time == starttime) return;
+        if (reversed)
+        {
+            throw new NotImplementedException();
+        }
+        else
+        {
+            int keeps = 0;
+            float progress = time - starttime;
+
+            for (int i = 0; i < record.Count; i++)
+            {
+                if (record[i].a < progress) keeps++;
+            }
+            if (keeps == 0) return;
+            record = record.GetRange(0, keeps);
+        }
+
+
     }
     public const float delta = 1 / 50f;
     public void PollData(T data, float time)
@@ -328,4 +469,23 @@ public class DataRecord<T>
         }
         return null;
     }
+
+    public void Pause(float time)
+    {
+        pause_progress = time - starttime;
+    }
+    public void Unpause(float time)
+    {
+        starttime = time - pause_progress;
+    }
+    public void UnpauseWithLeap(float time)
+    {
+        starttime = time - pause_progress;
+
+        var dingle = record.Last();
+
+        time -= starttime;
+        record.Add(new MultiRef<float, T>(time, dingle.b));
+    }
+
 }

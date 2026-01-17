@@ -27,6 +27,10 @@
     - Also has a GlobalProfile
     - Reworked entire codebase to use the new system
   - Events changed to now use Layered OXEvents
+- Event System Improvements
+  - OXEvents now have a Contains method to check if a method is already registered
+  - Global Methods have been moved to UnstableOrUnfinished
+  - Global.Set has been removed as it's functionality is covered by Reactable<>
 - Menu Handler Improvements
   - New boolean to opt-out of automatic transform recording/resetting on open/close
   - "Menu" field renamed to "Objects" for clarity
@@ -38,18 +42,21 @@
 - GIS Improvements
   - Added toggle to disable double clicking items in containers
   - Improved container dev interface readability using NaughtyAttributes to hide unneeded variables when not in use
-  - Improved feel of GISSlot interaction (double clicking detection had made some left clicks not do anything in the case that both the clicks were fast enough and that no more items could be stacked onto the currently held item)
+  - Improved feel of GISSlot interaction (double clicking detection had made some left clicks not do anything in the case that both clicks were fast enough and that no more items could be stacked onto the currently held item)
   - Fixed a big bug where items stacked with exactly 1 would not save/load properly (whoops!)
 - NavMesh Improvements
   - NavMeshRefresher now works again
   - Updated Navmesh components to latest version
+- Object Recorder System Improvements
+  - Now has the ability to pause/unpause playback
+  - Now has the ability to pause/unpause recording
+  - Now has the ability to pause playback and directly start recording from that point in the playback
 - Misc
   - zExtensions changed to a separate folder called Plugins
     - New plugin added: ulayout (v1.4.2)
   - Added some extra methods from the File and Directory classes to agrigate some file tasks
-  - OXEvents now have a Contains method to check if a method is already registered
   - Hover now uses SingleInstance<>
-  - Fixed one line of broken code in InifiGrid that prevented it from loading
+  - Fixed one line of broken code in InifiGrid that prevented it from loading, lol
   - New 3D stuff, namely a SweepCollider static method
   - Render now adds a "query" command to console when possible
   - Cleaned up some stuff in SpawnData and the Spawn System
@@ -58,8 +65,6 @@
   - New Random Functions to dynamically load assets via string path, varient for editor and for runtime
   - New GetOrDefine extension method for dictionaries
   - Reactive Data has been removed as it's functionality is covered by Reactable<>
-  - Global.Set has been removed as it's functionality is covered by Reactable<>
-  - Global Methods have been moved to UnstableOrUnfinished
 ------------
 
 ------------
