@@ -1,7 +1,9 @@
+using NaughtyAttributes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -25,13 +27,13 @@ public class FileSystem : SingleInstance<FileSystem>
 
 
     private string GameName = "?";
-    [HideInInspector]
+    [ReadOnly]
     public string DirectoryLol = "";
-    [HideInInspector]
+    [ReadOnly]
     public string OcksDirectry = "";
-    [HideInInspector]
+    [ReadOnly]
     public string UniversalDirectory = "";
-    [HideInInspector]
+    [ReadOnly]
     public string GameDirectory = "";
     [HideInInspector]
     public Dictionary<string, string> FileLocations = new Dictionary<string, string>();
@@ -116,7 +118,6 @@ public class FileSystem : SingleInstance<FileSystem>
     {
         return File.GetLastWriteTime(file);
     }
-
     public void DeleteFile(string file)
     {
         File.Delete(file);
@@ -125,6 +126,33 @@ public class FileSystem : SingleInstance<FileSystem>
     {
         Directory.Delete(FolderPath);
     }
+    public static string ConvertWindowsAppDataToLinux(string windowsPath)
+    {
+        if (string.IsNullOrWhiteSpace(windowsPath))
+            return windowsPath;
+
+        windowsPath = windowsPath.Replace('/', '\\');
+
+        var match = Regex.Match(
+            windowsPath,
+            @"^C:\\Users\\[^\\]+\\AppData\\Roaming\\(.+)$",
+            RegexOptions.IgnoreCase);
+
+        if (!match.Success)
+            throw new ArgumentException("Invalid Windows AppData Roaming path format.");
+
+        string remainingPath = match.Groups[1].Value;
+
+        string linuxUser = Environment.UserName;
+
+        string linuxBasePath = $"/home/{linuxUser}/.local/share";
+
+        string linuxPath = Path.Combine(linuxBasePath, remainingPath)
+            .Replace('\\', '/');
+
+        return linuxPath;
+    }
+
     public DownloadDataHandler DownloadFile(int type, string filelocation)
     {
         var DDH = new DownloadDataHandler();
@@ -189,6 +217,7 @@ public class FileSystem : SingleInstance<FileSystem>
     {
         Debug.Log(a);
     }
+
 }
 
 
