@@ -1,7 +1,8 @@
 
 ------------
    v1.1.5
-- it begins...
+- Achievement Improvements
+  - New layered ox event for achievements being granted
 ------------
 
 ------------

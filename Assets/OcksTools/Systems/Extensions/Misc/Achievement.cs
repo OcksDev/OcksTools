@@ -6,6 +6,7 @@ public class Achievement : SingleInstance<Achievement>
     public static List<AchievementData> AchievementsDontSave = new List<AchievementData>();
     private static Dictionary<string, AchievementData> AchievementDict = new Dictionary<string, AchievementData>();
     private static Dictionary<string, AchievementData> AchievementDontSaveDict = new Dictionary<string, AchievementData>();
+    public static OXEventLayered<AchievementData> OnAchievementGet = new OXEventLayered<AchievementData>();
 
     public static AchievementData GetAchievementData(string name)
     {
@@ -27,15 +28,13 @@ public class Achievement : SingleInstance<Achievement>
     public static void Grant(string name, bool saved = true)
     {
         var d = GetAchievementData(name);
-        if (d != null)
-        {
-            d.Progress.IsCompleted = true;
-        }
-        else
+        if (d == null)
         {
             Define(name, saved);
-            GetAchievementData(name).Progress.IsCompleted = true;
+            d = GetAchievementData(name);
         }
+        d.Progress.IsCompleted = true;
+        OnAchievementGet.Invoke(d);
     }
     public static void Revoke(string name)
     {
