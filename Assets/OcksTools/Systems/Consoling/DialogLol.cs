@@ -82,6 +82,15 @@ public class DialogLol : SingleInstance<DialogLol>
         });
     }
 
+    [RuntimeInitializeOnLoadMethod]
+    public static void Gaming()
+    {
+        ConsoleCommandBuilder.Build(() =>
+        {
+            ConsoleLol.Instance.Add(new OXCommand("dialog", "Console", "Message_HelpDialog")
+                .Append(new OXCommand(OXCommand.ExpectedInputType.String).Action(ConsoleCommands.Dialog)));
+        });
+    }
 
     private void Start()
     {

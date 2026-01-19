@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65d2867867a6e3f4589744892e859273, type: 3}
   m_Name: TheNumber
   m_EditorClassIdentifier: Assembly-CSharp-Editor::BuildNumberHolder
-  BuildNumber: 2
+  BuildNumber: -1
