@@ -578,4 +578,13 @@ public static class OXFunctions
         }
         return ti;
     }
+
+    public static List<T> SetMinCount<T>(this List<T> ti, int desired)
+    {
+        while (ti.Count < desired)
+        {
+            ti.Add(default);
+        }
+        return ti;
+    }
 }

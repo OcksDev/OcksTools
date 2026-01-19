@@ -3,6 +3,7 @@
    v1.1.4
 - New Achievement system
 - New Big Ass Number type for storing some big ass numbers
+- New Dynamic String type for strings that need replacements in certain spots
 - New OXEventLayered which allows for multiple OXEvents to be set up to execute in specified order
 - New FPS Lightweight Reader which can be easily interfaced with and tweaked
   - Also provided a canvas prefab in Misc to easily throw into any scene to get FPS readings
@@ -51,6 +52,11 @@
   - Now has the ability to pause/unpause playback
   - Now has the ability to pause/unpause recording
   - Now has the ability to pause playback and directly start recording from that point in the playback
+    - Stop+Pickup Does not work when playing a recording backwards, I haven't implemented this yet
+- Reactable<> Improvements
+  - ToString now returns its value's ToString
+  - Now has implicit conversion to the base type
+  - Reactive Data has been removed as it's functionality is covered by Reactable<>
 - Misc
   - zExtensions changed to a separate folder called Plugins
     - New plugin added: ulayout (v1.4.2)
@@ -64,7 +70,7 @@
   - Unstable folder renamed to UnstableOrUnfinished
   - New Random Functions to dynamically load assets via string path, varient for editor and for runtime
   - New GetOrDefine extension method for dictionaries
-  - Reactive Data has been removed as it's functionality is covered by Reactable<>
+  - New SetMinCount extension method for lists
 ------------
 
 ------------

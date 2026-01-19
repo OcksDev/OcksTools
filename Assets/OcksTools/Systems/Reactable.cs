@@ -21,4 +21,9 @@ public class Reactable<T>
             OnValueChanged.Invoke();
         }
     }
+    public override string ToString()
+    {
+        return data.ToString();
+    }
+    public static implicit operator T(Reactable<T> r) => r.GetValue();
 }
