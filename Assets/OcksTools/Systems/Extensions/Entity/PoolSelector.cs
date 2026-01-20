@@ -8,8 +8,8 @@ public class PoolSelector<T>
     public enum SelectionTypeFromPool
     {
         Weighted = 0,
-        ChanceFallthroughTopFirst = 1,
-        ChanceFallthroughBottomFirst = 2,
+        ChanceFallThroughTopFirst = 1,
+        ChanceFallThroughBottomFirst = 2,
     }
     public PoolNode<T> Pull()
     {
@@ -19,13 +19,13 @@ public class PoolSelector<T>
                 var d = new WeightedAverage();
                 foreach (PoolNode<T> node in Pool) d.Add(node.ChanceOrWeight, node);
                 return WeightedAverageHandler.DrawFromWeights<PoolNode<T>>(d);
-            case SelectionTypeFromPool.ChanceFallthroughTopFirst:
+            case SelectionTypeFromPool.ChanceFallThroughTopFirst:
                 for (int i = 0; i < Pool.Count - 1; i++)
                 {
                     if (UnityEngine.Random.Range(0f, 1f) <= Pool[i].ChanceOrWeight) return Pool[i];
                 }
                 return Pool[Pool.Count - 1];
-            case SelectionTypeFromPool.ChanceFallthroughBottomFirst:
+            case SelectionTypeFromPool.ChanceFallThroughBottomFirst:
                 for (int i = 0; i < Pool.Count - 1; i++)
                 {
                     int j = (Pool.Count - 1) - i;
