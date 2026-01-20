@@ -17,26 +17,25 @@ public class WeightedAverageHandler
 
         float sum = 0;
         float tot = 0;
-        foreach (var dd in deez) sum += (float)dd[0];
+        foreach (var dd in deez) sum += dd.a;
         for (int i = 0; i < deez.Count; i++)
         {
-            var x = ((float)deez[i][0]) / sum;
-            deez[i][0] = x;
+            var x = deez[i].a / sum;
             tot += x;
             if (tot >= get)
             {
-                return (T)deez[i][1];
+                return (T)deez[i].b;
             }
         }
-        return (T)deez[deez.Count - 1][1];
+        return (T)deez[deez.Count - 1].b;
     }
 }
 public class WeightedAverage
 {
-    public List<List<object>> lists = new List<List<object>>();
+    public List<MultiRef<float, object>> lists = new List<MultiRef<float, object>>();
     public WeightedAverage Add(float weight, object n)
     {
-        lists.Add(new List<object>() { weight, n });
+        lists.Add(new MultiRef<float, object>(weight, n));
         return this;
     }
 }

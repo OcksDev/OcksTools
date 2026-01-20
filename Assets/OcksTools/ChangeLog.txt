@@ -1,8 +1,11 @@
 
 ------------
    v1.1.5
+- New Pool Selector Tool
 - Achievement Improvements
   - New layered ox event for achievements being granted
+- Misc
+  - Weighted Averages modified to use Multiref and be slightly cooler
 ------------
 
 ------------
