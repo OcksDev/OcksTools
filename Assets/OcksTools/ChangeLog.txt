@@ -4,6 +4,7 @@
 - New Pool Selector Tool
 - Achievement Improvements
   - New layered ox event for achievements being granted
+- New Pointer<> Type, literally just to make references without needing to mark as unsafe
 - Misc
   - Weighted Averages modified to use Multiref and be slightly cooler
 ------------
