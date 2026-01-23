@@ -14,13 +14,13 @@ public class PlayerController3D : MonoBehaviour
     public float move_speed = 2;
     public float air_speed = 0.1f;
     public float jump_str = 2;
-    public float decay = 0.8f;
-    public float air_decay = 0.98f;
+    public float input_decay = 0.8f;
     public float xz_decay = 0.9f;
+    public float air_xz_decay = 0.9f;
     public float mouse_sense = 1;
     public float grav_str = 2;
-    public float air_str = 2;
-    public float max_dot = 0.5f;
+    public float air_turn = 0.05f;
+    public float max_floor_angle = 45f;
     private Vector3 move = new Vector3(0, 0, 0);
     public Transform HeadY;
     public Transform HeadXZ;
@@ -35,12 +35,20 @@ public class PlayerController3D : MonoBehaviour
 
     private void FixedUpdate()
     {
-        rigid.linearVelocity = new Vector3(rigid.linearVelocity.x * xz_decay, rigid.linearVelocity.y, rigid.linearVelocity.z * xz_decay);
+        if (grounded)
+        {
+            rigid.linearVelocity = new Vector3(rigid.linearVelocity.x * xz_decay, rigid.linearVelocity.y, rigid.linearVelocity.z * xz_decay);
+        }
+        else
+        {
+            rigid.linearVelocity = new Vector3(rigid.linearVelocity.x * air_xz_decay, rigid.linearVelocity.y, rigid.linearVelocity.z * air_xz_decay);
+        }
 
         Vector3 dir = new Vector3(0, 0, 0);
-        if (grounded || !Movements.HasFlag(AllowedMovements.BunnyHop))
+
+        move *= input_decay;
+        if (grounded)
         {
-            move *= decay;
             if (InputManager.IsKey("move_forward", "Player")) dir += HeadXZ.forward;
             if (InputManager.IsKey("move_back", "Player")) dir += HeadXZ.forward * -1;
             if (InputManager.IsKey("move_right", "Player")) dir += HeadY.right;
@@ -49,36 +57,53 @@ public class PlayerController3D : MonoBehaviour
         }
         else
         {
-            move *= air_decay;
             if (InputManager.IsKey("move_forward", "Player")) dir += HeadXZ.forward;
             if (InputManager.IsKey("move_back", "Player")) dir += HeadXZ.forward * -1;
             if (InputManager.IsKey("move_right", "Player")) dir += HeadY.right;
             if (InputManager.IsKey("move_left", "Player")) dir += HeadY.right * -1;
+            if (dir.magnitude > 0.5f)
+            {
+                dir.Normalize();
+                var xzy = rigid.linearVelocity;
+                var xz = xzy;
+                xz.y = 0;
+                float ang = Vector3.Angle(xz, dir) - 90;
+                ang *= -1;
 
-            if (InputManager.IsKey("move_forward", "Player"))
-            {
-                var dd = Vector3.Dot(dir, Quaternion.Euler(0, 90, 0) * move.normalized);
-                move = Quaternion.Euler(0, dd * air_str, 0) * move;
+                //ang:
+                // +90 = same dir
+                // 0 = right angle
+                // -90 = opposite dir
+                int flipped = 1;
+                if (ang < 0)
+                {
+                    xz *= Mathf.Lerp(1, 0.95f, Mathf.Abs(ang) / 90);
+                    ang = 90 + ang;
+                }
+                else
+                {
+                    ang = 90 - ang;
+                }
+                if (Vector3.Dot(xz, Quaternion.Euler(0, 90, 0) * dir) > 0)
+                {
+                    flipped = -1;
+                }
+                xz = Quaternion.Euler(0, ang * flipped * air_turn, 0) * xz;
+
+                xzy.x = xz.x;
+                xzy.z = xz.z;
+                rigid.linearVelocity = xzy;
             }
-            if (InputManager.IsKey("move_back", "Player"))
-            {
-                var dd = Vector3.Dot(dir, Quaternion.Euler(0, -90, 0) * move.normalized);
-                move = Quaternion.Euler(0, -dd * air_str, 0) * move;
-            }
-            if (InputManager.IsKey("move_right", "Player"))
-            {
-                var dd = Vector3.Dot(dir, Quaternion.Euler(0, 90, 0) * move.normalized);
-                move = Quaternion.Euler(0, dd * air_str, 0) * move;
-            }
-            if (InputManager.IsKey("move_left", "Player"))
-            {
-                var dd = Vector3.Dot(dir, Quaternion.Euler(0, -90, 0) * move.normalized);
-                move = Quaternion.Euler(0, -dd * air_str, 0) * move;
-            }
+
+
+
+
+            dir = Vector3.zero;
         }
+
         if (dir.magnitude > 0.5f)
         {
-            move += dir * (grounded ? move_speed : air_speed);
+            move += dir * move_speed;
         }
         Vector3 bgalls = move * Time.deltaTime * 20;
         rigid.linearVelocity += bgalls;
@@ -182,15 +207,18 @@ public class PlayerController3D : MonoBehaviour
         GroundSnap = 1 << 5,
     }
     public bool grounded = false;
+    private Vector3 tpos = Vector3.zero;
     public void CollisionGroundCheck()
     {
-        var a = Physics.RaycastAll(transform.position, Vector3.down, (player_height / 2) + 0.1f);
+        tpos = transform.position - (player_height / 4) * Vector3.up;
+        var a = Physics.SphereCastAll(tpos, 0.45f, Vector3.down, 0.1f);
         for (int i = 0; i < a.Length; i++)
         {
             var dd = a[i];
             if (dd.collider.isTrigger) continue;
             if (dd.collider.gameObject == gameObject) continue;
-            if (Vector3.Dot(dd.normal, Vector3.up) >= max_dot)
+            //Debug.Log($"Hit: {dd.collider.gameObject.name}, {}");
+            if (dd.point != Vector3.zero && Vector3.Angle(dd.normal, Vector3.up) <= max_floor_angle)
             {
                 grounded = true;
                 return;
@@ -200,6 +228,8 @@ public class PlayerController3D : MonoBehaviour
         grounded = false;
         return;
     }
+
+
     private Vector3 walldir = Vector3.zero;
 
 

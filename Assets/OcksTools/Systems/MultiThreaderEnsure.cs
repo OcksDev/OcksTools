@@ -39,6 +39,7 @@ public class MultiThreaderEnsure : SingleInstance<MultiThreaderEnsure>
     private void OnApplicationQuit()
     {
         FUCKING_DIE = true;
+
     }
     // in the case some that threads dont get created properly
     // for some reason Unity makes thread creation unreliable, at least on startup, so this fixes it.
