@@ -2,6 +2,7 @@
 ------------
    v1.1.5
 - New Pool Selector Tool
+- 3D Movement Massively Overhauled
 - Achievement Improvements
   - New layered ox event for achievements being granted
 - New Pointer<> Type, literally just to make references without needing to mark as unsafe
