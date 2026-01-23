@@ -4379,48 +4379,12 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 52581739253764052, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
-      propertyPath: nerd
-      value: 
-      objectReference: {fileID: 6909798639549162927, guid: b8f62317f6eab8c47858238051a1a4ab, type: 3}
-    - target: {fileID: 52581739253764052, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
       propertyPath: decay
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 52581739253764052, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
-      propertyPath: grav_str
-      value: 0.8
-      objectReference: {fileID: 0}
-    - target: {fileID: 52581739253764052, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
-      propertyPath: jump_str
-      value: 16
-      objectReference: {fileID: 0}
-    - target: {fileID: 52581739253764052, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
-      propertyPath: xz_decay
-      value: 0.83
-      objectReference: {fileID: 0}
-    - target: {fileID: 52581739253764052, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
       propertyPath: air_decay
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 52581739253764052, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
-      propertyPath: move_speed
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 52581739253764052, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
-      propertyPath: slip_decay
-      value: 0.75
-      objectReference: {fileID: 0}
-    - target: {fileID: 52581739253764052, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
-      propertyPath: input_decay
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 52581739253764052, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
-      propertyPath: air_xz_decay
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 52581739253764052, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
-      propertyPath: slip_opposite_force
-      value: 0.85
       objectReference: {fileID: 0}
     - target: {fileID: 6838122281118527589, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
       propertyPath: m_Name

@@ -331,24 +331,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: OcksTools::PlayerController3D
   player_height: 2
   player_width: 1
+  wall_cameratilt: 1
+  Vcel: {x: 0, y: 0, z: 0}
   Movements: -1
-  move_speed: 2
+  move_speed: 6
   air_speed: 0.1
-  jump_str: 12
-  decay: 0.7
-  air_decay: 0.98
-  xz_decay: 0.85
+  jump_str: 16
+  input_decay: 0
+  slip_decay: 0.75
+  slip_opposite_force: 0.85
+  xz_decay: 0.83
+  air_xz_decay: 1
   mouse_sense: 1
-  grav_str: 0.5
-  wall_grav_str: 0.25
-  max_dot: 0.7
-  air_str: 1
-  wall_boost_str: 4
-  wall_leave_boost_str: 10
+  grav_str: 0.8
+  air_turn: 0.05
+  max_floor_angle: 45
   HeadY: {fileID: 6371845093491532323}
   HeadXZ: {fileID: 4998704634607921774}
   Normal: 112
   Stationary: 122
+  nerd: {fileID: 6909798639549162927, guid: b8f62317f6eab8c47858238051a1a4ab, type: 3}
   grounded: 0
 --- !u!54 &8653577835142743007
 Rigidbody:
