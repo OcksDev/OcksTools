@@ -10,6 +10,7 @@ public class PlayerController3D : MonoBehaviour
     public float wall_cameratilt = 1;
     public Vector3 Vcel;
     private Rigidbody rigid;
+    private CapsuleCollider coll;
     public AllowedMovements Movements;
     public float move_speed = 2;
     public float air_speed = 0.1f;
@@ -32,6 +33,7 @@ public class PlayerController3D : MonoBehaviour
     private void Start()
     {
         rigid = GetComponent<Rigidbody>();
+        coll = GetComponent<CapsuleCollider>();
         ToggleMouseState(true);
     }
 
@@ -114,8 +116,16 @@ public class PlayerController3D : MonoBehaviour
         }
         Vector3 bgalls = move * Time.deltaTime * 20;
         rigid.linearVelocity += bgalls;
-        rigid.linearVelocity += Vector3.down * grav_str;
-        if (Movements.HasFlag(AllowedMovements.AntiSlopeSlip) && grounded)
+        if (Movements.HasFlag(AllowedMovements.AntiSlopeSlip))
+        {
+            if (!grounded) rigid.linearVelocity += Vector3.down * grav_str;
+            else rigid.linearVelocity += -ground_normal * grav_str;
+        }
+        else
+        {
+            rigid.linearVelocity += Vector3.down * grav_str;
+        }
+        /*if (Movements.HasFlag(AllowedMovements.AntiSlopeSlip) && grounded)
         {
             if (slip < 0.0005)
             {
@@ -124,14 +134,8 @@ public class PlayerController3D : MonoBehaviour
             else
             {
                 rigid.constraints = Normal;
-                var str = RandomFunctions.EaseIn(1 - Vector3.Dot(ground_normal, Vector3.up), 12);
-                var x = Quaternion.Euler(90, 0, 0) * ground_normal * str * slip_opposite_force;
-                x.y = 0;
-                rigid.linearVelocity += x;
-                Debug.Log(x);
             }
-        }
-        Physics.Simulate(0f);
+        }*/
         Vcel = rigid.linearVelocity;
     }
     public bool Jump()
@@ -155,6 +159,7 @@ public class PlayerController3D : MonoBehaviour
     private void Update()
     {
         if (Movements.HasFlag(AllowedMovements.Jump)) InputBuffer.Instance.BufferListen("jump", "Player", "Jump", 0.1f);
+
         CollisionGroundCheck();
 
         if (InputManager.IsKeyDown(KeyCode.G))
@@ -200,7 +205,6 @@ public class PlayerController3D : MonoBehaviour
             Time.timeScale = 1f;
         }
 #endif
-
     }
     private bool locked = false;
     public void ToggleMouseState(bool? over = null)

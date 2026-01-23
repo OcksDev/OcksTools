@@ -4390,6 +4390,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Nerd
       objectReference: {fileID: 0}
+    - target: {fileID: 8653577835142743007, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
+      propertyPath: m_UseGravity
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8998951737039264408, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1.35
