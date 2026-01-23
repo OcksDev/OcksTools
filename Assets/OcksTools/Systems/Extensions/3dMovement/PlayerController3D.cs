@@ -15,6 +15,8 @@ public class PlayerController3D : MonoBehaviour
     public float air_speed = 0.1f;
     public float jump_str = 2;
     public float input_decay = 0.8f;
+    public float slip_decay = 0.8f;
+    public float slip_opposite_force = 5f;
     public float xz_decay = 0.9f;
     public float air_xz_decay = 0.9f;
     public float mouse_sense = 1;
@@ -26,6 +28,7 @@ public class PlayerController3D : MonoBehaviour
     public Transform HeadXZ;
     [EnumFlags] public RigidbodyConstraints Normal;
     [EnumFlags] public RigidbodyConstraints Stationary;
+    private float slip = -1;
     private void Start()
     {
         rigid = GetComponent<Rigidbody>();
@@ -38,6 +41,7 @@ public class PlayerController3D : MonoBehaviour
         if (grounded)
         {
             rigid.linearVelocity = new Vector3(rigid.linearVelocity.x * xz_decay, rigid.linearVelocity.y, rigid.linearVelocity.z * xz_decay);
+            slip *= slip_decay;
         }
         else
         {
@@ -45,7 +49,6 @@ public class PlayerController3D : MonoBehaviour
         }
 
         Vector3 dir = new Vector3(0, 0, 0);
-
         move *= input_decay;
         if (grounded)
         {
@@ -53,7 +56,11 @@ public class PlayerController3D : MonoBehaviour
             if (InputManager.IsKey("move_back", "Player")) dir += HeadXZ.forward * -1;
             if (InputManager.IsKey("move_right", "Player")) dir += HeadY.right;
             if (InputManager.IsKey("move_left", "Player")) dir += HeadY.right * -1;
-            if (dir.magnitude > 0.5f) dir.Normalize();
+            if (dir.magnitude > 0.5f)
+            {
+                slip = 1;
+                dir.Normalize();
+            }
         }
         else
         {
@@ -108,19 +115,28 @@ public class PlayerController3D : MonoBehaviour
         Vector3 bgalls = move * Time.deltaTime * 20;
         rigid.linearVelocity += bgalls;
         rigid.linearVelocity += Vector3.down * grav_str;
-        /*if (grounded && move.magnitude < 0.0005)
+        if (Movements.HasFlag(AllowedMovements.AntiSlopeSlip) && grounded)
         {
-            rigid.constraints = Stationary;
+            if (slip < 0.0005)
+            {
+                rigid.constraints = Stationary;
+            }
+            else
+            {
+                rigid.constraints = Normal;
+                var str = RandomFunctions.EaseIn(1 - Vector3.Dot(ground_normal, Vector3.up), 12);
+                var x = Quaternion.Euler(90, 0, 0) * ground_normal * str * slip_opposite_force;
+                x.y = 0;
+                rigid.linearVelocity += x;
+                Debug.Log(x);
+            }
         }
-        else
-        {
-            rigid.constraints = Normal;
-        }*/
         Physics.Simulate(0f);
         Vcel = rigid.linearVelocity;
     }
     public bool Jump()
     {
+        slip = 1;
         grounded = false;
         var dd = rigid.linearVelocity;
         dd.y = jump_str;
@@ -203,14 +219,13 @@ public class PlayerController3D : MonoBehaviour
         Dash = 1 << 1,
         Wallride = 1 << 2,
         Slide = 1 << 3,
-        BunnyHop = 1 << 4,
-        GroundSnap = 1 << 5,
+        AntiSlopeSlip = 1 << 4,
     }
     public bool grounded = false;
-    private Vector3 tpos = Vector3.zero;
+    private Vector3 ground_normal = Vector3.zero;
     public void CollisionGroundCheck()
     {
-        tpos = transform.position - (player_height / 4) * Vector3.up;
+        var tpos = transform.position - (player_height / 4) * Vector3.up;
         var a = Physics.SphereCastAll(tpos, 0.45f, Vector3.down, 0.1f);
         for (int i = 0; i < a.Length; i++)
         {
@@ -220,6 +235,7 @@ public class PlayerController3D : MonoBehaviour
             //Debug.Log($"Hit: {dd.collider.gameObject.name}, {}");
             if (dd.point != Vector3.zero && Vector3.Angle(dd.normal, Vector3.up) <= max_floor_angle)
             {
+                ground_normal = dd.normal;
                 grounded = true;
                 return;
             }
