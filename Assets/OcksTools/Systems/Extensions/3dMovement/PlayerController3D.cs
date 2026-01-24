@@ -30,19 +30,22 @@ public class PlayerController3D : MonoBehaviour
     [EnumFlags] public RigidbodyConstraints Normal;
     [EnumFlags] public RigidbodyConstraints Stationary;
     private float slip = -1;
+    private Vector3 InitPos;
     private void Start()
     {
         rigid = GetComponent<Rigidbody>();
         coll = GetComponent<CapsuleCollider>();
+        InitPos = transform.position;
         ToggleMouseState(true);
     }
 
-
+    private int jump_bananas = 0;
     private void FixedUpdate()
     {
+        jump_bananas--;
         if (grounded)
         {
-            rigid.linearVelocity = new Vector3(rigid.linearVelocity.x * xz_decay, rigid.linearVelocity.y, rigid.linearVelocity.z * xz_decay);
+            rigid.linearVelocity = new Vector3(rigid.linearVelocity.x * xz_decay, rigid.linearVelocity.y * xz_decay, rigid.linearVelocity.z * xz_decay);
             slip *= slip_decay;
         }
         else
@@ -141,6 +144,7 @@ public class PlayerController3D : MonoBehaviour
     public bool Jump()
     {
         slip = 1;
+        jump_bananas = 1;
         grounded = false;
         var dd = rigid.linearVelocity;
         dd.y = jump_str;
@@ -161,12 +165,6 @@ public class PlayerController3D : MonoBehaviour
         if (Movements.HasFlag(AllowedMovements.Jump)) InputBuffer.Instance.BufferListen("jump", "Player", "Jump", 0.1f);
 
         CollisionGroundCheck();
-
-        if (InputManager.IsKeyDown(KeyCode.G))
-        {
-            var g = Instantiate(nerd, HeadY.position + HeadY.forward * 2f, Quaternion.identity);
-            g.transform.position = DumbPhysics.SweepCollider(g.GetComponent<BoxCollider>(), HeadY.forward, 10, ~0, out RaycastHit banana);
-        }
 
 
         var x = Input.GetAxis("Mouse X") * mouse_sense;
@@ -195,6 +193,11 @@ public class PlayerController3D : MonoBehaviour
             ToggleMouseState();
         }
 
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            ResetPosition();
+        }
+
 #if UNITY_EDITOR
         if (Input.GetKey(KeyCode.Mouse0))
         {
@@ -216,6 +219,10 @@ public class PlayerController3D : MonoBehaviour
         // Optionally, also hide the cursor
         Cursor.visible = !locked;
     }
+    public void ResetPosition()
+    {
+        transform.position = InitPos;
+    }
     [Flags]
     public enum AllowedMovements
     {
@@ -229,6 +236,11 @@ public class PlayerController3D : MonoBehaviour
     private Vector3 ground_normal = Vector3.zero;
     public void CollisionGroundCheck()
     {
+        if (jump_bananas >= 0)
+        {
+            grounded = false;
+            return;
+        }
         var tpos = transform.position - (player_height / 4) * Vector3.up;
         var a = Physics.SphereCastAll(tpos, 0.45f, Vector3.down, 0.1f);
         for (int i = 0; i < a.Length; i++)
