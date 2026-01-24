@@ -20,13 +20,15 @@ public class PlayerController3D : MonoBehaviour
     public float slip_decay = 0.8f;
     public float slip_opposite_force = 5f;
     public float xz_decay = 0.9f;
-    public float slide_decay = 0.9f;
+    public float slide_decay_steep = 0.9f;
+    public float slide_decay_flat = 0.9f;
+    public float slide_slope_mult = 1f;
     public float air_xz_decay = 0.9f;
     public float mouse_sense = 1;
     public float grav_str = 2;
     public float air_turn = 0.05f;
     public float max_floor_angle = 45f;
-    private Vector3 move = new Vector3(0, 0, 0);
+    public float slide_steep_angle = 10f;
     public Transform HeadY;
     public Transform HeadXZ;
     [EnumFlags] public RigidbodyConstraints Normal;
@@ -46,9 +48,16 @@ public class PlayerController3D : MonoBehaviour
     {
         jump_bananas--;
         float xzd = xz_decay;
-        if (CurrentState == MoveState.Sliding)
+        if (CurrentState == MoveState.Sliding && grounded)
         {
-            xzd = slide_decay;
+            if (Vector3.Angle(ground_normal, Vector3.up) >= 15)
+            {
+                xzd = slide_decay_steep;
+            }
+            else
+            {
+                xzd = slide_decay_flat;
+            }
         }
         if (grounded)
         {
@@ -61,7 +70,6 @@ public class PlayerController3D : MonoBehaviour
         }
 
         Vector3 dir = new Vector3(0, 0, 0);
-        move *= input_decay;
         if (grounded)
         {
             if (InputManager.IsKey("move_forward", "Player")) dir += HeadXZ.forward;
@@ -131,7 +139,8 @@ public class PlayerController3D : MonoBehaviour
 
             var dirr = Vector3.down * grav_str;
             dirr += ground_normal * grav_str;
-
+            dirr *= slide_slope_mult;
+            float min_speed = 0.5f;
             bgalls += dirr;
         }
         rigid.linearVelocity += bgalls;
@@ -212,9 +221,8 @@ public class PlayerController3D : MonoBehaviour
             switch (CurrentState)
             {
                 case MoveState.Neutral:
-                    if (InputBuffer.Instance.GetBuffer("Slide") && (xz.sqrMagnitude > 0.01f || Vector3.Dot(ground_normal, Vector3.up) < 0.999f))
+                    if (InputBuffer.Instance.GetBuffer("Slide") && (xz.sqrMagnitude > 0.01f || Vector3.Dot(ground_normal, Vector3.up) < 0.999f) && CurrentState != MoveState.Sliding)
                     {
-                        Debug.Log("Crazy");
                         SetState(MoveState.Sliding);
                         InputBuffer.Instance.RemoveBuffer("Slide");
                     }
@@ -222,7 +230,6 @@ public class PlayerController3D : MonoBehaviour
                 case MoveState.Sliding:
                     if (!InputBuffer.Instance.GetBuffer("Slide"))
                     {
-                        Debug.Log("AntiCrazy");
                         SetState();
                     }
                     break;

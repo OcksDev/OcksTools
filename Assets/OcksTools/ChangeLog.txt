@@ -8,6 +8,7 @@
   - New layered ox event for achievements being granted
 - New Pointer<> Type, literally just to make references without needing to mark as unsafe
 - Misc
+  - New Random Function to create perpendicular vectors in the direction of certain vectors
   - Weighted Averages modified to use Multiref and be slightly cooler
 ------------
 
