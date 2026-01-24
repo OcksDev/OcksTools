@@ -315,6 +315,23 @@ public class RandomFunctions : SingleInstance<RandomFunctions>
         return Quaternion.RotateTowards(start_rot, target, max_speed);
     }
 
+    public static Vector3 PerpendicularTowardDirection(Vector3 baseVector, Vector3 directionVector)
+    {
+        Vector3 baseNorm = baseVector.normalized;
+
+        Vector3 perpendicular = directionVector - Vector3.Dot(directionVector, baseNorm) * baseNorm;
+
+        if (perpendicular.sqrMagnitude < 1e-6f)
+        {
+            perpendicular = Vector3.Cross(baseNorm, Vector3.up);
+
+            if (perpendicular.sqrMagnitude < 1e-6f)
+                perpendicular = Vector3.Cross(baseNorm, Vector3.right);
+        }
+
+        return perpendicular.normalized;
+    }
+
     private Quaternion Point2D(float offset2)
     {
         //returns the rotation required to make the current gameobject point at the mouse, untested in 3D.

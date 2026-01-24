@@ -20,6 +20,7 @@ public class PlayerController3D : MonoBehaviour
     public float slip_decay = 0.8f;
     public float slip_opposite_force = 5f;
     public float xz_decay = 0.9f;
+    public float slide_decay = 0.9f;
     public float air_xz_decay = 0.9f;
     public float mouse_sense = 1;
     public float grav_str = 2;
@@ -44,9 +45,14 @@ public class PlayerController3D : MonoBehaviour
     private void FixedUpdate()
     {
         jump_bananas--;
+        float xzd = xz_decay;
+        if (CurrentState == MoveState.Sliding)
+        {
+            xzd = slide_decay;
+        }
         if (grounded)
         {
-            rigid.linearVelocity = new Vector3(rigid.linearVelocity.x * xz_decay, rigid.linearVelocity.y * xz_decay, rigid.linearVelocity.z * xz_decay);
+            rigid.linearVelocity = new Vector3(rigid.linearVelocity.x * xzd, rigid.linearVelocity.y * xzd, rigid.linearVelocity.z * xzd);
             slip *= slip_decay;
         }
         else
@@ -120,11 +126,13 @@ public class PlayerController3D : MonoBehaviour
         }
         if (CurrentState == MoveState.Sliding)
         {
-            float str = 1 - Vector3.Dot(ground_normal, Vector3.up);
-            var dirr = ground_normal;
-            dirr.y = 0;
-            dirr.Normalize();
-            bgalls += dirr * str * 100;
+            //float str = 1 - Vector3.Dot(ground_normal, Vector3.up);
+            //var dirr = RandomFunctions.PerpendicularTowardDirection(ground_normal, Vector3.down);
+
+            var dirr = Vector3.down * grav_str;
+            dirr += ground_normal * grav_str;
+
+            bgalls += dirr;
         }
         rigid.linearVelocity += bgalls;
         if (Movements.HasFlag(AllowedMovements.AntiSlopeSlip))
@@ -204,7 +212,7 @@ public class PlayerController3D : MonoBehaviour
             switch (CurrentState)
             {
                 case MoveState.Neutral:
-                    if (InputBuffer.Instance.GetBuffer("Slide") && xz.sqrMagnitude > 0.01f)
+                    if (InputBuffer.Instance.GetBuffer("Slide") && (xz.sqrMagnitude > 0.01f || Vector3.Dot(ground_normal, Vector3.up) < 0.999f))
                     {
                         Debug.Log("Crazy");
                         SetState(MoveState.Sliding);

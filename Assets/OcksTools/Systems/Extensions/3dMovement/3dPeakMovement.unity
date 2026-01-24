@@ -5174,6 +5174,10 @@ PrefabInstance:
       propertyPath: air_decay
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 52581739253764052, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
+      propertyPath: slide_decay
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6838122281118527589, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
       propertyPath: m_Name
       value: Nerd
