@@ -334,24 +334,31 @@ MonoBehaviour:
   wall_cameratilt: 1
   Vcel: {x: 0, y: 0, z: 0}
   Movements: -1
+  CurrentState: 0
   move_speed: 6
   air_speed: 0.1
-  jump_str: 16
+  jump_str: 14
   input_decay: 0
   slip_decay: 0.75
   slip_opposite_force: 0.85
   xz_decay: 0.83
+  slide_decay_steep: 1
+  slide_decay_flat: 0.96
+  slide_slope_mult: 1.2
   air_xz_decay: 1
+  air_crouched_xz_decay: 0.9
   mouse_sense: 1
   grav_str: 0.8
   air_turn: 0.05
   max_floor_angle: 45
+  slide_steep_angle: 5
   HeadY: {fileID: 6371845093491532323}
   HeadXZ: {fileID: 4998704634607921774}
   Normal: 112
   Stationary: 122
   nerd: {fileID: 6909798639549162927, guid: b8f62317f6eab8c47858238051a1a4ab, type: 3}
   grounded: 0
+  allow_movement_inputs: 0
 --- !u!54 &8653577835142743007
 Rigidbody:
   m_ObjectHideFlags: 0
