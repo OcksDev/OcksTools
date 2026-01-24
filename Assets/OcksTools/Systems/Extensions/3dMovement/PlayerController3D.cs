@@ -12,6 +12,7 @@ public class PlayerController3D : MonoBehaviour
     private Rigidbody rigid;
     private CapsuleCollider coll;
     public AllowedMovements Movements;
+    public MoveState CurrentState = MoveState.Neutral;
     public float move_speed = 2;
     public float air_speed = 0.1f;
     public float jump_str = 2;
@@ -112,12 +113,19 @@ public class PlayerController3D : MonoBehaviour
 
             dir = Vector3.zero;
         }
-
-        if (dir.magnitude > 0.5f)
+        Vector3 bgalls = Vector3.zero;
+        if (dir.magnitude > 0.5f && allow_movement_inputs)
         {
-            move += dir * move_speed;
+            bgalls += dir * move_speed * Time.deltaTime * 20;
         }
-        Vector3 bgalls = move * Time.deltaTime * 20;
+        if (CurrentState == MoveState.Sliding)
+        {
+            float str = 1 - Vector3.Dot(ground_normal, Vector3.up);
+            var dirr = ground_normal;
+            dirr.y = 0;
+            dirr.Normalize();
+            bgalls += dirr * str * 100;
+        }
         rigid.linearVelocity += bgalls;
         if (Movements.HasFlag(AllowedMovements.AntiSlopeSlip))
         {
@@ -149,6 +157,7 @@ public class PlayerController3D : MonoBehaviour
         var dd = rigid.linearVelocity;
         dd.y = jump_str;
         rigid.linearVelocity = dd;
+        SetState(MoveState.Jumping);
         return true;
     }
 
@@ -163,6 +172,7 @@ public class PlayerController3D : MonoBehaviour
     private void Update()
     {
         if (Movements.HasFlag(AllowedMovements.Jump)) InputBuffer.Instance.BufferListen("jump", "Player", "Jump", 0.1f);
+        if (Movements.HasFlag(AllowedMovements.Slide)) InputBuffer.Instance.BufferListen("slide", "Player", "Slide", 0.1f, false);
 
         CollisionGroundCheck();
 
@@ -183,6 +193,31 @@ public class PlayerController3D : MonoBehaviour
                 {
                     InputBuffer.Instance.RemoveBuffer("Jump");
                 }
+            }
+        }
+
+        if (Movements.HasFlag(AllowedMovements.Slide))
+        {
+            var xzy = rigid.linearVelocity;
+            var xz = xzy;
+            xz.y = 0;
+            switch (CurrentState)
+            {
+                case MoveState.Neutral:
+                    if (InputBuffer.Instance.GetBuffer("Slide") && xz.sqrMagnitude > 0.01f)
+                    {
+                        Debug.Log("Crazy");
+                        SetState(MoveState.Sliding);
+                        InputBuffer.Instance.RemoveBuffer("Slide");
+                    }
+                    break;
+                case MoveState.Sliding:
+                    if (!InputBuffer.Instance.GetBuffer("Slide"))
+                    {
+                        Debug.Log("AntiCrazy");
+                        SetState();
+                    }
+                    break;
             }
         }
 
@@ -231,14 +266,22 @@ public class PlayerController3D : MonoBehaviour
         Wallride = 1 << 2,
         Slide = 1 << 3,
         AntiSlopeSlip = 1 << 4,
+        Sprint = 1 << 4,
     }
-    public bool grounded = false;
+    public enum MoveState
+    {
+        Neutral,
+        Sprinting,
+        Jumping,
+        Sliding,
+        WallRunning,
+        Dashing,
+    }
     private Vector3 ground_normal = Vector3.zero;
     public void CollisionGroundCheck()
     {
         if (jump_bananas >= 0)
         {
-            grounded = false;
             return;
         }
         var tpos = transform.position - (player_height / 4) * Vector3.up;
@@ -252,15 +295,37 @@ public class PlayerController3D : MonoBehaviour
             if (dd.point != Vector3.zero && Vector3.Angle(dd.normal, Vector3.up) <= max_floor_angle)
             {
                 ground_normal = dd.normal;
-                grounded = true;
+                SetState();
                 return;
             }
         }
-
-        grounded = false;
+        if (grounded)
+        {
+            SetState(MoveState.Jumping);
+        }
         return;
     }
-
+    public bool grounded = false;
+    public bool allow_movement_inputs = false;
+    public void SetState(MoveState sta = MoveState.Neutral)
+    {
+        CurrentState = sta;
+        grounded = false;
+        allow_movement_inputs = true;
+        switch (sta)
+        {
+            case MoveState.Neutral:
+                grounded = true;
+                break;
+            case MoveState.Sliding:
+                grounded = true;
+                allow_movement_inputs = false;
+                break;
+            case MoveState.WallRunning:
+                allow_movement_inputs = false;
+                break;
+        }
+    }
 
     private Vector3 walldir = Vector3.zero;
 

@@ -41,6 +41,7 @@ public class InputManager : SingleInstance<InputManager>
         CreateKeyAllocation("move_left", KeyCode.A);
         CreateKeyAllocation("move_right", KeyCode.D);
         CreateKeyAllocation("jump", KeyCode.Space);
+        CreateKeyAllocation("slide", KeyCode.LeftControl);
         CreateKeyAllocation("reload", KeyCode.R);
         CreateKeyAllocation("interact", KeyCode.F);
         CreateKeyAllocation("close_menu", new List<KeyCode>() { KeyCode.Escape, KeyCode.JoystickButton1 });
