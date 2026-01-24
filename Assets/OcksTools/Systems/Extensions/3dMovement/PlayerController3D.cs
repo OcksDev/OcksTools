@@ -8,6 +8,7 @@ public class PlayerController3D : MonoBehaviour
     public float player_width = 1;
 
     public float wall_cameratilt = 1;
+    [ReadOnly]
     public Vector3 Vcel;
     private Rigidbody rigid;
     private CapsuleCollider coll;
@@ -24,6 +25,7 @@ public class PlayerController3D : MonoBehaviour
     public float slide_decay_flat = 0.9f;
     public float slide_slope_mult = 1f;
     public float air_xz_decay = 0.9f;
+    public float air_crouched_xz_decay = 0.9f;
     public float mouse_sense = 1;
     public float grav_str = 2;
     public float air_turn = 0.05f;
@@ -44,12 +46,34 @@ public class PlayerController3D : MonoBehaviour
     }
 
     private int jump_bananas = 0;
+    private int ticks_on_ground = 0;
+    private bool air_couched = false;
     private void FixedUpdate()
     {
+        if (grounded)
+        {
+            ticks_on_ground++;
+        }
+        else
+        {
+            ticks_on_ground = 0;
+        }
         jump_bananas--;
         float xzd = xz_decay;
+        float airsex = air_xz_decay;
+        if (air_couched) airsex = air_crouched_xz_decay;
         if (CurrentState == MoveState.Sliding && grounded)
         {
+            //Debug.Log("Diff: " + (rigid.linearVelocity.y - Vcel.y));
+            if (ticks_on_ground > 5 && Vcel.y - rigid.linearVelocity.y < -2)
+            {
+                var diff = Mathf.Abs(Vcel.y - rigid.linearVelocity.y);
+                var dirr = new Vector3(rigid.linearVelocity.x, 0, rigid.linearVelocity.z).normalized;
+                rigid.linearVelocity += dirr * diff * (Vector3.Dot(ground_normal, Vector3.up));
+                Debug.Log("BOOSTED: " + dirr * diff * (Vector3.Dot(ground_normal, Vector3.up)));
+            }
+
+
             if (Vector3.Angle(ground_normal, Vector3.up) >= 15)
             {
                 xzd = slide_decay_steep;
@@ -66,7 +90,7 @@ public class PlayerController3D : MonoBehaviour
         }
         else
         {
-            rigid.linearVelocity = new Vector3(rigid.linearVelocity.x * air_xz_decay, rigid.linearVelocity.y, rigid.linearVelocity.z * air_xz_decay);
+            rigid.linearVelocity = new Vector3(rigid.linearVelocity.x * airsex, rigid.linearVelocity.y, rigid.linearVelocity.z * airsex);
         }
 
         Vector3 dir = new Vector3(0, 0, 0);
@@ -212,7 +236,7 @@ public class PlayerController3D : MonoBehaviour
                 }
             }
         }
-
+        air_couched = false;
         if (Movements.HasFlag(AllowedMovements.Slide))
         {
             var xzy = rigid.linearVelocity;
@@ -224,6 +248,13 @@ public class PlayerController3D : MonoBehaviour
                     if (InputBuffer.Instance.GetBuffer("Slide") && (xz.sqrMagnitude > 0.01f || Vector3.Dot(ground_normal, Vector3.up) < 0.999f) && CurrentState != MoveState.Sliding)
                     {
                         SetState(MoveState.Sliding);
+                        InputBuffer.Instance.RemoveBuffer("Slide");
+                    }
+                    break;
+                case MoveState.Jumping:
+                    if (InputBuffer.Instance.GetBuffer("Slide"))
+                    {
+                        air_couched = true;
                         InputBuffer.Instance.RemoveBuffer("Slide");
                     }
                     break;
@@ -320,7 +351,9 @@ public class PlayerController3D : MonoBehaviour
         }
         return;
     }
+    [ReadOnly]
     public bool grounded = false;
+    [ReadOnly]
     public bool allow_movement_inputs = false;
     public void SetState(MoveState sta = MoveState.Neutral)
     {
