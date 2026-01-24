@@ -26,6 +26,7 @@ public class PlayerController3D : MonoBehaviour
     public float air_crouched_xz_decay = 0.9f;
     public float mouse_sense = 1;
     public float grav_str = 2;
+    public float air_turn = 0.05f;
     public float max_floor_angle = 45f;
     public float slide_steep_angle = 10f;
     public Transform HeadY;
@@ -44,21 +45,24 @@ public class PlayerController3D : MonoBehaviour
 
     private int jump_bananas = 0;
     private int ticks_on_ground = 0;
+    private int ticks_in_air = 0;
     private bool air_couched = false;
     private void FixedUpdate()
     {
         if (grounded)
         {
             ticks_on_ground++;
+            ticks_in_air = 0;
         }
         else
         {
+            ticks_in_air++;
             ticks_on_ground = 0;
         }
         jump_bananas--;
         float xzd = xz_decay;
         float airsex = air_xz_decay;
-        if (air_couched) airsex = air_crouched_xz_decay;
+        if (air_couched && ticks_in_air > 2) airsex = air_crouched_xz_decay;
         if (CurrentState == MoveState.Sliding && grounded)
         {
             //Debug.Log("Diff: " + (rigid.linearVelocity.y - Vcel.y));
@@ -67,11 +71,11 @@ public class PlayerController3D : MonoBehaviour
                 var diff = Mathf.Abs(Vcel.y - rigid.linearVelocity.y);
                 var dirr = new Vector3(rigid.linearVelocity.x, 0, rigid.linearVelocity.z).normalized;
                 rigid.linearVelocity += dirr * diff * (Vector3.Dot(ground_normal, Vector3.up));
-                Debug.Log("BOOSTED: " + dirr * diff * (Vector3.Dot(ground_normal, Vector3.up)));
+                //Debug.Log("BOOSTED: " + dirr * diff * (Vector3.Dot(ground_normal, Vector3.up)));
             }
 
 
-            if (Vector3.Angle(ground_normal, Vector3.up) >= 15)
+            if (Vector3.Angle(ground_normal, Vector3.up) >= slide_steep_angle)
             {
                 xzd = slide_decay_steep;
             }
@@ -151,7 +155,7 @@ public class PlayerController3D : MonoBehaviour
         Vector3 bgalls = Vector3.zero;
         if (dir.magnitude > 0.5f && allow_movement_inputs)
         {
-            bgalls += dir * move_speed * Time.deltaTime * 20;
+            bgalls += RandomFunctions.PerpendicularTowardDirection(ground_normal, dir) * move_speed * Time.deltaTime * 20;
         }
         if (CurrentState == MoveState.Sliding)
         {
