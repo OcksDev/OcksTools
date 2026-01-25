@@ -2273,7 +2273,7 @@ MonoBehaviour:
     List:
     - Name: DashSkill
       Duration: 0
-      Cooldown: 0
+      Cooldown: 1
       InterUseCooldown: 0
       MaxStacks: 1
       StacksPerCooldown: 1
