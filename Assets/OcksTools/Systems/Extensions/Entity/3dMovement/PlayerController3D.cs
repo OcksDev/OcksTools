@@ -17,7 +17,6 @@ public class PlayerController3D : MonoBehaviour
     public MoveState CurrentState = MoveState.Neutral;
     public float move_speed = 2;
     public float jump_str = 2;
-    public float input_decay = 0.8f;
     public float slip_decay = 0.8f;
     public float xz_decay = 0.9f;
     public float slide_decay_steep = 0.9f;
