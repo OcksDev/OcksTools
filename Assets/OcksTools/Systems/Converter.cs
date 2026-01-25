@@ -748,3 +748,18 @@ public class CompileableDictionary<A, B>
         }
     }
 }
+
+[System.Serializable]
+public class CompileableDictionaryAlt<A, B>
+{
+    public List<B> List = new List<B>();
+    public Dictionary<A, B> Dict = new Dictionary<A, B>();
+    public void Compile(Func<B, A> funky)
+    {
+        Dict.Clear();
+        foreach (var a in List)
+        {
+            Dict.Add(funky(a), a);
+        }
+    }
+}

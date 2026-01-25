@@ -87,4 +87,87 @@ public class OXLerp : MonoBehaviour
             }
         }
     }
+    public static IEnumerator LinearFixed(Action<float> method, float time = 1f)
+    {
+        float x = 0f;
+        float f = 1 / time;
+        while (x < 1)
+        {
+            x = Mathf.Clamp01(x + (Time.fixedDeltaTime * f));
+            method(x);
+            yield return new WaitForFixedUpdate();
+        }
+    }
+    //infinitely progresses from 0-1, when it reaches 1 it jumps back to 0
+    public static IEnumerator LinearInfniteLoopedFixed(Action<float> method, float time = 1f)
+    {
+        float x = 0f;
+        float f = 1 / time;
+        while (true)
+        {
+            x = (x + Time.fixedDeltaTime * f) % 1;
+            method(x);
+            yield return new WaitForFixedUpdate();
+        }
+    }
+
+    //infinitely progresses from 0-infinity, never stops increasing
+    public static IEnumerator LinearInfniteUncappedFixed(Action<float> method, float time = 1f)
+    {
+        float x = 0f;
+        float f = 1 / time;
+        while (true)
+        {
+            x = x + Time.fixedDeltaTime * f;
+            method(x);
+            yield return new WaitForFixedUpdate();
+        }
+    }
+
+    //bounces back and forth linearly between 0-1
+    public static IEnumerator BounceFixed(Action<float> method, int bounces, float time = 1f)
+    {
+        float x = 0f;
+        float f = 1 / time;
+        int i = 0;
+        while (i < bounces)
+        {
+            while (x < 1)
+            {
+                x = Mathf.Clamp01(x + Time.fixedDeltaTime * f);
+                method(x);
+                yield return new WaitForFixedUpdate();
+            }
+            i++;
+            if (i >= bounces) yield break;
+            while (x > 0)
+            {
+                x = Mathf.Clamp01(x - Time.fixedDeltaTime * f);
+                method(x);
+                yield return new WaitForFixedUpdate();
+            }
+            i++;
+            if (i >= bounces) yield break;
+        }
+    }
+    public static IEnumerator BounceInfiniteFixed(Action<float> method, float time = 1f)
+    {
+        float x = 0f;
+        float f = 1 / time;
+        while (true)
+        {
+            while (x < 1)
+            {
+                x = Mathf.Clamp01(x + Time.fixedDeltaTime * f);
+                method(x);
+                yield return new WaitForFixedUpdate();
+            }
+            while (x > 0)
+            {
+                x = Mathf.Clamp01(x - Time.fixedDeltaTime * f);
+                method(x);
+                yield return new WaitForFixedUpdate();
+            }
+        }
+    }
 }

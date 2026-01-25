@@ -1,5 +1,6 @@
 using NaughtyAttributes;
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class PlayerController3D : MonoBehaviour
@@ -29,6 +30,11 @@ public class PlayerController3D : MonoBehaviour
     public float air_turn = 0.05f;
     public float max_floor_angle = 45f;
     public float slide_steep_angle = 10f;
+    public float fast_punish = 0.9f;
+    public float fast_punish_speed = 10f;
+    public float dash_str = 20;
+    public float dash_dur = 2;
+    public float dash_end_str = 2;
     public Transform HeadY;
     public Transform HeadXZ;
     [EnumFlags] public RigidbodyConstraints Normal;
@@ -47,6 +53,28 @@ public class PlayerController3D : MonoBehaviour
     private int ticks_on_ground = 0;
     private int ticks_in_air = 0;
     private bool air_couched = false;
+
+    public void ApplyVelocity(Vector3 force)
+    {
+        rigid.linearVelocity += force;
+        Vcel += force;
+    }
+
+    public void ApplyVelocityOverTime(Vector3 force, float time)
+    {
+        ApplyVelocityOverTime((x) => { return force; }, time);
+    }
+
+    public void ApplyVelocityOverTime(Func<float, Vector3> force_func, float time)
+    {
+        StartCoroutine(OXLerp.LinearFixed((x) =>
+        {
+            var force = force_func(x);
+            rigid.linearVelocity += force;
+            Vcel += force;
+        }, time));
+    }
+    private Vector3 start_dash_vel = Vector3.zero;
     private void FixedUpdate()
     {
         if (grounded)
@@ -165,7 +193,6 @@ public class PlayerController3D : MonoBehaviour
             var dirr = Vector3.down * grav_str;
             dirr += ground_normal * grav_str;
             dirr *= slide_slope_mult;
-            float min_speed = 0.5f;
             bgalls += dirr;
         }
         rigid.linearVelocity += bgalls;
@@ -198,6 +225,14 @@ public class PlayerController3D : MonoBehaviour
         grounded = false;
         var dd = rigid.linearVelocity;
         dd.y = jump_str;
+        if (ticks_on_ground < 2)
+        {
+            if (rigid.linearVelocity.magnitude > (fast_punish_speed / fast_punish))
+            {
+                dd.x *= fast_punish;
+                dd.z *= fast_punish;
+            }
+        }
         rigid.linearVelocity = dd;
         SetState(MoveState.Jumping);
         return true;
@@ -208,12 +243,48 @@ public class PlayerController3D : MonoBehaviour
         if (!grounded) return false;
         return Jump();
     }
+
+    public bool Dash()
+    {
+        switch (CurrentState)
+        {
+            case MoveState.Dashing: return false;
+            default:
+                Vector3 dir = Vector3.zero;
+                if (InputManager.IsKey("move_forward", "Player")) dir += HeadXZ.forward;
+                if (InputManager.IsKey("move_back", "Player")) dir += HeadXZ.forward * -1;
+                if (InputManager.IsKey("move_right", "Player")) dir += HeadY.right;
+                if (InputManager.IsKey("move_left", "Player")) dir += HeadY.right * -1;
+                if (dir.magnitude > 0.5)
+                {
+                    StartCoroutine(DashCour(dir.normalized));
+                    return true;
+                }
+                return false;
+        }
+    }
+    public IEnumerator DashCour(Vector3 dir)
+    {
+        SetState(MoveState.Dashing);
+        float d = dash_dur;
+        start_dash_vel = rigid.linearVelocity;
+        while (d > 0)
+        {
+            rigid.linearVelocity = dir * dash_str;
+            d -= Time.deltaTime;
+            yield return new WaitForFixedUpdate();
+        }
+        rigid.linearVelocity = start_dash_vel + dir * dash_end_str;
+        SetState(MoveState.Jumping);
+    }
+
     public GameObject nerd = null;
     private float rot_y = 0;
     private float rot_x = 0;
     private void Update()
     {
         if (Movements.HasFlag(AllowedMovements.Jump)) InputBuffer.Instance.BufferListen("jump", "Player", "Jump", 0.1f);
+        if (Movements.HasFlag(AllowedMovements.Dash)) InputBuffer.Instance.BufferListen("dash", "Player", "Dash", 0.1f);
         if (Movements.HasFlag(AllowedMovements.Slide)) InputBuffer.Instance.BufferListen("slide", "Player", "Slide", 0.1f, false);
 
         CollisionGroundCheck();
@@ -234,6 +305,17 @@ public class PlayerController3D : MonoBehaviour
                 if (a)
                 {
                     InputBuffer.Instance.RemoveBuffer("Jump");
+                }
+            }
+        }
+        if (Movements.HasFlag(AllowedMovements.Dash))
+        {
+            if (InputBuffer.Instance.GetBuffer("Dash"))
+            {
+                var a = Dash();
+                if (a)
+                {
+                    InputBuffer.Instance.RemoveBuffer("Dash");
                 }
             }
         }
@@ -330,6 +412,10 @@ public class PlayerController3D : MonoBehaviour
         if (jump_bananas >= 0)
         {
             return;
+        }
+        switch (CurrentState)
+        {
+            case MoveState.Dashing: return;
         }
         var tpos = transform.position - (player_height / 4) * Vector3.up;
         var a = Physics.SphereCastAll(tpos, 0.45f, Vector3.down, 0.1f);

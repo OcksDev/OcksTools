@@ -41,7 +41,7 @@ public static class ExtensionForEntityOXSForEffects
         {
             var a = new EntityEffectMiddleMan(nerd);
             EffectsGlobal.Add(nerd, a);
-            nerd.OnKillEvent.Append("CleanUpEffects", CleanUpEffects);
+            nerd.OnKillEvent.Append(99999, "CleanUpEffects", CleanUpEffects);
             return a;
         }
     }
@@ -58,11 +58,7 @@ public static class ExtensionForEntityOXSForEffects
 
 public class EntityEffectMiddleMan : EntityEffectMiddleManReadOnly
 {
-    public EntityEffectMiddleMan(EntityOXS e) : base(e)
-    {
-        entity = e;
-        Effects = new List<EffectProfile>();
-    }
+    public EntityEffectMiddleMan(EntityOXS e) : base(e) { }
     public void UpdateEntityEffects(float time)
     {
         for (int i = Effects.Count - 1; i >= 0; i--)
@@ -207,4 +203,19 @@ public class EntityEffectMiddleManReadOnly
         return Get(eff.Name);
     }
 
+    public bool Has(string name)
+    {
+        foreach (var ef in Effects)
+        {
+            if (name == ef.Name)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    public bool Has(Skill eff)
+    {
+        return Has(eff.Name);
+    }
 }
