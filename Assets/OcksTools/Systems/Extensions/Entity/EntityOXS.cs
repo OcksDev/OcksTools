@@ -5,6 +5,7 @@ using static EntityOXS;
 [System.Serializable]
 public class EntityOXS : MonoBehaviour
 {
+    public GameObject Self;
     public EntityType Type = EntityType.Enemy;
     public double Health = 100;
     public double Shield = 100;
@@ -70,7 +71,11 @@ public class EntityOXS : MonoBehaviour
         NPC = 2,
         World = 3,
     }
-
+    public EntityOXS SetSelf(GameObject self)
+    {
+        Self = self;
+        return this;
+    }
 }
 
 [System.Serializable]

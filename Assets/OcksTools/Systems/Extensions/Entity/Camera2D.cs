@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraLol : SingleInstance<CameraLol>
+public class Camera2D : SingleInstance<Camera2D>
 {
     public bool FollowsMouse = true;
     public float MouseFollowSpeed = 1;

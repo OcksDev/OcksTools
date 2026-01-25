@@ -16,9 +16,8 @@ public class SkillData
 }
 
 [System.Serializable]
-public class Skill
+public class Skill : Containable
 {
-    public string Name = "Missing?";
     public int Stacks = 0;
     public float Duration = 0;
     public float Cooldown = 0;

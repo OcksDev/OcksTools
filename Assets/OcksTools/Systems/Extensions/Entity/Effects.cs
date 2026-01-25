@@ -2,10 +2,9 @@ using NaughtyAttributes;
 using UnityEngine;
 
 [System.Serializable]
-public class EffectProfile
+public class EffectProfile : Containable
 {
     //data you pass in
-    public string Name;
     public float Duration;
     public CombineMethods CombineMethod = CombineMethods.Replace;
     //other data

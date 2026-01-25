@@ -8,16 +8,16 @@ public class EffectManager : SingleInstance<EffectManager>
     {
         foreach (var entity in ExtensionForEntityOXSForEffects.EffectsTicking)
         {
-            entity.Value.UpdateEntityEffects(Time.deltaTime);
+            entity.Value.UpdateContainer(Time.deltaTime);
         }
     }
 }
 
 public static class ExtensionForEntityOXSForEffects
 {
-    public static Dictionary<EntityOXS, EntityEffectMiddleMan> EffectsTicking = new Dictionary<EntityOXS, EntityEffectMiddleMan>();
-    public static Dictionary<EntityOXS, EntityEffectMiddleMan> EffectsGlobal = new Dictionary<EntityOXS, EntityEffectMiddleMan>();
-    public static EntityEffectMiddleMan Effect(this EntityOXS nerd)
+    public static Dictionary<EntityOXS, EffectContainer> EffectsTicking = new Dictionary<EntityOXS, EffectContainer>();
+    public static Dictionary<EntityOXS, EffectContainer> EffectsGlobal = new Dictionary<EntityOXS, EffectContainer>();
+    public static EffectContainer Effect(this EntityOXS nerd)
     {
         if (EffectsGlobal.ContainsKey(nerd))
         {
@@ -25,21 +25,7 @@ public static class ExtensionForEntityOXSForEffects
         }
         else
         {
-            var a = new EntityEffectMiddleMan(nerd);
-            EffectsGlobal.Add(nerd, a);
-            nerd.OnKillEvent.Append(99999, "CleanUpEffects", CleanUpEffects);
-            return a;
-        }
-    }
-    public static EntityEffectMiddleManReadOnly EffectReadOnly(this EntityOXS nerd)
-    {
-        if (EffectsGlobal.ContainsKey(nerd))
-        {
-            return EffectsGlobal[nerd];
-        }
-        else
-        {
-            var a = new EntityEffectMiddleMan(nerd);
+            var a = new EffectContainer(nerd);
             EffectsGlobal.Add(nerd, a);
             nerd.OnKillEvent.Append(99999, "CleanUpEffects", CleanUpEffects);
             return a;
@@ -56,28 +42,32 @@ public static class ExtensionForEntityOXSForEffects
     }
 }
 
-public class EntityEffectMiddleMan : EntityEffectMiddleManReadOnly
+public class EffectContainer : ContainerListStyle<EffectProfile>
 {
-    public EntityEffectMiddleMan(EntityOXS e) : base(e) { }
-    public void UpdateEntityEffects(float time)
+    public EffectContainer(EntityOXS e)
     {
-        for (int i = Effects.Count - 1; i >= 0; i--)
+        entity = e;
+        List = new List<EffectProfile>();
+    }
+    public override void UpdateContainer(float time)
+    {
+        for (int i = List.Count - 1; i >= 0; i--)
         {
-            var ef = Effects[i];
+            var ef = List[i];
             ef.TimeRemaining -= time;
             if (ef.TimeRemaining <= 0)
             {
-                Effects.RemoveAt(i);
+                List.RemoveAt(i);
             }
             else
             {
-                Effects[i] = ef;
+                List[i] = ef;
             }
         }
         CheckExistence();
     }
 
-    public void Add(EffectProfile eff)
+    public override void Add(EffectProfile eff)
     {
         entity.OnEffectGain.Invoke(entity, eff);
         if (!ExtensionForEntityOXSForEffects.EffectsTicking.ContainsKey(entity))
@@ -92,12 +82,12 @@ public class EntityEffectMiddleMan : EntityEffectMiddleManReadOnly
             {
                 case EffectProfile.CombineMethods.Replace:
                     //replace existing effect with new
-                    Effects.Remove(s);
-                    Effects.Add(eff);
+                    List.Remove(s);
+                    List.Add(eff);
                     break;
                 case EffectProfile.CombineMethods.AddNew:
                     //apply effect as new
-                    Effects.Add(eff);
+                    List.Add(eff);
                     break;
                 case EffectProfile.CombineMethods.CombineStack:
                     //increase stack count
@@ -124,98 +114,16 @@ public class EntityEffectMiddleMan : EntityEffectMiddleManReadOnly
         }
         else
         {
-            Effects.Add(eff);
+            List.Add(eff);
         }
 
 
     }
-
-    public void Remove(string name)
+    public override void CheckExistence()
     {
-        for (int i = Effects.Count - 1; i >= 0; i--)
-        {
-            if (Effects[i].Name == name)
-            {
-                Effects.RemoveAt(i);
-                break;
-            }
-        }
-        CheckExistence();
-    }
-
-    public void RemoveAll(string name)
-    {
-        for (int i = Effects.Count - 1; i >= 0; i--)
-        {
-            if (Effects[i].Name == name)
-            {
-                Effects.RemoveAt(i);
-            }
-        }
-        CheckExistence();
-    }
-
-    public void Remove(EffectProfile name)
-    {
-        Remove(name.Name);
-    }
-
-    public void RemoveAll(EffectProfile name)
-    {
-        RemoveAll(name.Name);
-    }
-    public void Clear()
-    {
-        Effects.Clear();
-        CheckExistence();
-    }
-
-    public void CheckExistence()
-    {
-        if (Effects.Count == 0)
+        if (List.Count == 0)
         {
             ExtensionForEntityOXSForEffects.EffectsTicking.Remove(entity);
         }
-    }
-}
-public class EntityEffectMiddleManReadOnly
-{
-    public EntityOXS entity;
-    public List<EffectProfile> Effects;
-    public EntityEffectMiddleManReadOnly(EntityOXS e)
-    {
-        entity = e;
-        Effects = new List<EffectProfile>();
-    }
-    public EffectProfile Get(string name)
-    {
-        foreach (var ef in Effects)
-        {
-            if (name == ef.Name)
-            {
-                return ef;
-            }
-        }
-        return null;
-    }
-    public EffectProfile Get(EffectProfile eff)
-    {
-        return Get(eff.Name);
-    }
-
-    public bool Has(string name)
-    {
-        foreach (var ef in Effects)
-        {
-            if (name == ef.Name)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-    public bool Has(Skill eff)
-    {
-        return Has(eff.Name);
     }
 }

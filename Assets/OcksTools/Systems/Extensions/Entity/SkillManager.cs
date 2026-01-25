@@ -13,16 +13,16 @@ public class SkillManager : SingleInstance<SkillManager>
     {
         foreach (var entity in ExtensionForEntityOXSForSkills.SkillsTicking)
         {
-            entity.Value.UpdateEntitySkills(Time.deltaTime);
+            entity.Value.UpdateContainer(Time.deltaTime);
         }
     }
 }
 
 public static class ExtensionForEntityOXSForSkills
 {
-    public static Dictionary<EntityOXS, EntitySkillMiddleMan> SkillsTicking = new Dictionary<EntityOXS, EntitySkillMiddleMan>();
-    public static Dictionary<EntityOXS, EntitySkillMiddleMan> SkillsGlobal = new Dictionary<EntityOXS, EntitySkillMiddleMan>();
-    public static EntitySkillMiddleMan Skill(this EntityOXS nerd)
+    public static Dictionary<EntityOXS, SkillContainer> SkillsTicking = new Dictionary<EntityOXS, SkillContainer>();
+    public static Dictionary<EntityOXS, SkillContainer> SkillsGlobal = new Dictionary<EntityOXS, SkillContainer>();
+    public static SkillContainer Skill(this EntityOXS nerd)
     {
         if (SkillsGlobal.ContainsKey(nerd))
         {
@@ -30,27 +30,13 @@ public static class ExtensionForEntityOXSForSkills
         }
         else
         {
-            var a = new EntitySkillMiddleMan(nerd);
+            var a = new SkillContainer(nerd);
             SkillsGlobal.Add(nerd, a);
             nerd.OnKillEvent.Append(99999, "CleanUpSkills", CleanUpSkills);
             return a;
         }
     }
 
-    public static EntitySkillMiddleManReadOnly SkillReadOnly(this EntityOXS nerd)
-    {
-        if (SkillsGlobal.ContainsKey(nerd))
-        {
-            return SkillsGlobal[nerd];
-        }
-        else
-        {
-            var a = new EntitySkillMiddleMan(nerd);
-            SkillsGlobal.Add(nerd, a);
-            nerd.OnKillEvent.Append(99999, "CleanUpSkills", CleanUpSkills);
-            return a;
-        }
-    }
     public static void CleanUpSkills(EntityOXS nerd, MultiRef<object, EntityType> b)
     {
         if (SkillsTicking.ContainsKey(nerd))
@@ -65,18 +51,22 @@ public static class ExtensionForEntityOXSForSkills
 
 
 
-public class EntitySkillMiddleMan : EntitySkillMiddleManReadOnly
+public class SkillContainer : ContainerListStyle<Skill>
 {
-    public EntitySkillMiddleMan(EntityOXS e) : base(e) { }
-    public void UpdateEntitySkills(float time)
+    public SkillContainer(EntityOXS e)
     {
-        for (int i = Skills.Count - 1; i >= 0; i--)
+        entity = e;
+        List = new List<Skill>();
+    }
+    public override void UpdateContainer(float time)
+    {
+        for (int i = List.Count - 1; i >= 0; i--)
         {
-            Skills[i].Update(time);
+            List[i].Update(time);
         }
     }
 
-    public void Add(Skill eff)
+    public override void Add(Skill eff)
     {
         if (SkillManager.Instance != null && eff.data == null && SkillManager.Instance.AllSkills.Dict.ContainsKey(eff.Name)) eff.SetDataRefFromManager();
 
@@ -85,95 +75,15 @@ public class EntitySkillMiddleMan : EntitySkillMiddleManReadOnly
             ExtensionForEntityOXSForSkills.SkillsTicking.Add(entity, this);
         }
 
-        Skills.Add(eff);
+        List.Add(eff);
     }
 
-    public void Remove(string name)
-    {
-        for (int i = Skills.Count - 1; i >= 0; i--)
-        {
-            if (Skills[i].Name == name)
-            {
-                Skills.RemoveAt(i);
-                break;
-            }
-        }
-        CheckExistence();
-    }
 
-    public void RemoveAll(string name)
+    public override void CheckExistence()
     {
-        for (int i = Skills.Count - 1; i >= 0; i--)
-        {
-            if (Skills[i].Name == name)
-            {
-                Skills.RemoveAt(i);
-            }
-        }
-        CheckExistence();
-    }
-
-    public void Remove(Skill name)
-    {
-        Remove(name.Name);
-    }
-
-    public void RemoveAll(Skill name)
-    {
-        RemoveAll(name.Name);
-    }
-    public void Clear()
-    {
-        Skills.Clear();
-        CheckExistence();
-    }
-
-    public void CheckExistence()
-    {
-        if (Skills.Count == 0)
+        if (List.Count == 0)
         {
             ExtensionForEntityOXSForSkills.SkillsTicking.Remove(entity);
         }
     }
-}
-public class EntitySkillMiddleManReadOnly
-{
-    public EntityOXS entity;
-    public List<Skill> Skills;
-    public EntitySkillMiddleManReadOnly(EntityOXS e)
-    {
-        entity = e;
-        Skills = new List<Skill>();
-    }
-    public Skill Get(string name)
-    {
-        foreach (var ef in Skills)
-        {
-            if (name == ef.Name)
-            {
-                return ef;
-            }
-        }
-        return null;
-    }
-    public Skill Get(Skill eff)
-    {
-        return Get(eff.Name);
-    }
-    public bool Has(string name)
-    {
-        foreach (var ef in Skills)
-        {
-            if (name == ef.Name)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-    public bool Has(Skill eff)
-    {
-        return Has(eff.Name);
-    }
-
 }

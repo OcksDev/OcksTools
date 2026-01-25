@@ -31,9 +31,9 @@ public class PlayerControllerMulti : NetworkBehaviour
         }
         Vector3 bgalls = move * Time.deltaTime * move_speed * 20;
         rigid.linearVelocity += new Vector2(bgalls.x, bgalls.y);
-        if (CameraLol.Instance != null)
+        if (Camera2D.Instance != null)
         {
-            CameraLol.Instance.targetpos = transform.position;
+            Camera2D.Instance.targetpos = transform.position;
         }
 
     }

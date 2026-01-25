@@ -23,6 +23,7 @@ public class PlayerController3D : MonoBehaviour
     public float slide_decay_steep = 0.9f;
     public float slide_decay_flat = 0.9f;
     public float slide_slope_mult = 1f;
+    public float slide_min_time = 0.5f;
     public float air_xz_decay = 0.9f;
     public float air_crouched_xz_decay = 0.9f;
     public float mouse_sense = 1;
@@ -64,14 +65,14 @@ public class PlayerController3D : MonoBehaviour
         Vcel += force;
     }
 
-    public void ApplyVelocityOverTime(Vector3 force, float time)
+    public Coroutine ApplyVelocityOverTime(Vector3 force, float time)
     {
-        ApplyVelocityOverTime((x) => { return force; }, time);
+        return ApplyVelocityOverTime((x) => { return force; }, time);
     }
 
-    public void ApplyVelocityOverTime(Func<float, Vector3> force_func, float time)
+    public Coroutine ApplyVelocityOverTime(Func<float, Vector3> force_func, float time)
     {
-        StartCoroutine(OXLerp.LinearFixed((x) =>
+        return StartCoroutine(OXLerp.LinearFixed((x) =>
         {
             var force = force_func(x);
             rigid.linearVelocity += force;
@@ -79,6 +80,7 @@ public class PlayerController3D : MonoBehaviour
         }, time));
     }
     private Vector3 start_dash_vel = Vector3.zero;
+    private Vector3 move_dir = Vector3.zero;
     private void FixedUpdate()
     {
         if (grounded)
@@ -127,12 +129,13 @@ public class PlayerController3D : MonoBehaviour
         }
 
         Vector3 dir = new Vector3(0, 0, 0);
+        if (InputManager.IsKey("move_forward", "Player")) dir += HeadXZ.forward;
+        if (InputManager.IsKey("move_back", "Player")) dir += HeadXZ.forward * -1;
+        if (InputManager.IsKey("move_right", "Player")) dir += HeadY.right;
+        if (InputManager.IsKey("move_left", "Player")) dir += HeadY.right * -1;
+        move_dir = dir;
         if (grounded)
         {
-            if (InputManager.IsKey("move_forward", "Player")) dir += HeadXZ.forward;
-            if (InputManager.IsKey("move_back", "Player")) dir += HeadXZ.forward * -1;
-            if (InputManager.IsKey("move_right", "Player")) dir += HeadY.right;
-            if (InputManager.IsKey("move_left", "Player")) dir += HeadY.right * -1;
             if (dir.magnitude > 0.5f)
             {
                 slip = 1;
@@ -141,10 +144,6 @@ public class PlayerController3D : MonoBehaviour
         }
         else
         {
-            if (InputManager.IsKey("move_forward", "Player")) dir += HeadXZ.forward;
-            if (InputManager.IsKey("move_back", "Player")) dir += HeadXZ.forward * -1;
-            if (InputManager.IsKey("move_right", "Player")) dir += HeadY.right;
-            if (InputManager.IsKey("move_left", "Player")) dir += HeadY.right * -1;
             if (dir.magnitude > 0.5f)
             {
                 dir.Normalize();
@@ -228,7 +227,16 @@ public class PlayerController3D : MonoBehaviour
         jump_bananas = 1;
         grounded = false;
         var dd = rigid.linearVelocity;
-        dd.y = jump_str;
+        switch (CurrentState)
+        {
+            case MoveState.Sliding:
+                dd.y = 0;
+                dd += ground_normal * jump_str;
+                break;
+            default:
+                dd.y = jump_str;
+                break;
+        }
         if (ticks_on_ground < 2)
         {
             if (rigid.linearVelocity.magnitude > (fast_punish_speed / fast_punish))
@@ -288,6 +296,7 @@ public class PlayerController3D : MonoBehaviour
     public GameObject nerd = null;
     private float rot_y = 0;
     private float rot_x = 0;
+    private float slidemin = 0;
     private void Update()
     {
         if (Movements.HasFlag(AllowedMovements.Jump)) InputBuffer.Instance.BufferListen("jump", "Player", "Jump", 0.1f);
@@ -337,6 +346,7 @@ public class PlayerController3D : MonoBehaviour
                     if (InputBuffer.Instance.GetBuffer("Slide") && (xz.sqrMagnitude > 0.01f || Vector3.Dot(ground_normal, Vector3.up) < 0.999f) && CurrentState != MoveState.Sliding)
                     {
                         SetState(MoveState.Sliding);
+                        slidemin = slide_min_time;
                         InputBuffer.Instance.RemoveBuffer("Slide");
                     }
                     break;
@@ -348,7 +358,8 @@ public class PlayerController3D : MonoBehaviour
                     }
                     break;
                 case MoveState.Sliding:
-                    if (!InputBuffer.Instance.GetBuffer("Slide"))
+                    slidemin -= Time.deltaTime;
+                    if (!InputBuffer.Instance.GetBuffer("Slide") && slidemin <= 0)
                     {
                         SetState();
                     }
@@ -434,7 +445,7 @@ public class PlayerController3D : MonoBehaviour
             if (dd.point != Vector3.zero && Vector3.Angle(dd.normal, Vector3.up) <= max_floor_angle)
             {
                 ground_normal = dd.normal;
-                SetState();
+                if (CurrentState != MoveState.Sliding) SetState();
                 return;
             }
         }
@@ -464,6 +475,9 @@ public class PlayerController3D : MonoBehaviour
                 break;
             case MoveState.WallRunning:
                 allow_movement_inputs = false;
+                break;
+            case MoveState.Jumping:
+                ground_normal = Vector3.up;
                 break;
         }
     }
