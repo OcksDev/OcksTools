@@ -5280,11 +5280,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 52581739253764052, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
       propertyPath: dash_dur
-      value: 0.1
+      value: 0.15
       objectReference: {fileID: 0}
     - target: {fileID: 52581739253764052, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
       propertyPath: dash_str
-      value: 100
+      value: 70
       objectReference: {fileID: 0}
     - target: {fileID: 52581739253764052, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
       propertyPath: air_decay
@@ -5297,6 +5297,10 @@ PrefabInstance:
     - target: {fileID: 52581739253764052, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
       propertyPath: dash_end_str
       value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 52581739253764052, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
+      propertyPath: air_crouched_xz_decay
+      value: 0.94
       objectReference: {fileID: 0}
     - target: {fileID: 6838122281118527589, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
       propertyPath: m_Name

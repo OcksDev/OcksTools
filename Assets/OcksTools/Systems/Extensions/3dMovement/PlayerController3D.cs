@@ -90,7 +90,7 @@ public class PlayerController3D : MonoBehaviour
         jump_bananas--;
         float xzd = xz_decay;
         float airsex = air_xz_decay;
-        if (air_couched && ticks_in_air > 2) airsex = air_crouched_xz_decay;
+        if (air_couched && ticks_in_air > 4) airsex = air_crouched_xz_decay;
         if (CurrentState == MoveState.Sliding && grounded)
         {
             //Debug.Log("Diff: " + (rigid.linearVelocity.y - Vcel.y));
@@ -274,7 +274,8 @@ public class PlayerController3D : MonoBehaviour
             d -= Time.deltaTime;
             yield return new WaitForFixedUpdate();
         }
-        rigid.linearVelocity = start_dash_vel + dir * dash_end_str;
+        start_dash_vel.y = 0f;
+        rigid.linearVelocity = (dir.normalized * start_dash_vel.magnitude) + (dir * dash_end_str / Mathf.Clamp(start_dash_vel.magnitude, 1, 1000));
         SetState(MoveState.Jumping);
     }
 
