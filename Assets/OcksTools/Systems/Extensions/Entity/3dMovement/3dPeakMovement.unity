@@ -1985,6 +1985,7 @@ GameObject:
   - component: {fileID: 1004372533}
   - component: {fileID: 1004372532}
   - component: {fileID: 1004372534}
+  - component: {fileID: 1004372535}
   m_Layer: 0
   m_Name: Gamer
   m_TagString: Untagged
@@ -2031,6 +2032,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f83b4aa201dd3424a9bce946e8b66b49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: OcksTools::InputBuffer
+--- !u!114 &1004372535
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1004372531}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a3f1ea45eeb44c48b2a56ec58272a27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SkillManager
+  AllSkills:
+    List:
+    - Name: DashSkill
+      Duration: 0
+      Cooldown: 1
+      InterUseCooldown: 0
+      MaxStacks: 1
+      StacksPerCooldown: 1
+      StacksPerUse: 1
 --- !u!1 &1010239704
 GameObject:
   m_ObjectHideFlags: 0
@@ -5280,7 +5302,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 52581739253764052, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
       propertyPath: dash_dur
-      value: 0.15
+      value: 0.14
       objectReference: {fileID: 0}
     - target: {fileID: 52581739253764052, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
       propertyPath: dash_str

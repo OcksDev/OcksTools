@@ -14,6 +14,7 @@ public class SkillManager : SingleInstance<SkillManager>
         foreach (var entity in ExtensionForEntityOXSForSkills.SkillsTicking)
         {
             entity.Value.UpdateEntitySkills(Time.deltaTime);
+            Debug.Log("Updated From Update");
         }
     }
 }
@@ -73,12 +74,20 @@ public class EntitySkillMiddleMan : EntitySkillMiddleManReadOnly
         for (int i = Skills.Count - 1; i >= 0; i--)
         {
             Skills[i].Update(time);
+            Debug.Log("Updated From Middleman");
         }
     }
 
     public void Add(Skill eff)
     {
+        if (SkillManager.Instance != null && eff.data == null && SkillManager.Instance.AllSkills.Dict.ContainsKey(eff.Name)) eff.SetDataRefFromManager();
 
+        if (!ExtensionForEntityOXSForSkills.SkillsTicking.ContainsKey(entity))
+        {
+            ExtensionForEntityOXSForSkills.SkillsTicking.Add(entity, this);
+        }
+
+        Skills.Add(eff);
     }
 
     public void Remove(string name)

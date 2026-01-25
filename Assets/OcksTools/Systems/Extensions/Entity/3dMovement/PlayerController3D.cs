@@ -41,11 +41,15 @@ public class PlayerController3D : MonoBehaviour
     [EnumFlags] public RigidbodyConstraints Stationary;
     private float slip = -1;
     private Vector3 InitPos;
+    private EntityOXS entity;
     private void Start()
     {
         rigid = GetComponent<Rigidbody>();
         coll = GetComponent<CapsuleCollider>();
         InitPos = transform.position;
+        entity = new EntityOXS();
+        SkillManager.Instance.AllSkills.Dict["DashSkill"].OnSkillActivation.Append(Dash);
+        entity.Skill().Add(new Skill("DashSkill"));
         ToggleMouseState(true);
     }
 
@@ -244,11 +248,12 @@ public class PlayerController3D : MonoBehaviour
         return Jump();
     }
 
-    public bool Dash()
+    public void Dash(EntityOXS a, Skill b)
     {
+        Debug.Log("Method invoked");
         switch (CurrentState)
         {
-            case MoveState.Dashing: return false;
+            case MoveState.Dashing: return;
             default:
                 Vector3 dir = Vector3.zero;
                 if (InputManager.IsKey("move_forward", "Player")) dir += HeadXZ.forward;
@@ -258,9 +263,11 @@ public class PlayerController3D : MonoBehaviour
                 if (dir.magnitude > 0.5)
                 {
                     StartCoroutine(DashCour(dir.normalized));
-                    return true;
+                    Debug.Log("Cououttt");
+                    OXEvent.SuccessfulHit = true;
+                    return;
                 }
-                return false;
+                return;
         }
     }
     public IEnumerator DashCour(Vector3 dir)
@@ -313,8 +320,9 @@ public class PlayerController3D : MonoBehaviour
         {
             if (InputBuffer.Instance.GetBuffer("Dash"))
             {
-                var a = Dash();
-                if (a)
+                var a = entity.Skill();
+                var b = a.Get("DashSkill");
+                if (b.Activate(entity))
                 {
                     InputBuffer.Instance.RemoveBuffer("Dash");
                 }
