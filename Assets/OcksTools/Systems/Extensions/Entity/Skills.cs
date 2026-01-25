@@ -10,6 +10,8 @@ public class SkillData
     public int MaxStacks = 0;
     public int StacksPerCooldown = 1;
     public int StacksPerUse = 1;
+    public bool DisableAutoCooldown;
+    public bool AllowActivationWhileActive;
     public OXEvent<EntityOXS, Skill> OnSkillActivation = new();
 }
 
@@ -33,16 +35,16 @@ public class Skill
     public void SetDataRefFromManager() { this.data = SkillManager.Instance.AllSkills.Dict[Name]; }
     public void Update(float x)
     {
-        InterUseCooldown = Mathf.Max(InterUseCooldown - x, 0);
         Duration = Mathf.Max(Duration - x, 0);
+        if (Duration == 0 || data.AllowActivationWhileActive) InterUseCooldown = Mathf.Max(InterUseCooldown - x, 0);
+        if (data.DisableAutoCooldown) return;
         Cooldown -= x;
         if (Cooldown <= 0)
         {
             if (Stacks < data.MaxStacks || data.MaxStacks < 1)
             {
                 Cooldown += data.Cooldown;
-                GrantStacks(1);
-                Debug.Log("Granmted actrivated");
+                GrantStacks();
             }
             else
             {
@@ -50,8 +52,9 @@ public class Skill
             }
         }
     }
-    public void GrantStacks(int amnt)
+    public void GrantStacks(int amnt = -1)
     {
+        if (amnt < 1) amnt = data.StacksPerCooldown;
         int max = int.MaxValue;
         if (data.MaxStacks > 0) max = data.MaxStacks;
         Stacks = System.Math.Min(max, Stacks + amnt);
@@ -63,8 +66,15 @@ public class Skill
     public bool Activate(EntityOXS ox)
     {
         if (Stacks < data.StacksPerUse) return false;
-        Debug.Log("actitgi actrivated");
-        TakeStacks(data.StacksPerUse);
-        return data.OnSkillActivation.InvokeWithHitCheck(ox, this);
+        if (Duration > 0 && !data.AllowActivationWhileActive) return false;
+        if (InterUseCooldown > 0) return false;
+        var b = data.OnSkillActivation.InvokeWithHitCheck(ox, this);
+        if (b)
+        {
+            TakeStacks(data.StacksPerUse);
+            InterUseCooldown = data.InterUseCooldown;
+            Duration = data.Duration;
+        }
+        return b;
     }
 }

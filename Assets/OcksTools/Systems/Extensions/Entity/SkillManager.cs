@@ -14,7 +14,6 @@ public class SkillManager : SingleInstance<SkillManager>
         foreach (var entity in ExtensionForEntityOXSForSkills.SkillsTicking)
         {
             entity.Value.UpdateEntitySkills(Time.deltaTime);
-            Debug.Log("Updated From Update");
         }
     }
 }
@@ -74,7 +73,6 @@ public class EntitySkillMiddleMan : EntitySkillMiddleManReadOnly
         for (int i = Skills.Count - 1; i >= 0; i--)
         {
             Skills[i].Update(time);
-            Debug.Log("Updated From Middleman");
         }
     }
 

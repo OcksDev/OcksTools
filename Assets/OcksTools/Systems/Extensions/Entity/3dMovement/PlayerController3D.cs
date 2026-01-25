@@ -250,7 +250,6 @@ public class PlayerController3D : MonoBehaviour
 
     public void Dash(EntityOXS a, Skill b)
     {
-        Debug.Log("Method invoked");
         switch (CurrentState)
         {
             case MoveState.Dashing: return;
@@ -263,10 +262,10 @@ public class PlayerController3D : MonoBehaviour
                 if (dir.magnitude > 0.5)
                 {
                     StartCoroutine(DashCour(dir.normalized));
-                    Debug.Log("Cououttt");
                     OXEvent.SuccessfulHit = true;
                     return;
                 }
+                OXEvent.SuccessfulHit = false;
                 return;
         }
     }
@@ -320,9 +319,7 @@ public class PlayerController3D : MonoBehaviour
         {
             if (InputBuffer.Instance.GetBuffer("Dash"))
             {
-                var a = entity.Skill();
-                var b = a.Get("DashSkill");
-                if (b.Activate(entity))
+                if (entity.Skill().Get("DashSkill").Activate(entity))
                 {
                     InputBuffer.Instance.RemoveBuffer("Dash");
                 }

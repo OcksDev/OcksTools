@@ -4,15 +4,17 @@
 - New Pool Selector Tool
 - 3D Movement Massively Overhauled
   - Added the abiltiy to Slide
-  - Added the abiltiy to Dash
+  - Added the abiltiy to Dash (using the new Skill system from Entity)
+  - Moved to a sub-extension of Entity
   - Also removed the previous 3D stuff from v1.1.4 as it was buggy and not good
 - Achievement Improvements
   - New layered ox event for achievements being granted
 - Entity Improvements
+  - New Skill System, very similar to the revamped Effect System from v1.1.4
   - EffectMiddleMan now has a "Has" method, allowing you to easily check for the existence of a given effect
   - Fixed bug: EffectReadOnly no longer improperly appends clean up method to kill event priority 0
   - Effect Profile has been moved to its own file
-- New Pointer<> Type, literally just to make references without needing to mark as unsafe
+- New Pointer<> Type, literally just to make references
 - Misc
   - New Random Function to create perpendicular vectors in the direction of certain vectors
   - New CompileableDictionaryAlt, allows you to define your own dictionary compiling method
