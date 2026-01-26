@@ -2,12 +2,14 @@
 ------------
    v1.1.5
 - New Pool Selector Tool
+- New Modular Chess System
 - New(ish) OXComponents
   - Moved into general system folder from the GIS
   - Add/Get/Has/Compare/Save/Load methods have been moved to their own object/class
 - 3D Movement Massively Overhauled
   - Added the abiltiy to Slide
   - Added the abiltiy to Dash (using the new Skill system from Entity)
+  - Added the ability to Wallrun (WIP)
   - Moved to a sub-extension of Entity
   - Also removed the previous 3D stuff from v1.1.4 as it was buggy and not good
 - Entity Improvements
