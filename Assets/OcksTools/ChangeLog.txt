@@ -4,7 +4,7 @@
 - New Pool Selector Tool
 - New(ish) OXComponents
   - Moved into general system folder from the GIS
-  - Currently, Add/Get/Has methods still require manual implementation on a per class basis, but hopefully this will be cooler later
+  - Add/Get/Has/Compare/Save/Load methods have been moved to their own object/class
 - 3D Movement Massively Overhauled
   - Added the abiltiy to Slide
   - Added the abiltiy to Dash (using the new Skill system from Entity)

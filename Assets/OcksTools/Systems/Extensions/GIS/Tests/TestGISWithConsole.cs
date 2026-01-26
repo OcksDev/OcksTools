@@ -23,12 +23,12 @@ public class TestGISWithConsole : MonoBehaviour
             var ding = new GISExampleComponent().FromString("69");
             Console.Log(ding.ToString());
             Console.Log("----");
-            item.AddComponent(ding);
+            item.Components.AddComponent(ding);
             string stored = item.ToString();
             Console.Log(stored);
             Console.Log("----");
             var g = new GISItem().StringToItem(stored);
-            var pp = g.GetComponent<GISExampleComponent>();
+            var pp = g.Components.GetComponent<GISExampleComponent>();
             Console.Log(pp.ToString());
             Console.Log("----");
             var a = new GISExampleComponent().FromString("69");

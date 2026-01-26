@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class ComponentLoader
+public static class OXComponentLoader
 {
     [RuntimeInitializeOnLoadMethod]
     public static void InitComps()
@@ -16,10 +16,79 @@ public static class ComponentLoader
     }
 }
 
-public static class ComponentData
+public static class OXComponentData
 {
     public static Dictionary<string, Func<string, OXComponentBase>> ComponentTransformers = new Dictionary<string, Func<string, OXComponentBase>>();
     public static Dictionary<string, string> ClassToIdentifier = new Dictionary<string, string>();
+
+    public static OXComponentBase ComponentConvert(string wish, string data)
+    {
+        if (ComponentTransformers.ContainsKey(wish))
+        {
+            return ComponentTransformers[wish](data);
+        }
+        throw new Exception($"No item data conversion defined for {wish}");
+    }
+}
+
+public class ComponentHolder
+{
+    public void CompFromString(string a)
+    {
+        Components = a.EscapedStringToDictionary().ABDictionaryToCDDictionary((x, y) => x, (x, y) => OXComponentData.ComponentConvert(x, y));
+    }
+    public string CompToString()
+    {
+        return Components.ABDictionaryToCDDictionary((x) => x, (x) => x.GetString()).EscapedDictionaryToString();
+    }
+
+
+    public Dictionary<string, OXComponentBase> Components = new Dictionary<string, OXComponentBase>();
+    public void AddComponent(OXComponentBase cum)
+    {
+        Components.Add(cum.GetUniqueIdentifier(), cum);
+    }
+    public T GetComponent<T>() where T : OXComponentBase
+    {
+        var s = OXComponentData.ClassToIdentifier[typeof(T).Name];
+        if (!Components.ContainsKey(s)) return null;
+        return (T)Components[s];
+    }
+    public bool HasComponent<T>() where T : OXComponentBase
+    {
+        var s = OXComponentData.ClassToIdentifier[typeof(T).Name];
+        return Components.ContainsKey(s);
+    }
+    public bool HasComponent(string s)
+    {
+        return Components.ContainsKey(s);
+    }
+    public bool Compare(ComponentHolder sexnut)
+    {
+        bool comp = true;
+        if (sexnut.Components.Count != Components.Count) comp = false;
+        else
+        {
+            foreach (var c in Components)
+            {
+                if (!sexnut.Components.ContainsKey(c.Key))
+                {
+                    comp = false;
+                    break;
+                }
+                else
+                {
+                    if (!c.Value.Compare(sexnut.Components[c.Key]))
+                    {
+                        comp = false;
+                        break;
+                    }
+                }
+            }
+        }
+        return comp;
+    }
+
 }
 
 
@@ -61,8 +130,8 @@ public abstract class OXComponent<T> : OXComponentBase where T : OXComponent<T>
 {
     public override void Init()
     {
-        ComponentData.ComponentTransformers.Add(GetUniqueIdentifier(), FromString);
-        ComponentData.ClassToIdentifier.Add(typeof(T).Name, GetUniqueIdentifier());
+        OXComponentData.ComponentTransformers.Add(GetUniqueIdentifier(), FromString);
+        OXComponentData.ClassToIdentifier.Add(typeof(T).Name, GetUniqueIdentifier());
     }
     /// <summary>
     /// Determines if this component is equal to another component.

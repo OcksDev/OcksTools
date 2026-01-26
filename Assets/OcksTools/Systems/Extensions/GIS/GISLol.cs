@@ -114,7 +114,7 @@ public class GISItem
     public int Amount;
     public GISContainer Container;
     public List<GISContainer> Interacted_Containers = new List<GISContainer>();
-    public Dictionary<string, OXComponentBase> Components = new Dictionary<string, OXComponentBase>();
+    public ComponentHolder Components = new ComponentHolder();
     public GISItem()
     {
         setdefaultvals();
@@ -158,26 +158,7 @@ public class GISItem
 
         if (!usebase && !comp)
         {
-            if (sexnut.Components.Count != Components.Count) comp = false;
-            else
-            {
-                foreach (var c in Components)
-                {
-                    if (!sexnut.Components.ContainsKey(c.Key))
-                    {
-                        comp = false;
-                        break;
-                    }
-                    else
-                    {
-                        if (!c.Value.Compare(sexnut.Components[c.Key]))
-                        {
-                            comp = false;
-                            break;
-                        }
-                    }
-                }
-            }
+            comp = Components.Compare(sexnut.Components);
         }
         return comp;
     }
@@ -221,7 +202,7 @@ public class GISItem
         Data["Count"] = Amount.ToString();
         Debug.Log($"{Name} -  {Amount}");
         //cursed ass line of code lol
-        Data["Extra"] = Components.ABDictionaryToCDDictionary((x) => x, (x) => x.GetString()).EscapedDictionaryToString();
+        Data["Extra"] = Components.CompToString();
 
         Dictionary<string, string> bb = def.MergeDictionary(Data);
 
@@ -247,36 +228,9 @@ public class GISItem
         if (Name != "Empty") Amount = int.Parse(Data["Count"]);
         else Amount = 0;
 
-        Components = Data["Extra"].EscapedStringToDictionary().ABDictionaryToCDDictionary((x, y) => x, (x, y) => ItemDataConvert(x, y));
+        Components.CompFromString(Data["Extra"]);
 
         return this;
-    }
-    public static OXComponentBase ItemDataConvert(string wish, string data)
-    {
-        if (ComponentData.ComponentTransformers.ContainsKey(wish))
-        {
-            return ComponentData.ComponentTransformers[wish](data);
-        }
-        throw new Exception($"No item data conversion defined for {wish}");
-    }
-    public void AddComponent(OXComponentBase cum)
-    {
-        Components.Add(cum.GetUniqueIdentifier(), cum);
-    }
-    public T GetComponent<T>() where T : OXComponentBase
-    {
-        var s = ComponentData.ClassToIdentifier[typeof(T).Name];
-        if (!Components.ContainsKey(s)) return null;
-        return (T)Components[s];
-    }
-    public bool HasComponent<T>() where T : OXComponentBase
-    {
-        var s = ComponentData.ClassToIdentifier[typeof(T).Name];
-        return Components.ContainsKey(s);
-    }
-    public bool HasComponent(string s)
-    {
-        return Components.ContainsKey(s);
     }
 }
 
