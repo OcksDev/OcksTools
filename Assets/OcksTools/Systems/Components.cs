@@ -35,6 +35,7 @@ public class ComponentHolder
 {
     public void CompFromString(string a)
     {
+        //cursed ass line of code lol
         Components = a.EscapedStringToDictionary().ABDictionaryToCDDictionary((x, y) => x, (x, y) => OXComponentData.ComponentConvert(x, y));
     }
     public string CompToString()

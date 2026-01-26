@@ -63,7 +63,7 @@ public class GISLol : SingleInstance<GISLol>
             foreach (var a in l.GetDict("Items"))
             {
                 ItemDict[a.Key].SetLangData(a.Value);
-                Debug.Log(ItemDict[a.Key].DisplayName + ": " + ItemDict[a.Key].Description);
+                //Debug.Log(ItemDict[a.Key].DisplayName + ": " + ItemDict[a.Key].Description);
             }
         }
     }
@@ -156,7 +156,7 @@ public class GISItem
          */
         bool comp = Name == sexnut.Name;
 
-        if (!usebase && !comp)
+        if (!usebase && comp)
         {
             comp = Components.Compare(sexnut.Components);
         }
@@ -200,8 +200,7 @@ public class GISItem
 
         Data["Index"] = Name.ToString();
         Data["Count"] = Amount.ToString();
-        Debug.Log($"{Name} -  {Amount}");
-        //cursed ass line of code lol
+
         Data["Extra"] = Components.CompToString();
 
         Dictionary<string, string> bb = def.MergeDictionary(Data);

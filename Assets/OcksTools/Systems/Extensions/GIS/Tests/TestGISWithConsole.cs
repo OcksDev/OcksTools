@@ -5,15 +5,12 @@ public class TestGISWithConsole : MonoBehaviour
 {
     private void Start()
     {
-        GlobalEvent.Append("Console", GISTestCommands);
-        Debug.Log("Ranstart");
+        ConsoleCommandBuilder.Build(() =>
+        {
+            ConsoleLol.Instance.Add(new OXCommand("gistest").Action(ItemConversion));
+        });
     }
 
-    public void GISTestCommands()
-    {
-        ConsoleLol.Instance.Add(new OXCommand("gistest").Action(ItemConversion));
-        Debug.Log("ADDED");
-    }
 
     public void ItemConversion()
     {
