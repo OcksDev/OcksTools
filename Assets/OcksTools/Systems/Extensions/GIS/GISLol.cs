@@ -10,10 +10,6 @@ public class GISLol : SingleInstance<GISLol>
     public GameObject MouseFollower;
     public List<GISItem_Data> Items = new List<GISItem_Data>();
     public Dictionary<string, GISItem_Data> ItemDict = new Dictionary<string, GISItem_Data>();
-
-    public Dictionary<string, Func<string, GISItemComponentBase>> ComponentTransformers = new Dictionary<string, Func<string, GISItemComponentBase>>();
-    public Dictionary<string, string> ClassToIdentifier = new Dictionary<string, string>();
-
     public Dictionary<string, GISContainer> All_Containers = new Dictionary<string, GISContainer>();
 
     private bool nono = false;
@@ -118,7 +114,7 @@ public class GISItem
     public int Amount;
     public GISContainer Container;
     public List<GISContainer> Interacted_Containers = new List<GISContainer>();
-    public Dictionary<string, GISItemComponentBase> Components = new Dictionary<string, GISItemComponentBase>();
+    public Dictionary<string, OXComponentBase> Components = new Dictionary<string, OXComponentBase>();
     public GISItem()
     {
         setdefaultvals();
@@ -255,21 +251,32 @@ public class GISItem
 
         return this;
     }
-    public static GISItemComponentBase ItemDataConvert(string wish, string data)
+    public static OXComponentBase ItemDataConvert(string wish, string data)
     {
-        if (GISLol.Instance.ComponentTransformers.ContainsKey(wish))
+        if (ComponentData.ComponentTransformers.ContainsKey(wish))
         {
-            return GISLol.Instance.ComponentTransformers[wish](data);
+            return ComponentData.ComponentTransformers[wish](data);
         }
         throw new Exception($"No item data conversion defined for {wish}");
     }
-    public void AddComponent(GISItemComponentBase cum)
+    public void AddComponent(OXComponentBase cum)
     {
-        Components.Add(cum.GetIdentifier(), cum);
+        Components.Add(cum.GetUniqueIdentifier(), cum);
     }
-    public T GetComponent<T>() where T : GISItemComponentBase
+    public T GetComponent<T>() where T : OXComponentBase
     {
-        return (T)Components[GISLol.Instance.ClassToIdentifier[typeof(T).Name]];
+        var s = ComponentData.ClassToIdentifier[typeof(T).Name];
+        if (!Components.ContainsKey(s)) return null;
+        return (T)Components[s];
+    }
+    public bool HasComponent<T>() where T : OXComponentBase
+    {
+        var s = ComponentData.ClassToIdentifier[typeof(T).Name];
+        return Components.ContainsKey(s);
+    }
+    public bool HasComponent(string s)
+    {
+        return Components.ContainsKey(s);
     }
 }
 
@@ -339,57 +346,4 @@ public class GISDisplayData
         Images = new Sprite[1] { GISLol.Instance.ItemDict[gissy.Name].Sprite };
         Count = gissy.Amount > 0 ? "x" + gissy.Amount : "";
     }
-}
-
-/// <summary>
-/// Components have to be initialized in order to register their FromString functions.
-/// </summary>
-public abstract class GISItemComponentBase
-{
-    /// <summary>
-    /// Unique identifier for this component type. No two components should share the same identifier.
-    /// </summary>
-    public abstract string GetIdentifier();
-    /// <summary>
-    /// Converts the current component instance into its string representation for serialization.
-    /// </summary>
-    public abstract string GetString();
-
-    /// <summary>
-    /// Creates a new instance by parsing the specified string representation.
-    /// IT DOES NOT set any values on the current instance!
-    /// </summary>
-    public abstract GISItemComponentBase FromString(string data);
-
-    /// <summary>
-    /// Determines if this component is equal to another component.
-    /// </summary>
-    public bool Compare(GISItemComponentBase data)
-    {
-        if (GetIdentifier() != data.GetIdentifier()) return false;
-        return Compare2(data);
-    }
-    public abstract bool Compare2(GISItemComponentBase data);
-}
-/// <summary>
-/// Components have to be initialized in order to register their FromString functions.
-/// </summary>
-public abstract class GISItemComponent<T> : GISItemComponentBase where T : GISItemComponent<T>
-{
-    public void Init()
-    {
-        GISLol.Instance.ComponentTransformers.Add(GetIdentifier(), FromString);
-        GISLol.Instance.ClassToIdentifier.Add(typeof(T).Name, GetIdentifier());
-    }
-    /// <summary>
-    /// Determines if this component is equal to another component.
-    /// </summary>
-    public override bool Compare2(GISItemComponentBase data)
-    {
-        return EqualsSpecific((T)data);
-    }
-    /// <summary>
-    /// Determines if this component is specifically equal to another component of the same type.
-    /// </summary>
-    public abstract bool EqualsSpecific(T data);
 }

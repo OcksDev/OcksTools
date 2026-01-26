@@ -1,22 +1,11 @@
-using UnityEngine;
-
-public class ExampleComponents : MonoBehaviour
-{
-    private void Start()
-    {
-        new GISExampleComponent().Init();
-        new GISExampleComponentAlt().Init();
-    }
-}
-
-public class GISExampleComponent : GISItemComponent<GISExampleComponent>
+public class GISExampleComponent : OXComponent<GISExampleComponent>
 {
     public int examplevalue;
-    public override string GetIdentifier()
+    public override string GetUniqueIdentifier()
     {
         return "Example";
     }
-    public override GISItemComponentBase FromString(string data)
+    public override OXComponentBase FromString(string data)
     {
         var a = new GISExampleComponent();
         a.examplevalue = int.Parse(data);
@@ -38,14 +27,14 @@ public class GISExampleComponent : GISItemComponent<GISExampleComponent>
     }
 }
 
-public class GISExampleComponentAlt : GISItemComponent<GISExampleComponentAlt>
+public class GISExampleComponentAlt : OXComponent<GISExampleComponentAlt>
 {
     public string examplevalue;
-    public override string GetIdentifier()
+    public override string GetUniqueIdentifier()
     {
         return "ExampleAlt";
     }
-    public override GISItemComponentBase FromString(string data)
+    public override OXComponentBase FromString(string data)
     {
         var a = new GISExampleComponentAlt();
         a.examplevalue = data;
