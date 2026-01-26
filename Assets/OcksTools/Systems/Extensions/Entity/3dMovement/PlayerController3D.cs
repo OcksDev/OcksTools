@@ -8,15 +8,17 @@ public class PlayerController3D : MonoBehaviour
     public float player_height = 2;
     public float player_width = 1;
 
-    public float wall_cameratilt = 1;
     [ReadOnly]
     public Vector3 Vcel;
     private Rigidbody rigid;
     private CapsuleCollider coll;
     public AllowedMovements Movements;
     public MoveState CurrentState = MoveState.Neutral;
+    public float mouse_sense = 1;
     public float move_speed = 2;
     public float jump_str = 2;
+    public float grav_str = 2;
+    public float air_turn = 0.05f;
     public float slip_decay = 0.8f;
     public float xz_decay = 0.9f;
     public float slide_decay_steep = 0.9f;
@@ -25,9 +27,6 @@ public class PlayerController3D : MonoBehaviour
     public float slide_min_time = 0.5f;
     public float air_xz_decay = 0.9f;
     public float air_crouched_xz_decay = 0.9f;
-    public float mouse_sense = 1;
-    public float grav_str = 2;
-    public float air_turn = 0.05f;
     public float max_floor_angle = 45f;
     public float slide_steep_angle = 10f;
     public float fast_punish = 0.9f;
@@ -35,6 +34,10 @@ public class PlayerController3D : MonoBehaviour
     public float dash_str = 20;
     public float dash_dur = 2;
     public float dash_end_str = 2;
+    public float wall_grav_mod = 0.5f;
+    public float wall_up_str = 0.5f;
+    public float wall_velocity_add = 0.5f;
+    public float wall_orig_up_perc = 0.5f;
     public Transform HeadY;
     public Transform HeadXZ;
     [EnumFlags] public RigidbodyConstraints Normal;
@@ -133,6 +136,10 @@ public class PlayerController3D : MonoBehaviour
         if (InputManager.IsKey("move_right", "Player")) dir += HeadY.right;
         if (InputManager.IsKey("move_left", "Player")) dir += HeadY.right * -1;
         move_dir = dir;
+        if (allow_movement_inputs)
+        {
+
+        }
         if (grounded)
         {
             if (dir.magnitude > 0.5f)
@@ -143,7 +150,7 @@ public class PlayerController3D : MonoBehaviour
         }
         else
         {
-            if (dir.magnitude > 0.5f)
+            if (dir.magnitude > 0.5f && allow_movement_inputs)
             {
                 dir.Normalize();
                 var xzy = rigid.linearVelocity;
@@ -187,6 +194,14 @@ public class PlayerController3D : MonoBehaviour
         {
             bgalls += RandomFunctions.PerpendicularTowardDirection(ground_normal, dir) * move_speed * Time.deltaTime * 20;
         }
+
+        float grav_str = this.grav_str;
+        if (CurrentState == MoveState.WallRunning)
+        {
+            grav_str *= wall_grav_mod;
+        }
+
+
         if (CurrentState == MoveState.Sliding)
         {
             //float str = 1 - Vector3.Dot(ground_normal, Vector3.up);
@@ -218,6 +233,68 @@ public class PlayerController3D : MonoBehaviour
                 rigid.constraints = Normal;
             }
         }*/
+
+        switch (CurrentState)
+        {
+            case MoveState.WallRunning:
+            case MoveState.Jumping:
+                var a = Physics.RaycastAll(transform.position, HeadY.right, (player_width / 2) + 0.15f);
+                var aa = Physics.RaycastAll(transform.position, HeadY.right * -1, (player_width / 2) + 0.15f);
+                bool riding = false;
+                RaycastHit hit = default;
+                Action<RaycastHit[]> bana = (x) =>
+                {
+                    foreach (var dd in x)
+                    {
+                        if (dd.collider.isTrigger) continue;
+                        if (dd.collider.gameObject == gameObject) continue;
+                        if (dd.point == Vector3.zero) continue;
+                        riding = true;
+                        hit = dd;
+                        break;
+                    }
+                };
+                if (Vector3.Angle(rigid.linearVelocity, HeadXZ.forward) < 45)
+                {
+                    if (!riding) bana(a);
+                    if (!riding) bana(aa);
+                }
+                if (riding)
+                {
+                    switch (CurrentState)
+                    {
+                        case MoveState.WallRunning:
+                            break;
+                        case MoveState.Jumping:
+                            SetState(MoveState.WallRunning);
+                            var d = rigid.linearVelocity;
+                            d.y = wall_up_str + (d.y * wall_orig_up_perc);
+                            var xz = d;
+                            xz.y = 0;
+                            var newdir = hit.normal;
+                            newdir.y = 0;
+                            newdir = RandomFunctions.PerpendicularTowardDirection(newdir, xz) * (xz.magnitude + wall_velocity_add);
+                            d.x = newdir.x;
+                            d.z = newdir.z;
+                            rigid.linearVelocity = d;
+                            break;
+
+                    }
+                }
+                else
+                {
+
+                    switch (CurrentState)
+                    {
+                        case MoveState.WallRunning:
+                            SetState(MoveState.Jumping);
+                            break;
+
+                    }
+                }
+                break;
+        }
+
         Vcel = rigid.linearVelocity;
     }
     public bool Jump()
@@ -251,7 +328,7 @@ public class PlayerController3D : MonoBehaviour
 
     public bool JumpChecked()
     {
-        if (!grounded) return false;
+        if (!grounded && !override_allow_jump) return false;
         return Jump();
     }
 
@@ -458,11 +535,13 @@ public class PlayerController3D : MonoBehaviour
     public bool grounded = false;
     [ReadOnly]
     public bool allow_movement_inputs = false;
+    public bool override_allow_jump = false;
     public void SetState(MoveState sta = MoveState.Neutral)
     {
         CurrentState = sta;
         grounded = false;
         allow_movement_inputs = true;
+        override_allow_jump = false;
         switch (sta)
         {
             case MoveState.Neutral:
@@ -474,6 +553,8 @@ public class PlayerController3D : MonoBehaviour
                 break;
             case MoveState.WallRunning:
                 allow_movement_inputs = false;
+                ground_normal = Vector3.up;
+                override_allow_jump = true;
                 break;
             case MoveState.Jumping:
                 ground_normal = Vector3.up;
