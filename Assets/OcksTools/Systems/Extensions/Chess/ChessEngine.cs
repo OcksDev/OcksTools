@@ -8,6 +8,10 @@ public class ChessEngine
     {
         White,
         Black,
+        Red, // 4-player white equiv
+        Blue, // 4-player left
+        Yellow, // 4-player black equiv
+        Green, // 4-player right
     }
 }
 
@@ -54,6 +58,29 @@ public abstract class ChessPieceBase
     public ChessTeam Team;
     public List<ChessBoardVector> MoveVectors = new List<ChessBoardVector>();
     public abstract void Initialize();
+
+    public Vector2Int TeamRotation(Vector2Int pos)
+    {
+        if (Team == ChessTeam.Black) return -pos;
+        if (Team == ChessTeam.Yellow) return -pos;
+        if (Team == ChessTeam.Blue)
+        {
+            var h = pos.x;
+            pos.x = pos.y;
+            pos.y = -h;
+            return pos;
+        }
+        if (Team == ChessTeam.Green)
+        {
+            var h = pos.x;
+            pos.x = -pos.y;
+            pos.y = h;
+            return pos;
+        }
+        return pos;
+    }
+
+
     public virtual List<Vector2Int> GetAllValidMoves(BoardState state)
     {
         List<Vector2Int> fin = new List<Vector2Int>();
@@ -63,8 +90,9 @@ public abstract class ChessPieceBase
             var d = v.TraverseVector();
             foreach (var p in d)
             {
-                if (state.IsOccupied(p)) break;
-                if (!fin.Contains(p)) fin.Add(p);
+                var p2 = Position + TeamRotation(p);
+                if (state.IsOccupied(p2)) break;
+                if (!fin.Contains(p2)) fin.Add(p2);
             }
         }
         return fin;
@@ -78,9 +106,10 @@ public abstract class ChessPieceBase
             var d = v.TraverseVector();
             foreach (var p in d)
             {
-                if (state.CanPieceTakeAtPos(this, p) && !fin.Contains(p))
+                var p2 = Position + TeamRotation(p);
+                if (state.CanPieceTakeAtPos(this, p2) && !fin.Contains(p2))
                 {
-                    fin.Add(p);
+                    fin.Add(p2);
                     break;
                 }
             }

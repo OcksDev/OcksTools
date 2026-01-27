@@ -36,12 +36,11 @@ public class Chess_Pawn : ChessPieceBase
         base.Capture(nerd, pos);
     }
 
-    /* implement en pissant later
     public override bool CanBeCapturedByAt(BoardState state, ChessPieceBase nerd, Vector2Int pos)
     {
-        if(has_double_push && moves_made == 0 && nerd.Team != Team && )
+        if (nerd.Name == "Pawn" && has_double_push && moves_made == 1 && nerd.Team != Team && pos == Position + TeamRotation(Vector2Int.down)) return true;
         return base.CanBeCapturedByAt(state, nerd, pos);
-    }*/
+    }
 }
 
 public class Chess_Bishop : ChessPieceBase
