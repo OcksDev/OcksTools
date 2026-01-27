@@ -38,6 +38,7 @@ public class PlayerController3D : MonoBehaviour
     public float wall_up_str = 0.5f;
     public float wall_velocity_add = 0.5f;
     public float wall_orig_up_perc = 0.5f;
+    public float wall_leave_force = 10f;
     public Transform HeadY;
     public Transform HeadXZ;
     [EnumFlags] public RigidbodyConstraints Normal;
@@ -59,6 +60,10 @@ public class PlayerController3D : MonoBehaviour
     private int jump_bananas = 0;
     private int ticks_on_ground = 0;
     private int ticks_in_air = 0;
+    private int ticks_wall_cooldown = 0;
+    private int wall_shungle = 0;
+    private int wall_cur_shungle = 0;
+    private float wall_shungle_consecutive = 1;
     private bool air_couched = false;
 
     public void ApplyVelocity(Vector3 force)
@@ -238,11 +243,20 @@ public class PlayerController3D : MonoBehaviour
         {
             case MoveState.WallRunning:
             case MoveState.Jumping:
+                if (wall_shungle == -1)
+                {
+                    Debug.Log("Blocking RIGHT");
+                }
+                else if (wall_shungle == 1)
+                {
+                    Debug.Log("Blocking LEFT");
+                }
                 var a = Physics.RaycastAll(transform.position, HeadY.right, (player_width / 2) + 0.15f);
                 var aa = Physics.RaycastAll(transform.position, HeadY.right * -1, (player_width / 2) + 0.15f);
                 bool riding = false;
                 RaycastHit hit = default;
-                Action<RaycastHit[]> bana = (x) =>
+                bool boosteleibibi = false;
+                Action<RaycastHit[], int> bana = (x, y) =>
                 {
                     foreach (var dd in x)
                     {
@@ -251,29 +265,49 @@ public class PlayerController3D : MonoBehaviour
                         if (dd.point == Vector3.zero) continue;
                         riding = true;
                         hit = dd;
+                        boosteleibibi = y != wall_cur_shungle;
+                        wall_cur_shungle = y;
+                        if (!boosteleibibi)
+                        {
+                            if (CurrentState != MoveState.WallRunning) wall_shungle_consecutive *= 2f;
+                        }
+                        else wall_shungle_consecutive = 1;
                         break;
                     }
                 };
-                if (Vector3.Angle(rigid.linearVelocity, HeadXZ.forward) < 45)
+
+                var d = rigid.linearVelocity;
+                var xz = d;
+                xz.y = 0;
+                if (Vector3.Angle(xz, HeadXZ.forward) < 45)
                 {
-                    if (!riding) bana(a);
-                    if (!riding) bana(aa);
+                    if (!riding && wall_shungle >= 0) bana(a, -1);
+                    if (!riding && wall_shungle <= 0) bana(aa, 1);
+                }
+                if (ticks_wall_cooldown <= 0)
+                {
+                    wall_shungle = 0;
+                }
+                else
+                {
+                    ticks_wall_cooldown--;
                 }
                 if (riding)
                 {
+                    wall_normal = hit.normal;
                     switch (CurrentState)
                     {
                         case MoveState.WallRunning:
                             break;
                         case MoveState.Jumping:
                             SetState(MoveState.WallRunning);
-                            var d = rigid.linearVelocity;
-                            d.y = wall_up_str + (d.y * wall_orig_up_perc);
-                            var xz = d;
-                            xz.y = 0;
-                            var newdir = hit.normal;
+                            if (boosteleibibi) d.y = wall_up_str + (d.y * wall_orig_up_perc);
+                            else d.y = (d.y * wall_orig_up_perc);
+                            var newdir = wall_normal;
                             newdir.y = 0;
-                            newdir = RandomFunctions.PerpendicularTowardDirection(newdir, xz) * (xz.magnitude + wall_velocity_add);
+                            newdir = RandomFunctions.PerpendicularTowardDirection(newdir, xz);
+                            if (boosteleibibi) newdir *= (xz.magnitude + wall_velocity_add / Mathf.Clamp(xz.magnitude, 1, 1000) * 10);
+                            else newdir *= xz.magnitude;
                             d.x = newdir.x;
                             d.z = newdir.z;
                             rigid.linearVelocity = d;
@@ -287,6 +321,8 @@ public class PlayerController3D : MonoBehaviour
                     switch (CurrentState)
                     {
                         case MoveState.WallRunning:
+                            wall_shungle = wall_cur_shungle;
+                            ticks_wall_cooldown = 10;
                             SetState(MoveState.Jumping);
                             break;
 
@@ -308,6 +344,14 @@ public class PlayerController3D : MonoBehaviour
             case MoveState.Sliding:
                 dd.y = 0;
                 dd += ground_normal * jump_str;
+                break;
+            case MoveState.WallRunning:
+                wall_shungle = wall_cur_shungle;
+                ticks_wall_cooldown = 5;
+                var d = wall_normal;
+                d.y = 0;
+                dd += d.normalized * wall_leave_force;
+                dd.y = jump_str / wall_shungle_consecutive;
                 break;
             default:
                 dd.y = jump_str;
@@ -365,7 +409,7 @@ public class PlayerController3D : MonoBehaviour
             yield return new WaitForFixedUpdate();
         }
         start_dash_vel.y = 0f;
-        rigid.linearVelocity = (dir.normalized * start_dash_vel.magnitude) + (dir * dash_end_str / Mathf.Clamp(start_dash_vel.magnitude, 1, 1000));
+        rigid.linearVelocity = (dir.normalized * start_dash_vel.magnitude) + (dir * dash_end_str / Mathf.Clamp(start_dash_vel.magnitude, 2, 1000));
         SetState(MoveState.Jumping);
     }
 
@@ -500,6 +544,7 @@ public class PlayerController3D : MonoBehaviour
         Dashing,
     }
     private Vector3 ground_normal = Vector3.zero;
+    private Vector3 wall_normal = Vector3.zero;
     public void CollisionGroundCheck()
     {
         if (jump_bananas >= 0)
@@ -521,6 +566,8 @@ public class PlayerController3D : MonoBehaviour
             if (dd.point != Vector3.zero && Vector3.Angle(dd.normal, Vector3.up) <= max_floor_angle)
             {
                 ground_normal = dd.normal;
+                wall_cur_shungle = 0;
+                wall_shungle_consecutive = 1;
                 if (CurrentState != MoveState.Sliding) SetState();
                 return;
             }
