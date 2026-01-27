@@ -17,7 +17,7 @@ public class ChessEngine
 
 public class BoardState
 {
-    public List<ChessPieceBase> CurerentPieces = new List<ChessPieceBase>();
+    public List<ChessPieceBase> CurrentPieces = new List<ChessPieceBase>();
     public List<MultiRef<int, string>> History = new List<MultiRef<int, string>>();
     public int CurrentTurn = 0;
     public void AddPiece(ChessPieceBase nerd, Vector2Int pos)
@@ -33,15 +33,45 @@ public class BoardState
     }
     public bool IsOccupied(Vector2Int pos)
     {
-        foreach (var piece in CurerentPieces)
+        foreach (var piece in CurrentPieces)
         {
             if (piece.CanBlockMovementAt(this, pos)) return true;
         }
         return false;
     }
+    public bool IsGameInCheck()
+    {
+        return false;
+    }
+    public ChessPieceBase GetPieceAtPos(Vector2Int pos)
+    {
+        foreach (var piece in CurrentPieces)
+        {
+            if (piece.Position == pos) return piece;
+        }
+        return null;
+    }
+    public void SetPieceAtPos(ChessPieceBase newpiece, Vector2Int pos)
+    {
+        var existing = GetPieceAtPos(pos);
+        if (existing != null)
+        {
+            CurrentPieces.Remove(existing);
+        }
+        AddPiece(newpiece, pos);
+
+    }
+    public void MovePiece(ChessPieceBase piece, Vector2Int newpos)
+    {
+        piece.MoveTo(this, newpos);
+    }
+    public void CapturePiece(ChessPieceBase piece, ChessPieceBase takes, Vector2Int newpos)
+    {
+        piece.Capture(this, takes, newpos);
+    }
     public bool CanPieceTakeAtPos(ChessPieceBase piece, Vector2Int pos)
     {
-        foreach (var p in CurerentPieces)
+        foreach (var p in CurrentPieces)
         {
             if (p.CanBeCapturedByAt(this, piece, pos)) return true;
         }
@@ -54,9 +84,14 @@ public class BoardState
 public abstract class ChessPieceBase
 {
     public string Name = "<Unset>";
+    public int MovesMade = 0;
+    public int TurnLastMovedOn = 0;
     public Vector2Int Position;
     public ChessTeam Team;
     public List<ChessBoardVector> MoveVectors = new List<ChessBoardVector>();
+    /// <summary>
+    /// Sets the unique name and move vectors
+    /// </summary>
     public abstract void Initialize();
 
     public Vector2Int TeamRotation(Vector2Int pos)
@@ -81,7 +116,7 @@ public abstract class ChessPieceBase
     }
 
 
-    public virtual List<Vector2Int> GetAllValidMoves(BoardState state)
+    public virtual List<Vector2Int> GetAllValidMoves(BoardState state, Vector2Int Position)
     {
         List<Vector2Int> fin = new List<Vector2Int>();
         foreach (ChessBoardVector v in MoveVectors)
@@ -97,7 +132,7 @@ public abstract class ChessPieceBase
         }
         return fin;
     }
-    public virtual List<Vector2Int> GetAllValidCaptures(BoardState state)
+    public virtual List<Vector2Int> GetAllValidCaptures(BoardState state, Vector2Int Position)
     {
         List<Vector2Int> fin = new List<Vector2Int>();
         foreach (ChessBoardVector v in MoveVectors)
@@ -118,11 +153,19 @@ public abstract class ChessPieceBase
     }
     public virtual bool CanMoveTo(BoardState state, Vector2Int pos)
     {
-        return GetAllValidMoves(state).Contains(pos);
+        return CanMoveToFrom(state, pos, Position);
     }
     public virtual bool CanCaptureAt(BoardState state, Vector2Int pos)
     {
-        return GetAllValidCaptures(state).Contains(pos);
+        return CanCaptureAtFrom(state, pos, Position);
+    }
+    public virtual bool CanMoveToFrom(BoardState state, Vector2Int pos, Vector2Int Position)
+    {
+        return GetAllValidMoves(state, Position).Contains(pos);
+    }
+    public virtual bool CanCaptureAtFrom(BoardState state, Vector2Int pos, Vector2Int Position)
+    {
+        return GetAllValidCaptures(state, Position).Contains(pos);
     }
     public virtual bool CanBlockMovementAt(BoardState state, Vector2Int pos)
     {
@@ -132,13 +175,16 @@ public abstract class ChessPieceBase
     {
         return nerd.Team != Team && pos == Position;
     }
-    public virtual void MoveTo(Vector2Int pos)
+    public virtual void MoveTo(BoardState state, Vector2Int pos)
     {
+        MovesMade++;
         Position = pos;
     }
-    public virtual void Capture(ChessPieceBase nerd, Vector2Int pos)
+    public virtual void Capture(BoardState state, ChessPieceBase nerd, Vector2Int pos)
     {
+        MovesMade++;
         Position = pos;
+        state.CurrentPieces.Remove(nerd);
     }
     public override string ToString()
     {
@@ -149,6 +195,12 @@ public abstract class ChessPieceBase
             { "t", Team.ToString() }
         };
         return b.DictionaryToString();
+    }
+
+    public ChessPieceBase SetTeam(ChessTeam t)
+    {
+        Team = t;
+        return this;
     }
 }
 
