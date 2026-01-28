@@ -33,7 +33,7 @@ blade
 edge
 eat
 smell
-Byte
+byte
 potato
 cookie
 pizza
@@ -55,6 +55,9 @@ squid
 equal
 tender
 chicken
+sheep
+horse
+turtle
 pig
 reptile
 imposter
@@ -82,3 +85,6 @@ melon
 nugget
 mcdonald
 inspector
+handstand
+bend
+bucket

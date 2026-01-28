@@ -13,7 +13,7 @@ public class OXGenerator_Username : MonoBehaviour
     [Button]
     public void GenerateTest()
     {
-        Debug.Log(Pull(new GenProfile().MinLength(10)));
+        Debug.Log(Pull(new GenProfile().MinLength(10).MaxLength(15)));
     }
 
 
@@ -249,12 +249,12 @@ public class OXGenerator_Username : MonoBehaviour
     private CapStyle GetCap()
     {
         var a = new WeightedAverage();
-        a.Add(0.2f, CapStyle.snake_case);
+        a.Add(0.4f, CapStyle.snake_case);
         a.Add(1f, CapStyle.snakenounderscore);
         a.Add(1.75f, CapStyle.Firstonly);
         a.Add(3f, CapStyle.Pascel);
-        a.Add(0.5f, CapStyle.SCREAMINGNODIFF);
-        a.Add(0.2f, CapStyle.SCREAMING_UNDERSCORE);
+        a.Add(0.2f, CapStyle.SCREAMINGNODIFF);
+        a.Add(0.1f, CapStyle.SCREAMING_UNDERSCORE);
         if (pp.allow_spaces)
         {
             a.Add(0.1f, CapStyle.s_p_a_c_e_d);
