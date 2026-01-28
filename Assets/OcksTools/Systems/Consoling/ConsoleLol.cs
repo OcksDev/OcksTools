@@ -317,6 +317,12 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
         var a = Converter.StringToList(e, " ");
         bestmatch = null;
         string besttext = "";
+
+        if (e == null || e == "")
+        {
+            if (!ReturnInstead) ConsoleObjectRef.predictr.text = "";
+            return "";
+        }
         foreach (var c in a)
         {
             if (c == "")

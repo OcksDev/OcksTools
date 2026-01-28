@@ -117,9 +117,10 @@ public static class Converter
 
     public static List<string> StringToList(this string eee, string split = ", ")
     {
-        return eee.Split(split).ToList();
+        var d = eee.Split(split).ToList();
+        if (d.Count == 1 && d[0] == "") return new List<string>();
+        return d;
     }
-
     public static Dictionary<string, string> ABDictionaryToStringDictionary<A, B>(this Dictionary<A, B> dic)
     {
         var t = new Dictionary<string, string>();
@@ -222,6 +223,7 @@ public static class Converter
         {
             dupe[i] = UnescapeString(dupe[i], esc);
         }
+        if (dupe.Count == 1 && dupe[0] == "") return new List<string>();
         return dupe;
     }
 

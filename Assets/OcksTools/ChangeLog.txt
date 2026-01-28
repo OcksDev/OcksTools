@@ -24,6 +24,8 @@
   - EntityEffectMiddleMan renamed to EffectContainer
 - Achievement Improvements
   - New layered ox event for achievements being granted
+  - CompileDict now accounts for non-saved achievements
+  - Saving/Loading of achievements now actually works lol
 - New Pointer<> Type, literally just to make references
 - Misc
   - New Random Function to create a perpendicular vector to a vector in the direction of another vector
@@ -31,7 +33,6 @@
   - New CompileableDictionaryAlt, allows you to define your own dictionary compiling method
   - CompileableDictionary and CompileableDictionaryAlt now inherit from Dictionary, so they are easier to use now
   - Weighted Averages modified to use Multiref and be slightly cooler
-  - Achievements.CompileDict() actually works for non-saving achievements now
   - CameraLol renamed to Camera2D
 ------------
 

@@ -522,6 +522,18 @@ public static class OXFunctions
         }
         return ti;
     }
+    public static List<T> Clean<T>(this List<T> ti)
+    {
+        for (int t = 0; t < ti.Count; t++)
+        {
+            if (ti[t] == null)
+            {
+                ti.RemoveAt(t);
+                t--;
+            }
+        }
+        return ti;
+    }
     public static bool ListMatchesListOrderless<T>(this List<T> ti, List<T> tee)
     {
         if (ti.Count != tee.Count) return false;

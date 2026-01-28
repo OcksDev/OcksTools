@@ -72,11 +72,11 @@ public class Achievement : SingleInstance<Achievement>
     }
     public void SaveAchievements(SaveProfile a)
     {
-        a.SetString("Achievements", Achievements.ListToString());
+        a.SetString("Achievements", AchievementDict.DictionaryToString());
     }
     public void LoadAchievements(SaveProfile a)
     {
-        var Achievements = a.GetString("Achievements").StringToList().AListToBList(x =>
+        var Achievements = a.GetString("Achievements").StringToDictionary().ABDictionaryToCDDictionary(x => x, x =>
         {
             AchievementData ad = new AchievementData();
             ad.FromString(x);
@@ -86,7 +86,7 @@ public class Achievement : SingleInstance<Achievement>
         CompileDict();
         foreach (var b in Achievements)
         {
-            AchievementDict.AddOrUpdate(b.Name, b);
+            AchievementDict.AddOrUpdate(b);
         }
     }
     private void CompileDict()
@@ -123,7 +123,7 @@ public class AchievementData
     public void FromString(string data)
     {
         Dictionary<string, string> banans = data.StringToDictionary("==", "++");
-
+        if (!banans.ContainsKey("N")) return;
         Name = banans["N"];
         Progress = new AchievementProgress(true)
         {
