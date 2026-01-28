@@ -31,6 +31,7 @@
   - New CompileableDictionaryAlt, allows you to define your own dictionary compiling method
   - CompileableDictionary and CompileableDictionaryAlt now inherit from Dictionary, so they are easier to use now
   - Weighted Averages modified to use Multiref and be slightly cooler
+  - Achievements.CompileDict() actually works for non-saving achievements now
   - CameraLol renamed to Camera2D
 ------------
 

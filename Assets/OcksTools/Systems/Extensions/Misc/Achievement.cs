@@ -2,8 +2,8 @@ using System.Collections.Generic;
 
 public class Achievement : SingleInstance<Achievement>
 {
-    public static List<AchievementData> Achievements = new List<AchievementData>();
-    public static List<AchievementData> AchievementsDontSave = new List<AchievementData>();
+    public List<AchievementData> Achievements = new List<AchievementData>();
+    public List<AchievementData> AchievementsDontSave = new List<AchievementData>();
     private static Dictionary<string, AchievementData> AchievementDict = new Dictionary<string, AchievementData>();
     private static Dictionary<string, AchievementData> AchievementDontSaveDict = new Dictionary<string, AchievementData>();
     public static OXEventLayered<AchievementData> OnAchievementGet = new OXEventLayered<AchievementData>();
@@ -53,12 +53,12 @@ public class Achievement : SingleInstance<Achievement>
         };
         if (saved)
         {
-            Achievements.Add(d);
+            Instance.Achievements.Add(d);
             AchievementDict.Add(name, d);
         }
         else
         {
-            AchievementsDontSave.Add(d);
+            Instance.AchievementsDontSave.Add(d);
             AchievementDontSaveDict.Add(name, d);
         }
     }
@@ -76,7 +76,7 @@ public class Achievement : SingleInstance<Achievement>
     }
     public void LoadAchievements(SaveProfile a)
     {
-        Achievements = a.GetString("Achievements").StringToList().AListToBList(x =>
+        var Achievements = a.GetString("Achievements").StringToList().AListToBList(x =>
         {
             AchievementData ad = new AchievementData();
             ad.FromString(x);
@@ -84,13 +84,21 @@ public class Achievement : SingleInstance<Achievement>
         }
         );
         CompileDict();
+        foreach (var b in Achievements)
+        {
+            AchievementDict.AddOrUpdate(b.Name, b);
+        }
     }
     private void CompileDict()
     {
         AchievementDict.Clear();
         foreach (var ach in Achievements)
         {
-            AchievementDict[ach.Name] = ach;
+            AchievementDict.AddOrUpdate(ach.Name, ach);
+        }
+        foreach (var ach in AchievementsDontSave)
+        {
+            AchievementDontSaveDict.AddOrUpdate(ach.Name, ach);
         }
     }
 }
@@ -115,6 +123,7 @@ public class AchievementData
     public void FromString(string data)
     {
         Dictionary<string, string> banans = data.StringToDictionary("==", "++");
+
         Name = banans["N"];
         Progress = new AchievementProgress(true)
         {
