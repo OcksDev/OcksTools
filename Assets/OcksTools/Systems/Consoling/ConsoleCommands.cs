@@ -28,7 +28,27 @@ public class ConsoleCommands : MonoBehaviour
         bananas.ListToString().Log();
         var dd = bananas.StringListToAList<TestClass>();
         dd.ListToString().Log();
-
+        "---".Log();
+        Dictionary<string, string> d1 = new Dictionary<string, string>()
+        {
+            {"v1", "aaa"},
+            {"v2", "bbb"},
+            {"v3", "ccc"},
+        };
+        Dictionary<string, string> d2 = new Dictionary<string, string>()
+        {
+            {"v1", "aaa"},
+            {"v2", "bbb22"},
+            {"v69", "ccc"},
+        };
+        d1.DiffDictionary(d2).DictionaryToRead().Log();
+        "---".Log();
+        string s = "abcabcabc123123123123123123whatthefuck{{{{{{{{{5,3}h";
+        s.Log();
+        s = RandomFunctions.Instance.CollapseSimilarString(s);
+        s.Log();
+        s = RandomFunctions.Instance.ExpandSimilarString(s);
+        s.Log();
     }
     public static void Test_cleanstack()
     {

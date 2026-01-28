@@ -396,6 +396,38 @@ public class RandomFunctions : SingleInstance<RandomFunctions>
         return objects;
     }
 
+    public string CollapseSimilarString(string input)
+    {
+        string build = input.EscapeString(new List<string>() { "{" });
+        var m = Regex.Matches(build, @"(?=.{9,}$)(.{3,}?)(?:\1){2,}").ToList();
+        m.Reverse();
+        foreach (var match in m)
+        {
+            var g = match.Groups.ToList()[1];
+            string replace = $"{{{match.Value.Length / g.Value.Length},{g.Value.Length}}}" + g.Value;
+            build = build.Substring(0, match.Index) + replace + build.Substring(match.Index + match.Value.Length);
+        }
+        return build;
+    }
+
+    public string ExpandSimilarString(string input)
+    {
+        var m = Regex.Matches(input, @"{(\d*),(\d*)}").ToList();
+        m.Reverse();
+        foreach (var match in m)
+        {
+            var gs = match.Groups.ToList();
+            int x = int.Parse(gs[2].Value);
+            string replace = input.Substring(match.Index + match.Value.Length, x);
+            replace = string.Concat(Enumerable.Repeat(replace, int.Parse(gs[1].Value)));
+            input = input.Substring(0, match.Index) + replace + input.Substring(match.Index + match.Value.Length + x);
+        }
+        input = input.UnescapeString(new List<string>() { "{" });
+        return input;
+    }
+
+
+
 
     //totally not a joke method
     public float Lerp01(float sex)
@@ -451,6 +483,31 @@ public static class OXFunctions
             tea.AddOrUpdate(t);
         }
         return tea;
+    }
+    /// <summary>
+    /// used for effecient data storage, only using the differences between two dictionaries,
+    /// to be used in conjunction with MergeDictionary
+    /// </summary>
+    /// <param name="ti">base dictionary</param>
+    /// <param name="tee">modified dictionary</param>
+    /// <returns></returns>
+    public static Dictionary<T, T2> DiffDictionary<T, T2>(this Dictionary<T, T2> ti, Dictionary<T, T2> tee)
+    {
+        var tea = MergeDictionary(ti, tee);
+        var tii = new Dictionary<T, T2>();
+        foreach (var t in tea)
+        {
+            if (!ti.ContainsKey(t.Key))
+            {
+                tii.Add(t.Key, t.Value);
+                continue;
+            }
+            if (!t.Value.Equals(ti[t.Key]))
+            {
+                tii.Add(t.Key, t.Value);
+            }
+        }
+        return tii;
     }
     public static void AddOrUpdate<T, T2>(this Dictionary<T, T2> ti, T K, T2 V)
     {
