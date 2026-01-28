@@ -29,7 +29,7 @@
   - New Random Function to create a perpendicular vector to a vector in the direction of another vector
   - New Random Function to GetListOfInheritors (like inherited classes)
   - New CompileableDictionaryAlt, allows you to define your own dictionary compiling method
-  - CompileableDictionary and CompileableDictionaryAlt now inherit from a real dictioonary, so they are easier to use now
+  - CompileableDictionary and CompileableDictionaryAlt now inherit from Dictionary, so they are easier to use now
   - Weighted Averages modified to use Multiref and be slightly cooler
   - CameraLol renamed to Camera2D
 ------------
