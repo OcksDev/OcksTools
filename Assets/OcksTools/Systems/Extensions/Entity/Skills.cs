@@ -31,7 +31,7 @@ public class Skill : Containable
     }
 
     public void SetDataRef(SkillData data) { this.data = data; }
-    public void SetDataRefFromManager() { this.data = SkillManager.Instance.AllSkills.Dict[Name]; }
+    public void SetDataRefFromManager() { this.data = SkillManager.Instance.AllSkills[Name]; }
     public void Update(float x)
     {
         Duration = Mathf.Max(Duration - x, 0);

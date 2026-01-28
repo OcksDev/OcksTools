@@ -735,31 +735,29 @@ public struct MultiRef<A, B, C, D>
 }
 
 [System.Serializable]
-public class CompileableDictionary<A, B>
+public class CompileableDictionary<A, B> : Dictionary<A, B>
 {
     public List<MultiRef<A, B>> List = new List<MultiRef<A, B>>();
-    public Dictionary<A, B> Dict = new Dictionary<A, B>();
     public void Compile()
     {
-        Dict.Clear();
+        Clear();
         foreach (var a in List)
         {
-            Dict.Add(a.a, a.b);
+            Add(a.a, a.b);
         }
     }
 }
 
 [System.Serializable]
-public class CompileableDictionaryAlt<A, B>
+public class CompileableDictionaryAlt<A, B> : Dictionary<A, B>
 {
     public List<B> List = new List<B>();
-    public Dictionary<A, B> Dict = new Dictionary<A, B>();
     public void Compile(Func<B, A> funky)
     {
-        Dict.Clear();
+        Clear();
         foreach (var a in List)
         {
-            Dict.Add(funky(a), a);
+            Add(funky(a), a);
         }
     }
 }

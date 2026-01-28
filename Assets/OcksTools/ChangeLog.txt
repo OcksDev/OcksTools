@@ -2,10 +2,13 @@
 ------------
    v1.1.5
 - New Pool Selector Tool
-- New Modular Chess System
+- New Modular Chess System (W.I.P)
 - New(ish) OXComponents
   - Moved into general system folder from the GIS
   - Add/Get/Has/Compare/Save/Load methods have been moved to their own object/class
+  - GetComponent() now is safer (returns null on failed get instead of throwing error)
+  - Added HasComponent() for minorly less taxing checking
+  - Components no longer need to be manually initialized
 - 3D Movement Massively Overhauled
   - Added the abiltiy to Slide
   - Added the abiltiy to Dash (using the new Skill system from Entity)
@@ -19,10 +22,6 @@
   - Fixed bug: EffectReadOnly no longer improperly appends clean up method to kill event priority 0
   - Effect Profile has been moved to its own file
   - EntityEffectMiddleMan renamed to EffectContainer
-- GIS Improvements
-  - GetComponent() now is safer (returns null on failed get instead of throwing error)
-  - Added HasComponent() for minorly less taxing checking
-  - Components no longer need to be manually initialized
 - Achievement Improvements
   - New layered ox event for achievements being granted
 - New Pointer<> Type, literally just to make references
@@ -30,6 +29,7 @@
   - New Random Function to create a perpendicular vector to a vector in the direction of another vector
   - New Random Function to GetListOfInheritors (like inherited classes)
   - New CompileableDictionaryAlt, allows you to define your own dictionary compiling method
+  - CompileableDictionary and CompileableDictionaryAlt now inherit from a real dictioonary, so they are easier to use now
   - Weighted Averages modified to use Multiref and be slightly cooler
   - CameraLol renamed to Camera2D
 ------------

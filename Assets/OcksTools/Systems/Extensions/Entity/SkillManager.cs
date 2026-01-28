@@ -68,7 +68,7 @@ public class SkillContainer : ContainerListStyle<Skill>
 
     public override void Add(Skill eff)
     {
-        if (SkillManager.Instance != null && eff.data == null && SkillManager.Instance.AllSkills.Dict.ContainsKey(eff.Name)) eff.SetDataRefFromManager();
+        if (SkillManager.Instance != null && eff.data == null && SkillManager.Instance.AllSkills.ContainsKey(eff.Name)) eff.SetDataRefFromManager();
 
         if (!ExtensionForEntityOXSForSkills.SkillsTicking.ContainsKey(entity))
         {
