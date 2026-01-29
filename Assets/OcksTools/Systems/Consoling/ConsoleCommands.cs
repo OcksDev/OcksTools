@@ -49,6 +49,17 @@ public class ConsoleCommands : MonoBehaviour
         s.Log();
         s = RandomFunctions.Instance.ExpandSimilarString(s);
         s.Log();
+        "---".Log();
+
+        var dict = new Dictionary<(int, int), string>()
+        {
+            {(0,0), "zero"},
+            {(1,2), "onetwo"},
+            {(3,4), "threefour"},
+        };
+        dict.ContainsKey((0, 0)).Log();
+        dict.ContainsKey((0, 1)).Log();
+
     }
     public static void Test_cleanstack()
     {

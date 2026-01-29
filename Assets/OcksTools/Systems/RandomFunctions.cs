@@ -430,33 +430,17 @@ public class RandomFunctions : SingleInstance<RandomFunctions>
 
 
     //totally not a joke method
-    public float Lerp01(float sex)
-    {
-        return Mathf.Lerp(0, 1, sex);
-    }
-
+    public float Lerp01(float sex) => Mathf.Lerp(0, 1, sex);
 
 
 }
 
 public static class OXFunctions
 {
-    public static int Mod(this int r, int max)
-    {
-        return ((r % max) + max) % max;
-    }
-    public static float Mod(this float r, float max)
-    {
-        return ((r % max) + max) % max;
-    }
-    public static double Mod(this double r, double max)
-    {
-        return ((r % max) + max) % max;
-    }
-    public static long Mod(this long r, long max)
-    {
-        return ((r % max) + max) % max;
-    }
+    public static int Mod(this int r, int max) => ((r % max) + max) % max;
+    public static float Mod(this float r, float max) => ((r % max) + max) % max;
+    public static double Mod(this double r, double max) => ((r % max) + max) % max;
+    public static long Mod(this long r, long max) => ((r % max) + max) % max;
     public static List<T> RemoveDuplicates<T>(this List<T> tee)
     {
         var tea = new List<T>();
@@ -514,10 +498,7 @@ public static class OXFunctions
         if (ti.ContainsKey(K)) ti[K] = V;
         else ti.Add(K, V);
     }
-    public static void AddOrUpdate<T, T2>(this Dictionary<T, T2> ti, KeyValuePair<T, T2> kv)
-    {
-        ti.AddOrUpdate(kv.Key, kv.Value);
-    }
+    public static void AddOrUpdate<T, T2>(this Dictionary<T, T2> ti, KeyValuePair<T, T2> kv) => ti.AddOrUpdate(kv.Key, kv.Value);
     public static T2 GetOrDefine<T, T2>(this Dictionary<T, T2> ti, T inp, T2 def)
     {
         if (!ti.ContainsKey(inp))
@@ -608,16 +589,11 @@ public static class OXFunctions
         return true;
     }
 
-    public static Vector2 GetActualSizeOfUI(this RectTransform re)
-    {
+    public static Vector2 GetActualSizeOfUI(this RectTransform re) =>
         //sizeDelta and Rect.width both dont get the actual size, somehow
-        return (re.rect.max - re.rect.min);
-    }
+        (re.rect.max - re.rect.min);
 
-    public static Vector3 ReflectVector(this Vector3 incoming, Vector3 normal)
-    {
-        return incoming - 2 * Vector3.Dot(incoming, normal) * normal;
-    }
+    public static Vector3 ReflectVector(this Vector3 incoming, Vector3 normal) => incoming - 2 * Vector3.Dot(incoming, normal) * normal;
 
 
     public static string GetCleanStackTraceRichtextified()
@@ -672,9 +648,7 @@ public static class OXFunctions
         while (n > 1)
         {
             int k = rng.Next(n--);
-            T temp = ti[n];
-            ti[n] = ti[k];
-            ti[k] = temp;
+            (ti[k], ti[n]) = (ti[n], ti[k]);
         }
         return ti;
     }
