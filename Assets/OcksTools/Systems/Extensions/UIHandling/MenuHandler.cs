@@ -69,7 +69,8 @@ public class MenuHandler : SingleInstance<MenuHandler>
 
         if (!forced && !newstate && cum.ClosingAnimation != null)
         {
-            yield return StartCoroutine(cum.ClosingAnimation(cum.Objects));
+            if (cum.ClosingAnimation.parts[0].OutsideTargeting) cum.ClosingAnimation.parts[0].GameObjects(cum.Objects);
+            yield return StartCoroutine(cum.ClosingAnimation.PlayAnimation(this));
         }
 
         cum.State = newstate;
@@ -77,7 +78,8 @@ public class MenuHandler : SingleInstance<MenuHandler>
 
         if (!forced && newstate && cum.OpeningAnimation != null)
         {
-            yield return StartCoroutine(cum.OpeningAnimation(cum.Objects));
+            if (cum.OpeningAnimation.parts[0].OutsideTargeting) cum.OpeningAnimation.parts[0].GameObjects(cum.Objects);
+            yield return StartCoroutine(cum.OpeningAnimation.PlayAnimation(this));
         }
 
 
@@ -102,22 +104,6 @@ public class MenuHandler : SingleInstance<MenuHandler>
             gm.transform.localScale = dd.b;
             gm.transform.localRotation = dd.c;
         }
-    }
-    public void PlayAnim(string name, System.Func<List<GameObject>, IEnumerator> anim)
-    {
-        var cum = CurrentMenuStates[name];
-        StartCoroutine(AnimSmegging(cum, anim));
-    }
-    public void PlayAnimOneShot(List<GameObject> nerds, System.Func<List<GameObject>, IEnumerator> anim)
-    {
-        StartCoroutine(AnimSmegging(new MenuState(nerds), anim));
-    }
-    private IEnumerator AnimSmegging(MenuState cum, System.Func<List<GameObject>, IEnumerator> anim)
-    {
-        if (cum.AnimLocked) yield break;
-        cum.AnimLocked = true;
-        yield return StartCoroutine(anim(cum.Objects));
-        cum.AnimLocked = false;
     }
 
     public void ResetAllMenus(bool update = true)
@@ -155,6 +141,21 @@ public class MenuHandler : SingleInstance<MenuHandler>
     {
         foreach (var a in gms) a.SetActive(newstate);
     }
+
+
+    public void PlayAnim(string name, OXAnimationSet anim)
+    {
+        var cum = CurrentMenuStates[name];
+        StartCoroutine(AnimSmegging(cum, anim));
+    }
+    private IEnumerator AnimSmegging(MenuState cum, OXAnimationSet anim)
+    {
+        if (cum.AnimLocked) yield break;
+        cum.AnimLocked = true;
+        if (anim.parts[0].OutsideTargeting) anim.parts[0].GameObjects(cum.Objects);
+        yield return StartCoroutine(anim.PlayAnimation(this));
+        cum.AnimLocked = false;
+    }
 }
 
 [System.Serializable]
@@ -166,8 +167,8 @@ public class MenuState
     public Dictionary<GameObject, MultiRef<Vector3, Vector3, Quaternion>> InitialTransforms;
     public bool OptOutTransformRecord = false;
     public bool State;
-    public System.Func<List<GameObject>, IEnumerator> OpeningAnimation;
-    public System.Func<List<GameObject>, IEnumerator> ClosingAnimation;
+    public OXAnimationSet OpeningAnimation = null;
+    public OXAnimationSet ClosingAnimation = null;
     public OXEvent OnOpen = new OXEvent();
     public OXEvent OnClose = new OXEvent();
     [HideInInspector]

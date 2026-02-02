@@ -481,11 +481,13 @@ public static class OXFunctions
         var tii = new Dictionary<T, T2>();
         foreach (var t in tea)
         {
+            if (t.Value == null) continue;
             if (!ti.ContainsKey(t.Key))
             {
                 tii.Add(t.Key, t.Value);
                 continue;
             }
+            if (ti[t.Key] == null) continue;
             if (!t.Value.Equals(ti[t.Key]))
             {
                 tii.Add(t.Key, t.Value);
