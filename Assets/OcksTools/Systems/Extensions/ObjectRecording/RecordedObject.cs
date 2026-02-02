@@ -177,7 +177,13 @@ public class RecordedObject : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (UseFixedUpdate) PollAll = Poll;
+        if (status == RecordingStatus.Recording)
+        {
+            if (UseFixedUpdate)
+            {
+                Poll();
+            }
+        }
     }
     private void Update()
     {
@@ -233,15 +239,7 @@ public class RecordedObject : MonoBehaviour
         }
         if (status == RecordingStatus.Recording)
         {
-            if (UseFixedUpdate)
-            {
-                if (PollAll != null)
-                {
-                    PollAll();
-                    PollAll = null;
-                }
-            }
-            else
+            if (!UseFixedUpdate)
             {
                 Poll();
             }
@@ -375,14 +373,22 @@ public class DataRecord<T>
     public void ResumeRecording(float time)
     {
         if (time == starttime) return;
+        float progress = (time - starttime) * playback_speed;
         if (reversed)
         {
-            throw new NotImplementedException();
+            int keeps = 0;
+            progress = record[record.Count - 1].a + ((starttime - time) * playback_speed);
+            for (int i = 0; i < record.Count; i++)
+            {
+                if (record[i].a < progress) keeps++;
+            }
+            if (keeps == 0) return;
+            record = record.GetRange(0, keeps);
+            starttime = time - progress;
         }
         else
         {
             int keeps = 0;
-            float progress = time - starttime;
 
             for (int i = 0; i < record.Count; i++)
             {

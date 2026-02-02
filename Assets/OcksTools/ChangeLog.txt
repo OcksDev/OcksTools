@@ -33,6 +33,8 @@
   - New method to generate a diff between two dictionaries
   - New method to collapse repeating strings into more compressed forms
   - New method to expand compressed string forms back into full strings
+- Object Recorder System Improvements
+  - Stop+Pickup now works when playing a recording backwards
 - Misc
   - Added safety checks to StringToList and EscapedStringToList to allow for returning empty lists on empty strings
   - New CompileableDictionaryAlt, allows you to define your own dictionary compiling method
