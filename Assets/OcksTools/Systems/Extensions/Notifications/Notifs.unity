@@ -471,7 +471,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.000061035156, y: 0}
+  m_AnchoredPosition: {x: 0.00012207031, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2023265948
@@ -498,6 +498,10 @@ PrefabInstance:
       propertyPath: NotifParent
       value: 
       objectReference: {fileID: 2023265947}
+    - target: {fileID: 2972709682924619404, guid: a20532b8dfe5af44dba599a220343dc0, type: 3}
+      propertyPath: stackingDirection
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6438754589900973316, guid: a20532b8dfe5af44dba599a220343dc0, type: 3}
       propertyPath: Direction
       value: 1
