@@ -33,6 +33,20 @@ public static class OXComponentData
 
 public class ComponentHolder
 {
+
+    public ComponentHolder()
+    {
+
+    }
+
+    public ComponentHolder(ComponentHolder a)
+    {
+        foreach (var c in a.Components)
+        {
+            Components.Add(c.Key, c.Value.Copy());
+        }
+    }
+
     public void CompFromString(string a)
     {
         //cursed ass line of code lol
@@ -94,7 +108,8 @@ public class ComponentHolder
 
 
 /// <summary>
-/// Components have to be initialized in order to register their FromString functions.
+/// Components initialization should be handled automatically via OXComponentLoader.
+/// If not using Unity, make sure to run the loader manually.
 /// </summary>
 public abstract class OXComponentBase
 {
@@ -122,10 +137,15 @@ public abstract class OXComponentBase
         return Compare2(data);
     }
     public abstract bool Compare2(OXComponentBase data);
+    /// <summary>
+    /// Creates a copy of this component as a new instance.
+    /// </summary>
+    public abstract OXComponentBase Copy();
     public abstract void Init();
 }
 /// <summary>
-/// Components have to be initialized in order to register their FromString functions.
+/// Components initialization should be handled automatically via OXComponentLoader.
+/// If not using Unity, make sure to run the loader manually.
 /// </summary>
 public abstract class OXComponent<T> : OXComponentBase where T : OXComponent<T>
 {
@@ -145,4 +165,20 @@ public abstract class OXComponent<T> : OXComponentBase where T : OXComponent<T>
     /// Determines if this component is specifically equal to another component of the same type.
     /// </summary>
     public abstract bool EqualsSpecific(T data);
+    public override OXComponentBase Copy()
+    {
+        return GenerateCopy();
+    }
+    /// <summary>
+    /// Simple method to create a copy of this component using string serialization, not recommended for performance-critical code.
+    /// </summary>
+    public T CopyUsingString()
+    {
+        return (T)FromString(GetString());
+    }
+
+    /// <summary>
+    /// Creates a copy of this component as a new instance.
+    /// </summary>
+    public abstract T GenerateCopy();
 }

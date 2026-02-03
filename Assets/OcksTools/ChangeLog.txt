@@ -9,6 +9,8 @@
   - Add/Get/Has/Compare/Save/Load methods have been moved to their own object/class
   - GetComponent() now is safer (returns null on failed get instead of throwing error)
   - Added HasComponent() for minorly less taxing checking
+  - Added GenerateCopy() method to create a copy of a component on a new object
+    - Also created default CopyUsingString() method, an easy but inefficient way to copy components
   - Components no longer need to be manually initialized
 - 3D Movement Massively Overhauled
   - Added the abiltiy to Slide

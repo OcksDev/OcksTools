@@ -25,6 +25,8 @@ public class GISExampleComponent : OXComponent<GISExampleComponent>
     {
         return examplevalue == data.examplevalue;
     }
+
+    public override GISExampleComponent GenerateCopy() => CopyUsingString();
 }
 
 public class GISExampleComponentAlt : OXComponent<GISExampleComponentAlt>
@@ -54,4 +56,5 @@ public class GISExampleComponentAlt : OXComponent<GISExampleComponentAlt>
     {
         return examplevalue == data.examplevalue;
     }
+    public override GISExampleComponentAlt GenerateCopy() => CopyUsingString();
 }

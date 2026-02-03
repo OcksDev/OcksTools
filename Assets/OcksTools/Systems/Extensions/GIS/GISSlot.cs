@@ -11,6 +11,8 @@ public class GISSlot : MonoBehaviour
     private RectTransform erect;
     public OXEvent<GISSlot> OnInteractEvent = new OXEvent<GISSlot>();
     public OXEvent<GISSlot> OnFilterCheck = new OXEvent<GISSlot>();
+    [HideInInspector]
+    public GISItem StoredItem;
     public void Awake()
     {
         if (Held_Item == null)
@@ -28,10 +30,10 @@ public class GISSlot : MonoBehaviour
         switch (InteractFilter)
         {
             case "TakeOnly":
-                if (pp.Name != "Empty") return true;
+                if (!pp.IsEmpty()) return true;
                 break;
             case "PlaceOnly":
-                if (Held_Item.Name != "Empty") return true;
+                if (!Held_Item.IsEmpty()) return true;
                 break;
             case " ":
             case "":
@@ -62,20 +64,20 @@ public class GISSlot : MonoBehaviour
         if (!IsHovering()) return;
         bool left = GISLol.Instance.MouseLeftClickingDown;
         bool right = GISLol.Instance.MouseRightClickingDown;
+
+        /* if (Conte.CanDragDistributeItems)
+         {
+             if (GISLol.Instance.MouseLeftClicking && !left && GISLol.Instance.DragSlotsLeft.Count > 0 && !GISLol.Instance.DragSlotsLeft.Contains(this))
+             {
+                 DragLeft();
+             }
+             else if (GISLol.Instance.MouseRightClicking && !right && GISLol.Instance.DragSlotsRight.Count > 0 && !GISLol.Instance.DragSlotsRight.Contains(this))
+             {
+                 DragRight();
+             }
+         }*/
+
         if (!(left || right)) return;
-
-        if (Conte.CanDragDistributeItems)
-        {
-            if (GISLol.Instance.MouseLeftClicking && !GISLol.Instance.MouseLeftClickingDown && !GISLol.Instance.DragSlotsLeft.Contains(this))
-            {
-                //drag left add
-            }
-            else if (GISLol.Instance.MouseRightClicking && !GISLol.Instance.MouseRightClickingDown && !GISLol.Instance.DragSlotsRight.Contains(this))
-            {
-                //drag right add
-            }
-        }
-
         bool shift = InputManager.IsKey("item_alt");
         bool ctrl = InputManager.IsKey("item_mod");
         switch (Name)
@@ -191,7 +193,7 @@ public class GISSlot : MonoBehaviour
                     }
                 }
             }
-            else if (x.Name == "Empty")
+            else if (x.IsEmpty())
             {
                 break;
             }
@@ -205,6 +207,9 @@ public class GISSlot : MonoBehaviour
         OnInteract();
     }
 
+
+
+
     public void LeftClick()
     {
 
@@ -212,14 +217,18 @@ public class GISSlot : MonoBehaviour
         Held_Item.AddConnection(Conte);
         SaveItemContainerData();
 
-        if (Conte.CanDragDistributeItems)
+        if (Conte.CanDragDistributeItems && !g.Mouse_Held_Item.IsEmpty())
+        {
+            GISLol.Instance.DragItemLeft = new GISItem(g.Mouse_Held_Item);
+            if (Held_Item.Compare(g.Mouse_Held_Item)) StoredItem = new GISItem(Held_Item);
             GISLol.Instance.DragSlotsLeft.Add(this);
+        }
 
         if (DoubleClickTimer >= 0)
         {
             var d = g.Mouse_Held_Item.Name;
             var K = g.ItemDict[d].MaxAmount;
-            if (g.Mouse_Held_Item.Name == "Empty")
+            if (g.Mouse_Held_Item.IsEmpty())
             {
                 DoubleClickTimer = -69f;
             }
@@ -273,7 +282,7 @@ public class GISSlot : MonoBehaviour
             {
                 g.Mouse_Held_Item = Held_Item;
                 g.Mouse_Held_Item.AddConnection(Conte);
-                if (g.Mouse_Held_Item.Name == "Empty")
+                if (g.Mouse_Held_Item.IsEmpty())
                 {
                     g.Mouse_Held_Item.SetContainer(null);
                 }
@@ -327,9 +336,14 @@ public class GISSlot : MonoBehaviour
         SaveItemContainerData();
         var a = g.Mouse_Held_Item;
 
-        if (Conte.CanDragDistributeItems) GISLol.Instance.DragSlotsRight.Add(this);
+        if (Conte.CanDragDistributeItems && !g.Mouse_Held_Item.IsEmpty())
+        {
+            GISLol.Instance.DragItemRight = g.Mouse_Held_Item;
+            if (Held_Item.Compare(g.Mouse_Held_Item)) StoredItem = new GISItem(Held_Item);
+            GISLol.Instance.DragSlotsRight.Add(this);
+        }
 
-        if (Held_Item.Name == "Empty")
+        if (Held_Item.IsEmpty())
         {
             if (a.Amount > 0)
             {
@@ -347,7 +361,7 @@ public class GISSlot : MonoBehaviour
         }
         else
         {
-            if (a.Name == "Empty")
+            if (a.IsEmpty())
             {
                 float b = (float)Held_Item.Amount / 2;
                 g.Mouse_Held_Item = new GISItem(Held_Item);

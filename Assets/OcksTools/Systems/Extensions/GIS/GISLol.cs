@@ -75,9 +75,7 @@ public class GISLol : SingleInstance<GISLol>
     public Reactable<bool> MouseLeftClickingDown = new(false);
     [HideInInspector]
     public Reactable<bool> MouseRightClickingDown = new(false);
-    [HideInInspector]
     public List<GISSlot> DragSlotsLeft = new();
-    [HideInInspector]
     public List<GISSlot> DragSlotsRight = new();
     [HideInInspector]
     public GISItem DragItemLeft = null;
@@ -172,6 +170,11 @@ public class GISItem
         Amount = sexnut.Amount;
         Name = sexnut.Name;
         Container = sexnut.Container;
+        Components = new ComponentHolder(sexnut.Components);
+    }
+    public bool IsEmpty()
+    {
+        return Name == "Empty";
     }
     private void setdefaultvals()
     {
@@ -265,7 +268,7 @@ public class GISItem
         Data = Data.MergeDictionary(Converter.EscapedStringToDictionary(e, "~|~", "~o~"));
 
         Name = Data["Index"];
-        if (Name != "Empty") Amount = int.Parse(Data["Count"]);
+        if (!IsEmpty()) Amount = int.Parse(Data["Count"]);
         else Amount = 0;
 
         Components.CompFromString(Data["Extra"]);
