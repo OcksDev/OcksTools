@@ -12,6 +12,15 @@
   - Added GenerateCopy() method to create a copy of a component on a new object
     - Also created default CopyUsingString() method, an easy but inefficient way to copy components
   - Components no longer need to be manually initialized
+- Complete Notification System Remake
+  - Deleted all previous code and started from scratch, now much more interchangeable and expandable
+  - Anchoring Notifications to corners now applies to rect transform of parent instead of canvas space, making it much more flexible in where notifications can be placed
+  - Stacking direction and anchoring location are now seperatated, also making it much more flexible
+  - Seperate parameters now also exist for spacing between notifications and spacing from the edge of the screen
+  - Currently looks less good than before due to lack of animation, but that will be fixed in future updates
+  - New interfacing method to clear all notifications
+  - New notification method to remove itself
+  - No longer relies upon dumb methods that required manual edits in core system code to expand/change
 - 3D Movement Massively Overhauled
   - Added the abiltiy to Slide
   - Added the abiltiy to Dash (using the new Skill system from Entity)

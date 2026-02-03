@@ -9,6 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6438754589900973339}
+  - component: {fileID: 2972709682924619404}
+  - component: {fileID: -5947997023332889064}
   m_Layer: 0
   m_Name: NotifHandler
   m_TagString: Untagged
@@ -31,3 +33,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2972709682924619404
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6438754589900973317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c35c0cdd7ec60634d96aa41aaeb7aa08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NotificationSystem
+  NotifParent: {fileID: 0}
+  MaxNotifsOnScreen: 3
+  corner: 1
+  stackingDirection: 0
+  VerticalPadding: 10
+  HorizontalPadding: 10
+  Spacing: 10
+--- !u!114 &-5947997023332889064
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6438754589900973317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d2fdd83fa9489f47a6e2ab74ad9c70a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpawnSystem
+  Spawnables:
+  - Name: ExampleNotif
+    Object: {fileID: 6750865390813945322, guid: 53035a664afa4b04a9da816bf5eb1597, type: 3}
