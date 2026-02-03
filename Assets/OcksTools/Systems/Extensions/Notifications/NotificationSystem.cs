@@ -81,7 +81,7 @@ public class OXNotif
     }
     public void Publish()
     {
-        var d = NotificationSystem.Instance.FuckYouAndSpawnTheNotifPrefabYouDingleButtWadd(notification.GetPrefab());\
+        var d = NotificationSystem.Instance.FuckYouAndSpawnTheNotifPrefabYouDingleButtWadd(notification.GetPrefab());
         notification.Nerd = d;
         size = notification.CalculateInitial(d);
         rectTransform = notification.GetRectTransform(d);

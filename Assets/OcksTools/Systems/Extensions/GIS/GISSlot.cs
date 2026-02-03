@@ -60,9 +60,22 @@ public class GISSlot : MonoBehaviour
         var g = GISLol.Instance;
         if (FailToClick()) return;
         if (!IsHovering()) return;
-        bool left = InputManager.IsKeyDown("item_select");
-        bool right = InputManager.IsKeyDown("item_half");
+        bool left = GISLol.Instance.MouseLeftClickingDown;
+        bool right = GISLol.Instance.MouseRightClickingDown;
         if (!(left || right)) return;
+
+        if (Conte.CanDragDistributeItems)
+        {
+            if (GISLol.Instance.MouseLeftClicking && !GISLol.Instance.MouseLeftClickingDown && !GISLol.Instance.DragSlotsLeft.Contains(this))
+            {
+                //drag left add
+            }
+            else if (GISLol.Instance.MouseRightClicking && !GISLol.Instance.MouseRightClickingDown && !GISLol.Instance.DragSlotsRight.Contains(this))
+            {
+                //drag right add
+            }
+        }
+
         bool shift = InputManager.IsKey("item_alt");
         bool ctrl = InputManager.IsKey("item_mod");
         switch (Name)
@@ -199,6 +212,9 @@ public class GISSlot : MonoBehaviour
         Held_Item.AddConnection(Conte);
         SaveItemContainerData();
 
+        if (Conte.CanDragDistributeItems)
+            GISLol.Instance.DragSlotsLeft.Add(this);
+
         if (DoubleClickTimer >= 0)
         {
             var d = g.Mouse_Held_Item.Name;
@@ -310,6 +326,8 @@ public class GISSlot : MonoBehaviour
         Held_Item.AddConnection(Conte);
         SaveItemContainerData();
         var a = g.Mouse_Held_Item;
+
+        if (Conte.CanDragDistributeItems) GISLol.Instance.DragSlotsRight.Add(this);
 
         if (Held_Item.Name == "Empty")
         {

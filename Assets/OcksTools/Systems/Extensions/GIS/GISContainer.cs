@@ -12,6 +12,8 @@ public class GISContainer : MonoBehaviour
     [Tooltip("Uses the GISItems however doesn't use slots")]
     public bool IsAbstract = false;
     [HideIf("IsAbstract")]
+    public bool CanDragDistributeItems = true;
+    [HideIf("IsAbstract")]
     public bool CanShiftClickItems = true;
     [HideIf("IsAbstract")]
     public bool CanCtrlClickItems = true;

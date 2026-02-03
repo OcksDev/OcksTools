@@ -67,8 +67,22 @@ public class GISLol : SingleInstance<GISLol>
             }
         }
     }
-    public Reactable<bool> MouseClicking = new(false);
-    public List<GISSlot> DragContainers = new();
+    [HideInInspector]
+    public Reactable<bool> MouseLeftClicking = new(false);
+    [HideInInspector]
+    public Reactable<bool> MouseRightClicking = new(false);
+    [HideInInspector]
+    public Reactable<bool> MouseLeftClickingDown = new(false);
+    [HideInInspector]
+    public Reactable<bool> MouseRightClickingDown = new(false);
+    [HideInInspector]
+    public List<GISSlot> DragSlotsLeft = new();
+    [HideInInspector]
+    public List<GISSlot> DragSlotsRight = new();
+    [HideInInspector]
+    public GISItem DragItemLeft = null;
+    [HideInInspector]
+    public GISItem DragItemRight = null;
     private void Update()
     {
         Mouse_Displayer.item = Mouse_Held_Item;
@@ -81,16 +95,30 @@ public class GISLol : SingleInstance<GISLol>
             LoadTempForAll();
         }
 #endif
-        MouseClicking.SetValue(InputManager.IsKey("shoot"));
-        if (MouseClicking.HasChanged())
+        MouseLeftClicking.SetValue(InputManager.IsKey("shoot"));
+        MouseRightClicking.SetValue(InputManager.IsKey("alt_shoot"));
+        MouseLeftClickingDown.SetValue(InputManager.IsKeyDown("shoot"));
+        MouseRightClickingDown.SetValue(InputManager.IsKeyDown("alt_shoot"));
+        if (MouseLeftClicking.HasChanged())
         {
-            if (MouseClicking.GetValue())
+            if (MouseLeftClicking)
             {
-
+                //active?
             }
             else
             {
-                DragContainers.Clear();
+                DragSlotsLeft.Clear();
+            }
+        }
+        if (MouseRightClicking.HasChanged())
+        {
+            if (MouseRightClicking)
+            {
+                //active?
+            }
+            else
+            {
+                DragSlotsRight.Clear();
             }
         }
 

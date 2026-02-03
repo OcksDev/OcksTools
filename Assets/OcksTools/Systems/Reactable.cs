@@ -1,5 +1,9 @@
+using UnityEngine;
+
+[System.Serializable]
 public class Reactable<T>
 {
+    [SerializeField]
     private T data;
     private bool diff_marked = false;
     public OXEvent OnValueChanged = new OXEvent();
