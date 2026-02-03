@@ -1,35 +1,7 @@
-using TMPro;
-using UnityEngine;
-
-public class TextFromData : MonoBehaviour
+public class TextFromData : TextDisplay
 {
-    public string type = "";
-    private TextMeshProUGUI jessie;
-    public bool UseFixedUpdate = false;
-    // Start is called before the first frame update
-    private void OnEnable()
+    public override string GetDisplayString()
     {
-        jessie = GetComponent<TextMeshProUGUI>();
-    }
-
-    // Update is called once per frame
-    private void Update()
-    {
-        if (!UseFixedUpdate)
-        {
-            j();
-        }
-    }
-    private void FixedUpdate()
-    {
-        if (UseFixedUpdate)
-        {
-            j();
-        }
-    }
-    public void j()
-    {
-
         string a = "";
         switch (type)
         {
@@ -57,7 +29,6 @@ public class TextFromData : MonoBehaviour
                 a = "FPS: " + FPSLightweightReader.Instance.LastOutgoingFPS;
                 break;
         }
-
-        jessie.text = a;
+        return a;
     }
 }

@@ -132,24 +132,26 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
                 ConsoleObjectRef.input.Select();
             }
         }
-        else if (InputManager.IsKeyDown("console_autofill", "Console"))
+        if (enable)
         {
-            AutoFill();
-        }
-        else if (InputManager.IsKeyDown("close_menu"))
-        {
-            ConsoleChange(false);
+            if (InputManager.IsKeyDown("console_autofill", "Console"))
+            {
+                AutoFill();
+            }
+            else if (InputManager.IsKeyDown("close_menu"))
+            {
+                ConsoleChange(false);
+            }
+            if (InputManager.IsKeyDown("console_up"))
+            {
+                CommandChange(-1);
+            }
+            if (InputManager.IsKeyDown("console_down"))
+            {
+                CommandChange(1);
+            }
         }
 
-
-        if (enable && InputManager.IsKeyDown("console_up"))
-        {
-            CommandChange(-1);
-        }
-        if (enable && InputManager.IsKeyDown("console_down"))
-        {
-            CommandChange(1);
-        }
     }
 
     public void CommandChange(int i)

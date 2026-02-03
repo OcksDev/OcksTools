@@ -25,7 +25,6 @@ public class GISSlot : MonoBehaviour
     public bool FailToClick()
     {
         var pp = GISLol.Instance.Mouse_Held_Item;
-        if (pp.Name == "Empty") return false;
         switch (InteractFilter)
         {
             case "TakeOnly":
@@ -34,8 +33,13 @@ public class GISSlot : MonoBehaviour
             case "PlaceOnly":
                 if (Held_Item.Name != "Empty") return true;
                 break;
+            case " ":
+            case "":
+                break;
+            default:
+                return OnFilterCheck.InvokeWithHitCheck(this);
         }
-        return OnFilterCheck.InvokeWithHitCheck(this);
+        return false;
     }
 
     public void OnInteract()
@@ -51,16 +55,16 @@ public class GISSlot : MonoBehaviour
         OnInteractEvent.Invoke(this);
     }
 
-    private void Update()
+    public void UpdateCall()
     {
         var g = GISLol.Instance;
-        bool shift = InputManager.IsKey("item_alt");
-        bool ctrl = InputManager.IsKey("item_mod");
+        if (FailToClick()) return;
+        if (!IsHovering()) return;
         bool left = InputManager.IsKeyDown("item_select");
         bool right = InputManager.IsKeyDown("item_half");
         if (!(left || right)) return;
-        if (FailToClick()) return;
-        if (!IsHovering()) return;
+        bool shift = InputManager.IsKey("item_alt");
+        bool ctrl = InputManager.IsKey("item_mod");
         switch (Name)
         {
             default:

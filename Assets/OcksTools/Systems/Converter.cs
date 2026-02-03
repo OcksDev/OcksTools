@@ -4,6 +4,31 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
+public readonly struct BetterList<T>
+{
+    private readonly List<T> _values;
+
+    public BetterList(T value)
+    {
+        _values = new List<T> { value };
+    }
+
+    public BetterList(List<T> values)
+    {
+        _values = values;
+    }
+
+    public static implicit operator BetterList<T>(T value)
+        => new BetterList<T>(value);
+
+    public static implicit operator BetterList<T>(List<T> values)
+        => new BetterList<T>(values);
+
+    public static implicit operator List<T>(BetterList<T> values)
+        => values.ToList();
+
+    public List<T> ToList() => _values;
+}
 public static class Converter
 {
 

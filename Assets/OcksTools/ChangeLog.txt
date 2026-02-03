@@ -3,6 +3,7 @@
    v1.1.5
 - New Pool Selector Tool
 - New Modular Chess System (W.I.P)
+- New BetterList type which lets you define lists with single items easier
 - New(ish) OXComponents
   - Moved into general system folder from the GIS
   - Add/Get/Has/Compare/Save/Load methods have been moved to their own object/class
@@ -27,6 +28,12 @@
   - CompileDict now accounts for non-saved achievements
   - Saving/Loading of achievements now actually works lol
 - New Pointer<> Type, literally just to make references
+- Input Manager Improvements
+  - Removed all redundant method overloads for GetKey/GetKeyDown/GetKeyUp, replaced with implicit conversions, it's now much cleaner
+  - Renamed some methods to be more clear
+  - Optimized non-lockable inputs (raw inputs), performance should be better on such cases
+- GIS Improvements
+  - Optimized slot update code, batched update calls, and overall made it less taxing on background performance
 - New Random Functions
   - New method to create a perpendicular vector to a vector in the direction of another vector
   - New method to GetListOfInheritors (like inherited classes)
@@ -35,6 +42,10 @@
   - New method to expand compressed string forms back into full strings
 - Object Recorder System Improvements
   - Stop+Pickup now works when playing a recording backwards
+- TextFromData Improvements
+  - It is now inherited from a base class, TextDisplay, making it a lot easier to interchange and segment text display methods
+  - Added interfacing methods such as EnableCall, ForceUpdate, and GetDisplayString
+  - Added option to disable automatic updates
 - Misc
   - Added safety checks to StringToList and EscapedStringToList to allow for returning empty lists on empty strings
   - New CompileableDictionaryAlt, allows you to define your own dictionary compiling method

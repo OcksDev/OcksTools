@@ -117,7 +117,7 @@ public class InputManager : SingleInstance<InputManager>
     }
 
 
-    public static bool GetSelected(List<string> ide)
+    public static bool InputPassesLockLevel(List<string> ide)
     {
         // ide = {"a", "b"}  locklevel = {"a", "b", "c"} returns: true
         // ide = {"a", "b", "no"}  locklevel = {"a", "b"} returns: false
@@ -159,7 +159,7 @@ public class InputManager : SingleInstance<InputManager>
         return false;
     }
 
-    public static bool IsDie(List<string> ide)
+    public static bool AllowInputToPass(List<string> ide)
     {
         //set a = false to deny inputs
         bool a = true;
@@ -176,231 +176,190 @@ public class InputManager : SingleInstance<InputManager>
     }
     public static bool CheckAvailability(List<string> ide)
     {
-        if (!IsDie(ide)) return false;
-        if (!GetSelected(ide)) return false;
+        if (!AllowInputToPass(ide)) return false;
+        if (!InputPassesLockLevel(ide)) return false;
         return true;
     }
-
-    public static bool IsKeyDown(KeyCode baller, List<string> ide)
+    public static bool IsKeyDown(InputManagerKeyVal baller)
     {
-        if (!IsDie(ide)) return false;
-        if (!GetSelected(ide)) return false;
-        return Input.GetKeyDown(baller);
-    }
-    public static bool IsKey(KeyCode baller, List<string> ide)
-    {
-        if (!IsDie(ide)) return false;
-        if (!GetSelected(ide)) return false;
-        return Input.GetKey(baller);
-    }
-    public static bool IsKeyUp(KeyCode baller, List<string> ide)
-    {
-        if (!IsDie(ide)) return false;
-        if (!GetSelected(ide)) return false;
-        return Input.GetKeyUp(baller);
-    }
-    public static bool IsKeyDown(KeyCode baller, string ide)
-    {
-        return IsKeyDown(baller, new List<string>() { ide });
-    }
-    public static bool IsKey(KeyCode baller, string ide)
-    {
-        return IsKey(baller, new List<string>() { ide });
-    }
-    public static bool IsKeyUp(KeyCode baller, string ide)
-    {
-        return IsKeyUp(baller, new List<string>() { ide });
-    }
-    public static bool IsKeyDown(KeyCode baller)
-    {
-        return IsKeyDown(baller, new List<string>() { });
-    }
-    public static bool IsKey(KeyCode baller)
-    {
-        return IsKey(baller, new List<string>() { });
-    }
-    public static bool IsKeyUp(KeyCode baller)
-    {
-        return IsKeyUp(baller, new List<string>() { });
-    }
-    public static bool IsKeyDown(string baller, List<string> ide)
-    {
-        if (!IsDie(ide)) return false;
-        if (!GetSelected(ide)) return false;
-        var keys = gamekeys[baller];
+        var keys = baller.ToList();
         foreach (var key in keys)
         {
             if (Input.GetKeyDown(key)) return true;
         }
         return false;
     }
-    public static bool IsKey(string baller, List<string> ide)
+    public static bool IsKey(InputManagerKeyVal baller)
     {
-        if (!IsDie(ide)) return false;
-        if (!GetSelected(ide)) return false;
-        var keys = gamekeys[baller];
+        var keys = baller.ToList();
         foreach (var key in keys)
         {
             if (Input.GetKey(key)) return true;
         }
         return false;
     }
-    public static bool IsKeyUp(string baller, List<string> ide)
+    public static bool IsKeyUp(InputManagerKeyVal baller)
     {
-        if (!IsDie(ide)) return false;
-        if (!GetSelected(ide)) return false;
-        var keys = gamekeys[baller];
+        var keys = baller.ToList();
         foreach (var key in keys)
         {
             if (Input.GetKeyUp(key)) return true;
         }
         return false;
     }
-    public static bool IsKeyDown(string baller, string a = "")
+    public static bool IsKeyDown(InputManagerKeyVal baller, BetterList<string> ide)
     {
-        return IsKeyDown(baller, new List<string>() { a });
+        if (!AllowInputToPass(ide)) return false;
+        if (!InputPassesLockLevel(ide)) return false;
+        return IsKeyDown(baller);
     }
-    public static bool IsKey(string baller, string a = "")
+    public static bool IsKey(InputManagerKeyVal baller, BetterList<string> ide)
     {
-        return IsKey(baller, new List<string>() { a });
+        if (!AllowInputToPass(ide)) return false;
+        if (!InputPassesLockLevel(ide)) return false;
+        return IsKey(baller);
     }
-    public static bool IsKeyUp(string baller, string a = "")
+    public static bool IsKeyUp(InputManagerKeyVal baller, BetterList<string> ide)
     {
-        return IsKeyUp(baller, new List<string>() { a });
+        if (!AllowInputToPass(ide)) return false;
+        if (!InputPassesLockLevel(ide)) return false;
+        return IsKeyUp(baller);
     }
     public static void SetGameKeys()
     {
-        keynames.Clear();
-        keynames.Add(KeyCode.A, "A");
-        keynames.Add(KeyCode.B, "B");
-        keynames.Add(KeyCode.C, "C");
-        keynames.Add(KeyCode.D, "D");
-        keynames.Add(KeyCode.E, "E");
-        keynames.Add(KeyCode.F, "F");
-        keynames.Add(KeyCode.G, "G");
-        keynames.Add(KeyCode.H, "H");
-        keynames.Add(KeyCode.I, "I");
-        keynames.Add(KeyCode.J, "J");
-        keynames.Add(KeyCode.K, "K");
-        keynames.Add(KeyCode.L, "L");
-        keynames.Add(KeyCode.M, "M");
-        keynames.Add(KeyCode.N, "N");
-        keynames.Add(KeyCode.O, "O");
-        keynames.Add(KeyCode.P, "P");
-        keynames.Add(KeyCode.Q, "Q");
-        keynames.Add(KeyCode.R, "R");
-        keynames.Add(KeyCode.S, "S");
-        keynames.Add(KeyCode.T, "T");
-        keynames.Add(KeyCode.U, "U");
-        keynames.Add(KeyCode.V, "V");
-        keynames.Add(KeyCode.W, "W");
-        keynames.Add(KeyCode.X, "X");
-        keynames.Add(KeyCode.Y, "Y");
-        keynames.Add(KeyCode.Z, "Z");
-        keynames.Add(KeyCode.Alpha0, "0");
-        keynames.Add(KeyCode.Alpha1, "1");
-        keynames.Add(KeyCode.Alpha2, "2");
-        keynames.Add(KeyCode.Alpha3, "3");
-        keynames.Add(KeyCode.Alpha4, "4");
-        keynames.Add(KeyCode.Alpha5, "5");
-        keynames.Add(KeyCode.Alpha6, "6");
-        keynames.Add(KeyCode.Alpha7, "7");
-        keynames.Add(KeyCode.Alpha8, "8");
-        keynames.Add(KeyCode.Alpha9, "9");
-        keynames.Add(KeyCode.Tab, "TAB");
-        keynames.Add(KeyCode.LeftAlt, "LALT");
-        keynames.Add(KeyCode.LeftControl, "LCTR");
-        keynames.Add(KeyCode.LeftShift, "LSH");
-        keynames.Add(KeyCode.LeftWindows, "LWIN");
-        keynames.Add(KeyCode.CapsLock, "CAP");
-        keynames.Add(KeyCode.RightAlt, "RALT");
-        keynames.Add(KeyCode.RightControl, "RCTR");
-        keynames.Add(KeyCode.RightShift, "RSH");
-        keynames.Add(KeyCode.RightWindows, "RWIN");
-        keynames.Add(KeyCode.Delete, "DEL");
-        keynames.Add(KeyCode.Backspace, "BACK");
-        keynames.Add(KeyCode.Insert, "INS");
-        keynames.Add(KeyCode.PageDown, "PGDN");
-        keynames.Add(KeyCode.PageUp, "PGUP");
-        keynames.Add(KeyCode.Print, "PRT");
-        keynames.Add(KeyCode.ScrollLock, "SLCK");
-        keynames.Add(KeyCode.Pause, "PAUS");
-        keynames.Add(KeyCode.End, "END");
-        keynames.Add(KeyCode.Home, "HOME");
-        keynames.Add(KeyCode.Mouse0, "m1");
-        keynames.Add(KeyCode.Mouse1, "m2");
-        keynames.Add(KeyCode.Mouse2, "m3");
-        keynames.Add(KeyCode.Mouse3, "m4");
-        keynames.Add(KeyCode.Mouse4, "m5");
-        keynames.Add(KeyCode.Mouse5, "m6");
-        keynames.Add(KeyCode.Mouse6, "m7");
-        keynames.Add(KeyCode.Return, "ENT");
-        keynames.Add(KeyCode.Backslash, "\\");
-        keynames.Add(KeyCode.Slash, "/");
-        keynames.Add(KeyCode.UpArrow, "UP");
-        keynames.Add(KeyCode.DownArrow, "DOWN");
-        keynames.Add(KeyCode.LeftArrow, "LEFT");
-        keynames.Add(KeyCode.RightArrow, "RIGHT");
-        keynames.Add(KeyCode.Space, "SPACE");
-        keynames.Add(KeyCode.Escape, "ESC");
-        keynames.Add(KeyCode.LeftBracket, "[");
-        keynames.Add(KeyCode.RightBracket, "]");
-        keynames.Add(KeyCode.Semicolon, ";");
-        keynames.Add(KeyCode.Quote, "'");
-        keynames.Add(KeyCode.Underscore, "_");
-        keynames.Add(KeyCode.Equals, "=");
-        keynames.Add(KeyCode.Numlock, "NML");
-        keynames.Add(KeyCode.F1, "f1");
-        keynames.Add(KeyCode.F2, "f2");
-        keynames.Add(KeyCode.F3, "f3");
-        keynames.Add(KeyCode.F4, "f4");
-        keynames.Add(KeyCode.F5, "f5");
-        keynames.Add(KeyCode.F6, "f6");
-        keynames.Add(KeyCode.F7, "f7");
-        keynames.Add(KeyCode.F8, "f8");
-        keynames.Add(KeyCode.F9, "f9");
-        keynames.Add(KeyCode.F10, "f10");
-        keynames.Add(KeyCode.F11, "f11");
-        keynames.Add(KeyCode.F12, "f12");
-        keynames.Add(KeyCode.F13, "f13");
-        keynames.Add(KeyCode.F14, "f14");
-        keynames.Add(KeyCode.F15, "f15");
-        keynames.Add(KeyCode.Keypad0, "n0");
-        keynames.Add(KeyCode.Keypad1, "n1");
-        keynames.Add(KeyCode.Keypad2, "n2");
-        keynames.Add(KeyCode.Keypad3, "n3");
-        keynames.Add(KeyCode.Keypad4, "n4");
-        keynames.Add(KeyCode.Keypad5, "n5");
-        keynames.Add(KeyCode.Keypad6, "n6");
-        keynames.Add(KeyCode.Keypad7, "n7");
-        keynames.Add(KeyCode.Keypad8, "n8");
-        keynames.Add(KeyCode.Keypad9, "n9");
-        keynames.Add(KeyCode.KeypadDivide, "n/");
-        keynames.Add(KeyCode.KeypadEquals, "n=");
-        keynames.Add(KeyCode.KeypadMinus, "n-");
-        keynames.Add(KeyCode.KeypadMultiply, "n*");
-        keynames.Add(KeyCode.KeypadPeriod, "n.");
-        keynames.Add(KeyCode.KeypadPlus, "n+");
-        keynames.Add(KeyCode.KeypadEnter, "nENT");
-        keynames.Add(KeyCode.None, "NONE");
-        keynames.Add(KeyCode.Tilde, "~");
-        keynames.Add(KeyCode.AltGr, "grrr uwu");
-        keynames.Add(KeyCode.BackQuote, "`");
-        keynames.Add(KeyCode.Minus, "-");
-        keynames.Add(KeyCode.Period, ".");
-        keynames.Add(KeyCode.Comma, ",");
-        keynames.Add(KeyCode.WheelDown, "wDWN");
-        keynames.Add(KeyCode.WheelUp, "wUP");
-        keynames.Add(KeyCode.JoystickButton0, "cA");
-        keynames.Add(KeyCode.JoystickButton1, "cB");
-        keynames.Add(KeyCode.JoystickButton2, "cX");
-        keynames.Add(KeyCode.JoystickButton3, "cY");
-        keynames.Add(KeyCode.JoystickButton4, "cLB");
-        keynames.Add(KeyCode.JoystickButton5, "cRB");
-        keynames.Add(KeyCode.JoystickButton6, "cBACK");
-        keynames.Add(KeyCode.JoystickButton7, "cSTRT");
-        keynames.Add(KeyCode.JoystickButton8, "cLSB");
-        keynames.Add(KeyCode.JoystickButton9, "cRSB");
+        keynames = new Dictionary<KeyCode, string>
+        {
+            { KeyCode.A, "A" },
+            { KeyCode.B, "B" },
+            { KeyCode.C, "C" },
+            { KeyCode.D, "D" },
+            { KeyCode.E, "E" },
+            { KeyCode.F, "F" },
+            { KeyCode.G, "G" },
+            { KeyCode.H, "H" },
+            { KeyCode.I, "I" },
+            { KeyCode.J, "J" },
+            { KeyCode.K, "K" },
+            { KeyCode.L, "L" },
+            { KeyCode.M, "M" },
+            { KeyCode.N, "N" },
+            { KeyCode.O, "O" },
+            { KeyCode.P, "P" },
+            { KeyCode.Q, "Q" },
+            { KeyCode.R, "R" },
+            { KeyCode.S, "S" },
+            { KeyCode.T, "T" },
+            { KeyCode.U, "U" },
+            { KeyCode.V, "V" },
+            { KeyCode.W, "W" },
+            { KeyCode.X, "X" },
+            { KeyCode.Y, "Y" },
+            { KeyCode.Z, "Z" },
+            { KeyCode.Alpha0, "0" },
+            { KeyCode.Alpha1, "1" },
+            { KeyCode.Alpha2, "2" },
+            { KeyCode.Alpha3, "3" },
+            { KeyCode.Alpha4, "4" },
+            { KeyCode.Alpha5, "5" },
+            { KeyCode.Alpha6, "6" },
+            { KeyCode.Alpha7, "7" },
+            { KeyCode.Alpha8, "8" },
+            { KeyCode.Alpha9, "9" },
+            { KeyCode.Tab, "TAB" },
+            { KeyCode.LeftAlt, "LALT" },
+            { KeyCode.LeftControl, "LCTR" },
+            { KeyCode.LeftShift, "LSH" },
+            { KeyCode.LeftWindows, "LWIN" },
+            { KeyCode.CapsLock, "CAP" },
+            { KeyCode.RightAlt, "RALT" },
+            { KeyCode.RightControl, "RCTR" },
+            { KeyCode.RightShift, "RSH" },
+            { KeyCode.RightWindows, "RWIN" },
+            { KeyCode.Delete, "DEL" },
+            { KeyCode.Backspace, "BACK" },
+            { KeyCode.Insert, "INS" },
+            { KeyCode.PageDown, "PGDN" },
+            { KeyCode.PageUp, "PGUP" },
+            { KeyCode.Print, "PRT" },
+            { KeyCode.ScrollLock, "SLCK" },
+            { KeyCode.Pause, "PAUS" },
+            { KeyCode.End, "END" },
+            { KeyCode.Home, "HOME" },
+            { KeyCode.Mouse0, "m1" },
+            { KeyCode.Mouse1, "m2" },
+            { KeyCode.Mouse2, "m3" },
+            { KeyCode.Mouse3, "m4" },
+            { KeyCode.Mouse4, "m5" },
+            { KeyCode.Mouse5, "m6" },
+            { KeyCode.Mouse6, "m7" },
+            { KeyCode.Return, "ENT" },
+            { KeyCode.Backslash, "\\" },
+            { KeyCode.Slash, "/" },
+            { KeyCode.UpArrow, "UP" },
+            { KeyCode.DownArrow, "DOWN" },
+            { KeyCode.LeftArrow, "LEFT" },
+            { KeyCode.RightArrow, "RIGHT" },
+            { KeyCode.Space, "SPACE" },
+            { KeyCode.Escape, "ESC" },
+            { KeyCode.LeftBracket, "[" },
+            { KeyCode.RightBracket, "]" },
+            { KeyCode.Semicolon, ";" },
+            { KeyCode.Quote, "'" },
+            { KeyCode.Underscore, "_" },
+            { KeyCode.Equals, "=" },
+            { KeyCode.Numlock, "NML" },
+            { KeyCode.F1, "f1" },
+            { KeyCode.F2, "f2" },
+            { KeyCode.F3, "f3" },
+            { KeyCode.F4, "f4" },
+            { KeyCode.F5, "f5" },
+            { KeyCode.F6, "f6" },
+            { KeyCode.F7, "f7" },
+            { KeyCode.F8, "f8" },
+            { KeyCode.F9, "f9" },
+            { KeyCode.F10, "f10" },
+            { KeyCode.F11, "f11" },
+            { KeyCode.F12, "f12" },
+            { KeyCode.F13, "f13" },
+            { KeyCode.F14, "f14" },
+            { KeyCode.F15, "f15" },
+            { KeyCode.Keypad0, "n0" },
+            { KeyCode.Keypad1, "n1" },
+            { KeyCode.Keypad2, "n2" },
+            { KeyCode.Keypad3, "n3" },
+            { KeyCode.Keypad4, "n4" },
+            { KeyCode.Keypad5, "n5" },
+            { KeyCode.Keypad6, "n6" },
+            { KeyCode.Keypad7, "n7" },
+            { KeyCode.Keypad8, "n8" },
+            { KeyCode.Keypad9, "n9" },
+            { KeyCode.KeypadDivide, "n/" },
+            { KeyCode.KeypadEquals, "n=" },
+            { KeyCode.KeypadMinus, "n-" },
+            { KeyCode.KeypadMultiply, "n*" },
+            { KeyCode.KeypadPeriod, "n." },
+            { KeyCode.KeypadPlus, "n+" },
+            { KeyCode.KeypadEnter, "nENT" },
+            { KeyCode.None, "NONE" },
+            { KeyCode.Tilde, "~" },
+            { KeyCode.AltGr, "grrr uwu" },
+            { KeyCode.BackQuote, "`" },
+            { KeyCode.Minus, "-" },
+            { KeyCode.Period, "." },
+            { KeyCode.Comma, "," },
+            { KeyCode.WheelDown, "wDWN" },
+            { KeyCode.WheelUp, "wUP" },
+            { KeyCode.JoystickButton0, "cA" },
+            { KeyCode.JoystickButton1, "cB" },
+            { KeyCode.JoystickButton2, "cX" },
+            { KeyCode.JoystickButton3, "cY" },
+            { KeyCode.JoystickButton4, "cLB" },
+            { KeyCode.JoystickButton5, "cRB" },
+            { KeyCode.JoystickButton6, "cBACK" },
+            { KeyCode.JoystickButton7, "cSTRT" },
+            { KeyCode.JoystickButton8, "cLSB" },
+            { KeyCode.JoystickButton9, "cRSB" }
+        };
     }
 
     public static void CreateKeyAllocation(string name, KeyCode key)
@@ -412,4 +371,33 @@ public class InputManager : SingleInstance<InputManager>
         gamekeys.Add(name, keys);
         defaultgamekeys.Add(name, keys);
     }
+}
+
+
+public readonly struct InputManagerKeyVal
+{
+    private readonly BetterList<KeyCode> _keyvals;
+    private readonly string nerd;
+    public InputManagerKeyVal(string value)
+    {
+        _keyvals = null;
+        nerd = value;
+    }
+
+    public InputManagerKeyVal(KeyCode values)
+    {
+        nerd = "";
+        _keyvals = values;
+    }
+
+    public static implicit operator InputManagerKeyVal(KeyCode value)
+        => new InputManagerKeyVal(value);
+
+    public static implicit operator InputManagerKeyVal(string value)
+        => new InputManagerKeyVal(value);
+
+    public static implicit operator List<KeyCode>(InputManagerKeyVal values)
+        => values.ToList();
+
+    public List<KeyCode> ToList() => nerd != "" ? InputManager.gamekeys[nerd] : _keyvals.ToList();
 }

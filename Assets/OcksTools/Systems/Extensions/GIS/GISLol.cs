@@ -67,21 +67,34 @@ public class GISLol : SingleInstance<GISLol>
             }
         }
     }
-
+    public Reactable<bool> MouseClicking = new(false);
+    public List<GISSlot> DragContainers = new();
     private void Update()
     {
         Mouse_Displayer.item = Mouse_Held_Item;
         var za = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         za.z = 0;
         MouseFollower.transform.position = za;
+#if UNITY_EDITOR
         if (InputManager.IsKeyDown("reload"))
         {
             LoadTempForAll();
         }
-        if (InputManager.IsKeyDown(KeyCode.X))
+#endif
+        MouseClicking.SetValue(InputManager.IsKey("shoot"));
+        if (MouseClicking.HasChanged())
         {
-            Mouse_Held_Item = new GISItem();
+            if (MouseClicking.GetValue())
+            {
+
+            }
+            else
+            {
+                DragContainers.Clear();
+            }
         }
+
+
         nono = false;
     }
 

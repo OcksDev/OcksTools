@@ -93,24 +93,11 @@ public class GISContainer : MonoBehaviour
     }
     public void Update()
     {
-        /*
-        if (Input.GetKeyDown(KeyCode.Z))
+        if (IsAbstract) return;
+        foreach (var s in slots)
         {
-            var x = slots[FindEmptySlot()];
-            x.Held_Item = new GISItem();
-            x.Held_Item.Amount = 50;
-            x.Held_Item.ItemIndex = UnityEngine.Random.Range(1, 5);
-            x.Held_Item.Container = this;
-            x.Held_Item.Solidify();
+            s.UpdateCall();
         }
-        if (Input.GetKeyDown(KeyCode.G))
-        {
-            SaveContents();
-        }
-        if (Input.GetKeyDown(KeyCode.J))
-        {
-            LoadContents();
-        }*/
     }
 
 
