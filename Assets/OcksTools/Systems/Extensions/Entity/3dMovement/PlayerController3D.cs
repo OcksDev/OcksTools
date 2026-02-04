@@ -197,7 +197,7 @@ public class PlayerController3D : MonoBehaviour
         Vector3 bgalls = Vector3.zero;
         if (dir.magnitude > 0.5f && allow_movement_inputs)
         {
-            bgalls += RandomFunctions.PerpendicularTowardDirection(ground_normal, dir) * move_speed * Time.deltaTime * 20;
+            bgalls += ground_normal.PerpendicularTowardDirection(dir) * move_speed * Time.deltaTime * 20;
         }
 
         float grav_str = this.grav_str;
@@ -305,7 +305,7 @@ public class PlayerController3D : MonoBehaviour
                             else d.y = (d.y * wall_orig_up_perc);
                             var newdir = wall_normal;
                             newdir.y = 0;
-                            newdir = RandomFunctions.PerpendicularTowardDirection(newdir, xz);
+                            newdir = newdir.PerpendicularTowardDirection(xz);
                             if (boosteleibibi) newdir *= (xz.magnitude + wall_velocity_add / Mathf.Clamp(xz.magnitude, 1, 1000) * 10);
                             else newdir *= xz.magnitude;
                             d.x = newdir.x;

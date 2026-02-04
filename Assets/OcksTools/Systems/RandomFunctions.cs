@@ -317,22 +317,6 @@ public class RandomFunctions : SingleInstance<RandomFunctions>
         return Quaternion.RotateTowards(start_rot, target, max_speed);
     }
 
-    public static Vector3 PerpendicularTowardDirection(Vector3 baseVector, Vector3 directionVector)
-    {
-        Vector3 baseNorm = baseVector.normalized;
-
-        Vector3 perpendicular = directionVector - Vector3.Dot(directionVector, baseNorm) * baseNorm;
-
-        if (perpendicular.sqrMagnitude < 1e-6f)
-        {
-            perpendicular = Vector3.Cross(baseNorm, Vector3.up);
-
-            if (perpendicular.sqrMagnitude < 1e-6f)
-                perpendicular = Vector3.Cross(baseNorm, Vector3.right);
-        }
-
-        return perpendicular.normalized;
-    }
 
     private Quaternion Point2D(float offset2)
     {
@@ -447,6 +431,22 @@ public static class OXFunctions
         return 1 - Mathf.Pow(expo, Time.deltaTime * 50 * Time.timeScale);
     }
 
+    public static Vector3 PerpendicularTowardDirection(this Vector3 baseVector, Vector3 directionVector)
+    {
+        Vector3 baseNorm = baseVector.normalized;
+
+        Vector3 perpendicular = directionVector - Vector3.Dot(directionVector, baseNorm) * baseNorm;
+
+        if (perpendicular.sqrMagnitude < 1e-6f)
+        {
+            perpendicular = Vector3.Cross(baseNorm, Vector3.up);
+
+            if (perpendicular.sqrMagnitude < 1e-6f)
+                perpendicular = Vector3.Cross(baseNorm, Vector3.right);
+        }
+
+        return perpendicular.normalized;
+    }
     public static int Mod(this int r, int max) => ((r % max) + max) % max;
     public static float Mod(this float r, float max) => ((r % max) + max) % max;
     public static double Mod(this double r, double max) => ((r % max) + max) % max;
