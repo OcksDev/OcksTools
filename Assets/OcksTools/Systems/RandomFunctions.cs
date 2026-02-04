@@ -428,7 +428,6 @@ public class RandomFunctions : SingleInstance<RandomFunctions>
 
 
 
-
     //totally not a joke method
     public float Lerp01(float sex) => Mathf.Lerp(0, 1, sex);
 
@@ -437,6 +436,17 @@ public class RandomFunctions : SingleInstance<RandomFunctions>
 
 public static class OXFunctions
 {
+    public static float TimeStablePow(this float expo)
+    {
+        expo = 1 - expo;
+        return Mathf.Pow(expo, Time.deltaTime * 50 * Time.timeScale);
+    }
+    public static float TimeStableLerp(this float expo)
+    {
+        expo = 1 - expo;
+        return 1 - Mathf.Pow(expo, Time.deltaTime * 50 * Time.timeScale);
+    }
+
     public static int Mod(this int r, int max) => ((r % max) + max) % max;
     public static float Mod(this float r, float max) => ((r % max) + max) % max;
     public static double Mod(this double r, double max) => ((r % max) + max) % max;

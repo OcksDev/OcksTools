@@ -18,6 +18,7 @@ public class NotificationSystem : SingleInstance<NotificationSystem>
     {
         rt = NotifParent.GetComponent<RectTransform>();
     }
+    public float pos_y_inperp = 0f;
     private void Update()
     {
         var pos_y = 0f;
@@ -44,7 +45,7 @@ public class NotificationSystem : SingleInstance<NotificationSystem>
         {
             CurrentNotifs[i]._life -= Time.deltaTime;
             var pos = Vector2.zero;
-            float pos_y_inperp = pos_y;
+            pos_y_inperp = pos_y;
             if (reversed)
                 pos_y_inperp = -pos_y_inperp;
             switch (corner)
@@ -84,7 +85,8 @@ public class NotificationSystem : SingleInstance<NotificationSystem>
             }
             pos.y += mesize.y;
             pos.x -= mesize.x;
-            CurrentNotifs[i].rectTransform.anchoredPosition = pos;
+            CurrentNotifs[i].target_pos = pos;
+            CurrentNotifs[i].MoveToTarget();
             if (CurrentNotifs[i]._life <= 0)
             {
                 KillNotif(CurrentNotifs[i]);
@@ -164,6 +166,7 @@ public class OXNotif
     public Notification notification;
     public Vector2 size;
     public RectTransform rectTransform;
+    public Vector2 target_pos = Vector2.zero;
     public float _life = 0;
     public OXNotif(Notification notification, float duration)
     {
@@ -177,10 +180,20 @@ public class OXNotif
         notification.Nerd = d;
         size = notification.CalculateInitial(d);
         rectTransform = notification.GetRectTransform(d);
+        Vector2 start_pos = Vector2.zero;
+        rectTransform.anchoredPosition = start_pos;
     }
     public static implicit operator OXNotif(Notification n)
     {
         return new OXNotif(n, n._duration);
+    }
+    private int commands = 0;
+    public void MoveToTarget()
+    {
+        commands++;
+        if (commands < 3) return;
+        //Debug.LogError($"{dt}, {Time.timeScale}. {dt * 50 * Time.timeScale}, {0.1f.TimeStableLerp(dt)}");
+        rectTransform.anchoredPosition = Vector2.Lerp(rectTransform.anchoredPosition, target_pos, 0.3f.TimeStableLerp());
     }
 }
 
