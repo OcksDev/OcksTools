@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GISSlot : MonoBehaviour
@@ -12,7 +13,7 @@ public class GISSlot : MonoBehaviour
     public OXEvent<GISSlot> OnInteractEvent = new OXEvent<GISSlot>();
     public OXEvent<GISSlot> OnFilterCheck = new OXEvent<GISSlot>();
     [HideInInspector]
-    public GISItem StoredItem;
+    public int StoredAmount;
     public void Awake()
     {
         if (Held_Item == null)
@@ -65,17 +66,17 @@ public class GISSlot : MonoBehaviour
         bool left = GISLol.Instance.MouseLeftClickingDown;
         bool right = GISLol.Instance.MouseRightClickingDown;
 
-        /* if (Conte.CanDragDistributeItems)
-         {
-             if (GISLol.Instance.MouseLeftClicking && !left && GISLol.Instance.DragSlotsLeft.Count > 0 && !GISLol.Instance.DragSlotsLeft.Contains(this))
-             {
-                 DragLeft();
-             }
-             else if (GISLol.Instance.MouseRightClicking && !right && GISLol.Instance.DragSlotsRight.Count > 0 && !GISLol.Instance.DragSlotsRight.Contains(this))
-             {
-                 DragRight();
-             }
-         }*/
+        if (Conte.CanDragDistributeItems)
+        {
+            if (GISLol.Instance.MouseLeftClicking && !left && GISLol.Instance.DragSlotsLeft.Count > 0 && !GISLol.Instance.DragSlotsLeft.Contains(this))
+            {
+                DragLeft();
+            }
+            else if (GISLol.Instance.MouseRightClicking && !right && GISLol.Instance.DragSlotsRight.Count > 0 && !GISLol.Instance.DragSlotsRight.Contains(this))
+            {
+                //DragRight();
+            }
+        }
 
         if (!(left || right)) return;
         bool shift = InputManager.IsKey("item_alt");
@@ -112,6 +113,79 @@ public class GISSlot : MonoBehaviour
         }
 
     }
+    public void DragLeft()
+    {
+        var g = GISLol.Instance;
+        Debug.Log("A");
+        if (!Held_Item.IsEmpty() && !Held_Item.Compare(g.DragItemLeft)) return;
+        if (Held_Item.IsEmpty())
+        {
+            StoredAmount = 0;
+        }
+        else
+        {
+            StoredAmount = Held_Item.Amount;
+        }
+        g.DragSlotsLeft.Add(this);
+        if (g.DragItemLeft.Compare(g.Mouse_Held_Item)) GISLol.Instance.Mouse_Held_Item = new GISItem();
+        int rem = g.DragItemLeft.Amount;
+        int max = GISLol.Instance.ItemDict[g.DragItemLeft.Name].MaxAmount;
+        List<GISSlot> nerds = new List<GISSlot>(g.DragSlotsLeft);
+        foreach (GISSlot slot in nerds)
+        {
+            slot.Held_Item = new GISItem(g.DragItemLeft);
+            slot.Held_Item.Amount = 0;
+        }
+        while (rem > 0 && nerds.Count > 0)
+        {
+            rem = _DistributeToNerds(nerds, g.DragItemLeft, rem, max);
+            if (rem > 0 && max > 0)
+            {
+                for (int i = 0; i < nerds.Count; i++)
+                {
+                    int j = nerds.Count - 1 - i;
+                    if (nerds[j].Held_Item.Amount >= max) nerds.RemoveAt(j);
+                }
+            }
+        }
+
+        foreach (GISSlot slot in g.DragSlotsLeft)
+        {
+            if (slot.Held_Item.Amount == 0)
+            {
+                if (slot.StoredAmount == 0) slot.Held_Item = new GISItem();
+                else slot.Held_Item.Amount = slot.StoredAmount;
+            }
+        }
+
+        if (nerds.Count == 0 && rem > 0)
+        {
+            Debug.LogError("???"); // this means that its trying to distribute more items, but all the slots are somehow filled?
+        }
+    }
+
+    public int _DistributeToNerds(List<GISSlot> nerds, GISItem item, int amnt, int max)
+    {
+        float x = amnt;
+        x /= nerds.Count;
+        int rem = amnt;
+        if (x < 1.01f) x = 1.01f;
+        foreach (var a in nerds)
+        {
+            if (rem <= 0) break;
+            int orig = a.Held_Item.Amount > 0 ? a.Held_Item.Amount : a.StoredAmount;
+            int prop = ((int)x) + orig;
+            if (max > 0 && prop > max)
+            {
+                prop = max;
+            }
+            rem -= prop - orig;
+            a.Held_Item.Amount = prop;
+        }
+
+        return rem;
+    }
+
 
     public void CtrlClick(bool left)
     {
@@ -220,7 +294,8 @@ public class GISSlot : MonoBehaviour
         if (Conte.CanDragDistributeItems && !g.Mouse_Held_Item.IsEmpty())
         {
             GISLol.Instance.DragItemLeft = new GISItem(g.Mouse_Held_Item);
-            if (Held_Item.Compare(g.Mouse_Held_Item)) StoredItem = new GISItem(Held_Item);
+            if (Held_Item.Compare(g.Mouse_Held_Item)) StoredAmount = Held_Item.Amount;
+            else StoredAmount = 0;
             GISLol.Instance.DragSlotsLeft.Add(this);
         }
 
@@ -339,7 +414,8 @@ public class GISSlot : MonoBehaviour
         if (Conte.CanDragDistributeItems && !g.Mouse_Held_Item.IsEmpty())
         {
             GISLol.Instance.DragItemRight = g.Mouse_Held_Item;
-            if (Held_Item.Compare(g.Mouse_Held_Item)) StoredItem = new GISItem(Held_Item);
+            if (Held_Item.Compare(g.Mouse_Held_Item)) StoredAmount = Held_Item.Amount;
+            else StoredAmount = 0;
             GISLol.Instance.DragSlotsRight.Add(this);
         }
 

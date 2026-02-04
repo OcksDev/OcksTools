@@ -44,7 +44,7 @@
   - Renamed some methods to be more clear
   - Optimized non-lockable inputs (raw inputs), performance should be better on such cases
 - GIS Improvements
-  - Added dragging functionality for items between slots (W.I.P)
+  - Added left-click dragging functionality for items between slots
     - Also added ability for containers to opt-out of dragging
   - Optimized slot update code, batched update calls, and overall made it less taxing on background performance
 - Object Recorder System Improvements

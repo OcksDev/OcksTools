@@ -198,6 +198,8 @@ public class GISItem
          * false - not the same
          * true - are the same
          */
+        if (IsEmpty() || sexnut.IsEmpty()) return false;
+
         bool comp = Name == sexnut.Name;
 
         if (!usebase && comp)
