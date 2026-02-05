@@ -14,15 +14,15 @@ public class MenuTester : MonoBehaviour
         MenuHandler.CurrentMenuStates["m1"].OnOpen.Append(() => Debug.Log("m1_open"));
         MenuHandler.CurrentMenuStates["m1"].OnClose.Append(() => Debug.Log("m1_close"));
 
-        MenuHandler.CurrentMenuStates["m3"].OpeningAnimation = OXAnimationSet.FromBasic(OXDefaultAnimations.WobbleInEven);
-        MenuHandler.CurrentMenuStates["m3"].ClosingAnimation = OXAnimationSet.FromBasic(OXDefaultAnimations.TVOut);
+        MenuHandler.CurrentMenuStates["m3"].OpeningAnimation = OXAnimationSet.FromBasicWithHandoff(OXDefaultAnimations.WobbleInEven);
+        MenuHandler.CurrentMenuStates["m3"].ClosingAnimation = OXAnimationSet.FromBasicWithHandoff(OXDefaultAnimations.TVOut);
 
 
-        MenuHandler.CurrentMenuStates["m2"].OpeningAnimation = OXAnimationSet.FromBasic(OXDefaultAnimations.WobbleInVH);
-        MenuHandler.CurrentMenuStates["m2"].ClosingAnimation = OXAnimationSet.FromBasic(OXDefaultAnimations.EaseOutVH);
+        MenuHandler.CurrentMenuStates["m2"].OpeningAnimation = OXAnimationSet.FromBasicWithHandoff(OXDefaultAnimations.WobbleInVH);
+        MenuHandler.CurrentMenuStates["m2"].ClosingAnimation = OXAnimationSet.FromBasicWithHandoff(OXDefaultAnimations.EaseOutVH);
 
-        MenuHandler.CurrentMenuStates["m1"].OpeningAnimation = OXAnimationSet.FromBasic(OXDefaultAnimations.SpinInLeft);
-        MenuHandler.CurrentMenuStates["m1"].ClosingAnimation = OXAnimationSet.FromBasic(OXDefaultAnimations.SpinOutRight);
+        MenuHandler.CurrentMenuStates["m1"].OpeningAnimation = OXAnimationSet.FromBasicWithHandoff(OXDefaultAnimations.SpinInLeft);
+        MenuHandler.CurrentMenuStates["m1"].ClosingAnimation = OXAnimationSet.FromBasicWithHandoff(OXDefaultAnimations.SpinOutRight);
     }
 
     public IEnumerator m3open(MenuState cum)

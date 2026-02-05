@@ -19,11 +19,45 @@ public class NotificationSystem : SingleInstance<NotificationSystem>
         rt = NotifParent.GetComponent<RectTransform>();
     }
     public float pos_y_inperp = 0f;
+    public float pos_y = 0f;
+    private Vector2 mesize = Vector2.zero;
+    public bool reversed = false;
+
+    public void AddNotif(OXNotif n)
+    {
+        if (CurrentNotifs.Count >= MaxNotifsOnScreen)
+        {
+            backlog.Enqueue(n);
+        }
+        else
+        {
+            PublishNotif(n);
+        }
+    }
+
+    public void ClearAllNotifs()
+    {
+        backlog.Clear();
+        for (int i = 0; i < CurrentNotifs.Count; i++)
+        {
+            RemoveNotif(CurrentNotifs[0]);
+        }
+    }
+
+    public void RemoveNotif(OXNotif o)
+    {
+        if (!CurrentNotifs.Contains(o)) return;
+        CurrentNotifs.Remove(o);
+        StartCoroutine(KillProcess(o));
+    }
+
+
+
     private void Update()
     {
-        var pos_y = 0f;
-        var mesize = rt.GetActualSizeOfUI();
-        bool reversed = false;
+        pos_y = 0f;
+        mesize = rt.GetActualSizeOfUI();
+        reversed = false;
         if (stackingDirection == StackingDirection.BottomUp) reversed = !reversed;
         if (corner == PositionCorner.BottomLeft || corner == PositionCorner.BottomRight) reversed = !reversed;
         if (reversed)
@@ -44,92 +78,87 @@ public class NotificationSystem : SingleInstance<NotificationSystem>
         for (int i = 0; i < CurrentNotifs.Count; i++)
         {
             CurrentNotifs[i]._life -= Time.deltaTime;
-            var pos = Vector2.zero;
-            pos_y_inperp = pos_y;
-            if (reversed)
-                pos_y_inperp = -pos_y_inperp;
-            switch (corner)
-            {
-                case PositionCorner.TopLeft:
-                    pos.x = CurrentNotifs[i].size.x / 2;
-                    pos.y = -CurrentNotifs[i].size.y / 2;
-                    pos.x += HorizontalPadding;
-                    pos.y -= VerticalPadding;
-                    pos.y += pos_y_inperp;
-                    pos_y -= Spacing + CurrentNotifs[i].size.y;
-                    break;
-                case PositionCorner.TopRight:
-                    pos.x = -CurrentNotifs[i].size.x / 2 + mesize.x;
-                    pos.y = -CurrentNotifs[i].size.y / 2;
-                    pos.x -= HorizontalPadding;
-                    pos.y -= VerticalPadding;
-                    pos.y += pos_y_inperp;
-                    pos_y -= Spacing + CurrentNotifs[i].size.y;
-                    break;
-                case PositionCorner.BottomLeft:
-                    pos.x = CurrentNotifs[i].size.x / 2;
-                    pos.y = CurrentNotifs[i].size.y / 2 - mesize.y;
-                    pos.x += HorizontalPadding;
-                    pos.y += VerticalPadding;
-                    pos.y -= pos_y_inperp;
-                    pos_y -= Spacing + CurrentNotifs[i].size.y;
-                    break;
-                case PositionCorner.BottomRight:
-                    pos.x = -CurrentNotifs[i].size.x / 2 + mesize.x;
-                    pos.y = CurrentNotifs[i].size.y / 2 - mesize.y;
-                    pos.x -= HorizontalPadding;
-                    pos.y += VerticalPadding;
-                    pos.y -= pos_y_inperp;
-                    pos_y -= Spacing + CurrentNotifs[i].size.y;
-                    break;
-            }
-            pos.y += mesize.y;
-            pos.x -= mesize.x;
+            var pos = GetPos(CurrentNotifs[i].size, true);
             CurrentNotifs[i].target_pos = pos;
             CurrentNotifs[i].MoveToTarget();
             if (CurrentNotifs[i]._life <= 0)
             {
-                KillNotif(CurrentNotifs[i]);
+                RemoveNotif(CurrentNotifs[i]);
                 i--;
                 if (backlog.Count > 0) PublishNotif(backlog.Dequeue());
             }
 
         }
     }
-    public void AddNotif(OXNotif n)
+    public Vector2 GetPos(Vector2 size, bool allowchange)
     {
-        if (CurrentNotifs.Count >= MaxNotifsOnScreen)
+        var pos = Vector2.zero;
+        pos_y_inperp = pos_y;
+        if (reversed)
+            pos_y_inperp = -pos_y_inperp;
+        switch (corner)
         {
-            backlog.Enqueue(n);
+            case PositionCorner.TopLeft:
+                pos.x = size.x / 2;
+                pos.y = -size.y / 2;
+                pos.x += HorizontalPadding;
+                pos.y -= VerticalPadding;
+                pos.y += pos_y_inperp;
+                if (allowchange) pos_y -= Spacing + size.y;
+                break;
+            case PositionCorner.TopRight:
+                pos.x = -size.x / 2 + mesize.x;
+                pos.y = -size.y / 2;
+                pos.x -= HorizontalPadding;
+                pos.y -= VerticalPadding;
+                pos.y += pos_y_inperp;
+                if (allowchange) pos_y -= Spacing + size.y;
+                break;
+            case PositionCorner.BottomLeft:
+                pos.x = size.x / 2;
+                pos.y = size.y / 2 - mesize.y;
+                pos.x += HorizontalPadding;
+                pos.y += VerticalPadding;
+                pos.y -= pos_y_inperp;
+                if (allowchange) pos_y -= Spacing + size.y;
+                break;
+            case PositionCorner.BottomRight:
+                pos.x = -size.x / 2 + mesize.x;
+                pos.y = size.y / 2 - mesize.y;
+                pos.x -= HorizontalPadding;
+                pos.y += VerticalPadding;
+                pos.y -= pos_y_inperp;
+                if (allowchange) pos_y -= Spacing + size.y;
+                break;
         }
-        else
-        {
-            PublishNotif(n);
-        }
+        pos.y += mesize.y;
+        pos.x -= mesize.x;
+        return pos;
     }
 
-    public void ClearAllNotifs()
-    {
-        backlog.Clear();
-        for (int i = 0; i < CurrentNotifs.Count; i++)
-        {
-            KillNotif(CurrentNotifs[0]);
-        }
-    }
 
     public void PublishNotif(OXNotif o)
     {
         CurrentNotifs.Add(o);
         o._life = o.duration;
         o.Publish();
+        var d = o.notification.GetSpawnAnimation();
+        d.HandleHandoffs(o.notification.GetHandoffObjects());
+        StartCoroutine(d.PlayAnimation(this));
     }
-
-    public void KillNotif(OXNotif o)
+    public void KillObject(GameObject o)
     {
-        CurrentNotifs.Remove(o);
-        StartCoroutine(o.notification.KillProcess(o.notification.Nerd));
+        Destroy(o);
     }
 
+
+    public IEnumerator KillProcess(OXNotif o)
+    {
+        var d = o.notification.GetKillAnimation();
+        d.HandleHandoffs(o.notification.GetHandoffObjects());
+        yield return d.PlayAnimation(this);
+        o.notification.KillMe();
+    }
 
     public IEnumerator DestroyGameobject(GameObject o)
     {
@@ -176,11 +205,20 @@ public class OXNotif
     }
     public void Publish()
     {
-        var d = NotificationSystem.Instance.FuckYouAndSpawnTheNotifPrefabYouDingleButtWadd(notification.GetPrefab());
+        var n = NotificationSystem.Instance;
+        var d = n.FuckYouAndSpawnTheNotifPrefabYouDingleButtWadd(notification.GetPrefab());
         notification.Nerd = d;
         size = notification.CalculateInitial(d);
         rectTransform = notification.GetRectTransform(d);
         Vector2 start_pos = Vector2.zero;
+        if (n.CurrentNotifs.Count == 1)
+        {
+            start_pos = n.GetPos(size, false);
+        }
+        else
+        {
+            start_pos = n.CurrentNotifs[n.CurrentNotifs.Count - 2].rectTransform.anchoredPosition;
+        }
         rectTransform.anchoredPosition = start_pos;
     }
     public static implicit operator OXNotif(Notification n)
@@ -214,12 +252,16 @@ public abstract class Notification
         return _rectTransform;
     }
     public abstract GameObject GetPrefab();
-    public virtual IEnumerator KillProcess(GameObject spawned) => NotificationSystem.Instance.DestroyGameobject(spawned);
-    public virtual void KillMe(GameObject spawned) => NotificationSystem.Instance.KillNotif(oxnotifref);
+    public virtual BetterList<GameObject> GetHandoffObjects() => Nerd;
+    public virtual OXAnimationSet GetSpawnAnimation() => OXAnimationSet.FromBasicWithHandoff(OXDefaultAnimations.WobbleInEven);
+    public virtual OXAnimationSet GetKillAnimation() => OXAnimationSet.FromBasicWithHandoff(OXDefaultAnimations.EaseOutEven);
+    public virtual void KillMe() => NotificationSystem.Instance.KillObject(Nerd);
 
     public Notification Duration(float t)
     {
         _duration = t;
         return this;
     }
+
+
 }

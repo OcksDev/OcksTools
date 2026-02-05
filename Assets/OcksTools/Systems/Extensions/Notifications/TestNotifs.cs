@@ -8,7 +8,7 @@ public class TestNotifs : MonoBehaviour
         if (InputManager.IsKeyDown(KeyCode.Space))
         {
             x++;
-            NotificationSystem.Instance.AddNotif(new ExampleNotif(x));
+            NotificationSystem.Instance.AddNotif(new ExampleNotif(x).Duration(2));
         }
     }
 }

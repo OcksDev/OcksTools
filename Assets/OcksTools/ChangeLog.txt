@@ -4,6 +4,8 @@
 - New Pool Selector Tool
 - New Modular Chess System (W.I.P)
 - New BetterList type which lets you define lists with single items easier
+- New Animation Sets (and Animation Parts)
+  - Allows for decently flexible animation design
 - New(ish) OXComponents
   - Moved into general system folder from the GIS
   - Add/Get/Has/Compare/Save/Load methods have been moved to their own object/class

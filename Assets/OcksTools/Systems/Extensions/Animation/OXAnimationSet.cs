@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,9 +8,14 @@ public class OXAnimationSet
     public List<OXAnimationPart> parts = new();
     public Reactable<bool> HasCompleted = new(false);
 
-    public static OXAnimationSet FromBasic(System.Func<List<GameObject>, IEnumerator> s)
+    public static OXAnimationSet FromBasicWithHandoff(System.Func<List<GameObject>, IEnumerator> s)
     {
-        return new OXAnimationSet(new OXAnimationPart(s));
+        return new OXAnimationPart(s);
+    }
+
+    public static OXAnimationSet FromBasic(System.Func<List<GameObject>, IEnumerator> s, BetterList<GameObject> nerds)
+    {
+        return new OXAnimationPart(s, nerds);
     }
 
     public OXAnimationSet()
@@ -31,10 +35,20 @@ public class OXAnimationSet
         return this;
     }
 
+    public void HandleHandoffs(BetterList<GameObject> nerds)
+    {
+        foreach (var part in parts)
+        {
+            if (part.OutsideTargeting) part.gameObjects = nerds;
+        }
+    }
+
+
     public IEnumerator PlayAnimation(MonoBehaviour source)
     {
         foreach (var a in parts)
         {
+            a.OnPartStart.Invoke();
             switch (a._Playtype)
             {
                 case OXAnimationPlayType.WaitUntilComplete:
@@ -44,6 +58,7 @@ public class OXAnimationSet
                     source.StartCoroutine(a._Func.Invoke(a.gameObjects));
                     break;
             }
+            a.OnPartEnd.Invoke();
             if (a._Delay > 0) yield return new WaitForSeconds(a._Delay);
         }
         HasCompleted.SetValue(true);
@@ -53,6 +68,7 @@ public class OXAnimationSet
     //
     //public static implicit operator OXAnimationSet(System.Func<List<GameObject>, IEnumerator> r) => new OXAnimationSet(new OXAnimationPart(r));
 
+    public static implicit operator OXAnimationSet(OXAnimationPart r) => new OXAnimationSet(r);
 
     public enum OXAnimationPlayType
     {
@@ -68,6 +84,8 @@ public class OXAnimationPart
     public OXAnimationPlayType _Playtype = OXAnimationPlayType.WaitUntilComplete;
     public float _Delay = 0f;
     public bool OutsideTargeting = false;
+    public OXEvent OnPartStart = new();
+    public OXEvent OnPartEnd = new();
     public OXAnimationPart(System.Func<List<GameObject>, IEnumerator> f)
     {
         _Func = f;
@@ -93,27 +111,4 @@ public class OXAnimationPart
         this.gameObjects = gameObjects;
         return this;
     }
-}
-public static class AnimationExtensions
-{
-    public static OXAnimationSet AsAnimation(
-        this Func<List<GameObject>, IEnumerator> f
-    ) => new(new OXAnimationPart(f));
-}
-
-public readonly struct AnimationFunc
-{
-    public readonly Func<List<GameObject>, IEnumerator> _func;
-
-    public AnimationFunc(Func<List<GameObject>, IEnumerator> func)
-    {
-        _func = func;
-    }
-
-    public static implicit operator AnimationFunc(
-        Func<List<GameObject>, IEnumerator> func
-    ) => new(func);
-
-    public static implicit operator OXAnimationSet(AnimationFunc f)
-        => new(new OXAnimationPart(f._func));
 }

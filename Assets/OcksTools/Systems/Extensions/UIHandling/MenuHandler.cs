@@ -69,7 +69,7 @@ public class MenuHandler : SingleInstance<MenuHandler>
 
         if (!forced && !newstate && cum.ClosingAnimation != null)
         {
-            if (cum.ClosingAnimation.parts[0].OutsideTargeting) cum.ClosingAnimation.parts[0].GameObjects(cum.Objects);
+            cum.ClosingAnimation.HandleHandoffs(cum.Objects);
             yield return StartCoroutine(cum.ClosingAnimation.PlayAnimation(this));
         }
 
@@ -78,7 +78,7 @@ public class MenuHandler : SingleInstance<MenuHandler>
 
         if (!forced && newstate && cum.OpeningAnimation != null)
         {
-            if (cum.OpeningAnimation.parts[0].OutsideTargeting) cum.OpeningAnimation.parts[0].GameObjects(cum.Objects);
+            cum.OpeningAnimation.HandleHandoffs(cum.Objects);
             yield return StartCoroutine(cum.OpeningAnimation.PlayAnimation(this));
         }
 
