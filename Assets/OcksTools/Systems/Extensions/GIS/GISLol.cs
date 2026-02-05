@@ -68,6 +68,12 @@ public class GISLol : SingleInstance<GISLol>
         }
     }
     [HideInInspector]
+    public int DragLock = 0;
+    [HideInInspector]
+    public int SameFixedStop = 0;
+    [HideInInspector]
+    public int SameFrameStop = 0;
+    [HideInInspector]
     public Reactable<bool> MouseLeftClicking = new(false);
     [HideInInspector]
     public Reactable<bool> MouseRightClicking = new(false);
@@ -81,8 +87,14 @@ public class GISLol : SingleInstance<GISLol>
     public GISItem DragItemLeft = null;
     [HideInInspector]
     public GISItem DragItemRight = null;
+    private void FixedUpdate()
+    {
+        if (SameFixedStop > 0) SameFixedStop--;
+    }
+
     private void Update()
     {
+        if (SameFrameStop > 0) SameFrameStop--;
         Mouse_Displayer.item = Mouse_Held_Item;
         var za = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         za.z = 0;
@@ -93,19 +105,21 @@ public class GISLol : SingleInstance<GISLol>
             LoadTempForAll();
         }
 #endif
-        MouseLeftClicking.SetValue(InputManager.IsKey("shoot"));
-        MouseRightClicking.SetValue(InputManager.IsKey("alt_shoot"));
-        MouseLeftClickingDown.SetValue(InputManager.IsKeyDown("shoot"));
-        MouseRightClickingDown.SetValue(InputManager.IsKeyDown("alt_shoot"));
+        MouseLeftClicking.SetValue(DragLock != 2 && InputManager.IsKey("shoot"));
+        MouseRightClicking.SetValue(DragLock != 1 && InputManager.IsKey("alt_shoot"));
+        MouseLeftClickingDown.SetValue(DragLock != 2 && InputManager.IsKeyDown("shoot"));
+        MouseRightClickingDown.SetValue(DragLock != 1 && InputManager.IsKeyDown("alt_shoot"));
         if (MouseLeftClicking.HasChanged())
         {
             if (MouseLeftClicking)
             {
                 //active?
+                DragLock = 1;
             }
             else
             {
                 DragSlotsLeft.Clear();
+                DragLock = 0;
             }
         }
         if (MouseRightClicking.HasChanged())
@@ -113,10 +127,12 @@ public class GISLol : SingleInstance<GISLol>
             if (MouseRightClicking)
             {
                 //active?
+                DragLock = 2;
             }
             else
             {
                 DragSlotsRight.Clear();
+                DragLock = 0;
             }
         }
 

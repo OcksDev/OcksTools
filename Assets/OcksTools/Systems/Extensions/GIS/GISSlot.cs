@@ -63,8 +63,8 @@ public class GISSlot : MonoBehaviour
         var g = GISLol.Instance;
         if (FailToClick()) return;
         if (!IsHovering()) return;
-        bool left = GISLol.Instance.MouseLeftClickingDown;
-        bool right = GISLol.Instance.MouseRightClickingDown;
+        bool left = GISLol.Instance.MouseLeftClickingDown && GISLol.Instance.DragLock != 2;
+        bool right = GISLol.Instance.MouseRightClickingDown && GISLol.Instance.DragLock != 1;
 
         if (Conte.CanDragDistributeItems)
         {
@@ -116,7 +116,8 @@ public class GISSlot : MonoBehaviour
     public void DragLeft()
     {
         var g = GISLol.Instance;
-        Debug.Log("A");
+        if (g.SameFixedStop > 0) return;
+        if (g.SameFrameStop > 0) return;
         if (!Held_Item.IsEmpty() && !Held_Item.Compare(g.DragItemLeft)) return;
         if (Held_Item.IsEmpty())
         {
@@ -161,6 +162,16 @@ public class GISSlot : MonoBehaviour
         if (nerds.Count == 0 && rem > 0)
         {
             Debug.LogError("???"); // this means that its trying to distribute more items, but all the slots are somehow filled?
+        }
+        int t = 0;
+        foreach (var a in g.DragSlotsLeft)
+        {
+            t += a.Held_Item.Amount;
+        }
+        if (t < g.DragItemLeft.Amount)
+        {
+            Debug.LogError("Items:" + (t - g.DragItemLeft.Amount));
+            Debug.LogError($"{t}, {g.DragItemLeft.Amount}");
         }
     }
 
@@ -291,13 +302,8 @@ public class GISSlot : MonoBehaviour
         Held_Item.AddConnection(Conte);
         SaveItemContainerData();
 
-        if (Conte.CanDragDistributeItems && !g.Mouse_Held_Item.IsEmpty())
-        {
-            GISLol.Instance.DragItemLeft = new GISItem(g.Mouse_Held_Item);
-            if (Held_Item.Compare(g.Mouse_Held_Item)) StoredAmount = Held_Item.Amount;
-            else StoredAmount = 0;
-            GISLol.Instance.DragSlotsLeft.Add(this);
-        }
+        int xx = Held_Item.Amount;
+        var it = new GISItem(Held_Item);
 
         if (DoubleClickTimer >= 0)
         {
@@ -373,11 +379,11 @@ public class GISSlot : MonoBehaviour
             //double click code
             DoubleClickTimer = -69f;
 
+            int x = g.ItemDict[g.Mouse_Held_Item.Name].MaxAmount;
             foreach (var slot in Conte.slots)
             {
                 if (slot != this && slot.Held_Item.Compare(g.Mouse_Held_Item))
                 {
-                    int x = g.ItemDict[g.Mouse_Held_Item.Name].MaxAmount;
                     if (x != 0 && g.Mouse_Held_Item.Amount + slot.Held_Item.Amount > x)
                     {
                         slot.Held_Item.Amount = slot.Held_Item.Amount - (x - g.Mouse_Held_Item.Amount);
@@ -400,6 +406,21 @@ public class GISSlot : MonoBehaviour
             g.Mouse_Held_Item.AddConnection(Conte);
 
         }
+
+
+        if (Conte.CanDragDistributeItems && !Held_Item.IsEmpty())
+        {
+            g.DragSlotsLeft.Clear();
+            g.DragItemLeft = new GISItem(Held_Item);
+            if (xx > 0) g.DragItemLeft.Amount -= xx;
+            if (Held_Item.Compare(it)) StoredAmount = xx;
+            else StoredAmount = 0;
+            g.SameFixedStop = 1;
+            g.SameFrameStop = 3;
+            g.DragSlotsLeft.Add(this);
+        }
+
+
         SaveItemContainerData();
         OnInteract();
     }
@@ -411,13 +432,8 @@ public class GISSlot : MonoBehaviour
         SaveItemContainerData();
         var a = g.Mouse_Held_Item;
 
-        if (Conte.CanDragDistributeItems && !g.Mouse_Held_Item.IsEmpty())
-        {
-            GISLol.Instance.DragItemRight = g.Mouse_Held_Item;
-            if (Held_Item.Compare(g.Mouse_Held_Item)) StoredAmount = Held_Item.Amount;
-            else StoredAmount = 0;
-            GISLol.Instance.DragSlotsRight.Add(this);
-        }
+        int xx = Held_Item.Amount;
+        var it = new GISItem(Held_Item);
 
         if (Held_Item.IsEmpty())
         {
@@ -464,6 +480,16 @@ public class GISSlot : MonoBehaviour
                     }
                 }
             }
+        }
+
+        if (Conte.CanDragDistributeItems && !Held_Item.IsEmpty())
+        {
+            g.DragSlotsRight.Clear();
+            g.DragItemRight = Held_Item;
+            if (Held_Item.Compare(it)) StoredAmount = Held_Item.Amount;
+            else StoredAmount = 0;
+            g.SameFixedStop = 1;
+            GISLol.Instance.DragSlotsRight.Add(this);
         }
 
         SaveItemContainerData();
