@@ -44,9 +44,10 @@
   - Renamed some methods to be more clear
   - Optimized non-lockable inputs (raw inputs), performance should be better on such cases
 - GIS Improvements
-  - Added left-click dragging functionality for items between slots
-    - Also added ability for containers to opt-out of dragging
-  - Optimized slot update code, batched update calls, and overall made it less taxing on background performance
+  - Added left-click dragging functionality
+  - Added right-click dragging functionality
+  - Also added ability for containers to opt-out of dragging
+  - Optimized slot update code, batched update calls, and overall made it a bit less taxing on background performance
 - Object Recorder System Improvements
   - Stop+Pickup now works when playing a recording backwards
 - TextFromData Improvements
@@ -66,6 +67,7 @@
   - Reactive now shows up in the inspector
   - CompileableDictionary and CompileableDictionaryAlt now inherit from Dictionary, so they are easier to use now
   - Weighted Averages modified to use Multiref and be slightly cooler
+  - New InputShow test script
   - CameraLol renamed to Camera2D
 ------------
 

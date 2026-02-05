@@ -74,7 +74,7 @@ public class GISSlot : MonoBehaviour
             }
             else if (GISLol.Instance.MouseRightClicking && !right && GISLol.Instance.DragSlotsRight.Count > 0 && !GISLol.Instance.DragSlotsRight.Contains(this))
             {
-                //DragRight();
+                DragRight();
             }
         }
 
@@ -128,7 +128,7 @@ public class GISSlot : MonoBehaviour
             StoredAmount = Held_Item.Amount;
         }
         g.DragSlotsLeft.Add(this);
-        if (g.DragItemLeft.Compare(g.Mouse_Held_Item)) GISLol.Instance.Mouse_Held_Item = new GISItem();
+        if (g.DragItemLeft.Compare(g.Mouse_Held_Item) && g.DragItemLeft.Amount > 0) GISLol.Instance.Mouse_Held_Item = new GISItem();
         int rem = g.DragItemLeft.Amount;
         int max = GISLol.Instance.ItemDict[g.DragItemLeft.Name].MaxAmount;
         List<GISSlot> nerds = new List<GISSlot>(g.DragSlotsLeft);
@@ -173,6 +173,36 @@ public class GISSlot : MonoBehaviour
             Debug.LogError("Items:" + (t - g.DragItemLeft.Amount));
             Debug.LogError($"{t}, {g.DragItemLeft.Amount}");
         }
+    }
+    public void DragRight()
+    {
+        var g = GISLol.Instance;
+        if (g.Mouse_Held_Item.IsEmpty())
+        {
+            g.DragSlotsRight.Add(this);
+            return;
+        }
+        if (g.SameFixedStop > 0) return;
+        if (g.SameFrameStop > 0) return;
+        if (!Held_Item.IsEmpty() && !Held_Item.Compare(g.Mouse_Held_Item)) return;
+        g.DragSlotsRight.Add(this);
+        int max = GISLol.Instance.ItemDict[g.Mouse_Held_Item.Name].MaxAmount;
+        if (max > 0 && Held_Item.Amount >= max) return;
+        if (Held_Item.IsEmpty())
+        {
+            Held_Item = new GISItem(g.Mouse_Held_Item);
+            Held_Item.Amount = 1;
+        }
+        else
+        {
+            Held_Item.Amount++;
+        }
+        g.Mouse_Held_Item.Amount--;
+        if (g.Mouse_Held_Item.Amount <= 0)
+        {
+            g.Mouse_Held_Item = new GISItem();
+        }
+
     }
 
     public int _DistributeToNerds(List<GISSlot> nerds, GISItem item, int amnt, int max)
@@ -412,8 +442,11 @@ public class GISSlot : MonoBehaviour
         {
             g.DragSlotsLeft.Clear();
             g.DragItemLeft = new GISItem(Held_Item);
-            if (xx > 0) g.DragItemLeft.Amount -= xx;
-            if (Held_Item.Compare(it)) StoredAmount = xx;
+            if (Held_Item.Compare(it))
+            {
+                if (xx > 0) g.DragItemLeft.Amount -= xx;
+                StoredAmount = xx;
+            }
             else StoredAmount = 0;
             g.SameFixedStop = 1;
             g.SameFrameStop = 3;
@@ -468,7 +501,7 @@ public class GISSlot : MonoBehaviour
             else if (Held_Item.Compare(a))
             {
                 int max = g.ItemDict[Held_Item.Name].MaxAmount;
-                if (max == 0 || Held_Item.Amount < max)
+                if (max <= 0 || Held_Item.Amount < max)
                 {
                     Held_Item.Amount++;
                     Held_Item.AddConnection(g.Mouse_Held_Item.Container);
@@ -485,10 +518,6 @@ public class GISSlot : MonoBehaviour
         if (Conte.CanDragDistributeItems && !Held_Item.IsEmpty())
         {
             g.DragSlotsRight.Clear();
-            g.DragItemRight = Held_Item;
-            if (Held_Item.Compare(it)) StoredAmount = Held_Item.Amount;
-            else StoredAmount = 0;
-            g.SameFixedStop = 1;
             GISLol.Instance.DragSlotsRight.Add(this);
         }
 

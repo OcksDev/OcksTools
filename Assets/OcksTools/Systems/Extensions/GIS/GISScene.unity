@@ -443,6 +443,7 @@ MonoBehaviour:
   Name: I3
   SaveLoadData: 0
   IsAbstract: 0
+  CanDragDistributeItems: 1
   CanShiftClickItems: 1
   CanCtrlClickItems: 1
   CanDoubleClickItems: 1
@@ -1264,6 +1265,7 @@ MonoBehaviour:
   Name: Inventory2
   SaveLoadData: 0
   IsAbstract: 0
+  CanDragDistributeItems: 1
   CanShiftClickItems: 1
   CanCtrlClickItems: 1
   CanDoubleClickItems: 1
@@ -1758,7 +1760,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4007473491773129349, guid: 32aa07c1d97c2ed4cac286e0d66c9ab0, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -35.649994
+      value: -35.650024
       objectReference: {fileID: 0}
     - target: {fileID: 4049151182853182029, guid: 32aa07c1d97c2ed4cac286e0d66c9ab0, type: 3}
       propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
@@ -1874,6 +1876,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 239615115153129982, guid: 15999149b1cb19249bd578c805580479, type: 3}
+      propertyPath: item.Name
+      value: Drugs
+      objectReference: {fileID: 0}
     - target: {fileID: 239615115153129982, guid: 15999149b1cb19249bd578c805580479, type: 3}
       propertyPath: item.Amount
       value: 10
@@ -3032,6 +3038,7 @@ MonoBehaviour:
   Name: Inventory
   SaveLoadData: 1
   IsAbstract: 0
+  CanDragDistributeItems: 1
   CanShiftClickItems: 1
   CanCtrlClickItems: 1
   CanDoubleClickItems: 1
@@ -3809,6 +3816,7 @@ MonoBehaviour:
   Name: AbstractThingy
   SaveLoadData: 1
   IsAbstract: 1
+  CanDragDistributeItems: 1
   CanShiftClickItems: 1
   CanCtrlClickItems: 1
   CanDoubleClickItems: 1

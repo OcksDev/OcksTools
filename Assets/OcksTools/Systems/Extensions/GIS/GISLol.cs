@@ -85,8 +85,6 @@ public class GISLol : SingleInstance<GISLol>
     public List<GISSlot> DragSlotsRight = new();
     [HideInInspector]
     public GISItem DragItemLeft = null;
-    [HideInInspector]
-    public GISItem DragItemRight = null;
     private void FixedUpdate()
     {
         if (SameFixedStop > 0) SameFixedStop--;
