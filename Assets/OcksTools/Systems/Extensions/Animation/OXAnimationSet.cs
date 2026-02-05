@@ -91,7 +91,7 @@ public class OXAnimationPart
         _Func = f;
         OutsideTargeting = true;
     }
-    public OXAnimationPart(System.Func<List<GameObject>, IEnumerator> f, List<GameObject> gameObjects)
+    public OXAnimationPart(System.Func<List<GameObject>, IEnumerator> f, BetterList<GameObject> gameObjects)
     {
         _Func = f;
         this.gameObjects = gameObjects;
