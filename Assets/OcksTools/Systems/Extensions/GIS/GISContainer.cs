@@ -16,6 +16,8 @@ public class GISContainer : MonoBehaviour
     [HideIf("IsAbstract")]
     public bool CanShiftClickItems = true;
     [HideIf("IsAbstract")]
+    public bool CanMassShiftClickItems = true;
+    [HideIf("IsAbstract")]
     public bool CanCtrlClickItems = true;
     [HideIf("IsAbstract")]
     public bool CanDoubleClickItems = true;

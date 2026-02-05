@@ -48,7 +48,11 @@
 - GIS Improvements
   - Added left-click dragging functionality
   - Added right-click dragging functionality
-  - Also added ability for containers to opt-out of dragging
+  - Added mass shift clicking functionality
+    - shift+ctrl applies a shift-click to all items in the container
+    - shift+alt applies a shift-click to all items that are the same as the targeted slot in the container
+  - Added ability for containers to opt-out of dragging
+  - Added ability for containers to opt-out of mass shift clicking
   - Optimized slot update code, batched update calls, and overall made it a bit less taxing on background performance
 - Object Recorder System Improvements
   - Stop+Pickup now works when playing a recording backwards

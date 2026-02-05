@@ -445,6 +445,7 @@ MonoBehaviour:
   IsAbstract: 0
   CanDragDistributeItems: 1
   CanShiftClickItems: 1
+  CanMassShiftClickItems: 1
   CanCtrlClickItems: 1
   CanDoubleClickItems: 1
   CtrlClickPriority: -1
@@ -1267,6 +1268,7 @@ MonoBehaviour:
   IsAbstract: 0
   CanDragDistributeItems: 1
   CanShiftClickItems: 1
+  CanMassShiftClickItems: 1
   CanCtrlClickItems: 1
   CanDoubleClickItems: 1
   CtrlClickPriority: 0
@@ -3040,6 +3042,7 @@ MonoBehaviour:
   IsAbstract: 0
   CanDragDistributeItems: 1
   CanShiftClickItems: 1
+  CanMassShiftClickItems: 1
   CanCtrlClickItems: 1
   CanDoubleClickItems: 1
   CtrlClickPriority: 0
@@ -3818,6 +3821,7 @@ MonoBehaviour:
   IsAbstract: 1
   CanDragDistributeItems: 1
   CanShiftClickItems: 1
+  CanMassShiftClickItems: 1
   CanCtrlClickItems: 1
   CanDoubleClickItems: 1
   CtrlClickPriority: -1

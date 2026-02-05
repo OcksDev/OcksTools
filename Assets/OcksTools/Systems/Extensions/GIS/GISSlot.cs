@@ -81,6 +81,7 @@ public class GISSlot : MonoBehaviour
         if (!(left || right)) return;
         bool shift = InputManager.IsKey("item_alt");
         bool ctrl = InputManager.IsKey("item_mod");
+        bool alt = InputManager.IsKey("item_change");
         switch (Name)
         {
             default:
@@ -88,7 +89,15 @@ public class GISSlot : MonoBehaviour
                 {
                     if (left || right)
                     {
-                        ShiftClick(left);
+                        if (Conte.CanMassShiftClickItems && ctrl)
+                        {
+                            MassShiftClick(left, false);
+                        }
+                        else if (Conte.CanMassShiftClickItems && alt)
+                        {
+                            MassShiftClick(left, true);
+                        }
+                        else ShiftClick(left);
                     }
                 }
                 else if (Conte.CanCtrlClickItems && ctrl)
@@ -322,7 +331,17 @@ public class GISSlot : MonoBehaviour
         OnInteract();
     }
 
-
+    public void MassShiftClick(bool wasleft, bool requiresame)
+    {
+        for (int i = 0; i < Conte.slots.Count; i++)
+        {
+            int j = i;
+            if (!wasleft) j = (Conte.slots.Count - 1) - i;
+            if (Conte.slots[j].Held_Item.IsEmpty()) continue;
+            if (requiresame && !Held_Item.Compare(Conte.slots[j].Held_Item)) continue;
+            Conte.slots[j].ShiftClick(wasleft);
+        }
+    }
 
 
     public void LeftClick()

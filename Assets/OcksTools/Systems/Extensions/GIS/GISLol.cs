@@ -40,6 +40,7 @@ public class GISLol : SingleInstance<GISLol>
             InputManager.CreateKeyAllocation("item_pick", KeyCode.Mouse2);
             InputManager.CreateKeyAllocation("item_alt", KeyCode.LeftShift);
             InputManager.CreateKeyAllocation("item_mod", KeyCode.LeftControl);
+            InputManager.CreateKeyAllocation("item_change", KeyCode.LeftAlt);
         });
     }
 
