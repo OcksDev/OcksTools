@@ -73,6 +73,7 @@
   - New method to collapse repeating strings into more compressed forms
   - New method to expand compressed string forms back into full strings
   - New extension methods TimeStablePow and TimeStableLerp, makes doing lerps and pows consistent across framerate and timescale 
+  - New extension methods AllignX, AllignY, and AllignZ, which condenses some logic repitiion
 - Misc
   - Added safety checks to StringToList and EscapedStringToList to allow for returning empty lists on empty strings
   - New CompileableDictionaryAlt, allows you to define your own dictionary compiling method

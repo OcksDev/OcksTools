@@ -673,4 +673,75 @@ public static class OXFunctions
         }
         return ti;
     }
+
+    public static Vector3 AllignZ(this Vector3 v, float z)
+    {
+        v.z = z;
+        return v;
+    }
+
+    public static Vector3 AllignZ(this Vector3 v, Vector3 z)
+    {
+        v.z = z.z;
+        return v;
+    }
+
+    public static Vector3 AllignZ(this Vector3 v, Transform z)
+    {
+        v.z = z.position.z;
+        return v;
+    }
+
+    public static Vector3 AllignZ(this Vector3 v, Camera z)
+    {
+        v.z = z.transform.position.z;
+        return v;
+    }
+
+    public static Vector3 AllignY(this Vector3 v, float z)
+    {
+        v.y = z;
+        return v;
+    }
+
+    public static Vector3 AllignY(this Vector3 v, Vector3 z)
+    {
+        v.y = z.y;
+        return v;
+    }
+
+    public static Vector3 AllignY(this Vector3 v, Transform z)
+    {
+        v.y = z.position.y;
+        return v;
+    }
+
+    public static Vector3 AllignY(this Vector3 v, Camera z)
+    {
+        v.y = z.transform.position.y;
+        return v;
+    }
+    public static Vector3 AllignX(this Vector3 v, float z)
+    {
+        v.x = z;
+        return v;
+    }
+
+    public static Vector3 AllignX(this Vector3 v, Vector3 z)
+    {
+        v.x = z.x;
+        return v;
+    }
+
+    public static Vector3 AllignX(this Vector3 v, Transform z)
+    {
+        v.x = z.position.x;
+        return v;
+    }
+
+    public static Vector3 AllignX(this Vector3 v, Camera z)
+    {
+        v.x = z.transform.position.x;
+        return v;
+    }
 }
