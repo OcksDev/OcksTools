@@ -698,6 +698,12 @@ public static class OXFunctions
         return v;
     }
 
+    public static Vector3 AllignZ(this Vector3 v, Camera2D z)
+    {
+        v.z = z.transform.position.z;
+        return v;
+    }
+
     public static Vector3 AllignY(this Vector3 v, float z)
     {
         v.y = z;
@@ -721,6 +727,12 @@ public static class OXFunctions
         v.y = z.transform.position.y;
         return v;
     }
+
+    public static Vector3 AllignY(this Vector3 v, Camera2D z)
+    {
+        v.y = z.transform.position.y;
+        return v;
+    }
     public static Vector3 AllignX(this Vector3 v, float z)
     {
         v.x = z;
@@ -740,6 +752,12 @@ public static class OXFunctions
     }
 
     public static Vector3 AllignX(this Vector3 v, Camera z)
+    {
+        v.x = z.transform.position.x;
+        return v;
+    }
+
+    public static Vector3 AllignX(this Vector3 v, Camera2D z)
     {
         v.x = z.transform.position.x;
         return v;
