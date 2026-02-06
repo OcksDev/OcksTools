@@ -68,11 +68,22 @@ public class SoundSystem : SingleInstance<SoundSystem>
         }
         SoundMod.Invoke();
         sound._volume *= pvolume;
-        if (sound._pos == null) sound.psource = FindOpenSource(sound, findexisting);
+        sound.psource = FindOpenSource(sound, findexisting);
     }
 
     public AudioSource FindOpenSource(OXSound sound, bool findexisting = false)
     {
+        if (sound._pos != null)
+        {
+            Debug.Log("Running");
+            var d = new GameObject("OXBetterOneShot");
+            d.transform.position = sound._pos.Value;
+            var sex2 = d.AddComponent<AudioSource>();
+            sex2.clip = AudioClipDict[sound.name].Clip;
+            var sex3 = d.AddComponent<OneShotAudioKiller>();
+            sex3.nb = sex2;
+            return sex2;
+        }
         if (findexisting)
         {
             foreach (var penis in AudioSources)
@@ -108,6 +119,8 @@ public class SoundSystem : SingleInstance<SoundSystem>
         p.panStereo = sound._pan;
         p.bypassEffects = sound._bypass;
         p.loop = sound._loop;
+        p.priority = sound._priority;
+        p.spatialBlend = sound._spaceblend;
         if (sound._rand_min != null)
         {
             p.pitch *= Random.Range(sound._rand_min.Value, sound._rand_max.Value);
@@ -115,14 +128,7 @@ public class SoundSystem : SingleInstance<SoundSystem>
         volume *= MasterVolume;
         volume *= sound._volume;
         p.volume = volume;
-        if (sound._pos != null)
-        {
-            AudioSource.PlayClipAtPoint(p.clip, sound._pos.Value, volume);
-        }
-        else
-        {
-            p.Play();
-        }
+        p.Play();
         return sound;
     }
 
@@ -158,6 +164,8 @@ public class OXSound
     public float? _rand_max;
     public float _volume = 1;
     public float _pan = 0;
+    public float _spaceblend = 0;
+    public byte _priority = 128;
     public bool _clipping = false;
     public bool _bypass = false;
     public bool _loop = false;
@@ -188,6 +196,7 @@ public class OXSound
     {
         //for 2d games MAKE SURE THE [z] CORDINATE IS SET TO THE SAME AS THE CAMERA
         _pos = v;
+        _spaceblend = 1;
         return this;
     }
     public OXSound Clipping()
@@ -208,6 +217,16 @@ public class OXSound
     public OXSound MaxDistance(float x)
     {
         _maxd = x;
+        return this;
+    }
+    public OXSound SpacialBlend(float x)
+    {
+        _spaceblend = x;
+        return this;
+    }
+    public OXSound Priority(byte x)
+    {
+        _priority = x;
         return this;
     }
 

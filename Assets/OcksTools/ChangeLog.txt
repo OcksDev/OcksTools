@@ -14,6 +14,8 @@
   - Added GenerateCopy() method to create a copy of a component on a new object
     - Also created default CopyUsingString() method, an easy but inefficient way to copy components
   - Components no longer need to be manually initialized
+- New Audio folder inside OXResources
+  - Added some misc sound effects that I had lying around
 - Complete Notification System Remake
   - Deleted all previous code and started from scratch, now much more interchangeable and expandable
   - Anchoring Notifications to corners now applies to rect transform of parent instead of canvas space, making it much more flexible in where notifications can be placed
@@ -45,6 +47,10 @@
   - Added ability for containers to opt-out of dragging
   - Added ability for containers to opt-out of mass shift clicking
   - Optimized slot update code, batched update calls, and overall made it a bit less taxing on background performance
+- Sound System Improvements
+  - No longer relies on PlayClipAtPoint (I made my own implementation) so spacial audio now works betterer
+  - Added Priority attribute on OXSounds
+  - Added Spacial Blend attribute on OXSounds
 - Achievement Improvements
   - New layered ox event for achievements being granted
   - CompileDict now accounts for non-saved achievements
