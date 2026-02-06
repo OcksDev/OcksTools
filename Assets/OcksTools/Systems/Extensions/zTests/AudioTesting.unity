@@ -631,9 +631,9 @@ MonoBehaviour:
   MasterVolume: 1
   SFXVolume: 1
   MusicVolume: 1
-  AudioClips:
-  - Name: VB
-    Clip: {fileID: 8300000, guid: 55743f816bc32a945884635823003558, type: 3}
+  AudioClips: []
+  AudioLibraries:
+  - {fileID: 11400000, guid: 7be7f7393d9392347b692f4f33a39a06, type: 2}
 --- !u!1 &1102718154
 GameObject:
   m_ObjectHideFlags: 0

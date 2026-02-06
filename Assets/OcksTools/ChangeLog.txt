@@ -48,6 +48,7 @@
   - Added ability for containers to opt-out of mass shift clicking
   - Optimized slot update code, batched update calls, and overall made it a bit less taxing on background performance
 - Sound System Improvements
+  - New AudioLibrary (Scriptable Object) assets, pre-defined collections of sound effects that can just be thrown in as needed
   - No longer relies on PlayClipAtPoint (I made my own implementation) so spacial audio now works betterer
   - Added Priority attribute on OXSounds
   - Added Spacial Blend attribute on OXSounds
@@ -81,6 +82,7 @@
   - CompileableDictionary and CompileableDictionaryAlt now inherit from Dictionary, so they are easier to use now
   - Weighted Averages modified to use Multiref and be slightly cooler
   - New InputShow test script
+  - New AdditionalScripts folder in the main systems folder, not an extension, to hold additional stuff that is less central
   - CameraLol renamed to Camera2D
 ------------
 

@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 128f819acbcf5494f9bf8132562b4045, type: 3}
+  m_Name: MemeLibrary
+  m_EditorClassIdentifier: Assembly-CSharp::AudioLibrary
+  Datas:
+  - Name: Correct
+    Clip: {fileID: 8300000, guid: b946100d2e044674dba1ad459b9c4ba9, type: 3}
+  - Name: Incorrect
+    Clip: {fileID: 8300000, guid: 9cc3c98681ab43641ba76b6aa71e4f66, type: 3}
+  - Name: Vine Boom
+    Clip: {fileID: 8300000, guid: 55743f816bc32a945884635823003558, type: 3}
+  - Name: Fart
+    Clip: {fileID: 8300000, guid: 6169b98144f3f124aa95424c46c98a88, type: 3}
+  - Name: Emoji Death
+    Clip: {fileID: 8300000, guid: bc6e52dc253fb9348bf408e24fed0dec, type: 3}
+  - Name: Windows Error
+    Clip: {fileID: 8300000, guid: b856a531b0bb69849b4e8e00bcb3d757, type: 3}
+  - Name: PH Intro
+    Clip: {fileID: 8300000, guid: 67c8f6d95f97a434caba87ea6256a145, type: 3}
+  - Name: Quack
+    Clip: {fileID: 8300000, guid: a49c1e08552d7dd46a71dcf2fe811e05, type: 3}
+  - Name: Metal Pipe
+    Clip: {fileID: 8300000, guid: f672f204c08fce24183015e97e9a2ca2, type: 3}
+  - Name: Metal Pipe
+    Clip: {fileID: 8300000, guid: f672f204c08fce24183015e97e9a2ca2, type: 3}
+  - Name: Bruh
+    Clip: {fileID: 8300000, guid: 1b84308ea1ea58e47a1338eba4fef0b3, type: 3}
+  - Name: Prowler
+    Clip: {fileID: 8300000, guid: ab47f7f6c3700804abd81e3e3fad5561, type: 3}
+  - Name: Cheer
+    Clip: {fileID: 8300000, guid: 8d8c0bf39c03841429e7768819ac6a53, type: 3}

@@ -15,6 +15,7 @@ public class SoundSystem : SingleInstance<SoundSystem>
     public float SFXVolume = 1;
     public float MusicVolume = 1;
     public List<OXSoundData> AudioClips = new List<OXSoundData>();
+    public List<AudioLibrary> AudioLibraries = new List<AudioLibrary>();
     public Dictionary<string, OXSoundData> AudioClipDict = new Dictionary<string, OXSoundData>();
     private List<AudioSource> AudioSources = new List<AudioSource>();
 
@@ -24,9 +25,16 @@ public class SoundSystem : SingleInstance<SoundSystem>
 
     public override void Awake2()
     {
+        foreach (var l in AudioLibraries)
+        {
+            foreach (var s in l.Datas)
+            {
+                AudioClipDict.AddOrUpdate(s.Name, s);
+            }
+        }
         foreach (var s in AudioClips)
         {
-            AudioClipDict.Add(s.Name, s);
+            AudioClipDict.AddOrUpdate(s.Name, s);
         }
     }
     private void Start()
