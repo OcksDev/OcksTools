@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class SoundSystem : SingleInstance<SoundSystem>
 {
@@ -16,7 +17,9 @@ public class SoundSystem : SingleInstance<SoundSystem>
     public float MusicVolume = 1;
     public List<OXSoundData> AudioClips = new List<OXSoundData>();
     public List<AudioLibrary> AudioLibraries = new List<AudioLibrary>();
+    public List<OXMixerData> AudioMixers = new List<OXMixerData>();
     public Dictionary<string, OXSoundData> AudioClipDict = new Dictionary<string, OXSoundData>();
+    public Dictionary<string, AudioMixerGroup> AudioMixerDict = new Dictionary<string, AudioMixerGroup>();
     private List<AudioSource> AudioSources = new List<AudioSource>();
 
 
@@ -29,12 +32,20 @@ public class SoundSystem : SingleInstance<SoundSystem>
         {
             foreach (var s in l.Datas)
             {
-                AudioClipDict.AddOrUpdate(s.Name, s);
+                AddSound(s);
+            }
+            foreach (var s in l.Mixers)
+            {
+                AddMixer(s);
             }
         }
         foreach (var s in AudioClips)
         {
-            AudioClipDict.AddOrUpdate(s.Name, s);
+            AddSound(s);
+        }
+        foreach (var s in AudioMixers)
+        {
+            AddMixer(s);
         }
     }
     private void Start()
@@ -43,7 +54,11 @@ public class SoundSystem : SingleInstance<SoundSystem>
     }
     public void AddSound(OXSoundData s)
     {
-        AudioClipDict.Add(s.Name, s);
+        AudioClipDict.AddOrUpdate(s.Name, s);
+    }
+    public void AddMixer(OXMixerData s)
+    {
+        AudioMixerDict.AddOrUpdate(s.Name, s.Mixer);
     }
     public void ModSound(OXSound sound, bool findexisting = false)
     {
@@ -123,6 +138,7 @@ public class SoundSystem : SingleInstance<SoundSystem>
         ModSound(sound, sound._clipping);
         var volume = 1f;
         var p = sound.psource;
+        p.outputAudioMixerGroup = sound._mixer;
         p.pitch = sound._pitch;
         p.panStereo = sound._pan;
         p.bypassEffects = sound._bypass;
@@ -162,11 +178,18 @@ public class OXSoundData
     public string Name;
     public AudioClip Clip;
 }
+[System.Serializable]
+public class OXMixerData
+{
+    public string Name;
+    public AudioMixerGroup Mixer;
+}
 public class OXSound
 {
     public string name;
     public AudioClip clip;
     public AudioSource psource;
+    public AudioMixerGroup _mixer = null;
     public float _pitch = 1;
     public float? _rand_min;
     public float? _rand_max;
@@ -235,6 +258,16 @@ public class OXSound
     public OXSound Priority(byte x)
     {
         _priority = x;
+        return this;
+    }
+    public OXSound Mixer(string x)
+    {
+        _mixer = SoundSystem.Instance.AudioMixerDict[x];
+        return this;
+    }
+    public OXSound Mixer(AudioMixerGroup x)
+    {
+        _mixer = x;
         return this;
     }
 

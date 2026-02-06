@@ -39,3 +39,4 @@ MonoBehaviour:
     Clip: {fileID: 8300000, guid: ab47f7f6c3700804abd81e3e3fad5561, type: 3}
   - Name: Cheer
     Clip: {fileID: 8300000, guid: 8d8c0bf39c03841429e7768819ac6a53, type: 3}
+  Mixers: []

@@ -5,4 +5,5 @@ using UnityEngine;
 public class AudioLibrary : ScriptableObject
 {
     public List<OXSoundData> Datas = new();
+    public List<OXMixerData> Mixers = new();
 }
