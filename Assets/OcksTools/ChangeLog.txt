@@ -1,6 +1,6 @@
 
 ------------
-   v1.1.5
+   v1.2.0
 - New Pool Selector Tool
 - New Modular Chess System (W.I.P)
 - New BetterList type which lets you define lists with single items easier
