@@ -14,8 +14,6 @@
   - Added GenerateCopy() method to create a copy of a component on a new object
     - Also created default CopyUsingString() method, an easy but inefficient way to copy components
   - Components no longer need to be manually initialized
-- New Audio folder inside OXResources
-  - Added some misc sound effects that I had lying around
 - Complete Notification System Remake
   - Deleted all previous code and started from scratch, now much more interchangeable and expandable
   - Anchoring Notifications to corners now applies to rect transform of parent instead of canvas space, making it much more flexible in where notifications can be placed
@@ -48,8 +46,11 @@
   - Added ability for containers to opt-out of mass shift clicking
   - Optimized slot update code, batched update calls, and overall made it a bit less taxing on background performance
 - Sound System Improvements
+  - Added basic support for Audio Mixers
+  - New Audio folder inside OXResources
+    - Added some misc sound effects that I had lying around
   - New AudioLibrary (Scriptable Object) assets, pre-defined collections of sound effects that can just be thrown in as needed
-  - No longer relies on PlayClipAtPoint (I made my own implementation) so spacial audio now works betterer
+  - No longer relies on PlayClipAtPoint (I made my own implementation) so 3D/directional audio now works betterer
   - Added Priority attribute on OXSounds
   - Added Spacial Blend attribute on OXSounds
 - Achievement Improvements
@@ -79,6 +80,7 @@
   - Added safety checks to StringToList and EscapedStringToList to allow for returning empty lists on empty strings
   - New CompileableDictionaryAlt, allows you to define your own dictionary compiling method
   - Reactive now shows up in the inspector
+  - SingleInstance<> now tries to mark gameobjects as "DontDestroyOnLoad" whenever possible, unless told not to
   - CompileableDictionary and CompileableDictionaryAlt now inherit from Dictionary, so they are easier to use now
   - Weighted Averages modified to use Multiref and be slightly cooler
   - New InputShow test script
