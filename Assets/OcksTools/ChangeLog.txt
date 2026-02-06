@@ -47,6 +47,7 @@
   - Optimized slot update code, batched update calls, and overall made it a bit less taxing on background performance
 - Sound System Improvements
   - Added basic support for Audio Mixers
+    - New default audio mixer with some simple channels
   - New Audio folder inside OXResources
     - Added some misc sound effects that I had lying around
   - New AudioLibrary (Scriptable Object) assets, pre-defined collections of sound effects that can just be thrown in as needed
