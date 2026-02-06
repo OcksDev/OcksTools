@@ -4,20 +4,18 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
-public class GlobalAttributeCollector : MonoBehaviour
+public class GlobalAttributeCollector
 {
     // Start is called before the first frame update
 
     public delegate A Convertion<A>(string message);
 
-    [ConversionMethod]
     [RuntimeInitializeOnLoadMethod]
     public static void GatherMethods()
     {
         Assembly[] assemblies = new Assembly[1];
 
         assemblies[0] = Assembly.GetExecutingAssembly();
-
 
         foreach (var ass in assemblies)
         {
@@ -34,7 +32,6 @@ public class GlobalAttributeCollector : MonoBehaviour
                 {
                     try
                     {
-
                         var dd = Activator.CreateInstance(a.b.ReflectedType);
                         Converter.ConversionMethods.Add(a.a, (x) => { return a.b.Invoke(dd, new object[] { x }); });
                     }
