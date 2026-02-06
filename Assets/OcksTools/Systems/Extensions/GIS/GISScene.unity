@@ -455,6 +455,7 @@ MonoBehaviour:
   GenerateXSlots: 13
   SlotPrefab: {fileID: 4798491299756345537, guid: 283bb50cdbd4db74bbeedb431bd2ab0f, type: 3}
   slots: []
+  extraslots: []
   LoadedData: 0
   saved_items: []
 --- !u!114 &93729378
@@ -1278,6 +1279,7 @@ MonoBehaviour:
   GenerateXSlots: 28
   SlotPrefab: {fileID: 4798491299756345537, guid: 283bb50cdbd4db74bbeedb431bd2ab0f, type: 3}
   slots: []
+  extraslots: []
   LoadedData: 0
   saved_items: []
 --- !u!114 &713579748
@@ -3052,6 +3054,7 @@ MonoBehaviour:
   GenerateXSlots: 28
   SlotPrefab: {fileID: 4798491299756345537, guid: 283bb50cdbd4db74bbeedb431bd2ab0f, type: 3}
   slots: []
+  extraslots: []
   LoadedData: 0
   saved_items: []
 --- !u!1001 &1809781267
@@ -3070,10 +3073,6 @@ PrefabInstance:
       propertyPath: Conte
       value: 
       objectReference: {fileID: 2073049329}
-    - target: {fileID: 4327929998764027757, guid: 283bb50cdbd4db74bbeedb431bd2ab0f, type: 3}
-      propertyPath: InteractFilter
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 4798491299756345537, guid: 283bb50cdbd4db74bbeedb431bd2ab0f, type: 3}
       propertyPath: m_Name
       value: Slot
@@ -3831,6 +3830,7 @@ MonoBehaviour:
   GenerateXSlots: 1
   SlotPrefab: {fileID: 4798491299756345537, guid: 283bb50cdbd4db74bbeedb431bd2ab0f, type: 3}
   slots: []
+  extraslots: []
   LoadedData: 0
   saved_items: []
 --- !u!114 &2073049330

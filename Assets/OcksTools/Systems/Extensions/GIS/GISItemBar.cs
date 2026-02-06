@@ -46,7 +46,7 @@ public class GISItemBar : MonoBehaviour
 
         for (int iz = 0; iz < shites.Count; iz++)
         {
-            shites[iz].item = Container.slots[iz].Held_Item;
+            shites[iz].item.SetValue(Container.slots[iz].Held_Item);
             shites[iz].UpdateDisplay();
         }
     }

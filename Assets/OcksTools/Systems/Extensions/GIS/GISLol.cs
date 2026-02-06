@@ -94,7 +94,7 @@ public class GISLol : SingleInstance<GISLol>
     private void Update()
     {
         if (SameFrameStop > 0) SameFrameStop--;
-        Mouse_Displayer.item = Mouse_Held_Item;
+        Mouse_Displayer.item.SetValue(Mouse_Held_Item);
         var za = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         za.z = 0;
         MouseFollower.transform.position = za;
@@ -165,7 +165,7 @@ public class GISItem
      */
 
     public string Name;
-    public int Amount;
+    public Reactable<int> Amount;
     public GISContainer Container;
     public List<GISContainer> Interacted_Containers = new List<GISContainer>();
     public ComponentHolder Components = new ComponentHolder();
@@ -176,13 +176,13 @@ public class GISItem
     public GISItem(string base_type)
     {
         setdefaultvals();
-        Amount = 1;
+        Amount = new(1);
         Name = base_type;
     }
     public GISItem(GISItem sexnut)
     {
         setdefaultvals();
-        Amount = sexnut.Amount;
+        Amount = new(sexnut.Amount);
         Name = sexnut.Name;
         Container = sexnut.Container;
         Components = new ComponentHolder(sexnut.Components);
@@ -194,7 +194,7 @@ public class GISItem
     private void setdefaultvals()
     {
         Data = GetDefaultData();
-        Amount = 0;
+        Amount = new(0);
         Name = "Empty";
         Container = null;
     }
@@ -285,8 +285,8 @@ public class GISItem
         Data = Data.MergeDictionary(Converter.EscapedStringToDictionary(e, "~|~", "~o~"));
 
         Name = Data["Index"];
-        if (!IsEmpty()) Amount = int.Parse(Data["Count"]);
-        else Amount = 0;
+        if (!IsEmpty()) Amount = new(int.Parse(Data["Count"]));
+        else Amount = new(0);
 
         Components.CompFromString(Data["Extra"]);
 

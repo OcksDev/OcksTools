@@ -4,22 +4,24 @@ using UnityEngine.UI;
 
 public class GISDisplay : MonoBehaviour
 {
-    public GISItem item;
+    public Reactable<GISItem> item;
     public GameObject[] displays;
     public TextMeshProUGUI amnt;
     public bool IsPhysical = false;
-    public bool UpdateOnFixedUpdate = true;
     private bool hasfoundcomponents = false;
     private SpriteRenderer[] spriteRenderer;
     private Image[] imageRenderer;
     private void Awake()
     {
         GetStuff();
+        if (item == null) item = new(new GISItem());
+        item.OnValueChanged.Append(() => { UpdateDisplay(false); });
+        item.CompareFunc = (x, y) => x.Amount == y.Amount && !y.Amount.HasChanged() && x.Equals(y);
     }
     //GISItem olditem = null;
     public void UpdateDisplay(bool force = false)
     {
-        if (item == null) item = new GISItem();
+        if (item == null) item = new(new GISItem());
 
         /*if (StoreOldAndCompare && !force)
         {
@@ -71,11 +73,5 @@ public class GISDisplay : MonoBehaviour
             }
         }
         hasfoundcomponents = true;
-    }
-
-    // Update is called once per frame
-    private void FixedUpdate()
-    {
-        if (UpdateOnFixedUpdate) UpdateDisplay();
     }
 }

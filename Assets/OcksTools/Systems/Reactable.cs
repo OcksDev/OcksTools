@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 [System.Serializable]
@@ -7,8 +8,16 @@ public class Reactable<T>
     private T data;
     private bool diff_marked = false;
     public OXEvent OnValueChanged = new OXEvent();
-    public Reactable() { }
-    public Reactable(T d) { data = d; }
+    public Func<T, T, bool> CompareFunc;
+    public Reactable()
+    {
+        CompareFunc = (x, y) => x.Equals(y);
+    }
+    public Reactable(T d)
+    {
+        CompareFunc = (x, y) => x.Equals(y);
+        data = d;
+    }
     public bool HasChanged()
     {
         bool changed = diff_marked;
@@ -18,7 +27,7 @@ public class Reactable<T>
     public T GetValue() { return data; }
     public void SetValue(T d)
     {
-        if (!d.Equals(data))
+        if (!CompareFunc(d, data))
         {
             diff_marked = true;
             data = d;

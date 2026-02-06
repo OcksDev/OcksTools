@@ -45,6 +45,8 @@
   - Added ability for containers to opt-out of dragging
   - Added ability for containers to opt-out of mass shift clicking
   - Optimized slot update code, batched update calls, and overall made it a bit less taxing on background performance
+  - GISDisplay itself no longer updates via fixedupdate, instead, it uses the observer pattern to update only when needed
+  - Item Amount is now reactable, although you probably shouldn't hook into this yourself
 - Sound System Improvements
   - Added basic support for Audio Mixers
     - New default audio mixer with some simple channels
@@ -80,7 +82,8 @@
 - Misc
   - Added safety checks to StringToList and EscapedStringToList to allow for returning empty lists on empty strings
   - New CompileableDictionaryAlt, allows you to define your own dictionary compiling method
-  - Reactive now shows up in the inspector
+  - Reactable now shows up in the inspector
+  - Reactable now can have its comparison method changed (instead of needing to overload Equals() on the value class)
   - SingleInstance<> now tries to mark gameobjects as "DontDestroyOnLoad" whenever possible, unless told not to
   - CompileableDictionary and CompileableDictionaryAlt now inherit from Dictionary, so they are easier to use now
   - Weighted Averages modified to use Multiref and be slightly cooler
