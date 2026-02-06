@@ -86,6 +86,7 @@
   - Weighted Averages modified to use Multiref and be slightly cooler
   - New InputShow test script
   - New AdditionalScripts folder in the main systems folder, not an extension, to hold additional stuff that is less central
+  - File System Download Handler completed bool changed to be a Reactable<bool> instead
   - CameraLol renamed to Camera2D
 ------------
 

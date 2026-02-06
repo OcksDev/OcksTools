@@ -189,7 +189,7 @@ public class FileSystem : SingleInstance<FileSystem>
         {
             DDH.ErrorLol = true;
         }
-        DDH.CompletedDownload = true;
+        DDH.CompletedDownload.SetValue(true);
     }
 
     private IEnumerator GetImage(DownloadDataHandler DDH, string fileName)
@@ -210,7 +210,7 @@ public class FileSystem : SingleInstance<FileSystem>
         {
             DDH.ErrorLol = true;
         }
-        DDH.CompletedDownload = true;
+        DDH.CompletedDownload.SetValue(true);
     }
 
     public static void WEE(string a)
@@ -224,7 +224,7 @@ public class FileSystem : SingleInstance<FileSystem>
 public class DownloadDataHandler
 {
     public bool ErrorLol = false;
-    public bool CompletedDownload = false;
+    public Reactable<bool> CompletedDownload = new Reactable<bool>(false);
     public Texture Texture;
     public Sprite Sprite;
     public AudioClip Clip;
