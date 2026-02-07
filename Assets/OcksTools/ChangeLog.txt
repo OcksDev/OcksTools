@@ -2,6 +2,8 @@
 ------------
    v1.2.0
 - New Pool Selector Tool
+- New Scene Manager System
+  - A long overdue addition
 - New Modular Chess System (W.I.P)
 - New BetterList type which lets you define lists with single items easier
 - New Animation Sets (and Animation Parts)
