@@ -31,8 +31,6 @@ MonoBehaviour:
     Clip: {fileID: 8300000, guid: a49c1e08552d7dd46a71dcf2fe811e05, type: 3}
   - Name: Metal Pipe
     Clip: {fileID: 8300000, guid: f672f204c08fce24183015e97e9a2ca2, type: 3}
-  - Name: Metal Pipe
-    Clip: {fileID: 8300000, guid: f672f204c08fce24183015e97e9a2ca2, type: 3}
   - Name: Bruh
     Clip: {fileID: 8300000, guid: 1b84308ea1ea58e47a1338eba4fef0b3, type: 3}
   - Name: Prowler

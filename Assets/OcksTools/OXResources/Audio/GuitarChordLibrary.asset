@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 128f819acbcf5494f9bf8132562b4045, type: 3}
+  m_Name: GuitarChordLibrary
+  m_EditorClassIdentifier: Assembly-CSharp::AudioLibrary
+  Datas:
+  - Name: Down Crackle
+    Clip: {fileID: 8300000, guid: f3742352961f5f24fa09e7083bdd56cc, type: 3}
+  - Name: Down Beat
+    Clip: {fileID: 8300000, guid: f6a6174aa995b9f40a5cebef6e824950, type: 3}
+  - Name: Guitar Hit
+    Clip: {fileID: 8300000, guid: b1cdcc560b243204997c62ddf1133438, type: 3}
+  - Name: Guitar Hit 2
+    Clip: {fileID: 8300000, guid: 47a7891b67f02b64391414bcb069956f, type: 3}
+  - Name: Guitar Up
+    Clip: {fileID: 8300000, guid: 754b4380596bb374e8686f99d640a388, type: 3}
+  - Name: Guitar Up 2
+    Clip: {fileID: 8300000, guid: e392172c3abd09041bb64a378cc5b1b8, type: 3}
+  - Name: Guitar Up 3
+    Clip: {fileID: 8300000, guid: 4eed93874d3d55f4cac8478b1e83c86a, type: 3}
+  - Name: Guitar Up 4
+    Clip: {fileID: 8300000, guid: 1bd48ebc5115a6e45aced39e78872bcd, type: 3}
+  - Name: Guitar Up 5
+    Clip: {fileID: 8300000, guid: ca3ea3599cb3151429ecdd0b293ca625, type: 3}
+  Mixers: []
