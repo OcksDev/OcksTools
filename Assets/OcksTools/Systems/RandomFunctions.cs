@@ -209,19 +209,19 @@ public class RandomFunctions : SingleInstance<RandomFunctions>
                         {
                             return CompareState.Greater;
                         }
-                        int t1 = 0;
-                        int t2 = 0;
-                        int x = 1;
+                        long t1 = 0;
+                        long t2 = 0;
+                        long x = 1;
                         for (int j = 0; j < a3.Length; j++)
                         {
                             t1 += a3.Value[j] * x;
-                            x *= 10;
+                            x *= 100;
                         }
                         x = 1;
                         for (int j = 0; j < b3.Length; j++)
                         {
                             t2 += b3.Value[j] * x;
-                            x *= 10;
+                            x *= 100;
                         }
                         if (t1 < t2)
                         {
