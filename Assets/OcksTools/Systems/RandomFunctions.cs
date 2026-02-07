@@ -162,7 +162,7 @@ public class RandomFunctions : SingleInstance<RandomFunctions>
     }
     public static CompareState CompareTwoVersions(string I_Am, string compared_to)
     {
-        //supports things in the format of kv#.#.# or #.#.#
+        //supports things in the format of v#.#.# or #.#.#
         // There can be any amount of #s, so "v1.2" is valid, so is "1.2.3.4.5",
 
         if (I_Am.Length < 1) return CompareState.Invalid;
