@@ -54,6 +54,7 @@
     - New default audio mixer with some simple channels
   - New Audio folder inside OXResources
     - Added some misc sound effects that I had lying around
+    - Added a bunch of random sound effects that I found online
   - New AudioLibrary (Scriptable Object) assets, pre-defined collections of sound effects that can just be thrown in as needed
   - No longer relies on PlayClipAtPoint (I made my own implementation) so 3D/directional audio now works betterer
   - Added Priority attribute on OXSounds

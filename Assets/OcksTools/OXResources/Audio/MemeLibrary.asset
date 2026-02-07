@@ -21,6 +21,8 @@ MonoBehaviour:
     Clip: {fileID: 8300000, guid: 55743f816bc32a945884635823003558, type: 3}
   - Name: Fart
     Clip: {fileID: 8300000, guid: 6169b98144f3f124aa95424c46c98a88, type: 3}
+  - Name: Fart 2
+    Clip: {fileID: 8300000, guid: 3bd87313e8b6f234f87bd7aedf1cff34, type: 3}
   - Name: Emoji Death
     Clip: {fileID: 8300000, guid: bc6e52dc253fb9348bf408e24fed0dec, type: 3}
   - Name: Windows Error
@@ -37,4 +39,12 @@ MonoBehaviour:
     Clip: {fileID: 8300000, guid: ab47f7f6c3700804abd81e3e3fad5561, type: 3}
   - Name: Cheer
     Clip: {fileID: 8300000, guid: 8d8c0bf39c03841429e7768819ac6a53, type: 3}
+  - Name: Elevator Music
+    Clip: {fileID: 8300000, guid: ff34db4decaa3ae4898e8cba4cbe533e, type: 3}
+  - Name: Lego Breaking
+    Clip: {fileID: 8300000, guid: 85f531d4483e63e46a34dbd5c74d8498, type: 3}
+  - Name: Lobotomy
+    Clip: {fileID: 8300000, guid: 2baa869736984854bb99a4eaba989aa0, type: 3}
+  - Name: FNAF Yay
+    Clip: {fileID: 8300000, guid: a54a02f4e94da874097bbec935f5c3f3, type: 3}
   Mixers: []

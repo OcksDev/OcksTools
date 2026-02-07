@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 128f819acbcf5494f9bf8132562b4045, type: 3}
+  m_Name: BumpsNHitsLibrary
+  m_EditorClassIdentifier: Assembly-CSharp::AudioLibrary
+  Datas:
+  - Name: Hollow Hit
+    Clip: {fileID: 8300000, guid: 1e70fbb2388004f44bbb90631e2b8704, type: 3}
+  - Name: Jingle Hit
+    Clip: {fileID: 8300000, guid: 880fdea80b0c67b4b8b3a2d4e04f4321, type: 3}
+  - Name: Drum Hit
+    Clip: {fileID: 8300000, guid: f6e2ab01c67491540a342c606764b56d, type: 3}
+  - Name: Stick Hit
+    Clip: {fileID: 8300000, guid: 16dbf6a1d6f2c3d47abef412ac714ec2, type: 3}
+  - Name: Stick Hit 2
+    Clip: {fileID: 8300000, guid: 7328e134378d6da41a5a88de21f194fa, type: 3}
+  - Name: Stick Hit 3
+    Clip: {fileID: 8300000, guid: f200daecedf5e61439891f8f89a998e3, type: 3}
+  - Name: Dig
+    Clip: {fileID: 8300000, guid: 0570a2764f26ce14581fb3466cef5468, type: 3}
+  - Name: Dig 2
+    Clip: {fileID: 8300000, guid: c338339f026d42e449c34092beb7eed8, type: 3}
+  - Name: Dig 3
+    Clip: {fileID: 8300000, guid: a48651027eb3e244a80d3394b538a1e9, type: 3}
+  - Name: Thwump
+    Clip: {fileID: 8300000, guid: b9e8f99153a4c994c834461108922d0b, type: 3}
+  - Name: Cymbal Hit
+    Clip: {fileID: 8300000, guid: 1e995d2063b2c314f989baec384b16b4, type: 3}
+  - Name: Metal Hit
+    Clip: {fileID: 8300000, guid: 9e32e630ba3289c48b55b1c76e0bf0ba, type: 3}
+  - Name: Cloth
+    Clip: {fileID: 8300000, guid: 1013a0fd15e786240bf65618f3801d20, type: 3}
+  - Name: Cloth Hit
+    Clip: {fileID: 8300000, guid: 4bb51402f86e2bc43a5864bba93b6744, type: 3}
+  - Name: Close
+    Clip: {fileID: 8300000, guid: 3d497c84ac9ab654fa50ea54ebcad61e, type: 3}
+  - Name: Tin Hit
+    Clip: {fileID: 8300000, guid: e8aa67e02c2e65545b2c77b6fd02f5ad, type: 3}
+  - Name: Punch
+    Clip: {fileID: 8300000, guid: d22d28102f01d96458021afb61469e30, type: 3}
+  Mixers: []
