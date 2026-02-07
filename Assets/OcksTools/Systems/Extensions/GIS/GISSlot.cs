@@ -120,11 +120,11 @@ public class GISSlot : MonoBehaviour
                 {
                     if (left)
                     {
-                        LeftClick();
+                        LeftClick(alt);
                     }
                     if (right)
                     {
-                        RightClick();
+                        RightClick(alt);
                     }
                 }
                 break;
@@ -349,7 +349,7 @@ public class GISSlot : MonoBehaviour
     }
 
 
-    public void LeftClick()
+    public void LeftClick(bool alt)
     {
 
         var g = GISLol.Instance;
@@ -482,7 +482,7 @@ public class GISSlot : MonoBehaviour
         OnInteract();
     }
 
-    public void RightClick()
+    public void RightClick(bool alt)
     {
         var g = GISLol.Instance;
         Held_Item.AddConnection(Conte);
@@ -497,14 +497,21 @@ public class GISSlot : MonoBehaviour
             if (a.Amount > 0)
             {
                 Held_Item = new GISItem(a);
-                Held_Item.Amount.SetValue(1);
                 Held_Item.SetContainer(Conte);
-
-                g.Mouse_Held_Item.Amount.SetValue(g.Mouse_Held_Item.Amount - 1);
                 g.Mouse_Held_Item.AddConnection(Conte);
-                if (g.Mouse_Held_Item.Amount <= 0)
+                if (alt && g.Mouse_Held_Item.Amount > 1)
                 {
-                    g.Mouse_Held_Item = new GISItem();
+                    Held_Item.Amount.SetValue(g.Mouse_Held_Item.Amount - 1);
+                    g.Mouse_Held_Item.Amount.SetValue(1);
+                }
+                else
+                {
+                    Held_Item.Amount.SetValue(1);
+                    g.Mouse_Held_Item.Amount.SetValue(g.Mouse_Held_Item.Amount - 1);
+                    if (g.Mouse_Held_Item.Amount <= 0)
+                    {
+                        g.Mouse_Held_Item = new GISItem();
+                    }
                 }
             }
         }
@@ -512,10 +519,19 @@ public class GISSlot : MonoBehaviour
         {
             if (a.IsEmpty())
             {
-                float b = (float)Held_Item.Amount / 2;
-                g.Mouse_Held_Item = new GISItem(Held_Item);
-                g.Mouse_Held_Item.Amount.SetValue(Mathf.CeilToInt(b));
-                Held_Item.Amount.SetValue(Mathf.FloorToInt(b));
+                if (alt)
+                {
+                    g.Mouse_Held_Item = new GISItem(Held_Item);
+                    g.Mouse_Held_Item.Amount.SetValue(1);
+                    Held_Item.Amount.SetValue(Held_Item.Amount - 1);
+                }
+                else
+                {
+                    float b = (float)Held_Item.Amount / 2;
+                    g.Mouse_Held_Item = new GISItem(Held_Item);
+                    g.Mouse_Held_Item.Amount.SetValue(Mathf.CeilToInt(b));
+                    Held_Item.Amount.SetValue(Mathf.FloorToInt(b));
+                }
                 g.Mouse_Held_Item.AddConnection(Conte);
                 if (Held_Item.Amount <= 0)
                 {
@@ -525,15 +541,29 @@ public class GISSlot : MonoBehaviour
             else if (Held_Item.Compare(a))
             {
                 int max = g.ItemDict[Held_Item.Name].MaxAmount;
-                if (max <= 0 || Held_Item.Amount < max)
+                if (max <= 0 || (alt ? a.Amount < max : Held_Item.Amount < max))
                 {
-                    Held_Item.Amount.SetValue(Held_Item.Amount + 1);
-                    Held_Item.AddConnection(g.Mouse_Held_Item.Container);
-                    g.Mouse_Held_Item.AddConnection(Held_Item.Container);
-                    g.Mouse_Held_Item.Amount.SetValue(g.Mouse_Held_Item.Amount - 1);
-                    if (g.Mouse_Held_Item.Amount <= 0)
+                    if (alt)
                     {
-                        g.Mouse_Held_Item = new GISItem();
+                        g.Mouse_Held_Item.Amount.SetValue(g.Mouse_Held_Item.Amount + 1);
+                        Held_Item.AddConnection(g.Mouse_Held_Item.Container);
+                        g.Mouse_Held_Item.AddConnection(Held_Item.Container);
+                        Held_Item.Amount.SetValue(Held_Item.Amount - 1);
+                        if (Held_Item.Amount <= 0)
+                        {
+                            Held_Item = new GISItem();
+                        }
+                    }
+                    else
+                    {
+                        Held_Item.Amount.SetValue(Held_Item.Amount + 1);
+                        Held_Item.AddConnection(g.Mouse_Held_Item.Container);
+                        g.Mouse_Held_Item.AddConnection(Held_Item.Container);
+                        g.Mouse_Held_Item.Amount.SetValue(g.Mouse_Held_Item.Amount - 1);
+                        if (g.Mouse_Held_Item.Amount <= 0)
+                        {
+                            g.Mouse_Held_Item = new GISItem();
+                        }
                     }
                 }
             }

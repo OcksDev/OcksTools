@@ -19,7 +19,7 @@ MonoBehaviour:
     Clip: {fileID: 8300000, guid: f6a6174aa995b9f40a5cebef6e824950, type: 3}
   - Name: Guitar Hit
     Clip: {fileID: 8300000, guid: b1cdcc560b243204997c62ddf1133438, type: 3}
-  - Name: Guitar Hit 2
+  - Name: Guitar Note
     Clip: {fileID: 8300000, guid: 47a7891b67f02b64391414bcb069956f, type: 3}
   - Name: Guitar Up
     Clip: {fileID: 8300000, guid: 754b4380596bb374e8686f99d640a388, type: 3}

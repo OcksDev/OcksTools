@@ -39,6 +39,7 @@
   - Effect Profile has been moved to its own file
   - EntityEffectMiddleMan renamed to EffectContainer
 - GIS Improvements
+  - Added alt-right-click functionality
   - Added left-click dragging functionality
   - Added right-click dragging functionality
   - Added mass shift clicking functionality
