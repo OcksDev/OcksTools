@@ -1,0 +1,3 @@
+Install package from git url: "com.unity.toonshader"
+	found at: https://github.com/Unity-Technologies/com.unity.toonshader?tab=readme-ov-file
+	just paste com.unity.toonshader tho
