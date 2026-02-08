@@ -4,7 +4,6 @@ using UnityEngine.Audio;
 
 public class SoundSystem : SingleInstance<SoundSystem>
 {
-    public AudioMixer GlobalMixer;
     public float MasterVolume = 1;
     public float SFXVolume = 1;
     public float MusicVolume = 1;
