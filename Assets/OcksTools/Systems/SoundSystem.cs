@@ -4,14 +4,7 @@ using UnityEngine.Audio;
 
 public class SoundSystem : SingleInstance<SoundSystem>
 {
-
-
-
-    //Will be fixed/changed in the future
-
-
-
-
+    public AudioMixer GlobalMixer;
     public float MasterVolume = 1;
     public float SFXVolume = 1;
     public float MusicVolume = 1;
@@ -260,13 +253,15 @@ public class OXSound
         _priority = x;
         return this;
     }
-    public OXSound Mixer(string x)
+    public OXSound Mixer(string x, bool AllowOverride = false)
     {
+        if (!AllowOverride && _mixer != null) return this;
         _mixer = SoundSystem.Instance.AudioMixerDict[x];
         return this;
     }
-    public OXSound Mixer(AudioMixerGroup x)
+    public OXSound Mixer(AudioMixerGroup x, bool AllowOverride = false)
     {
+        if (!AllowOverride && _mixer != null) return this;
         _mixer = x;
         return this;
     }
