@@ -35,4 +35,6 @@ MonoBehaviour:
     Clip: {fileID: 8300000, guid: 83ed76ec4317dfd43918235be0b641a8, type: 3}
   - Name: Water Loop
     Clip: {fileID: 8300000, guid: 8c86d320b8540df498cb2d02c0c76fdc, type: 3}
+  - Name: Electric Hum Loop
+    Clip: {fileID: 8300000, guid: 2156ac14807aa334ab497a6ddece8df3, type: 3}
   Mixers: []

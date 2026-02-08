@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 128f819acbcf5494f9bf8132562b4045, type: 3}
+  m_Name: UILibrary
+  m_EditorClassIdentifier: Assembly-CSharp::AudioLibrary
+  Datas:
+  - Name: Wet Select
+    Clip: {fileID: 8300000, guid: 2e796507e66b87a4a86fb3e26e15b0bf, type: 3}
+  - Name: Wet Select 2
+    Clip: {fileID: 8300000, guid: 13676c22abf299e41b87e689f88e2b7e, type: 3}
+  - Name: Pop
+    Clip: {fileID: 8300000, guid: 8115267984c63904294042e7dceb1864, type: 3}
+  - Name: Double Click
+    Clip: {fileID: 8300000, guid: 6f7157e9886d19d41848d83a1d5a7a52, type: 3}
+  - Name: Double Click 2
+    Clip: {fileID: 8300000, guid: f7a8c6905071b4842b47cd999e100a07, type: 3}
+  - Name: Deny
+    Clip: {fileID: 8300000, guid: ce9e0fb8c33a62141bb582c95a16a194, type: 3}
+  - Name: Two Beep
+    Clip: {fileID: 8300000, guid: 2afd5711a2d25874c8ef9045fc641a0b, type: 3}
+  - Name: Tri-Beep
+    Clip: {fileID: 8300000, guid: 1357f87ecb1195d499bfa9db400cee61, type: 3}
+  - Name: Tri-Beep 2
+    Clip: {fileID: 8300000, guid: b21a3be4f69fbb14da9b6528d1aa7940, type: 3}
+  - Name: Button Hit
+    Clip: {fileID: 8300000, guid: a3d1cb0b5e9ed6547964b240109045a2, type: 3}
+  - Name: Muted Select
+    Clip: {fileID: 8300000, guid: f2b33014200bb4d41b3110a2cf2df613, type: 3}
+  - Name: Sci-Fi Select
+    Clip: {fileID: 8300000, guid: a368eef6a058d0247964815682a3f330, type: 3}
+  - Name: Sci-Fi Select 2
+    Clip: {fileID: 8300000, guid: a110679117ab34a4daebb38ade653685, type: 3}
+  - Name: Sci-Fi Select 3
+    Clip: {fileID: 8300000, guid: 56297c58f93c3d7479f91b0fda6e82fd, type: 3}
+  - Name: Computer Beep
+    Clip: {fileID: 8300000, guid: 099d3cb7377147b44a59b91eca7a2115, type: 3}
+  - Name: Beep
+    Clip: {fileID: 8300000, guid: dfe159101e86964428e3fb7265834988, type: 3}
+  - Name: Chirp
+    Clip: {fileID: 8300000, guid: add8d2e37b565eb45aff8a1f36a605f3, type: 3}
+  - Name: Checkout Beep
+    Clip: {fileID: 8300000, guid: bfc019b1ab866a34a870993adbf396eb, type: 3}
+  - Name: Two-Tone
+    Clip: {fileID: 8300000, guid: 29eefe5af62da314fab890ff990933c7, type: 3}
+  - Name: Chime
+    Clip: {fileID: 8300000, guid: 077247a56e77c1142a4f5556283b0715, type: 3}
+  - Name: Sci-Fi Zap
+    Clip: {fileID: 8300000, guid: e8290d4da18aef4409ef197c3dad9bda, type: 3}
+  - Name: Chime 2
+    Clip: {fileID: 8300000, guid: caf646599de56ae48be76f87e09d180a, type: 3}
+  - Name: Chime 3
+    Clip: {fileID: 8300000, guid: eb010f3eaecf85a4188af1880f793987, type: 3}
+  - Name: Chime Wave
+    Clip: {fileID: 8300000, guid: 46ba8f5499fbb4840bca9f213011f84b, type: 3}
+  - Name: Power Down
+    Clip: {fileID: 8300000, guid: 4b4c7f57fafef94438400a779e259adf, type: 3}
+  Mixers: []
