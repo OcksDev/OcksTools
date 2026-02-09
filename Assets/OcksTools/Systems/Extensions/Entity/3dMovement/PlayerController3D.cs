@@ -88,6 +88,7 @@ public class PlayerController3D : MonoBehaviour
     }
     private Vector3 start_dash_vel = Vector3.zero;
     private Vector3 move_dir = Vector3.zero;
+    private bool wall_detect = false;
     private void FixedUpdate()
     {
         if (grounded)
@@ -242,6 +243,7 @@ public class PlayerController3D : MonoBehaviour
         switch (CurrentState)
         {
             case MoveState.WallRunning:
+            case MoveState.Dashing:
             case MoveState.Jumping:
                 if (wall_shungle == -1)
                 {
@@ -295,11 +297,24 @@ public class PlayerController3D : MonoBehaviour
                 if (riding)
                 {
                     wall_normal = hit.normal;
+                    wall_detect = true;
+                    if (CurrentState == MoveState.Dashing)
+                    {
+                        var newdir = wall_normal;
+                        newdir.y = 0;
+                        newdir = newdir.PerpendicularTowardDirection(xz);
+                        StopCoroutine(Dc);
+                        EndDash(newdir);
+                        d = rigid.linearVelocity;
+                        xz = d;
+                        xz.y = 0;
+                    }
                     switch (CurrentState)
                     {
                         case MoveState.WallRunning:
                             break;
                         case MoveState.Jumping:
+                        case MoveState.Neutral:
                             SetState(MoveState.WallRunning);
                             if (boosteleibibi) d.y = wall_up_str + (d.y * wall_orig_up_perc);
                             else d.y = (d.y * wall_orig_up_perc);
@@ -375,7 +390,7 @@ public class PlayerController3D : MonoBehaviour
         if (!grounded && !override_allow_jump) return false;
         return Jump();
     }
-
+    private Coroutine Dc;
     public void Dash(EntityOXS a, Skill b)
     {
         switch (CurrentState)
@@ -389,7 +404,7 @@ public class PlayerController3D : MonoBehaviour
                 if (InputManager.IsKey("move_left", "Player")) dir += HeadY.right * -1;
                 if (dir.magnitude > 0.5)
                 {
-                    StartCoroutine(DashCour(dir.normalized));
+                    Dc = StartCoroutine(DashCour(dir.normalized));
                     OXEvent.SuccessfulHit = true;
                     return;
                 }
@@ -408,10 +423,16 @@ public class PlayerController3D : MonoBehaviour
             d -= Time.deltaTime;
             yield return new WaitForFixedUpdate();
         }
+        EndDash(dir);
+    }
+
+    public void EndDash(Vector3 dir)
+    {
         start_dash_vel.y = 0f;
         rigid.linearVelocity = (dir.normalized * start_dash_vel.magnitude) + (dir * dash_end_str / Mathf.Clamp(start_dash_vel.magnitude, 2, 1000));
         SetState(MoveState.Jumping);
     }
+
 
     public GameObject nerd = null;
     private float rot_y = 0;
