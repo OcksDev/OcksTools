@@ -70,6 +70,10 @@ public class Skill : Containable
         var b = data.OnSkillActivation.InvokeWithHitCheck(ox, this);
         if (b)
         {
+            if (Stacks == data.MaxStacks)
+            {
+                Cooldown = data.Cooldown;
+            }
             TakeStacks(data.StacksPerUse);
             InterUseCooldown = data.InterUseCooldown;
             Duration = data.Duration;
