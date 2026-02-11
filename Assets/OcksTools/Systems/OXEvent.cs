@@ -24,7 +24,6 @@ public static class GlobalEvent
     {
         if (Nerds.ContainsKey(even)) Nerds[even].Invoke();
     }
-
 }
 
 /*
