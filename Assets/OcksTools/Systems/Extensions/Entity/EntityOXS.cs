@@ -3,7 +3,7 @@ using UnityEngine;
 using static EntityOXS;
 
 [System.Serializable]
-public class EntityOXS : MonoBehaviour
+public class EntityOXS
 {
     public GameObject Self;
     public EntityType Type = EntityType.Enemy;
