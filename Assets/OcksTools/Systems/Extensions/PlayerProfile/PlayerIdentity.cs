@@ -6,6 +6,14 @@ public class PlayerIdentity : IComparable<PlayerIdentity>, IEquatable<PlayerIden
 
     public string NameRaw;
     public string UUID;
+    public string GetCleanedUsername()
+    {
+        var s = NameRaw;
+        s = Regex.Replace(s, "<", "<<i></i>");
+        s = s.Replace("\\", "\\\\");
+        return s;
+    }
+
     public PlayerIdentity(string n, string u)
     {
         NameRaw = n;
@@ -24,14 +32,6 @@ public class PlayerIdentity : IComparable<PlayerIdentity>, IEquatable<PlayerIden
         UUID = x[x.Count - 1];
         if (NameRaw.Length > ProfileHandler.MaxUsernameLength) NameRaw = NameRaw.Substring(0, ProfileHandler.MaxUsernameLength);
         return this;
-    }
-
-    public string GetCleanedUsername()
-    {
-        var s = NameRaw;
-        s = Regex.Replace(s, "<", "<<i></i>");
-        s = s.Replace("\\", "\\\\");
-        return s;
     }
 
 
