@@ -8,6 +8,9 @@
 - New BetterList type which lets you define lists with single items easier
 - New Animation Sets (and Animation Parts)
   - Allows for decently flexible animation design
+- New PlayerIdentity type (within Player Profiles)
+  - a combined datatype that allows for easy storing of player related information
+  - built-in username cleaning for escape characters and richtext 
 - New(ish) OXComponents
   - Moved into general system folder from the GIS
   - Add/Get/Has/Compare/Save/Load methods have been moved to their own object/class
@@ -47,9 +50,11 @@
     - shift+alt applies a shift-click to all items that are the same as the targeted slot in the container
   - Added ability for containers to opt-out of dragging
   - Added ability for containers to opt-out of mass shift clicking
+  - Added overloads on GISContainer for Clear(), IndexOf(), and AmountOf() to take just an item base name
   - Optimized slot update code, batched update calls, and overall made it a bit less taxing on background performance
   - GISDisplay itself no longer updates via fixedupdate, instead, it uses the observer pattern to update only when needed
   - Item Amount is now reactable, although you probably shouldn't hook into this yourself
+  - Removed some random lingering conversion functions that I forgot to erase (as they were moved to Converter)
 - Sound System Improvements
   - Added basic support for Audio Mixers
     - New default audio mixer with some simple channels
@@ -85,6 +90,8 @@
   - New extension methods TimeStablePow and TimeStableLerp, makes doing lerps and pows consistent across framerate and timescale 
   - New extension methods AllignX, AllignY, and AllignZ, which condenses some logic repitiion
 - Misc
+  - Fixed save system methods to actually respect profile save method instead of using global save method, whoops
+  - Profile system now has a defined constant for maximum username length, default being 15 characters
   - Added safety checks to StringToList and EscapedStringToList to allow for returning empty lists on empty strings
   - New CompileableDictionaryAlt, allows you to define your own dictionary compiling method
   - Reactable now shows up in the inspector

@@ -88,7 +88,6 @@ public class PlayerController3D : MonoBehaviour
     }
     private Vector3 start_dash_vel = Vector3.zero;
     private Vector3 move_dir = Vector3.zero;
-    private bool wall_detect = false;
     private void FixedUpdate()
     {
         if (grounded)
@@ -297,7 +296,6 @@ public class PlayerController3D : MonoBehaviour
                 if (riding)
                 {
                     wall_normal = hit.normal;
-                    wall_detect = true;
                     if (CurrentState == MoveState.Dashing)
                     {
                         var newdir = wall_normal;

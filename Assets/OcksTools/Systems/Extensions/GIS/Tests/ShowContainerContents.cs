@@ -17,6 +17,6 @@ public class ShowContainerContents : MonoBehaviour
     // Update is called once per frame
     private void FixedUpdate()
     {
-        se.text = GISLol.Instance.ItemDict[ItemToFind].Name + ": " + Container.AmountOfItem(thi).ToString();
+        se.text = GISLol.Instance.ItemDict[ItemToFind].Name + ": " + Container.AmountOf(thi).ToString();
     }
 }

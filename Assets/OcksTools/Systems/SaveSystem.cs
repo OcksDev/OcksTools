@@ -115,7 +115,7 @@ public class SaveSystem : SingleInstance<SaveSystem>
     {
         var f = FileSystem.Instance;
         f.AssembleFilePaths();
-        switch (SaveMethod_)
+        switch (prof.SaveMethod)
         {
             case SaveMethod.TXTFile:
                 f.WriteFile(PathOfProfile(prof), Converter.DictionaryToString(prof.SavedData, Environment.NewLine, ": "), true);
@@ -130,7 +130,7 @@ public class SaveSystem : SingleInstance<SaveSystem>
     public string PathOfProfile(SaveProfile prof)
     {
         string str = ".txt";
-        switch (SaveMethod_)
+        switch (prof.SaveMethod)
         {
             case SaveMethod.OXFile: str = ".ox"; break;
         }
@@ -159,7 +159,7 @@ public class SaveSystem : SingleInstance<SaveSystem>
             f.WriteFile(fp, "", false);
             return;
         }
-        switch (SaveMethod_)
+        switch (prof.SaveMethod)
         {
             case SaveMethod.TXTFile:
                 var s = Converter.StringToList(f.ReadFile(fp), Environment.NewLine);

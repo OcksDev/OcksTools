@@ -371,7 +371,7 @@ public class GISSlot : MonoBehaviour
             {
                 DoubleClickTimer = -69f;
             }
-            else if (Conte.AmountOfItem(g.Mouse_Held_Item) == 0)
+            else if (Conte.AmountOf(g.Mouse_Held_Item) == 0)
             {
                 DoubleClickTimer = -69f;
             }

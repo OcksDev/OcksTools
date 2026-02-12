@@ -2,7 +2,6 @@ using NaughtyAttributes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class GISContainer : MonoBehaviour
@@ -228,13 +227,28 @@ public class GISContainer : MonoBehaviour
         }
     }
 
-    public int AmountOfItem(GISItem item, bool usebase = false)
+    public int AmountOf(GISItem item, bool usebase = false)
     {
         int amnt = 0;
 
         foreach (var st in slots)
         {
             if (st.Held_Item.Compare(item, usebase))
+            {
+                amnt += st.Held_Item.Amount;
+            }
+        }
+
+        return amnt;
+    }
+
+    public int AmountOf(string name)
+    {
+        int amnt = 0;
+
+        foreach (var st in slots)
+        {
+            if (st.Held_Item.Name == name)
             {
                 amnt += st.Held_Item.Amount;
             }
@@ -371,7 +385,7 @@ public class GISContainer : MonoBehaviour
             }
         }
     }
-    public void ClearSlots()
+    public void ClearSlotObjects()
     {
         foreach (var ns in slots)
         {
@@ -399,6 +413,17 @@ public class GISContainer : MonoBehaviour
             }
         }
     }
+    public void Clear(string name)
+    {
+        foreach (var ns in slots)
+        {
+            if (ns.Held_Item.Name == name)
+            {
+                ns.Held_Item = new GISItem();
+                ns.OnInteract();
+            }
+        }
+    }
     public void GenerateSlots(int amount)
     {
         for (int i = 0; i < amount; i++)
@@ -412,7 +437,7 @@ public class GISContainer : MonoBehaviour
     }
     public void RegenerateAndLoadSlots(int amount)
     {
-        ClearSlots();
+        ClearSlotObjects();
         GenerateSlots(amount);
         LoadContents(SaveSystem.ActiveProf);
     }
@@ -429,22 +454,16 @@ public class GISContainer : MonoBehaviour
         return -1;
     }
 
-    public int BoolToInt(bool a)
+    public int IndexOf(string name)
     {
-        return a ? 1 : 0;
-    }
-    public bool IntToBool(int a)
-    {
-        return a == 1;
-    }
-
-    public string ListToString(List<string> eee, string split = ", ")
-    {
-        return String.Join(split, eee);
+        for (int i = 0; i < slots.Count; i++)
+        {
+            if (slots[i].Held_Item.Name == name)
+            {
+                return i;
+            }
+        }
+        return -1;
     }
 
-    public List<string> StringToList(string eee, string split = ", ")
-    {
-        return eee.Split(split).ToList();
-    }
 }

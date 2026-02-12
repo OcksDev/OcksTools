@@ -1,9 +1,11 @@
 using UnityEngine;
+using static SaveSystem;
 
 public class ProfileHandler : SingleInstance<ProfileHandler>
 {
 
-    public static string Username = "";
+    public const int MaxUsernameLength = 15;
+    public static PlayerIdentity LocalUser = null;
 
     public override void Awake2()
     {
@@ -16,21 +18,37 @@ public class ProfileHandler : SingleInstance<ProfileHandler>
     {
         var s = SaveSystem.Instance;
         var d = SaveSystem.Profile("ox_profile");
+        d.SaveMethod = SaveMethod.TXTFile;
+
         s.GetDataFromFile(d);
         if (d.GetString("Username", "") == "")
         {
-            d.SetString("Username", $"Guest{RandomFunctions.CharPrepend(Random.Range(0, 1000000).ToString(), 6, '0')}");
+            string def_user = $"Guest{RandomFunctions.CharPrepend(Random.Range(0, 1000000).ToString(), 6, '0')}";
+            d.SetString("Username", new PlayerIdentity(def_user, Tags.GenerateID()).ToString());
         }
-        Username = d.GetString("Username", "");
-        Console.Log("Logged In User: " + Username);
+        var def = d.GetString("Username", "");
+        try
+        {
+            LocalUser = new PlayerIdentity("", "").FromString(def);
+        }
+        catch // catch allows for backporting of older versions
+        {
+            LocalUser = new PlayerIdentity(def, Tags.GenerateID());
+        }
+        Console.Log("Logged In User: " + LocalUser.GetCleanedUsername() + $" [{LocalUser.UUID}]");
     }
     public void LockOut(SaveProfile dict)
     {
         var s = SaveSystem.Instance;
-        if (Username == "") return;
+        if (LocalUser == null)
+        {
+            "EXIT?".DLog();
+            return;
+        }
         var d = SaveSystem.Profile("ox_profile");
+        d.SaveMethod = SaveMethod.TXTFile;
 
-        d.SetString("Username", Username);
+        d.SetString("Username", LocalUser.ToString());
 
         s.SaveDataToFile(d);
     }
