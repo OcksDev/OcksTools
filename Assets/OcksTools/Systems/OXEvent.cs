@@ -36,18 +36,12 @@ public class OXEvent
     public static bool SuccessfulHit = false;
     public void Append(string name, Action method)
     {
-        if (!StoredMethods.ContainsKey(name))
-        {
-            StoredMethods.Add(name, method);
-        }
+        StoredMethods.AddOrUpdate(name, method);
     }
     public void Append(Action method)
     {
         var dd = Tags.GenerateID();
-        if (!StoredMethods.ContainsKey(dd))
-        {
-            StoredMethods.Add(dd, method);
-        }
+        StoredMethods.AddOrUpdate(dd, method);
     }
     public void Remove(string name)
     {
@@ -90,18 +84,12 @@ public class OXEvent<T>
     public Dictionary<string, Action<T>> StoredMethods = new Dictionary<string, Action<T>>();
     public void Append(string name, Action<T> method)
     {
-        if (!StoredMethods.ContainsKey(name))
-        {
-            StoredMethods.Add(name, method);
-        }
+        StoredMethods.AddOrUpdate(name, method);
     }
     public void Append(Action<T> method)
     {
         var dd = Tags.GenerateID();
-        if (!StoredMethods.ContainsKey(dd))
-        {
-            StoredMethods.Add(dd, method);
-        }
+        StoredMethods.AddOrUpdate(dd, method);
     }
     public void Remove(string name)
     {
@@ -143,18 +131,12 @@ public class OXEvent<T, T2>
     public Dictionary<string, Action<T, T2>> StoredMethods = new Dictionary<string, Action<T, T2>>();
     public void Append(string name, Action<T, T2> method)
     {
-        if (!StoredMethods.ContainsKey(name))
-        {
-            StoredMethods.Add(name, method);
-        }
+        StoredMethods.AddOrUpdate(name, method);
     }
     public void Append(Action<T, T2> method)
     {
         var dd = Tags.GenerateID();
-        if (!StoredMethods.ContainsKey(dd))
-        {
-            StoredMethods.Add(dd, method);
-        }
+        StoredMethods.AddOrUpdate(dd, method);
     }
     public void Remove(string name)
     {
@@ -197,18 +179,12 @@ public class OXEvent<T, T2, T3>
     public Dictionary<string, Action<T, T2, T3>> StoredMethods = new Dictionary<string, Action<T, T2, T3>>();
     public void Append(string name, Action<T, T2, T3> method)
     {
-        if (!StoredMethods.ContainsKey(name))
-        {
-            StoredMethods.Add(name, method);
-        }
+        StoredMethods.AddOrUpdate(name, method);
     }
     public void Append(Action<T, T2, T3> method)
     {
         var dd = Tags.GenerateID();
-        if (!StoredMethods.ContainsKey(dd))
-        {
-            StoredMethods.Add(dd, method);
-        }
+        StoredMethods.AddOrUpdate(dd, method);
     }
     public void Remove(string name)
     {
@@ -251,18 +227,12 @@ public class OXEvent<T, T2, T3, T4>
     public Dictionary<string, Action<T, T2, T3, T4>> StoredMethods = new Dictionary<string, Action<T, T2, T3, T4>>();
     public void Append(string name, Action<T, T2, T3, T4> method)
     {
-        if (!StoredMethods.ContainsKey(name))
-        {
-            StoredMethods.Add(name, method);
-        }
+        StoredMethods.AddOrUpdate(name, method);
     }
     public void Append(Action<T, T2, T3, T4> method)
     {
         var dd = Tags.GenerateID();
-        if (!StoredMethods.ContainsKey(dd))
-        {
-            StoredMethods.Add(dd, method);
-        }
+        StoredMethods.AddOrUpdate(dd, method);
     }
     public void Remove(string name)
     {
@@ -305,18 +275,12 @@ public class OXEvent<T, T2, T3, T4, T5>
     public Dictionary<string, Action<T, T2, T3, T4, T5>> StoredMethods = new Dictionary<string, Action<T, T2, T3, T4, T5>>();
     public void Append(string name, Action<T, T2, T3, T4, T5> method)
     {
-        if (!StoredMethods.ContainsKey(name))
-        {
-            StoredMethods.Add(name, method);
-        }
+        StoredMethods.AddOrUpdate(name, method);
     }
     public void Append(Action<T, T2, T3, T4, T5> method)
     {
         var dd = Tags.GenerateID();
-        if (!StoredMethods.ContainsKey(dd))
-        {
-            StoredMethods.Add(dd, method);
-        }
+        StoredMethods.AddOrUpdate(dd, method);
     }
     public void Remove(string name)
     {

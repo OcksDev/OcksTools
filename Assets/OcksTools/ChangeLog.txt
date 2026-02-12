@@ -19,6 +19,8 @@
   - Added GenerateCopy() method to create a copy of a component on a new object
     - Also created default CopyUsingString() method, an easy but inefficient way to copy components
   - Components no longer need to be manually initialized
+- New Shaders
+  - 8Dir sub-graph to make making shaders easier, giving a compacted way to create vector2 offsets
 - Complete Notification System Remake
   - Deleted all previous code and started from scratch, now much more interchangeable and expandable
   - Anchoring Notifications to corners now applies to rect transform of parent instead of canvas space, making it much more flexible in where notifications can be placed
@@ -103,6 +105,8 @@
   - New AdditionalScripts folder in the main systems folder, not an extension, to hold additional stuff that is less central
   - File System Download Handler completed bool changed to be a Reactable<bool> instead
   - CameraLol renamed to Camera2D
+  - NavMesh renamed to NavMesh2D
+  - OXEvents now use AddOrUpdate for their appending methods
 ------------
 
 ------------

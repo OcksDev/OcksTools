@@ -52,7 +52,7 @@ public class PlayerController3D : MonoBehaviour
         coll = GetComponent<CapsuleCollider>();
         InitPos = transform.position;
         entity = new EntityOXS();
-        SkillManager.Instance.AllSkills["DashSkill"].OnSkillActivation.Append(Dash);
+        SkillManager.Instance.AllSkills["DashSkill"].OnSkillActivation.Append("PlayerAction", Dash);
         entity.Skill().Add(new Skill("DashSkill"));
         ToggleMouseState(true);
     }
