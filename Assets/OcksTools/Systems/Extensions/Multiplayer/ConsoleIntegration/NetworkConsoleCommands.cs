@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class NetworkConsoleCommands : MonoBehaviour
@@ -14,18 +15,27 @@ public class NetworkConsoleCommands : MonoBehaviour
 
     public void NetworkCommands()
     {
-        ConsoleLol.Instance.Add(new OXCommand("host").Action(host));
+        ConsoleLol.Instance.Add(new OXCommand("host").Action(host).Append(new OXCommand("copy").Action(host_and_copy)));
         ConsoleLol.Instance.Add(new OXCommand("join").Append(new OXCommand(OXCommand.ExpectedInputType.String).Action(join)));
         ConsoleLol.Instance.Add(new OXCommand("disconnect").Action(disconnect));
         ConsoleLol.Instance.Append("test", new OXCommand("objectspawn").Action(objectspawn));
     }
-
-
-
-
     public static void host()
     {
         RelayMoment.Instance.GetComponent<PickThingymabob>().MakeGame();
+    }
+
+    public static void host_and_copy()
+    {
+        RelayMoment.Instance.Join_Code = "";
+        RelayMoment.Instance.GetComponent<PickThingymabob>().MakeGame();
+        ServerGamer.Instance.StartCoroutine(wait());
+    }
+
+    public static IEnumerator wait()
+    {
+        yield return new WaitUntil(() => RelayMoment.Instance.Join_Code != "");
+        OXClip.SetClipboard("join " + RelayMoment.Instance.Join_Code);
     }
     public static void objectspawn()
     {

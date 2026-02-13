@@ -40,7 +40,7 @@ public class PickThingymabob : MonoBehaviour
         }
     }
 
-    public async void MakeGame()
+    public async Task<string> MakeGame()
     {
         var x = await MakeGame2();
         if (x != "Error")
@@ -49,6 +49,16 @@ public class PickThingymabob : MonoBehaviour
             var p = Instantiate(relay.ServerGamerObject, relay.transform.position, relay.transform.rotation, relay.transform);
             p.GetComponent<NetworkObject>().Spawn();
             if (relay.JoinCodeTextDick != null) relay.JoinCodeTextDick.text = relay.Join_Code;
+        }
+        return x;
+    }
+
+    public async void MakeGameAndCopy()
+    {
+        var x = await MakeGame();
+        if (x != "Error")
+        {
+            OXClip.SetClipboard("join " + RelayMoment.Instance.Join_Code);
         }
     }
 
