@@ -39,6 +39,8 @@ public class PlayerController3D : MonoBehaviour
     public float wall_velocity_add = 0.5f;
     public float wall_orig_up_perc = 0.5f;
     public float wall_leave_force = 10f;
+    public float coyote_time = 0f;
+    public int air_jumps_base = 0;
     public Transform HeadY;
     public Transform HeadXZ;
     [EnumFlags] public RigidbodyConstraints Normal;
@@ -46,6 +48,8 @@ public class PlayerController3D : MonoBehaviour
     private float slip = -1;
     private Vector3 InitPos;
     private EntityOXS entity;
+    private int air_jumps = -1;
+    private float cur_coyote = -1;
     private void Start()
     {
         rigid = GetComponent<Rigidbody>();
@@ -54,7 +58,12 @@ public class PlayerController3D : MonoBehaviour
         entity = new EntityOXS();
         SkillManager.Instance.AllSkills["DashSkill"].OnSkillActivation.Append("PlayerAction", Dash);
         entity.Skill().Add(new Skill("DashSkill"));
+        entity.SetSelf(gameObject);
         ToggleMouseState(true);
+    }
+    public void OnDestroy()
+    {
+        if (entity != null) entity.Kill();
     }
 
     private int jump_bananas = 0;
@@ -348,6 +357,7 @@ public class PlayerController3D : MonoBehaviour
     }
     public bool Jump()
     {
+        InputBuffer.Instance.RemoveBuffer("Jump");
         slip = 1;
         jump_bananas = 1;
         grounded = false;
@@ -366,6 +376,9 @@ public class PlayerController3D : MonoBehaviour
                 dd += d.normalized * wall_leave_force;
                 dd.y = jump_str / wall_shungle_consecutive;
                 break;
+            case MoveState.Jumping:
+                air_jumps--;
+                goto default;
             default:
                 dd.y = jump_str;
                 break;
@@ -385,12 +398,13 @@ public class PlayerController3D : MonoBehaviour
 
     public bool JumpChecked()
     {
-        if (!grounded && !override_allow_jump) return false;
+        if (!(grounded || cur_coyote > 0) && air_jumps <= 0 && !override_allow_jump) return false;
         return Jump();
     }
     private Coroutine Dc;
     public void Dash(EntityOXS a, Skill b)
     {
+        if (a == null) return;
         switch (CurrentState)
         {
             case MoveState.Dashing: return;
@@ -442,6 +456,7 @@ public class PlayerController3D : MonoBehaviour
         if (Movements.HasFlag(AllowedMovements.Dash)) InputBuffer.Instance.BufferListen("dash", "Player", "Dash", 0.1f);
         if (Movements.HasFlag(AllowedMovements.Slide)) InputBuffer.Instance.BufferListen("slide", "Player", "Slide", 0.1f, false);
 
+        cur_coyote -= Time.deltaTime;
         CollisionGroundCheck();
 
 
@@ -457,10 +472,6 @@ public class PlayerController3D : MonoBehaviour
             if (InputBuffer.Instance.GetBuffer("Jump"))
             {
                 var a = JumpChecked();
-                if (a)
-                {
-                    InputBuffer.Instance.RemoveBuffer("Jump");
-                }
             }
         }
         if (Movements.HasFlag(AllowedMovements.Dash))
@@ -612,10 +623,14 @@ public class PlayerController3D : MonoBehaviour
         {
             case MoveState.Neutral:
                 grounded = true;
+                air_jumps = air_jumps_base;
+                cur_coyote = coyote_time;
                 break;
             case MoveState.Sliding:
                 grounded = true;
+                air_jumps = air_jumps_base;
                 allow_movement_inputs = false;
+                cur_coyote = coyote_time;
                 break;
             case MoveState.WallRunning:
                 allow_movement_inputs = false;
