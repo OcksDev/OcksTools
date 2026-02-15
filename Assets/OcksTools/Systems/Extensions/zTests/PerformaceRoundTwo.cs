@@ -23,10 +23,10 @@ public class PerformaceRoundTwo : MonoBehaviour
             yield return null;
             var x = Instantiate(testob);
             testobList.Add(x);
-            OXComponent.StoreComponent(x.GetComponent<AudioSource>());
+            OXComponentRef.StoreComponent(x.GetComponent<AudioSource>());
             x = Instantiate(testob);
             testobList.Add(x);
-            OXComponent.StoreComponent(x.GetComponent<AudioSource>());
+            OXComponentRef.StoreComponent(x.GetComponent<AudioSource>());
         }
         yield return null;
         ready = true;
@@ -45,7 +45,7 @@ public class PerformaceRoundTwo : MonoBehaviour
         Profiler.BeginSample("Reeree - Ocks");
         for (int i = 0; i < amnt; i++)
         {
-            var x = OXComponent.GetComponent<AudioSource>(testobList[i]);
+            var x = OXComponentRef.GetComponent<AudioSource>(testobList[i]);
             x.volume = Random.Range(0.0f, 1.0f);
         }
         Profiler.EndSample();

@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class MultiThreaderEnsure : SingleInstance<MultiThreaderEnsure>
@@ -69,9 +71,9 @@ public class OXThreadPoolA : IOXThreadPool
         }
         for (int i = 0; i < threadCount; i++)
         {
-            new System.Threading.Thread(() => { Awaiter(i); }).Start();
+            int copy = i;
+            Task.Run(() => Awaiter(copy));
         }
-        Debug.Log("A");
         if (MultiThreaderEnsure.Instance != null)
         {
             MultiThreaderEnsure.Instance.StartCoroutine(MultiThreaderEnsure.Instance.FixSlackers(this));
@@ -85,9 +87,9 @@ public class OXThreadPoolA : IOXThreadPool
     private int PullNextThread()
     {
         gg = OXFunctions.Mod(gg + 1, ThreadCount);
-        if (!allconfirmed && !SuccessfulThreads.Contains(gg) && SuccessfulThreads.Count > 0)
+        if (!allconfirmed && !SuccessfulThreads.ContainsKey(gg) && SuccessfulThreads.Count > 0)
         {
-            while (!SuccessfulThreads.Contains(gg))
+            while (!SuccessfulThreads.ContainsKey(gg))
             {
                 gg = OXFunctions.Mod(gg + 1, ThreadCount);
             }
@@ -95,12 +97,13 @@ public class OXThreadPoolA : IOXThreadPool
         return gg;
     }
 
-    public HashSet<int> SuccessfulThreads = new HashSet<int>();
+    public ConcurrentDictionary<int, byte> SuccessfulThreads
+        = new ConcurrentDictionary<int, byte>();
     public bool allconfirmed = false;
     private void Awaiter(int i)
     {
         bool a = false;
-        try { SuccessfulThreads.Add(i); } catch { a = true; }
+        try { SuccessfulThreads.TryAdd(i, 0); } catch { a = true; }
         if (a) return;
         if (i > ThreadCount) return;
         if (!ActionPool.ContainsKey(i))
@@ -129,9 +132,10 @@ public class OXThreadPoolA : IOXThreadPool
         bool good = true;
         for (int i = 0; i < ThreadCount; i++)
         {
-            if (SuccessfulThreads.Contains(i)) continue;
+            if (SuccessfulThreads.ContainsKey(i)) continue;
             good = false;
-            new System.Threading.Thread(() => { Awaiter(i); }).Start();
+            int copy = i;
+            Task.Run(() => Awaiter(copy));
         }
         if (good) allconfirmed = true;
         return good;
@@ -147,9 +151,9 @@ public class OXThreadPoolB : IOXThreadPool
         ThreadCount = threadCount;
         for (int i = 0; i < threadCount; i++)
         {
-            new System.Threading.Thread(() => { Awaiter(i); }).Start();
+            int copy = i;
+            Task.Run(() => Awaiter(copy));
         }
-        Debug.Log("A");
         if (MultiThreaderEnsure.Instance != null)
         {
             MultiThreaderEnsure.Instance.StartCoroutine(MultiThreaderEnsure.Instance.FixSlackers(this));
@@ -160,14 +164,15 @@ public class OXThreadPoolB : IOXThreadPool
         }
     }
 
-    public HashSet<int> SuccessfulThreads = new HashSet<int>();
+    public ConcurrentDictionary<int, byte> SuccessfulThreads
+        = new ConcurrentDictionary<int, byte>();
     public bool allconfirmed = false;
     private void Awaiter(int i)
     {
-        bool a = false;
-        try { SuccessfulThreads.Add(i); } catch { a = true; }
-        if (a) return;
         if (i > ThreadCount) return;
+        bool a = false;
+        try { SuccessfulThreads.TryAdd(i, 0); } catch { a = true; }
+        if (a) return;
         System.Action weenor = null;
         bool smegs = true;
         while (true)
@@ -209,9 +214,10 @@ public class OXThreadPoolB : IOXThreadPool
         bool good = true;
         for (int i = 0; i < ThreadCount; i++)
         {
-            if (SuccessfulThreads.Contains(i)) continue;
+            if (SuccessfulThreads.ContainsKey(i)) continue;
             good = false;
-            new System.Threading.Thread(() => { Awaiter(i); }).Start();
+            int copy = i;
+            Task.Run(() => Awaiter(copy));
         }
         if (good) allconfirmed = true;
         return good;
@@ -230,9 +236,9 @@ public class OXThreadPoolC : IOXThreadPool
         ThreadCount = threadCount;
         for (int i = 0; i < threadCount; i++)
         {
-            new System.Threading.Thread(() => { Awaiter(i); }).Start();
+            int copy = i;
+            Task.Run(() => Awaiter(copy));
         }
-        Debug.Log("A");
         if (MultiThreaderEnsure.Instance != null)
         {
             MultiThreaderEnsure.Instance.StartCoroutine(MultiThreaderEnsure.Instance.FixSlackers(this));
@@ -243,25 +249,14 @@ public class OXThreadPoolC : IOXThreadPool
         }
     }
     private int gg = 0;
-    private int PullNextThread()
-    {
-        gg = OXFunctions.Mod(gg + 1, ThreadCount);
-        if (!allconfirmed && !SuccessfulThreads.Contains(gg) && SuccessfulThreads.Count > 0)
-        {
-            while (!SuccessfulThreads.Contains(gg))
-            {
-                gg = OXFunctions.Mod(gg + 1, ThreadCount);
-            }
-        }
-        return gg;
-    }
 
-    public HashSet<int> SuccessfulThreads = new HashSet<int>();
+    public ConcurrentDictionary<int, byte> SuccessfulThreads
+        = new ConcurrentDictionary<int, byte>();
     public bool allconfirmed = false;
     private void Awaiter(int i)
     {
         bool a = false;
-        try { SuccessfulThreads.Add(i); } catch { a = true; }
+        try { SuccessfulThreads.TryAdd(i, 0); } catch { a = true; }
         if (a) return;
         if (i > ThreadCount) return;
         while (true)
@@ -280,9 +275,10 @@ public class OXThreadPoolC : IOXThreadPool
         bool good = true;
         for (int i = 0; i < ThreadCount; i++)
         {
-            if (SuccessfulThreads.Contains(i)) continue;
+            if (SuccessfulThreads.ContainsKey(i)) continue;
             good = false;
-            new System.Threading.Thread(() => { Awaiter(i); }).Start();
+            int copy = i;
+            Task.Run(() => Awaiter(copy));
         }
         if (good) allconfirmed = true;
         return good;

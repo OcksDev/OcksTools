@@ -36,6 +36,9 @@
   - Added the ability to Wallrun (W.I.P)
   - Moved to a sub-extension of Entity
   - Also removed the previous 3D stuff from v1.1.4 as it was buggy and not good
+- Multithreading Massive Improvements
+  - No longer fails to create threads randomly, requiring repeats (keeping thread ensure script around just in case tho)
+  - I think they are a bit more optimized now, idk exactly
 - Entity Improvements
   - New Skill System, very similar to the revamped Effect System from v1.1.4
   - Abtracted EntityEffectMiddleMan into its an abtract class to make similar systems easier to develope

@@ -8,16 +8,16 @@ public class ComponentRef : MonoBehaviour
     public List<string> Components = new List<string>();
     private void Awake()
     {
-        OXComponent.StoreComponents(gameObject, Components);
+        OXComponentRef.StoreComponents(gameObject, Components);
     }
     private void OnDestroy()
     {
-        OXComponent.ClearOf(gameObject);
+        OXComponentRef.ClearOf(gameObject);
     }
 }
 
 
-public class OXComponent
+public class OXComponentRef
 {
     public static Dictionary<GameObject, Dictionary<string, Component>> StoredComps = new Dictionary<GameObject, Dictionary<string, Component>>();
     public static void StoreComponents(GameObject nerd, List<string> boners)
