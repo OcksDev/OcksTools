@@ -15,7 +15,6 @@ public class OcksNetworkVar
     private string initdat = "";
     public OXEvent OnInitialDataLoad = new OXEvent();
     public OXEvent OnDataChanged = new OXEvent();
-    private ServerGamer.Style Style = ServerGamer.Style.DifferToBase;
     public OcksNetworkVar(NetworkObject sexy, string name, string data = "")
     {
         initdat = data;
@@ -26,7 +25,7 @@ public class OcksNetworkVar
         {
             NetID = "Global";
             CreateDataHolder();
-            ServerGamer.Instance.RequestOcksVar(NetID, Name);
+            Server.Send().RequestForOcksVar(NetID, Name);
         }
         else
         {
@@ -49,7 +48,7 @@ public class OcksNetworkVar
         }
         else
         {
-            ServerGamer.Instance.RequestOcksVar(NetID, Name);
+            Server.Send().RequestForOcksVar(NetID, Name);
         }
     }
     public void SetValue(string data, bool SendToOthers = true)
@@ -57,10 +56,10 @@ public class OcksNetworkVar
         CreateDataHolder();
         if (data == ONVManager.OcksVars[NetID][Name].Data) return;
         ONVManager.OcksVars[NetID][Name].Data = data;
-        ServerGamer.Instance.PassAlongUpdate(ONVManager.OcksVars[NetID][Name]); //?
+        Server.Instance.PassAlongUpdate(ONVManager.OcksVars[NetID][Name]); //?
         if (SendToOthers)
         {
-            ServerGamer.Instance.SendOcksVar(NetID, Name, data);
+            Server.Send().OcksVar(NetID, Name, data);
         }
     }
 
@@ -96,9 +95,4 @@ public class OcksNetworkVar
         }
     }
 
-    public OcksNetworkVar SetSharingMethodOverride(ServerGamer.Style style)
-    {
-        Style = style;
-        return this;
-    }
 }

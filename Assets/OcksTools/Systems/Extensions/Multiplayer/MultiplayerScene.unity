@@ -648,7 +648,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 978908897}
         m_TargetAssemblyTypeName: PickThingymabob, Assembly-CSharp
-        m_MethodName: MakeGame
+        m_MethodName: MakeGameButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

@@ -248,7 +248,6 @@ public class OXThreadPoolC : IOXThreadPool
             MultiThreaderEnsure.Nerds.Add(this);
         }
     }
-    private int gg = 0;
 
     public ConcurrentDictionary<int, byte> SuccessfulThreads
         = new ConcurrentDictionary<int, byte>();

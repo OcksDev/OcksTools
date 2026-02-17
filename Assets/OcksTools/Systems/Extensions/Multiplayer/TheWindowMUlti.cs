@@ -28,7 +28,7 @@ public class MultiplayerWindow : EditorWindow
         if (GUILayout.Button(new GUIContent("Host", "Hosts a match, and generates a new code")))
         {
             seeking = true;
-            g.GetComponent<PickThingymabob>().MakeGame();
+            _ = g.GetComponent<PickThingymabob>().MakeGame();
         }
         if (GUILayout.Button(new GUIContent("Join", "Enter a code and join a hosted match")))
         {

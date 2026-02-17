@@ -71,6 +71,12 @@
   - No longer relies on PlayClipAtPoint (I made my own implementation) so 3D/directional audio now works betterer
   - Added Priority attribute on OXSounds
   - Added Spacial Blend attribute on OXSounds
+- Multiplayer Improvements
+  - Completely modified how sending messages works, removed janky stuff and streamlined the process
+    - New format adds extra functionality, like easily being able to change where clients think a message is sent from
+  - Added message backlogs with basic locking capability, so you can explicitly queue incoming messages into piles
+  - Command "host" now has a sub command: "host copy"
+    - Automatically copies the correct "join xxxxxx" command for the newly hosted instance
 - Achievement Improvements
   - New layered ox event for achievements being granted
   - CompileDict now accounts for non-saved achievements
@@ -107,8 +113,6 @@
   - Weighted Averages modified to use Multiref and be slightly cooler
   - New InputShow test script
   - New AdditionalScripts folder in the main systems folder, not an extension, to hold additional stuff that is less central
-  - Multiplayer command "host" now has a sub command: "host copy"
-    - Automatically copies the correct "join xxxxxx" command for the newly hosted instance
   - File System Download Handler "completed" bool changed to be a Reactable<bool> instead
   - CameraLol renamed to Camera2D
   - NavMesh renamed to NavMesh2D

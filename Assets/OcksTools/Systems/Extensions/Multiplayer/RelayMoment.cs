@@ -31,10 +31,10 @@ public class RelayMoment : SingleInstance<RelayMoment>
             SignInState = "Connecting";
             await UnityServices.InitializeAsync();
 
-            AuthenticationService.Instance.SignedIn += () =>
-            {
-                Debug.Log("Shitted fardly");
-            };
+            /* AuthenticationService.Instance.SignedIn += () =>
+             {
+                 "Connected".Log();
+             };*/
 
             await AuthenticationService.Instance.SignInAnonymouslyAsync();
             SignInState = "Good";
@@ -42,7 +42,7 @@ public class RelayMoment : SingleInstance<RelayMoment>
         }
         catch
         {
-            Debug.Log("Failed to sign in, probably due to internet issues lol");
+            "Failed to sign in, probably due to internet issues lol".LogError();
             SignInState = "Fail";
             return 0;
         }
@@ -68,7 +68,7 @@ public class RelayMoment : SingleInstance<RelayMoment>
         }
         catch
         {
-            Debug.Log("SHID FUKED");
+            "Failed to create server instance".LogError();
         }
         return 0;
     }
@@ -100,7 +100,7 @@ public class RelayMoment : SingleInstance<RelayMoment>
         }
         catch
         {
-            Debug.Log("HAH STUIPDIUD");
+            "Failed to join server".LogError();
         }
         return 0;
     }

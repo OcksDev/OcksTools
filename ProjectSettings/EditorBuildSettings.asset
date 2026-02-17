@@ -6,14 +6,14 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/OcksTools/Systems/Consoling/ConsoleScene.unity
-    guid: 2cda990e2423bbf4892e6590ba056729
-  - enabled: 0
-    path: Assets/OcksTools/Systems/Extensions/Multiplayer/MultiplayerScene.unity
-    guid: 1345a2c56141f1d4db869c29131879a4
-  - enabled: 0
     path: Assets/OcksTools/Systems/Extensions/Multiplayer/ConsoleIntegration/ConsoleHookTest.unity
     guid: c7a42b6c2e3f0d34dae4e6a9972005ec
+  - enabled: 1
+    path: Assets/OcksTools/Systems/Consoling/ConsoleScene.unity
+    guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/OcksTools/Systems/Extensions/Multiplayer/MultiplayerScene.unity
+    guid: 1345a2c56141f1d4db869c29131879a4
   - enabled: 1
     path: Assets/OcksTools/Systems/Extensions/zTests/MenuHandScene.unity
     guid: 93ba6c7e50663d14bb22fa00bd3cbe03

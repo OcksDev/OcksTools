@@ -1,202 +1,203 @@
+using System;
 using System.Collections.Generic;
+using Unity.Collections;
 using Unity.Netcode;
-using UnityEngine;
+
+public static class Server
+{
+    public static ServerGamer Instance;
+    public static ServerGamer Send()
+    {
+        Instance._Handover = new OXNetworkRpcData(Instance.ClientID, "");
+        return Instance;
+    }
+
+    public static ServerGamer Send(FixedString64Bytes s)
+    {
+        Instance._Handover = new OXNetworkRpcData(Instance.ClientID, s);
+        return Instance;
+    }
+
+    public static ServerGamer Send(string s, FixedString64Bytes n)
+    {
+        Instance._Handover = new OXNetworkRpcData(s, n);
+        return Instance;
+    }
+    public static void handjoib(string spawndata)
+    {
+        Send().SpawnObject(spawndata);
+    }
+}
+
+
 
 public class ServerGamer : NetworkBehaviour
 {
     public string ClientID;
-    public Style BaseStyle = Style.PeerToHostToPeer;
     // public NetworkVariable<int> PlayerNum = new NetworkVariable<int>(100, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     // FixedString128Bytes
-    public static ServerGamer Instance;
-    public enum Style
-    {
-        DifferToBase,
-        PeerToHostToPeer,
-        PeerToPeer,
-    }
+
+    public Dictionary<FixedString64Bytes, Queue<Action>> MessageBacklog = new Dictionary<FixedString64Bytes, Queue<Action>>();
+    public List<FixedString64Bytes> LockedBacklogs = new List<FixedString64Bytes>();
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
+        if (Server.Instance == null) Server.Instance = this;
         ClientID = Tags.GenerateID();
         Console.Log("My ID: " + ClientID);
-        SpawnSystem.SpawnShareMethod = handjoib;
+        SpawnSystem.SpawnShareMethod = Server.handjoib;
+
     }
 
-
-    public void handjoib(string spawndata)
+    public void LockBacklog(FixedString64Bytes x)
     {
-        SpawnObjectCall(spawndata);
+        if (x.ToString() == "") return; // 0 can not be locked
+        if (LockedBacklogs.Contains(x)) return;
+        LockedBacklogs.Add(x);
     }
 
-    public void SpawnObjectCall(string spawndata, Style style = Style.DifferToBase)
+    public void UnlockBacklog(FixedString64Bytes x)
     {
-        if (style == Style.DifferToBase) style = BaseStyle;
-        switch (style)
+        if (x.ToString() == "") return; // 0 can not be locked
+        if (!LockedBacklogs.Contains(x)) return;
+        LockedBacklogs.Remove(x);
+        var q = MessageBacklog.GetOrDefine(x, new Queue<Action>());
+        while (q.Count > 0)
         {
-            case Style.PeerToHostToPeer:
-                _SpawnObjectPingPongServerRpc(ClientID, spawndata);
-                break;
-            case Style.PeerToPeer:
-                _SpawnObjectPTPServerRpc(spawndata);
-                break;
-            case Style.DifferToBase: Debug.LogError("Base style can not be Differ"); break;
+            q.Dequeue()();
+        }
+    }
+
+    public void AddFrom(FixedString64Bytes x, Action a)
+    {
+        if (x.ToString() == "" || !LockedBacklogs.Contains(x))
+        {
+            a();
+            return;
+        }
+        else
+        {
+            MessageBacklog.GetOrDefine(x, new Queue<Action>()).Enqueue(a);
         }
     }
 
 
-    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-    public void _SpawnObjectPingPongServerRpc(string id, string spawndata)
+    public OXNetworkRpcData _Handover;
+
+
+
+
+    public void SpawnObject(string spawndata)
+    {
+        _SpawnObjectPingPongServerRpc(_Handover, spawndata);
+    }
+
+
+    [Rpc(SendTo.Everyone, InvokePermission = RpcInvokePermission.Everyone)]
+    public void _SpawnObjectPingPongServerRpc(OXNetworkRpcData id, string spawndata)
     {
         _SpawnObjectClientRpc(id, spawndata);
     }
 
-    [Rpc(SendTo.NotMe, InvokePermission = RpcInvokePermission.Everyone)]
-    public void _SpawnObjectPTPServerRpc(string spawndata)
-    {
-        _SpawnObjectCode(spawndata);
-    }
-
     [ClientRpc]
-    public void _SpawnObjectClientRpc(string id, string spawndata)
+    public void _SpawnObjectClientRpc(OXNetworkRpcData id, string spawndata)
     {
         if (id == ClientID) return;
-        _SpawnObjectCode(spawndata);
-    }
-    public void _SpawnObjectCode(string spawndata)
-    {
-        SpawnSystem.Spawn(new SpawnData(spawndata, 0));
-    }
 
-
-
-    public void MessageCall(string id, string type, string data, Style style = Style.PeerToHostToPeer)
-    {
-        if (style == Style.DifferToBase) style = BaseStyle;
-        switch (style)
+        AddFrom(id.Queue, () =>
         {
-            case Style.PeerToHostToPeer:
-                _MessagePingPongServerRpc(id, type, data);
-                break;
-            case Style.PeerToPeer:
-                _MessagePTPServerRpc(id, type, data);
-                break;
-            case Style.DifferToBase: Debug.LogError("Base style can not be Differ"); break;
-        }
+            SpawnSystem.Spawn(new SpawnData(spawndata, 0));
+        });
     }
 
-    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-    public void _MessagePingPongServerRpc(string id, string type, string data)
+
+
+    public void Message(FixedString32Bytes type, string data)
+    {
+        _MessagePingPongServerRpc(_Handover, type, data);
+    }
+
+    [Rpc(SendTo.Everyone, InvokePermission = RpcInvokePermission.Everyone)]
+    public void _MessagePingPongServerRpc(OXNetworkRpcData id, FixedString32Bytes type, string data)
     {
         _RecieveMessageClientRpc(id, type, data);
     }
-    [Rpc(SendTo.NotMe, InvokePermission = RpcInvokePermission.Everyone)]
-    public void _MessagePTPServerRpc(string id, string type, string data)
-    {
-        _RecieveMessage(id, type, data);
-    }
     //chat related method
     [ClientRpc]
-    public void _RecieveMessageClientRpc(string id, string type, string data)
+    public void _RecieveMessageClientRpc(OXNetworkRpcData id, FixedString32Bytes type, string data)
     {
         if (id == ClientID) return;
-        _RecieveMessage(id, type, data);
-    }
-    public void _RecieveMessage(string id, string type, string data)
-    {
-        switch (type)
+        AddFrom(id.Queue, () =>
         {
-            default:
-                break;
-        }
+            switch (type.ToString())
+            {
+                case "Console":
+                    data.Log();
+                    break;
+                case "Lock":
+                    LockBacklog(data);
+                    break;
+                case "Unlock":
+                    UnlockBacklog(data);
+                    break;
+                default:
+                    break;
+            }
+        });
     }
 
 
-    public void SendChatMessageCall(string id, string message, string hex, Style style = Style.DifferToBase)
+    public void ChatMessage(string message, string hex)
     {
-        if (style == Style.DifferToBase) style = BaseStyle;
-        switch (style)
-        {
-            case Style.PeerToHostToPeer:
-                _SendChatMessagePingPongServerRpc(id, message, hex);
-                break;
-            case Style.PeerToPeer:
-                _SendChatMessagePTPServerRpc(message, hex);
-                break;
-            case Style.DifferToBase: Debug.LogError("Base style can not be Differ"); break;
-        }
+        _SendChatMessagePingPongServerRpc(_Handover, message, hex);
     }
     //chat related method
-    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-    public void _SendChatMessagePingPongServerRpc(string id, string message, string hex)
+    [Rpc(SendTo.Everyone, InvokePermission = RpcInvokePermission.Everyone)]
+    public void _SendChatMessagePingPongServerRpc(OXNetworkRpcData id, string message, string hex)
     {
         _RecieveChatMessageClientRpc(id, message, hex);
     }
-    //chat related method
-    [Rpc(SendTo.NotMe, InvokePermission = RpcInvokePermission.Everyone)]
-    public void _SendChatMessagePTPServerRpc(string message, string hex)
-    {
-        _ChatMessageCode(message, hex);
-    }
 
     //chat related method
     [ClientRpc]
-    public void _RecieveChatMessageClientRpc(string id, string message, string hex)
+    public void _RecieveChatMessageClientRpc(OXNetworkRpcData id, string message, string hex)
     {
         if (id == ClientID) return;
 
-        _ChatMessageCode(message, hex);
-    }
-    public void _ChatMessageCode(string message, string hex)
-    {
-        ChatLol.Instance.WriteChat(message, hex);
+        AddFrom(id.Queue, () =>
+        {
+            ChatLol.Instance.WriteChat(message, hex);
+        });
     }
 
 
 
 
     //OcksNetworkVars
-    public void SendOcksVar(string poopid, string name, string data, Style style = Style.DifferToBase)
+    public void OcksVar(string poopid, string name, string data)
     {
         //Console.Log($"Sending {ClientID}, {name}, {data}");
-        if (style == Style.DifferToBase) style = BaseStyle;
-        switch (style)
-        {
-            case Style.PeerToHostToPeer:
-                OcksVarPingPongServerRpc(ClientID, poopid, name, data);
-                break;
-            case Style.PeerToPeer:
-                OcksVarPTPServerRpc(poopid, name, data);
-                break;
-            case Style.DifferToBase: Debug.LogError("Base style can not be Differ"); break;
-        }
+        OcksVarPingPongServerRpc(_Handover, poopid, name, data);
     }
 
-    public void RequestOcksVar(string poopid, string name)
+    public void RequestForOcksVar(string poopid, string name)
     {
         //Console.Log($"Requesting {ClientID} at {name}");
-        AquireOcksVarServerRpc(ClientID, poopid, name);
+        AquireOcksVarServerRpc(_Handover, poopid, name);
     }
 
 
-    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-    public void OcksVarPingPongServerRpc(string id, string poopid, string name, string data)
+    [Rpc(SendTo.Everyone, InvokePermission = RpcInvokePermission.Everyone)]
+    public void OcksVarPingPongServerRpc(OXNetworkRpcData id, string poopid, string name, string data)
     {
         //Console.Log($"(server) incoming request for set data");
         RecieveOcksVarClientRpc(id, poopid, name, data);
     }
 
-    [Rpc(SendTo.NotMe, InvokePermission = RpcInvokePermission.Everyone)]
-    public void OcksVarPTPServerRpc(string poopid, string name, string data)
-    {
-        //Console.Log($"(server) incoming request for set data");
-        RecieveOcksVarCode(poopid, name, data);
-    }
 
 
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-    public void AquireOcksVarServerRpc(string id, string poopid, string name)
+    public void AquireOcksVarServerRpc(OXNetworkRpcData id, string poopid, string name)
     {
         //Console.Log($"(server) incoming request for aquire");
         CreateEmpty(poopid, name);
@@ -204,22 +205,21 @@ public class ServerGamer : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void RecieveOcksVarClientRpc(string id, string NetID, string Name, string data)
+    public void RecieveOcksVarClientRpc(OXNetworkRpcData id, string NetID, string Name, string data)
     {
         //Console.Log($"Recieved {id}, {Name}, {data}");
         if (id == ClientID) return;
         if (id == "Host" && NetworkManager.Singleton.IsHost) return;
-        RecieveOcksVarCode(NetID, Name, data);
+        AddFrom(id.Queue, () =>
+        {
+            CreateEmpty(NetID, Name);
+            //Console.Log($"Changed {NetID} to {data}");
+            var a = ONVManager.OcksVars[NetID][Name];
+            a.Data = data;
+            PassAlongUpdate(a);
+        });
     }
 
-    public void RecieveOcksVarCode(string NetID, string Name, string data)
-    {
-        CreateEmpty(NetID, Name);
-        //Console.Log($"Changed {NetID} to {data}");
-        var a = ONVManager.OcksVars[NetID][Name];
-        a.Data = data;
-        PassAlongUpdate(a);
-    }
 
     public void PassAlongUpdate(OcksNetworkVarData a)
     {
@@ -240,4 +240,23 @@ public class ServerGamer : NetworkBehaviour
         }
     }
 
+}
+
+public struct OXNetworkRpcData : INetworkSerializable
+{
+    public FixedString64Bytes ClientID;
+    public FixedString64Bytes Queue;
+
+    public OXNetworkRpcData(FixedString64Bytes ID, FixedString64Bytes num)
+    {
+        ClientID = ID;
+        Queue = num;
+    }
+    public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+    {
+        serializer.SerializeValue(ref ClientID);
+        serializer.SerializeValue(ref Queue);
+    }
+    public static implicit operator OXNetworkRpcData(string ID) { return new OXNetworkRpcData(ID, ""); }
+    public static implicit operator string(OXNetworkRpcData nerd) { return nerd.ClientID.ToString(); }
 }

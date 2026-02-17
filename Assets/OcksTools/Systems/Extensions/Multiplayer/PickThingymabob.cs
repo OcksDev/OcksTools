@@ -40,6 +40,11 @@ public class PickThingymabob : MonoBehaviour
         }
     }
 
+    public void MakeGameButton()
+    {
+        _ = MakeGame();
+    }
+
     public async Task<string> MakeGame()
     {
         var x = await MakeGame2();
