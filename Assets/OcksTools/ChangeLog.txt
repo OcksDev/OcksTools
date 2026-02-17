@@ -110,6 +110,7 @@
   - Reactable now can have its comparison method changed (instead of needing to overload Equals() on the value class)
   - SingleInstance<> now tries to mark gameobjects as "DontDestroyOnLoad" whenever possible, unless told not to
   - CompileableDictionary and CompileableDictionaryAlt now inherit from Dictionary, so they are easier to use now
+  - Moved some logic in Room Generation to allow for easier background generation
   - Weighted Averages modified to use Multiref and be slightly cooler
   - New InputShow test script
   - New AdditionalScripts folder in the main systems folder, not an extension, to hold additional stuff that is less central
