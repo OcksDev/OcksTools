@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class RoomLol : MonoBehaviour
@@ -22,7 +23,6 @@ public class RoomLol : MonoBehaviour
     private List<Room> EndDownRooms = new List<Room>();
     public void ClearRooms()
     {
-        RoomColliders = new int[200, 200];
         foreach (var r in SpawnedRooms)
         {
             Destroy(r);
@@ -36,25 +36,70 @@ public class RoomLol : MonoBehaviour
         {
             GenerateRandomLayout();
         }
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            LongGen();
+        }
     }
+    public async Task LongGen()
+    {
+        Debug.Log("Begin");
+        ClearRooms();
+        CoolRoom room = null;
+        await Task.Run(() =>
+        {
+            room = CalcRoomLayout(50);
+        });
+
+        PlaceFromCoolRoom(room, gameObject);
+
+        // Back on main thread here, safe to interact with Unity objects
+        Debug.Log("Done");
+        Debug.Log($"Build Stats: [{runs}], [{cycles}]");
+    }
+
 
     public int runs = 0;
     public int cycles = 0;
-    public void GenerateRandomLayout()
+
+    public CoolRoom CalcRoomLayout(int density)
     {
-        runs = 0;
-        cycles = 0;
-        ClearRooms();
         PopulateRooms();
         int sz = RoomColliders.GetLength(0) / 2;
-        var crs = GenerateFromRooms(RoomDensity, RoomColliders, RoomDirecton.None, new Vector2(sz, sz));
-        PlaceFromCoolRoom(crs, gameObject);
+        return GenerateFromRooms(density, RoomColliders, RoomDirecton.None, new Vector2(sz, sz));
+    }
+
+    public CoolRoom CalcRoomLayout()
+    {
+        return CalcRoomLayout(RoomDensity);
+    }
+
+
+
+    public void GenerateRandomLayout(int dens)
+    {
+        ClearRooms();
+        PlaceFromCoolRoom(CalcRoomLayout(dens), gameObject);
+
+        Debug.Log($"Build Stats: [{runs}], [{cycles}]");
+
+    }
+
+    public void GenerateRandomLayout()
+    {
+        ClearRooms();
+        PlaceFromCoolRoom(CalcRoomLayout(), gameObject);
 
         Debug.Log($"Build Stats: [{runs}], [{cycles}]");
 
     }
     public void PopulateRooms()
     {
+        runs = 0;
+        cycles = 0;
+
+        RoomColliders = new int[200, 200];
+
         //change rooms to use here
         AllRooms = new List<Room>();
 
@@ -84,7 +129,7 @@ public class RoomLol : MonoBehaviour
             if (room.BottomDoors.Count > 0 && room.IsEndpoint) EndDownRooms.Add(room);
         }
     }
-    public CoolRoom GenerateFromRooms(int lvl, int[,] roomcol, RoomDirecton dir, Vector2 pos)
+    public CoolRoom GenerateFromRooms(int lvl, int[,] roomcol, RoomDirecton SearchDirection, Vector2 pos)
     {
         CoolRoom ret = new CoolRoom();
 
@@ -106,7 +151,7 @@ public class RoomLol : MonoBehaviour
          * 
          */
         List<Room> available_rooms;
-        switch (dir)
+        switch (SearchDirection)
         {
             default:
                 available_rooms = new List<Room>(AllRooms);
@@ -129,7 +174,8 @@ public class RoomLol : MonoBehaviour
         //Debug.Log("Fuck dawg " + lvl + ", " + dir);
         while (available_rooms.Count > 0)
         {
-            int index = UnityEngine.Random.Range(0, available_rooms.Count);
+            var randy = new System.Random();
+            int index = randy.Next(0, available_rooms.Count);
             Room rom = available_rooms[index];
             Func<RoomDirecton, int> getamnt = (x) =>
             {
@@ -149,13 +195,13 @@ public class RoomLol : MonoBehaviour
                 }
 
             };
-            var aaa = getamnt(dir);
+            var aaa = getamnt(SearchDirection);
             for (int doorindexlol = 0; doorindexlol < aaa; doorindexlol++)
             {
                 cycles++;
                 bool keepgoing = true;
                 ret.room = rom;
-                var pos2 = ModPos(dir, pos, rom, doorindexlol);
+                var pos2 = ModPos(SearchDirection, pos, rom, doorindexlol);
 
                 ret.pos = pos2;
 
@@ -176,7 +222,7 @@ public class RoomLol : MonoBehaviour
                     {
                         for (int i = 0; i < rom.TopDoors.Count; i++)
                         {
-                            if (dir == RoomDirecton.Bottom && i == doorindexlol) continue;
+                            if (SearchDirection == RoomDirecton.Bottom && i == doorindexlol) continue;
                             var v = pos2 + rom.TopDoors[i] - new Vector2(0, 1);
                             if (roomcol[(int)v.x, (int)v.y] > 0) keepgoing = false;
                         }
@@ -185,7 +231,7 @@ public class RoomLol : MonoBehaviour
                     {
                         for (int i = 0; i < rom.BottomDoors.Count; i++)
                         {
-                            if (dir == RoomDirecton.Top && i == doorindexlol) continue;
+                            if (SearchDirection == RoomDirecton.Top && i == doorindexlol) continue;
                             var v = pos2 + rom.BottomDoors[i] + new Vector2(0, 1);
                             if (roomcol[(int)v.x, (int)v.y] > 0) keepgoing = false;
                         }
@@ -194,7 +240,7 @@ public class RoomLol : MonoBehaviour
                     {
                         for (int i = 0; i < rom.LeftDoors.Count; i++)
                         {
-                            if (dir == RoomDirecton.Right && i == doorindexlol) continue;
+                            if (SearchDirection == RoomDirecton.Right && i == doorindexlol) continue;
                             var v = pos2 + rom.LeftDoors[i] - new Vector2(1, 0);
                             if (roomcol[(int)v.x, (int)v.y] > 0) keepgoing = false;
                         }
@@ -203,7 +249,7 @@ public class RoomLol : MonoBehaviour
                     {
                         for (int i = 0; i < rom.RightDoors.Count; i++)
                         {
-                            if (dir == RoomDirecton.Left && i == doorindexlol) continue;
+                            if (SearchDirection == RoomDirecton.Left && i == doorindexlol) continue;
                             var v = pos2 + rom.RightDoors[i] + new Vector2(1, 0);
                             if (roomcol[(int)v.x, (int)v.y] > 0) keepgoing = false;
                         }
@@ -224,7 +270,7 @@ public class RoomLol : MonoBehaviour
                     {
                         for (int i = 0; i < rom.TopDoors.Count && good; i++)
                         {
-                            if (dir == RoomDirecton.Bottom && i == doorindexlol) continue;
+                            if (SearchDirection == RoomDirecton.Bottom && i == doorindexlol) continue;
                             var a = GenerateFromRooms(lvl - 1, roomcol, RoomDirecton.Top, pos2 + rom.TopDoors[i]);
                             if (a.room != null && a.WasChill)
                             {
@@ -237,7 +283,7 @@ public class RoomLol : MonoBehaviour
                     {
                         for (int i = 0; i < rom.BottomDoors.Count && good; i++)
                         {
-                            if (dir == RoomDirecton.Top && i == doorindexlol) continue;
+                            if (SearchDirection == RoomDirecton.Top && i == doorindexlol) continue;
                             var a = GenerateFromRooms(lvl - 1, roomcol, RoomDirecton.Bottom, pos2 + rom.BottomDoors[i]);
                             if (a.room != null && a.WasChill)
                             {
@@ -251,7 +297,7 @@ public class RoomLol : MonoBehaviour
                     {
                         for (int i = 0; i < rom.LeftDoors.Count && good; i++)
                         {
-                            if (dir == RoomDirecton.Right && i == doorindexlol) continue;
+                            if (SearchDirection == RoomDirecton.Right && i == doorindexlol) continue;
                             var a = GenerateFromRooms(lvl - 1, roomcol, RoomDirecton.Left, pos2 + rom.LeftDoors[i]);
                             if (a.room != null && a.WasChill)
                             {
@@ -264,7 +310,7 @@ public class RoomLol : MonoBehaviour
                     {
                         for (int i = 0; i < rom.RightDoors.Count && good; i++)
                         {
-                            if (dir == RoomDirecton.Left && i == doorindexlol) continue;
+                            if (SearchDirection == RoomDirecton.Left && i == doorindexlol) continue;
                             var a = GenerateFromRooms(lvl - 1, roomcol, RoomDirecton.Right, pos2 + rom.RightDoors[i]);
                             if (a.room != null && a.WasChill)
                             {
