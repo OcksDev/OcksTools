@@ -100,7 +100,7 @@
   - New method to expand compressed string forms back into full strings
   - New extension methods TimeStablePow and TimeStableLerp, makes doing lerps and pows consistent across framerate and timescale 
   - New extension methods AllignX, AllignY, and AllignZ, which condenses some logic repitiion
-- New Modular Chess System (W.I.P)
+- New Extendable Chess System (W.I.P)
 - Misc
   - Fixed save system methods to actually respect profile save method instead of using global save method, whoops
   - Profile system now has a defined constant for maximum username length, default being 15 characters
