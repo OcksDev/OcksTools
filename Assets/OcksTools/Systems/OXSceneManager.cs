@@ -29,7 +29,7 @@ public class OXSceneManager : SingleInstance<OXSceneManager>
         return Datas[a];
     }
     public bool IsSceneActive(string a) => GetScene(a).IsCurrentlyActive;
-    public async Task<SceneData> LoadSceneInstant(string a, bool keep_others = false)
+    public SceneData LoadSceneInstant(string a, bool keep_others = false)
     {
         var s = GetScene(a);
         if (s.IsCurrentlyLoading) return s;

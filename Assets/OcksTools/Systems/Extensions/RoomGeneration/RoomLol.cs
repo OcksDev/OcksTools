@@ -38,7 +38,7 @@ public class RoomLol : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            LongGen();
+            _ = LongGen();
         }
     }
     public async Task LongGen()

@@ -165,28 +165,6 @@ public class ServerGamer : NetworkBehaviour
     }
 
 
-    public void ChatMessage(string message, string hex)
-    {
-        _SendChatMessagePingPongServerRpc(_Handover, message, hex);
-    }
-    //chat related method
-    [Rpc(SendTo.Everyone, InvokePermission = RpcInvokePermission.Everyone)]
-    public void _SendChatMessagePingPongServerRpc(OXNetworkRpcData id, string message, string hex)
-    {
-        _RecieveChatMessageClientRpc(id, message, hex);
-    }
-
-    //chat related method
-    [ClientRpc]
-    public void _RecieveChatMessageClientRpc(OXNetworkRpcData id, string message, string hex)
-    {
-        if (id == ClientID) return;
-
-        AddFrom(id, () =>
-        {
-            ChatLol.Instance.WriteChat(message, hex);
-        });
-    }
 
 
 

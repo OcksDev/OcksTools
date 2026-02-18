@@ -1,0 +1,9 @@
+Choose The Sex
+</> <Animate=C1,Rainbow,26><Animate=C2,Wave,26>
+</>
+Replay
+Continue
+</>
+<Scene=Test1>
+<Scene=Test3>
+</>

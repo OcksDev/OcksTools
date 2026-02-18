@@ -7,12 +7,10 @@ public class ConsoleSetupWindow : EditorWindow
 {
     private GameObject s;
     private GameObject s3;
-    private string s4 = "s";
     private int c = 0;
     private int c2 = 0;
     private string s_d = "";
     private bool gaming = false;
-    private Color32 ba;
     [MenuItem("OcksTools/Console/Utils")]
     public static void ShowWindow()
     {
@@ -22,7 +20,7 @@ public class ConsoleSetupWindow : EditorWindow
     private void OnGUI()
     {
         GUILayout.Space(15);
-        var f22 = new string[3] { "Setup", "Dialog", "Chat" };
+        var f22 = new string[2] { "Setup", "Dialog" };
         c = GUILayout.Toolbar(c, f22);
 
         GUILayout.Space(15);
@@ -65,28 +63,6 @@ public class ConsoleSetupWindow : EditorWindow
                     var t2 = (GameObject)PrefabUtility.InstantiatePrefab((GameObject)Resources.Load(f2));
                     t2.transform.position = Vector3.zero;
                     t2.GetComponent<DialogLol>().DialogBoxObject = t1;
-
-                    t1.name = f1;
-                    t2.name = f2;
-
-                }
-                if (GUILayout.Button(new GUIContent("Setup Chat", "Creates the needed objects and references \nbut you need to reference the camera manually")))
-                {
-                    var f1 = "ChatLog";
-                    var f2 = "ChatHandler";
-
-                    var f = (GameObject)Resources.Load(f1);
-                    var t1 = (GameObject)PrefabUtility.InstantiatePrefab(f);
-                    t1.transform.position = new Vector3(-5.310166358947754f, -2.5500009059906008f, 0) + s.transform.position;
-                    t1.transform.parent = s.transform;
-                    t1.transform.localScale = Vector3.one;
-                    var t2 = (GameObject)PrefabUtility.InstantiatePrefab((GameObject)Resources.Load(f2));
-                    t2.transform.position = Vector3.zero;
-                    var g = t2.GetComponent<ChatLol>();
-                    g.ChatLog = t1;
-                    g.ChatText = (GameObject)Resources.Load("BonerText");
-
-                    t2.GetComponent<ConsoleLol>().ConsoleObject = t1;
 
                     t1.name = f1;
                     t2.name = f2;
@@ -164,14 +140,6 @@ public class ConsoleSetupWindow : EditorWindow
                         break;
                 }
 
-                break;
-            case 2:
-                s4 = EditorGUILayout.TextField(new GUIContent("Message", "The message that will be sent"), s4);
-                ba = EditorGUILayout.ColorField(new GUIContent("Message Color", "The color of the message, are you blind???"), ba);
-                if (GUILayout.Button(new GUIContent("Send Message", "What do you think it does")))
-                {
-                    ChatLol.Instance.WriteChat(s4, "#" + UnityEngine.ColorUtility.ToHtmlStringRGB((Color)ba));
-                }
                 break;
         }
 

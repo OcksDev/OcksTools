@@ -136,13 +136,6 @@ public class ConsoleCommands : MonoBehaviour
         Console.Log(r.com_caps[2]);
         Console.Log(Tags.GetFromTag<GameObject>("Exist", r.com_caps[2]).ToString());
     }
-    public static void Test_chat()
-    {
-        for (int i = 0; i < 10; i++)
-        {
-            ChatLol.Instance.WriteChat("Chat Test Lol", "#" + UnityEngine.Random.ColorHSV().ColorToString());
-        }
-    }
 
     public static void Test_listall()
     {
@@ -338,35 +331,6 @@ public class ConsoleCommands : MonoBehaviour
             "AYYYYYEEEEEE"
 
         ), "#bdbdbdff");
-    }
-    public static void Dialog(OXCommandData r)
-    {
-        switch (r.com[1])
-        {
-            case "stop":
-                DialogLol.Instance.ResetDialog();
-                Console.Log((
-
-                    LanguageFileSystem.Instance.GetString("Console", "Message_StoppedDialog")
-
-                ), "#bdbdbdff");
-                break;
-            default:
-                if (DialogLol.Instance.LanguageFileIndexes.ContainsKey(r.com_caps[1]))
-                {
-                    DialogLol.Instance.StartDialog(r.com_caps[1]);
-                    ConsoleLol.Instance.CloseConsole();
-                }
-                else
-                {
-                    Console.Log((
-
-                        LanguageFileSystem.Instance.GetString("Console", "Error_NoDialogWithName") + $"\"{r.com_caps[1]}\""
-
-                    ), "#ff0000ff");
-                }
-                break;
-        }
     }
     public static void Clear()
     {

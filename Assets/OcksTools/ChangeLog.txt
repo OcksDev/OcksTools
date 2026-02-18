@@ -81,6 +81,7 @@
     - You can also invert this behavior, queueing messages until it is given the signal to allow them through
   - Command "host" now has a sub command: "host copy"
     - Automatically copies the correct "join xxxxxx" command for the newly hosted instance
+  - Removed the bloat commands for sending chat messages
 - Achievement Improvements
   - New layered ox event for achievements being granted
   - CompileDict now accounts for non-saved achievements
@@ -96,6 +97,10 @@
   - It is now inherited from a base class, TextDisplay, making it a lot easier to interchange and segment text display methods
   - Added interfacing methods such as EnableCall, ForceUpdate, and GetDisplayString
   - Added option to disable automatic updates
+- Dialog Improvements 
+  - Renamed a lot of variables to be a lot more clear about their purpose
+  - Removed some unneeded variables, added some better comments in some places
+  - System moved to its own extension folder instead of being in the console folder lol
 - New Random Functions
   - New extension method to create a perpendicular vector to a vector in the direction of another vector
   - New method to GetListOfInheritors (like inherited classes)
@@ -106,6 +111,7 @@
   - New extension methods TimeStablePow and TimeStableLerp, makes doing lerps and pows consistent across framerate and timescale 
   - New extension methods AllignX, AllignY, and AllignZ, which condenses some logic repitiion
 - New Extendable Chess System (W.I.P)
+- Old chat system completely removed, potentially planning on making a revamped version, but for now it's just gone
 - Misc
   - Fixed save system methods to actually respect profile save method instead of using global save method, whoops
   - Profile system now has a defined constant for maximum username length, default being 15 characters

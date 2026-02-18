@@ -199,7 +199,6 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
         Add(new OXCommand("test", "Console", "Message_HelpTest")
             .Append(new OXCommand("tag").Action(ConsoleCommands.Test_tag))
             .Append(new OXCommand("circle").Action(ConsoleCommands.Test_circle))
-            .Append(new OXCommand("chat").Action(ConsoleCommands.Test_chat))
             .Append(new OXCommand("listall").Action(ConsoleCommands.Test_listall))
             .Append(new OXCommand("compver").Action(ConsoleCommands.Test_compver))
             .Append(new OXCommand("escape").Action(ConsoleCommands.Test_escape))
