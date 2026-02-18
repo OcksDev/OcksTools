@@ -23,7 +23,7 @@ If you do need the systems, then each of the systems have a file containing all 
 
 ## What is up with the systems folder and its subfolders?
 So the systems folder itself contains some classes like Tags, RandomFunctions, and InputManager, which I consider core systems. Other things such as Multiplayer or GIS may require functions or other stuff from the core systems, so its best you keep those unless you are absolutely sure about removing them.
-The subfolders like GIS, Multiplayer, NavMesh, Consoling, and more all act kinda like addons, each can be removed or added independantly of each other, and you can delete every subfolder of Systems without causing damage to anything else. This gives the package a good bit of modularity, allowing you to select what you do or do not need for your projects.
+The subfolders inside the Extensions folder like GIS, Multiplayer, NavMesh, Consoling, and more all act kinda like addons, each can be removed or added independantly of each other, and you can delete every subfolder of Extensions without causing damage to anything else. This gives the package a good bit of modularity, allowing you to select what you do or do not need for your projects.
 
 ---
 
