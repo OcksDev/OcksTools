@@ -64,6 +64,7 @@ public class GISSlot : MonoBehaviour
                 Held_Item = new GISItem();
                 break;
         }
+        SaveItemContainerData();
         OnInteractEvent.Invoke(this);
     }
 
@@ -94,7 +95,11 @@ public class GISSlot : MonoBehaviour
         switch (Name)
         {
             default:
-                if (Conte.CanShiftClickItems && shift)
+                if (Conte.CanSortItems && ctrl && shift && alt)
+                {
+                    Conte.Sort(GISContainer.SortingMethod.Amount, !left);
+                }
+                else if (Conte.CanShiftClickItems && shift)
                 {
                     if (left || right)
                     {
@@ -183,7 +188,6 @@ public class GISSlot : MonoBehaviour
         }
         foreach (var a in g.DragSlotsLeft)
         {
-            a.SaveItemContainerData();
             a.OnInteract();
         }
     }
@@ -215,7 +219,6 @@ public class GISSlot : MonoBehaviour
         {
             g.Mouse_Held_Item = new GISItem();
         }
-        SaveItemContainerData();
         OnInteract();
     }
 
@@ -282,7 +285,6 @@ public class GISSlot : MonoBehaviour
             nerd.slots[x].Held_Item = Held_Item;
             Held_Item = new GISItem();
             nerd.SaveTempContents();
-            SaveItemContainerData();
             OnInteract();
         }
     }
@@ -332,7 +334,6 @@ public class GISSlot : MonoBehaviour
         {
             Conte.slots[i].Held_Item = a;
         }
-        SaveItemContainerData();
         OnInteract();
     }
 
@@ -478,7 +479,6 @@ public class GISSlot : MonoBehaviour
         }
 
 
-        SaveItemContainerData();
         OnInteract();
     }
 
@@ -575,7 +575,6 @@ public class GISSlot : MonoBehaviour
             GISLol.Instance.DragSlotsRight.Add(this);
         }
 
-        SaveItemContainerData();
         OnInteract();
 
 

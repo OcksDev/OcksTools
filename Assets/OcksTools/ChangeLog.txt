@@ -53,9 +53,12 @@
   - Added mass shift clicking functionality
     - shift+ctrl applies a shift-click to all items in the container
     - shift+alt applies a shift-click to all items that are the same as the targeted slot in the container
+  - Added container sorting (ctrl+shift+alt+click)
   - Added ability for containers to opt-out of dragging
   - Added ability for containers to opt-out of mass shift clicking
+  - Added ability for containers to opt-out of sorting
   - Added overloads on GISContainer for Clear(), IndexOf(), and AmountOf() to take just an item base name
+  - Abstract Containers, when having items removed, now also clear out any empty slots
   - Optimized slot update code, batched update calls, and overall made it a bit less taxing on background performance
   - GISDisplay itself no longer updates via fixedupdate, instead, it uses the observer pattern to update only when needed
   - Item Amount is now reactable, although you probably shouldn't hook into this yourself
@@ -97,6 +100,7 @@
   - New extension method to create a perpendicular vector to a vector in the direction of another vector
   - New method to GetListOfInheritors (like inherited classes)
   - New extension method to generate a diff between two dictionaries
+  - New extension method to add item to list if it doesn't already exist
   - New method to collapse repeating strings into more compressed forms
   - New method to expand compressed string forms back into full strings
   - New extension methods TimeStablePow and TimeStableLerp, makes doing lerps and pows consistent across framerate and timescale 

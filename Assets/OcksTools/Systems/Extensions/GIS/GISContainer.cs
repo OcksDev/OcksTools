@@ -20,6 +20,8 @@ public class GISContainer : MonoBehaviour
     public bool CanCtrlClickItems = true;
     [HideIf("IsAbstract")]
     public bool CanDoubleClickItems = true;
+    [HideIf("IsAbstract")]
+    public bool CanSortItems = true;
     public int CtrlClickPriority = 0;
     [HideIf("IsAbstract")]
     public bool AutomaticallyAddChildren = true;
@@ -385,6 +387,20 @@ public class GISContainer : MonoBehaviour
             }
         }
     }
+
+    public void AbstractCollapseEmpty()
+    {
+        for (int i = 0; i < slots.Count; i++)
+        {
+            if (slots[i].Held_Item.IsEmpty())
+            {
+                slots.RemoveAt(i);
+                i--;
+            }
+        }
+    }
+
+
     public void ClearSlotObjects()
     {
         foreach (var ns in slots)
@@ -401,6 +417,7 @@ public class GISContainer : MonoBehaviour
             ns.Held_Item = new GISItem();
             ns.OnInteract();
         }
+        if (IsAbstract) AbstractCollapseEmpty();
     }
     public void Clear(GISItem diedie, bool usebase = true)
     {
@@ -412,6 +429,65 @@ public class GISContainer : MonoBehaviour
                 ns.OnInteract();
             }
         }
+        if (IsAbstract) AbstractCollapseEmpty();
+    }
+
+    public void Remove(GISItem diedie, int amount, bool usebase = true)
+    {
+        int im = amount;
+        for (int i = 0; i < slots.Count; i++)
+        {
+            var it = slots[i].Held_Item;
+            if (it.IsEmpty()) continue;
+            if (!it.Compare(diedie, usebase)) continue;
+            if (it.Amount > amount)
+            {
+                it.Amount.SetValue(it.Amount - amount);
+                slots[i].OnInteract();
+                return;
+            }
+            else
+            {
+                amount -= it.Amount;
+                slots[i].Held_Item = new GISItem();
+                slots[i].OnInteract();
+            }
+            if (amount <= 0) return;
+        }
+        if (amount > 0)
+        {
+            $"Attemped removing {im}, had {amount} remaining".DLogError();
+        }
+        if (IsAbstract) AbstractCollapseEmpty();
+    }
+
+    public void Remove(string name, int amount)
+    {
+        int im = amount;
+        for (int i = 0; i < slots.Count; i++)
+        {
+            var it = slots[i].Held_Item;
+            if (it.IsEmpty()) continue;
+            if (it.Name != name) continue;
+            if (it.Amount > amount)
+            {
+                it.Amount.SetValue(it.Amount - amount);
+                slots[i].OnInteract();
+                return;
+            }
+            else
+            {
+                amount -= it.Amount;
+                slots[i].Held_Item = new GISItem();
+                slots[i].OnInteract();
+            }
+            if (amount <= 0) return;
+        }
+        if (amount > 0)
+        {
+            $"Attemped removing {im}, had {amount} remaining".DLogError();
+        }
+        if (IsAbstract) AbstractCollapseEmpty();
     }
     public void Clear(string name)
     {
@@ -465,5 +541,51 @@ public class GISContainer : MonoBehaviour
         }
         return -1;
     }
+    private static SortingMethod _m;
+    public void Sort(SortingMethod m, bool reversed)
+    {
+        List<GISSlot> interacts = new();
+        List<GISItem> items = new();
+        foreach (GISSlot slot in slots)
+        {
+            if (!slot.Held_Item.IsEmpty())
+                interacts.Add(slot);
+            items.Add(slot.Held_Item);
+            slot.Held_Item = new GISItem();
+        }
+
+        _m = m;
+        items.Sort(CompareGISSlots);
+
+        for (int i = 0; i < slots.Count; i++)
+        {
+            int j = i;
+            if (!reversed) j = (slots.Count - 1) - i;
+            slots[j].Held_Item = items[i];
+            interacts.AddIfCan(slots[j]);
+        }
+        foreach (GISSlot slot in interacts)
+        {
+            slot.OnInteract();
+        }
+    }
+    public static int CompareGISSlots(GISItem a, GISItem b)
+    {
+        switch (_m)
+        {
+            case SortingMethod.Alphabetical: return a.Name.CompareTo(b.Name);
+            case SortingMethod.Amount: return a.Amount.GetValue().CompareTo(b.Amount.GetValue());
+            default: return 0;
+        }
+    }
+
+
+    public enum SortingMethod
+    {
+        Alphabetical,
+        Amount,
+    }
+
+
 
 }

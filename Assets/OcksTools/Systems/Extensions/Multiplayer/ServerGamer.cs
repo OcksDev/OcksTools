@@ -51,7 +51,7 @@ public class ServerGamer : NetworkBehaviour
 
     public void LockBacklog(FixedString64Bytes x)
     {
-        if (x.ToString() == "") return; // 0 can not be locked
+        if (x.ToString() == "") return; // "" can not be locked
         if (LockedBacklogs.Contains(x)) return;
         LockedBacklogs.Add(x);
         FlushBacklog(x);
@@ -59,7 +59,7 @@ public class ServerGamer : NetworkBehaviour
 
     public void UnlockBacklog(FixedString64Bytes x)
     {
-        if (x.ToString() == "") return; // 0 can not be locked
+        if (x.ToString() == "") return; // "" can not be locked
         if (!LockedBacklogs.Contains(x)) return;
         LockedBacklogs.Remove(x);
         FlushBacklog(x);

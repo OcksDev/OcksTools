@@ -523,6 +523,11 @@ public static class OXFunctions
 
 
 
+    public static List<T> AddIfCan<T>(this List<T> ti, T t)
+    {
+        if (!ti.Contains(t)) ti.Add(t);
+        return ti;
+    }
     public static List<T> CombineLists<T>(this List<T> ti, List<T> tee)
     {
         var tea = new List<T>(ti);

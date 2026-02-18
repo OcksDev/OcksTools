@@ -121,6 +121,13 @@ public abstract class OXComponentBase
     /// Converts the current component instance into its string representation for serialization.
     /// </summary>
     public abstract string GetString();
+    /// <summary>
+    /// Method that can be called on loading a component
+    /// </summary>
+    public virtual void OnLoad(object caller)
+    {
+
+    }
 
     /// <summary>
     /// Creates a new instance by parsing the specified string representation.
