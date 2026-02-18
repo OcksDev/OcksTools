@@ -6,21 +6,21 @@ using Unity.Netcode;
 public static class Server
 {
     public static ServerGamer Instance;
-    public static ServerGamer Send()
+    public static ServerGamer Send(bool wait_first = false)
     {
-        Instance._Handover = new OXNetworkRpcData(Instance.ClientID, "");
+        Instance._Handover = new OXNetworkRpcData(Instance.ClientID, "", wait_first);
         return Instance;
     }
 
-    public static ServerGamer Send(FixedString64Bytes s)
+    public static ServerGamer Send(FixedString64Bytes s, bool wait_first = false)
     {
-        Instance._Handover = new OXNetworkRpcData(Instance.ClientID, s);
+        Instance._Handover = new OXNetworkRpcData(Instance.ClientID, s, wait_first);
         return Instance;
     }
 
-    public static ServerGamer Send(string s, FixedString64Bytes n)
+    public static ServerGamer Send(string s, FixedString64Bytes n, bool wait_first = false)
     {
-        Instance._Handover = new OXNetworkRpcData(s, n);
+        Instance._Handover = new OXNetworkRpcData(s, n, wait_first);
         return Instance;
     }
     public static void handjoib(string spawndata)
@@ -54,6 +54,7 @@ public class ServerGamer : NetworkBehaviour
         if (x.ToString() == "") return; // 0 can not be locked
         if (LockedBacklogs.Contains(x)) return;
         LockedBacklogs.Add(x);
+        FlushBacklog(x);
     }
 
     public void UnlockBacklog(FixedString64Bytes x)
@@ -61,23 +62,34 @@ public class ServerGamer : NetworkBehaviour
         if (x.ToString() == "") return; // 0 can not be locked
         if (!LockedBacklogs.Contains(x)) return;
         LockedBacklogs.Remove(x);
+        FlushBacklog(x);
+    }
+
+    public void ClearBacklog(FixedString64Bytes x)
+    {
+        MessageBacklog.GetOrDefine(x, new Queue<Action>()).Clear();
+    }
+
+    public void FlushBacklog(FixedString64Bytes x)
+    {
         var q = MessageBacklog.GetOrDefine(x, new Queue<Action>());
         while (q.Count > 0)
         {
             q.Dequeue()();
         }
+        q.Clear();
     }
 
-    public void AddFrom(FixedString64Bytes x, Action a)
+    public void AddFrom(OXNetworkRpcData x, Action a)
     {
-        if (x.ToString() == "" || !LockedBacklogs.Contains(x))
+        if (x.Queue == "" || (!LockedBacklogs.Contains(x.Queue)) ^ x.WaitFirst)
         {
             a();
             return;
         }
         else
         {
-            MessageBacklog.GetOrDefine(x, new Queue<Action>()).Enqueue(a);
+            MessageBacklog.GetOrDefine(x.Queue, new Queue<Action>()).Enqueue(a);
         }
     }
 
@@ -104,7 +116,7 @@ public class ServerGamer : NetworkBehaviour
     {
         if (id == ClientID) return;
 
-        AddFrom(id.Queue, () =>
+        AddFrom(id, () =>
         {
             SpawnSystem.Spawn(new SpawnData(spawndata, 0));
         });
@@ -127,18 +139,24 @@ public class ServerGamer : NetworkBehaviour
     public void _RecieveMessageClientRpc(OXNetworkRpcData id, FixedString32Bytes type, string data)
     {
         if (id == ClientID) return;
-        AddFrom(id.Queue, () =>
+        AddFrom(id, () =>
         {
             switch (type.ToString())
             {
                 case "Console":
                     data.Log();
                     break;
-                case "Lock":
+                case "LockB":
                     LockBacklog(data);
                     break;
-                case "Unlock":
+                case "UnlockB":
                     UnlockBacklog(data);
+                    break;
+                case "ClearB":
+                    ClearBacklog(data);
+                    break;
+                case "FlushB":
+                    FlushBacklog(data);
                     break;
                 default:
                     break;
@@ -164,7 +182,7 @@ public class ServerGamer : NetworkBehaviour
     {
         if (id == ClientID) return;
 
-        AddFrom(id.Queue, () =>
+        AddFrom(id, () =>
         {
             ChatLol.Instance.WriteChat(message, hex);
         });
@@ -210,7 +228,7 @@ public class ServerGamer : NetworkBehaviour
         //Console.Log($"Recieved {id}, {Name}, {data}");
         if (id == ClientID) return;
         if (id == "Host" && NetworkManager.Singleton.IsHost) return;
-        AddFrom(id.Queue, () =>
+        AddFrom(id, () =>
         {
             CreateEmpty(NetID, Name);
             //Console.Log($"Changed {NetID} to {data}");
@@ -246,17 +264,20 @@ public struct OXNetworkRpcData : INetworkSerializable
 {
     public FixedString64Bytes ClientID;
     public FixedString64Bytes Queue;
+    public bool WaitFirst;
 
-    public OXNetworkRpcData(FixedString64Bytes ID, FixedString64Bytes num)
+    public OXNetworkRpcData(FixedString64Bytes ID, FixedString64Bytes num, bool wait)
     {
         ClientID = ID;
         Queue = num;
+        WaitFirst = wait;
     }
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
     {
         serializer.SerializeValue(ref ClientID);
         serializer.SerializeValue(ref Queue);
+        serializer.SerializeValue(ref WaitFirst);
     }
-    public static implicit operator OXNetworkRpcData(string ID) { return new OXNetworkRpcData(ID, ""); }
+    public static implicit operator OXNetworkRpcData(string ID) { return new OXNetworkRpcData(ID, "", false); }
     public static implicit operator string(OXNetworkRpcData nerd) { return nerd.ClientID.ToString(); }
 }

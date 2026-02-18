@@ -63,15 +63,21 @@ public class NetworkConsoleCommands : MonoBehaviour
     {
         yield return new WaitForSeconds(2);
         Server.Send().Message("Console", "Lock test");
-        Server.Send().Message("Lock", "test queue");
+        Server.Send().Message("LockB", "test queue");
         yield return new WaitForSeconds(2);
         Server.Send().Message("Console", "Messages incoming");
         Server.Send("test queue").Message("Console", "Message 1");
         Server.Send("test queue").Message("Console", "Message 2");
         Server.Send("test queue").Message("Console", "Message 3");
+        Server.Send("flush req", true).Message("Console", "Message 4");
         yield return new WaitForSeconds(2);
         Server.Send().Message("Console", "Sent, about to unlock test");
         yield return new WaitForSeconds(2);
-        Server.Send().Message("Unlock", "test queue");
+        Server.Send().Message("UnlockB", "test queue");
+        yield return new WaitForSeconds(2);
+        Server.Send().Message("LockB", "flush req");
+        yield return new WaitForSeconds(2);
+        Server.Send("test queue").Message("Console", "Message 5");
+        Server.Send("flush req", true).Message("Console", "Message 6");
     }
 }

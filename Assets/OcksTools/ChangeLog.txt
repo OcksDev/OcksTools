@@ -75,6 +75,7 @@
   - Completely modified how sending messages works, removed janky stuff and streamlined the process
     - New format adds extra functionality, like easily being able to change where clients think a message is sent from
   - Added message backlogs with basic locking capability, so you can explicitly queue incoming messages into piles
+    - You can also invert this behavior, queueing messages until it is given the signal to allow them through
   - Command "host" now has a sub command: "host copy"
     - Automatically copies the correct "join xxxxxx" command for the newly hosted instance
 - Achievement Improvements
