@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Netcode;
+using UnityEngine;
 
 public static class Server
 {
@@ -27,13 +29,23 @@ public static class Server
     {
         Send().SpawnObject(spawndata);
     }
+
+    public static Dictionary<FixedString64Bytes, NetworkIDSync> AllClients = new();
+    public static Dictionary<ulong, NetworkIDSync> BADAllClients = new();
+
 }
 
 
 
 public class ServerGamer : NetworkBehaviour
 {
-    public string ClientID;
+    public override void OnDestroy()
+    {
+        Server.AllClients.Clear();
+        Server.BADAllClients.Clear();
+        base.OnDestroy();
+    }
+    public FixedString64Bytes ClientID = "";
     // public NetworkVariable<int> PlayerNum = new NetworkVariable<int>(100, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     // FixedString128Bytes
 
@@ -114,7 +126,7 @@ public class ServerGamer : NetworkBehaviour
     [ClientRpc]
     public void _SpawnObjectClientRpc(OXNetworkRpcData id, string spawndata)
     {
-        if (id == ClientID) return;
+        if (id.ClientID == ClientID) return;
 
         AddFrom(id, () =>
         {
@@ -124,21 +136,21 @@ public class ServerGamer : NetworkBehaviour
 
 
 
-    public void Message(FixedString32Bytes type, string data)
+    public void Message(FixedString64Bytes type, string data)
     {
         _MessagePingPongServerRpc(_Handover, type, data);
     }
 
     [Rpc(SendTo.Everyone, InvokePermission = RpcInvokePermission.Everyone)]
-    public void _MessagePingPongServerRpc(OXNetworkRpcData id, FixedString32Bytes type, string data)
+    public void _MessagePingPongServerRpc(OXNetworkRpcData id, FixedString64Bytes type, string data)
     {
         _RecieveMessageClientRpc(id, type, data);
     }
     //chat related method
     [ClientRpc]
-    public void _RecieveMessageClientRpc(OXNetworkRpcData id, FixedString32Bytes type, string data)
+    public void _RecieveMessageClientRpc(OXNetworkRpcData id, FixedString64Bytes type, string data)
     {
-        if (id == ClientID) return;
+        if (id.ClientID == ClientID) return;
         AddFrom(id, () =>
         {
             switch (type.ToString())
@@ -165,6 +177,51 @@ public class ServerGamer : NetworkBehaviour
     }
 
 
+    public void IDSync(FixedString64Bytes ID, ulong bad_id)
+    {
+        _IDSyncServerRpc(_Handover, ID, bad_id);
+    }
+    [Rpc(SendTo.Everyone, InvokePermission = RpcInvokePermission.Everyone)]
+    public void _IDSyncServerRpc(OXNetworkRpcData id, FixedString64Bytes ID, ulong bad_id)
+    {
+        _IDSyncClientRpc(id, ID, bad_id);
+    }
+    //chat related method
+    [ClientRpc]
+    public void _IDSyncClientRpc(OXNetworkRpcData id, FixedString64Bytes ID, ulong bad_id)
+    {
+        if (id.ClientID == ClientID) return;
+        StartCoroutine(AddToNerds(ID, bad_id));
+    }
+
+    public IEnumerator AddToNerds(FixedString64Bytes ID, ulong bad_id)
+    {
+        if (Server.AllClients.ContainsKey(ID))
+        {
+            yield break; //already had this lol
+        }
+        if (Server.BADAllClients.ContainsKey(bad_id))
+        {
+            Server.AllClients.Add(ID, Server.BADAllClients[bad_id]);
+            LockBacklog(ID);
+            yield break;
+        }
+
+        //this shouldn't really happen, but just in case
+
+        float x = Time.time + 2f;
+        yield return new WaitUntil(() => Time.time >= x || Server.BADAllClients.ContainsKey(bad_id));
+        if (Server.BADAllClients.ContainsKey(bad_id))
+        {
+            Server.AllClients.Add(ID, Server.BADAllClients[bad_id]);
+            LockBacklog(ID);
+            yield break;
+        }
+
+        //this really shouldn't happen
+
+        Debug.LogError($"{ID} given with id {bad_id}, but never matched?");
+    }
 
 
 
@@ -204,8 +261,8 @@ public class ServerGamer : NetworkBehaviour
     public void RecieveOcksVarClientRpc(OXNetworkRpcData id, string NetID, string Name, string data)
     {
         //Console.Log($"Recieved {id}, {Name}, {data}");
-        if (id == ClientID) return;
-        if (id == "Host" && NetworkManager.Singleton.IsHost) return;
+        if (id.ClientID == ClientID) return;
+        if (id.ClientID == "Host" && NetworkManager.Singleton.IsHost) return;
         AddFrom(id, () =>
         {
             CreateEmpty(NetID, Name);

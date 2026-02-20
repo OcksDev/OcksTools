@@ -256,6 +256,7 @@ GameObject:
   - component: {fileID: 3013524816954814183}
   - component: {fileID: 6514279531858226045}
   - component: {fileID: 5807928609690263918}
+  - component: {fileID: 7411220356236698185}
   m_Layer: 0
   m_Name: Multi Player
   m_TagString: Untagged
@@ -515,6 +516,19 @@ MonoBehaviour:
   Display: {fileID: 2655767201714375939}
   Display2: {fileID: 8159807342777557259}
   Display3: {fileID: 8904167109920955087}
+--- !u!114 &7411220356236698185
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4868548265477744919}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd5b32681c1d955459488989ba88d899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NetworkIDSync
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!1 &6367113133912329471
 GameObject:
   m_ObjectHideFlags: 0

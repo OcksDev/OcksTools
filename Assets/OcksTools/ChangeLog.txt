@@ -75,6 +75,7 @@
   - Added Priority attribute on OXSounds
   - Added Spacial Blend attribute on OXSounds
 - Multiplayer Improvements
+  - New NetworkIDSync component for player objects, basically syncs up client IDs automatically.
   - Completely modified how sending messages works, removed janky stuff and streamlined the process
     - New format adds extra functionality, like easily being able to change where clients think a message is sent from
   - Added message backlogs with basic locking capability, so you can explicitly queue incoming messages into piles

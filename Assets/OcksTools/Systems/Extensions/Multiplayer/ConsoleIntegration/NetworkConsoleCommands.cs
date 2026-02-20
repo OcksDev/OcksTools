@@ -18,6 +18,7 @@ public class NetworkConsoleCommands : MonoBehaviour
         ConsoleLol.Instance.Add(new OXCommand("host").Action(host).Append(new OXCommand("copy").Action(host_and_copy)));
         ConsoleLol.Instance.Add(new OXCommand("join").Append(new OXCommand(OXCommand.ExpectedInputType.String).Action(join)));
         ConsoleLol.Instance.Add(new OXCommand("disconnect").Action(disconnect));
+        ConsoleLol.Instance.Add(new OXCommand("listclients").Action(listclients));
         ConsoleLol.Instance.Append("test", new OXCommand("objectspawn").Action(objectspawn));
         ConsoleLol.Instance.Append("test", new OXCommand("message").Action(message));
         ConsoleLol.Instance.Append("test", new OXCommand("locking").Action(locking));
@@ -30,6 +31,14 @@ public class NetworkConsoleCommands : MonoBehaviour
     public static void host_and_copy()
     {
         RelayMoment.Instance.GetComponent<PickThingymabob>().MakeGameAndCopy();
+    }
+
+    public static void listclients()
+    {
+        foreach (var a in Server.AllClients)
+        {
+            Console.Log(a.Value.OwnerClientId + ": " + a.Key);
+        }
     }
     public static void objectspawn()
     {
