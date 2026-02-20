@@ -82,7 +82,9 @@ public class GISLol : SingleInstance<GISLol>
     public Reactable<bool> MouseLeftClickingDown = new(false);
     [HideInInspector]
     public Reactable<bool> MouseRightClickingDown = new(false);
+    [HideInInspector]
     public List<GISSlot> DragSlotsLeft = new();
+    [HideInInspector]
     public List<GISSlot> DragSlotsRight = new();
     [HideInInspector]
     public GISItem DragItemLeft = null;
@@ -264,9 +266,9 @@ public class GISItem
 
         Data["Extra"] = Components.CompToString();
 
-        Dictionary<string, string> bb = def.MergeDictionary(Data);
+        Dictionary<string, string> bb = def.DiffDictionary(Data);
 
-        if (bb["Index"] == "Empty") bb = new Dictionary<string, string>(); //no need to store this, saves a large amount of space
+        if (!bb.ContainsKey("Index")) bb = new Dictionary<string, string>(); //no need to store this, saves a large amount of space
         if (bb.ContainsKey("Count") && bb["Count"] == "1") bb.Remove("Count"); //no need to store this, saves a minimal amount of space
         e = Converter.EscapedDictionaryToString(bb, "~|~", "~o~");
         return e;

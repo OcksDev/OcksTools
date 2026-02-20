@@ -32,7 +32,8 @@ public static class Server
 
     public static Dictionary<FixedString64Bytes, NetworkIDSync> AllClients = new();
     public static Dictionary<ulong, NetworkIDSync> BADAllClients = new();
-
+    public static OXEvent<FixedString64Bytes, string> MessageEvent = new();
+    public static OXEvent<FixedString64Bytes> ClientIDSynced = new();
 }
 
 
@@ -171,6 +172,7 @@ public class ServerGamer : NetworkBehaviour
                     FlushBacklog(data);
                     break;
                 default:
+                    Server.MessageEvent.Invoke(type, data);
                     break;
             }
         });
@@ -204,6 +206,7 @@ public class ServerGamer : NetworkBehaviour
         {
             Server.AllClients.Add(ID, Server.BADAllClients[bad_id]);
             LockBacklog(ID);
+            Server.ClientIDSynced.Invoke(ID);
             yield break;
         }
 
@@ -215,6 +218,7 @@ public class ServerGamer : NetworkBehaviour
         {
             Server.AllClients.Add(ID, Server.BADAllClients[bad_id]);
             LockBacklog(ID);
+            Server.ClientIDSynced.Invoke(ID);
             yield break;
         }
 

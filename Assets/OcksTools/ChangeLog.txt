@@ -62,6 +62,8 @@
   - Optimized slot update code, batched update calls, and overall made it a bit less taxing on background performance
   - GISDisplay itself no longer updates via fixedupdate, instead, it uses the observer pattern to update only when needed
   - Item Amount is now reactable, although you probably shouldn't hook into this yourself
+  - Saving items to strings now uses Diff instead of Merge, saves on space
+  - Containers now remove themselves from the global dictionary when destroyed
   - Removed some random lingering conversion functions that I forgot to erase (as they were moved to Converter)
 - Sound System Improvements
   - Added basic support for Audio Mixers
@@ -82,7 +84,8 @@
     - You can also invert this behavior, queueing messages until it is given the signal to allow them through
   - Command "host" now has a sub command: "host copy"
     - Automatically copies the correct "join xxxxxx" command for the newly hosted instance
-  - Removed the bloat commands for sending chat messages
+  - ServerGamer.Message now has an event, Server.MessageEvent, which allows for modularity without needing to modify base code
+  - Removed the bloat commands for sending chat messages, since it is now gone
 - Achievement Improvements
   - New layered ox event for achievements being granted
   - CompileDict now accounts for non-saved achievements

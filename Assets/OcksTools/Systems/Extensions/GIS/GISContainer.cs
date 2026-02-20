@@ -38,7 +38,11 @@ public class GISContainer : MonoBehaviour
     public List<GISSlot> extraslots = new List<GISSlot>();
     [HideInInspector]
     public bool LoadedData = false;
-
+    private void OnDestroy()
+    {
+        GISLol.Instance.All_Containers.Remove(Name);
+    }
+    [HideInInspector]
     public List<GISItem> saved_items = new List<GISItem>();
     // Start is called before the first frame update
     private void Start()
