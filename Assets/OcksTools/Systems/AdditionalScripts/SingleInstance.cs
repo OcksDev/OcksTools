@@ -7,7 +7,7 @@ public abstract class SingleInstance<T> : MonoBehaviour where T : SingleInstance
         get;
         private set;
     }
-    private void SetInstance(T t) { Instance = t; }
+    public virtual void SetInstance(T t) { Instance = t; }
     /// <summary>
     /// When overridden, object will be opted out of "DontDestroyOnLoad"
     /// </summary>

@@ -120,6 +120,7 @@
   - Reactable now shows up in the inspector
   - Reactable now can have its comparison method changed (instead of needing to overload Equals() on the value class)
   - SingleInstance<> now tries to mark gameobjects as "DontDestroyOnLoad" whenever possible, unless told not to
+  - SingleInstance<> now can have its SetInstance method be overloaded
   - CompileableDictionary and CompileableDictionaryAlt now inherit from Dictionary, so they are easier to use now
   - Moved some logic in Room Generation to allow for easier background generation
   - Weighted Averages modified to use Multiref and be slightly cooler
