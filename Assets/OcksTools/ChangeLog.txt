@@ -20,6 +20,7 @@
     - Also created default CopyUsingString() method, an easy but inefficient way to copy components
   - Components no longer need to be manually initialized
 - New Shaders
+  - 3D screen-space outline shader (taken from my Beyond Light project)
   - 8Dir sub-graph to make making shaders easier, giving a compacted way to create vector2 offsets
 - Complete Notification System Remake
   - Deleted all previous code and started from scratch, now much more interchangeable and expandable
