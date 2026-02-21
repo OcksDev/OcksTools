@@ -37,7 +37,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AnglePower: 5
     - _BigMult: 2.77
+    - _DistanceMult: 2.77
+    - _DistancePower: 0.5
     - _Freshtresh: -0.5
     - _OutlineWidth: 1
     - _Pow: 5

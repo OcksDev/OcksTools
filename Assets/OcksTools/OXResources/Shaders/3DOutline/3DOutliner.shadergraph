@@ -2566,7 +2566,7 @@
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "103f35eee1bf4d799f6c55048d3e6959",
     "m_Id": 0,
-    "m_DisplayName": "Pow",
+    "m_DisplayName": "AnglePower",
     "m_SlotType": 1,
     "m_Hidden": false,
     "m_ShaderOutputName": "Out",
@@ -3522,7 +3522,7 @@
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "2b499b607b7d4a1692348b517576d0e2",
     "m_Id": 0,
-    "m_DisplayName": "Power",
+    "m_DisplayName": "DistancePower",
     "m_SlotType": 1,
     "m_Hidden": false,
     "m_ShaderOutputName": "Out",
@@ -5354,10 +5354,10 @@
     "m_Guid": {
         "m_GuidSerialized": "1c39702a-815b-4ad0-b5c5-124e9c61b9ec"
     },
-    "m_Name": "Pow",
+    "m_Name": "AnglePower",
     "m_DefaultRefNameVersion": 1,
-    "m_RefNameGeneratedByDisplayName": "Pow",
-    "m_DefaultReferenceName": "_Pow",
+    "m_RefNameGeneratedByDisplayName": "AnglePower",
+    "m_DefaultReferenceName": "_AnglePower",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
     "m_UseCustomSlotLabel": false,
@@ -5739,7 +5739,7 @@
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "63cbf4a2ce324a49be030b51a9c5876d",
     "m_Id": 0,
-    "m_DisplayName": "BigMult",
+    "m_DisplayName": "DistanceMult",
     "m_SlotType": 1,
     "m_Hidden": false,
     "m_ShaderOutputName": "Out",
@@ -6570,7 +6570,7 @@
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "7f1893946dd24e81a405bd28adb10ce8",
     "m_Id": 0,
-    "m_DisplayName": "BigMult",
+    "m_DisplayName": "DistanceMult",
     "m_SlotType": 1,
     "m_Hidden": false,
     "m_ShaderOutputName": "Out",
@@ -6842,9 +6842,6 @@
             "m_Id": "2dc69971174044089051dbf65a69e21e"
         },
         {
-            "m_Id": "bb0e05b2a9d54607bb7cb3b72943604a"
-        },
-        {
             "m_Id": "94724ad8cd1a4bebb0fb7dfa39930ffe"
         },
         {
@@ -6852,6 +6849,9 @@
         },
         {
             "m_Id": "a07d7199327a4111bca4b36824f93d1a"
+        },
+        {
+            "m_Id": "bb0e05b2a9d54607bb7cb3b72943604a"
         }
     ]
 }
@@ -8003,10 +8003,10 @@
     "m_Guid": {
         "m_GuidSerialized": "94a0c2e0-a158-49d5-a425-1df7db55aa01"
     },
-    "m_Name": "Power",
+    "m_Name": "DistancePower",
     "m_DefaultRefNameVersion": 1,
-    "m_RefNameGeneratedByDisplayName": "Power",
-    "m_DefaultReferenceName": "_Power",
+    "m_RefNameGeneratedByDisplayName": "DistancePower",
+    "m_DefaultReferenceName": "_DistancePower",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
     "m_UseCustomSlotLabel": false,
@@ -9527,10 +9527,10 @@
     "m_Guid": {
         "m_GuidSerialized": "21802a90-d356-461d-94fb-fbc26a01151a"
     },
-    "m_Name": "BigMult",
+    "m_Name": "DistanceMult",
     "m_DefaultRefNameVersion": 1,
-    "m_RefNameGeneratedByDisplayName": "BigMult",
-    "m_DefaultReferenceName": "_BigMult",
+    "m_RefNameGeneratedByDisplayName": "DistanceMult",
+    "m_DefaultReferenceName": "_DistanceMult",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
     "m_UseCustomSlotLabel": false,
