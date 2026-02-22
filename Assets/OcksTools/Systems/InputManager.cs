@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class InputManager : SingleInstance<InputManager>
 {
+    public bool PollForEvents = true;
     public static List<string> locklevel = new List<string>();
     public static Dictionary<KeyCode, string> keynames = new Dictionary<KeyCode, string>();
     public static Dictionary<string, KeyCode> namekeys = new Dictionary<string, KeyCode>();
@@ -10,12 +11,123 @@ public class InputManager : SingleInstance<InputManager>
     public static Dictionary<string, List<KeyCode>> defaultgamekeys = new Dictionary<string, List<KeyCode>>();
     public static Dictionary<string, string> gamekeynames = new Dictionary<string, string>();
     public static OXEvent CollectInputAllocs = new OXEvent();
+
+
     // Start is called before the first frame update
     private void Start()
     {
         AssembleTheCodes();
         ResetLockLevel();
     }
+
+    public static Dictionary<string, List<MultiRef<List<string>, OXEvent>>> InputEvents = new();
+    public static Dictionary<string, List<MultiRef<List<string>, OXEvent>>> InputEventsUp = new();
+    public static Dictionary<string, List<MultiRef<List<string>, OXEvent>>> InputEventsDown = new();
+    private void Update()
+    {
+        if (!PollForEvents) return;
+        foreach (var a in gamekeys)
+        {
+            foreach (var key in a.Value)
+            {
+                if (Input.GetKey(key))
+                {
+                    if (InputEvents.ContainsKey(a.Key))
+                    {
+                        var p = InputEvents[a.Key];
+                        foreach (var c in p)
+                        {
+                            if (c.a == null)
+                            {
+                                c.b.Invoke();
+                                continue;
+                            }
+                            if (!AllowInputToPass(c.a)) continue;
+                            if (!InputPassesLockLevel(c.a)) continue;
+                            c.b.Invoke();
+                        }
+                    }
+                    break;
+                }
+            }
+            foreach (var key in a.Value)
+            {
+                if (Input.GetKeyUp(key))
+                {
+                    if (InputEventsUp.ContainsKey(a.Key))
+                    {
+                        var p = InputEventsUp[a.Key];
+                        foreach (var c in p)
+                        {
+                            if (c.a == null)
+                            {
+                                c.b.Invoke();
+                                continue;
+                            }
+                            if (!AllowInputToPass(c.a)) continue;
+                            if (!InputPassesLockLevel(c.a)) continue;
+                            c.b.Invoke();
+                        }
+                    }
+                    break;
+                }
+            }
+            foreach (var key in a.Value)
+            {
+                if (Input.GetKeyDown(key))
+                {
+                    if (InputEventsDown.ContainsKey(a.Key))
+                    {
+                        var p = InputEventsDown[a.Key];
+                        foreach (var c in p)
+                        {
+                            if (c.a == null)
+                            {
+                                c.b.Invoke();
+                                continue;
+                            }
+                            if (!AllowInputToPass(c.a)) continue;
+                            if (!InputPassesLockLevel(c.a)) continue;
+                            c.b.Invoke();
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    public static OXEvent GetEventFor(string nerd, BetterList<string>? ide = null)
+    {
+        var pp = InputEvents.GetOrDefine(nerd, new());
+        MultiRef<List<string>, OXEvent> b = new();
+        b.a = ide.HasValue ? ide.Value.ToList() : null;
+        b.b = new OXEvent();
+        pp.Add(b);
+        return b.b;
+    }
+
+    public static OXEvent GetUpEventFor(string nerd, BetterList<string>? ide = null)
+    {
+        var pp = InputEventsUp.GetOrDefine(nerd, new());
+        MultiRef<List<string>, OXEvent> b = new();
+        b.a = ide.HasValue ? ide.Value.ToList() : null;
+        b.b = new OXEvent();
+        pp.Add(b);
+        return b.b;
+    }
+
+    public static OXEvent GetDownEventFor(string nerd, BetterList<string>? ide = null)
+    {
+        var pp = InputEventsDown.GetOrDefine(nerd, new());
+        MultiRef<List<string>, OXEvent> b = new();
+        b.a = ide.HasValue ? ide.Value.ToList() : null;
+        b.b = new OXEvent();
+        pp.Add(b);
+        return b.b;
+    }
+
+
 
     public static void AssembleTheCodes()
     {
@@ -34,19 +146,19 @@ public class InputManager : SingleInstance<InputManager>
 
 
         //create custom key allocations
-        CreateKeyAllocation("shoot", KeyCode.Mouse0);
-        CreateKeyAllocation("alt_shoot", KeyCode.Mouse1);
-        CreateKeyAllocation("move_forward", KeyCode.W);
-        CreateKeyAllocation("move_back", KeyCode.S);
-        CreateKeyAllocation("move_left", KeyCode.A);
-        CreateKeyAllocation("move_right", KeyCode.D);
-        CreateKeyAllocation("jump", KeyCode.Space);
-        CreateKeyAllocation("slide", KeyCode.LeftControl);
-        CreateKeyAllocation("dash", KeyCode.LeftShift);
-        CreateKeyAllocation("reload", KeyCode.R);
-        CreateKeyAllocation("interact", KeyCode.F);
-        CreateKeyAllocation("close_menu", new List<KeyCode>() { KeyCode.Escape, KeyCode.JoystickButton1 });
-        CreateKeyAllocation("tab_menu", KeyCode.Tab);
+        CreateInputSet("shoot", KeyCode.Mouse0);
+        CreateInputSet("alt_shoot", KeyCode.Mouse1);
+        CreateInputSet("move_forward", KeyCode.W);
+        CreateInputSet("move_back", KeyCode.S);
+        CreateInputSet("move_left", KeyCode.A);
+        CreateInputSet("move_right", KeyCode.D);
+        CreateInputSet("jump", KeyCode.Space);
+        CreateInputSet("slide", KeyCode.LeftControl);
+        CreateInputSet("dash", KeyCode.LeftShift);
+        CreateInputSet("reload", KeyCode.R);
+        CreateInputSet("interact", KeyCode.F);
+        CreateInputSet("close_menu", new List<KeyCode>() { KeyCode.Escape, KeyCode.JoystickButton1 });
+        CreateInputSet("tab_menu", KeyCode.Tab);
 
         CollectInputAllocs.Invoke();
 
@@ -362,11 +474,11 @@ public class InputManager : SingleInstance<InputManager>
         };
     }
 
-    public static void CreateKeyAllocation(string name, KeyCode key)
+    public static void CreateInputSet(string name, KeyCode key)
     {
-        CreateKeyAllocation(name, new List<KeyCode>() { key });
+        CreateInputSet(name, new List<KeyCode>() { key });
     }
-    public static void CreateKeyAllocation(string name, List<KeyCode> keys)
+    public static void CreateInputSet(string name, List<KeyCode> keys)
     {
         gamekeys.Add(name, keys);
         defaultgamekeys.Add(name, keys);

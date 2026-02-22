@@ -35,12 +35,12 @@ public class GISLol : SingleInstance<GISLol>
 
         InputManager.CollectInputAllocs.Append("GIS", () =>
         {
-            InputManager.CreateKeyAllocation("item_select", KeyCode.Mouse0);
-            InputManager.CreateKeyAllocation("item_half", KeyCode.Mouse1);
-            InputManager.CreateKeyAllocation("item_pick", KeyCode.Mouse2);
-            InputManager.CreateKeyAllocation("item_alt", KeyCode.LeftShift);
-            InputManager.CreateKeyAllocation("item_mod", KeyCode.LeftControl);
-            InputManager.CreateKeyAllocation("item_change", KeyCode.LeftAlt);
+            InputManager.CreateInputSet("item_select", KeyCode.Mouse0);
+            InputManager.CreateInputSet("item_half", KeyCode.Mouse1);
+            InputManager.CreateInputSet("item_pick", KeyCode.Mouse2);
+            InputManager.CreateInputSet("item_alt", KeyCode.LeftShift);
+            InputManager.CreateInputSet("item_mod", KeyCode.LeftControl);
+            InputManager.CreateInputSet("item_change", KeyCode.LeftAlt);
         });
     }
 

@@ -56,10 +56,10 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
 
         InputManager.CollectInputAllocs.Append("Console", () =>
         {
-            InputManager.CreateKeyAllocation("console", KeyCode.Slash);
-            InputManager.CreateKeyAllocation("console_up", KeyCode.UpArrow);
-            InputManager.CreateKeyAllocation("console_down", KeyCode.DownArrow);
-            InputManager.CreateKeyAllocation("console_autofill", KeyCode.Tab);
+            InputManager.CreateInputSet("console", KeyCode.Slash);
+            InputManager.CreateInputSet("console_up", KeyCode.UpArrow);
+            InputManager.CreateInputSet("console_down", KeyCode.DownArrow);
+            InputManager.CreateInputSet("console_autofill", KeyCode.Tab);
         });
     }
 

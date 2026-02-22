@@ -76,8 +76,8 @@ public class DialogLol : SingleInstance<DialogLol>
 
         InputManager.CollectInputAllocs.Append("Dialog", () =>
         {
-            InputManager.CreateKeyAllocation("dialog_skip", new List<KeyCode>() { KeyCode.Space, KeyCode.Mouse0, KeyCode.RightArrow });
-            InputManager.CreateKeyAllocation("dialog_skip_back", KeyCode.LeftArrow);
+            InputManager.CreateInputSet("dialog_skip", new List<KeyCode>() { KeyCode.Space, KeyCode.Mouse0, KeyCode.RightArrow });
+            InputManager.CreateInputSet("dialog_skip_back", KeyCode.LeftArrow);
         });
     }
 
