@@ -20,113 +20,6 @@ public class InputManager : SingleInstance<InputManager>
         ResetLockLevel();
     }
 
-    public static Dictionary<string, List<MultiRef<List<string>, OXEvent>>> InputEvents = new();
-    public static Dictionary<string, List<MultiRef<List<string>, OXEvent>>> InputEventsUp = new();
-    public static Dictionary<string, List<MultiRef<List<string>, OXEvent>>> InputEventsDown = new();
-    private void Update()
-    {
-        if (!PollForEvents) return;
-        foreach (var a in gamekeys)
-        {
-            foreach (var key in a.Value)
-            {
-                if (Input.GetKey(key))
-                {
-                    if (InputEvents.ContainsKey(a.Key))
-                    {
-                        var p = InputEvents[a.Key];
-                        foreach (var c in p)
-                        {
-                            if (c.a == null)
-                            {
-                                c.b.Invoke();
-                                continue;
-                            }
-                            if (!AllowInputToPass(c.a)) continue;
-                            if (!InputPassesLockLevel(c.a)) continue;
-                            c.b.Invoke();
-                        }
-                    }
-                    break;
-                }
-            }
-            foreach (var key in a.Value)
-            {
-                if (Input.GetKeyUp(key))
-                {
-                    if (InputEventsUp.ContainsKey(a.Key))
-                    {
-                        var p = InputEventsUp[a.Key];
-                        foreach (var c in p)
-                        {
-                            if (c.a == null)
-                            {
-                                c.b.Invoke();
-                                continue;
-                            }
-                            if (!AllowInputToPass(c.a)) continue;
-                            if (!InputPassesLockLevel(c.a)) continue;
-                            c.b.Invoke();
-                        }
-                    }
-                    break;
-                }
-            }
-            foreach (var key in a.Value)
-            {
-                if (Input.GetKeyDown(key))
-                {
-                    if (InputEventsDown.ContainsKey(a.Key))
-                    {
-                        var p = InputEventsDown[a.Key];
-                        foreach (var c in p)
-                        {
-                            if (c.a == null)
-                            {
-                                c.b.Invoke();
-                                continue;
-                            }
-                            if (!AllowInputToPass(c.a)) continue;
-                            if (!InputPassesLockLevel(c.a)) continue;
-                            c.b.Invoke();
-                        }
-                    }
-                    break;
-                }
-            }
-        }
-    }
-
-    public static OXEvent GetEventFor(string nerd, BetterList<string>? ide = null)
-    {
-        var pp = InputEvents.GetOrDefine(nerd, new());
-        MultiRef<List<string>, OXEvent> b = new();
-        b.a = ide.HasValue ? ide.Value.ToList() : null;
-        b.b = new OXEvent();
-        pp.Add(b);
-        return b.b;
-    }
-
-    public static OXEvent GetUpEventFor(string nerd, BetterList<string>? ide = null)
-    {
-        var pp = InputEventsUp.GetOrDefine(nerd, new());
-        MultiRef<List<string>, OXEvent> b = new();
-        b.a = ide.HasValue ? ide.Value.ToList() : null;
-        b.b = new OXEvent();
-        pp.Add(b);
-        return b.b;
-    }
-
-    public static OXEvent GetDownEventFor(string nerd, BetterList<string>? ide = null)
-    {
-        var pp = InputEventsDown.GetOrDefine(nerd, new());
-        MultiRef<List<string>, OXEvent> b = new();
-        b.a = ide.HasValue ? ide.Value.ToList() : null;
-        b.b = new OXEvent();
-        pp.Add(b);
-        return b.b;
-    }
-
 
 
     public static void AssembleTheCodes()
@@ -163,6 +56,166 @@ public class InputManager : SingleInstance<InputManager>
         CollectInputAllocs.Invoke();
 
     }
+
+    public static Dictionary<string, List<MultiRef<string, List<string>, OXEvent>>> InputEvents = new();
+    public static Dictionary<string, List<MultiRef<string, List<string>, OXEvent>>> InputEventsUp = new();
+    public static Dictionary<string, List<MultiRef<string, List<string>, OXEvent>>> InputEventsDown = new();
+    private void Update()
+    {
+        if (!PollForEvents) return;
+        foreach (var a in gamekeys)
+        {
+            foreach (var key in a.Value)
+            {
+                if (Input.GetKey(key))
+                {
+                    if (InputEvents.ContainsKey(a.Key))
+                    {
+                        var p = InputEvents[a.Key];
+                        foreach (var c in p)
+                        {
+                            if (c.b == null)
+                            {
+                                c.c.Invoke();
+                                continue;
+                            }
+                            if (!AllowInputToPass(c.b)) continue;
+                            if (!InputPassesLockLevel(c.b)) continue;
+                            c.c.Invoke();
+                        }
+                    }
+                    break;
+                }
+            }
+            foreach (var key in a.Value)
+            {
+                if (Input.GetKeyUp(key))
+                {
+                    if (InputEventsUp.ContainsKey(a.Key))
+                    {
+                        var p = InputEventsUp[a.Key];
+                        foreach (var c in p)
+                        {
+                            if (c.b == null)
+                            {
+                                c.c.Invoke();
+                                continue;
+                            }
+                            if (!AllowInputToPass(c.b)) continue;
+                            if (!InputPassesLockLevel(c.b)) continue;
+                            c.c.Invoke();
+                        }
+                    }
+                    break;
+                }
+            }
+            foreach (var key in a.Value)
+            {
+                if (Input.GetKeyDown(key))
+                {
+                    if (InputEventsDown.ContainsKey(a.Key))
+                    {
+                        var p = InputEventsDown[a.Key];
+                        foreach (var c in p)
+                        {
+                            if (c.b == null)
+                            {
+                                c.c.Invoke();
+                                continue;
+                            }
+                            if (!AllowInputToPass(c.b)) continue;
+                            if (!InputPassesLockLevel(c.b)) continue;
+                            c.c.Invoke();
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    public static OXEvent CreateEvent(string Identity, string nerd, BetterList<string>? ide = null)
+    {
+        var pp = InputEvents.GetOrDefine(nerd, new());
+        MultiRef<string, List<string>, OXEvent> b = new();
+        b.a = Identity;
+        b.b = ide.HasValue ? ide.Value.ToList() : null;
+        b.c = new OXEvent();
+        pp.Add(b);
+        return b.c;
+    }
+
+    public static OXEvent CreateEventUp(string Identity, string nerd, BetterList<string>? ide = null)
+    {
+        var pp = InputEventsUp.GetOrDefine(nerd, new());
+        MultiRef<string, List<string>, OXEvent> b = new();
+        b.a = Identity;
+        b.b = ide.HasValue ? ide.Value.ToList() : null;
+        b.c = new OXEvent();
+        pp.Add(b);
+        return b.c;
+    }
+
+    public static OXEvent CreateEventDown(string Identity, string nerd, BetterList<string>? ide = null)
+    {
+        var pp = InputEventsDown.GetOrDefine(nerd, new());
+        MultiRef<string, List<string>, OXEvent> b = new();
+        b.a = Identity;
+        b.b = ide.HasValue ? ide.Value.ToList() : null;
+        b.c = new OXEvent();
+        pp.Add(b);
+        return b.c;
+    }
+
+    public void RemoveEvent(string Identity, string nerd)
+    {
+        if (InputEvents.ContainsKey(nerd))
+        {
+            for (int i = 0; i < InputEvents[nerd].Count; i++)
+            {
+                if (InputEvents[nerd][i].a == Identity)
+                {
+                    InputEvents[nerd].RemoveAt(i);
+                    break;
+                }
+            }
+            if (InputEvents[nerd].Count == 0) InputEvents.Remove(nerd);
+        }
+    }
+
+    public void RemoveEventUp(string Identity, string nerd)
+    {
+        if (InputEventsUp.ContainsKey(nerd))
+        {
+            for (int i = 0; i < InputEventsUp[nerd].Count; i++)
+            {
+                if (InputEventsUp[nerd][i].a == Identity)
+                {
+                    InputEventsUp[nerd].RemoveAt(i);
+                    break;
+                }
+            }
+            if (InputEventsUp[nerd].Count == 0) InputEventsUp.Remove(nerd);
+        }
+    }
+
+    public void RemoveEventDown(string Identity, string nerd)
+    {
+        if (InputEventsDown.ContainsKey(nerd))
+        {
+            for (int i = 0; i < InputEventsDown[nerd].Count; i++)
+            {
+                if (InputEventsDown[nerd][i].a == Identity)
+                {
+                    InputEventsDown[nerd].RemoveAt(i);
+                    break;
+                }
+            }
+            if (InputEventsDown[nerd].Count == 0) InputEventsDown.Remove(nerd);
+        }
+    }
+
+
 
     public static string GetReadableStringOf(List<KeyCode> n, bool first_only = false)
     {

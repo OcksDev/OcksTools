@@ -61,6 +61,8 @@ public class PlayerController3D : MonoBehaviour
         entity.SetSelf(gameObject);
         ToggleMouseState(true);
     }
+
+
     public void OnDestroy()
     {
         if (entity != null) entity.Kill();

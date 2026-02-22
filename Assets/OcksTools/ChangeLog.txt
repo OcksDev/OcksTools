@@ -38,8 +38,14 @@
   - Added the ability to Wallrun (W.I.P)
   - Moved to a sub-extension of Entity
   - Also removed the previous 3D stuff from v1.1.4 as it was buggy and not good
+- Input Manager Improvements
+  - Added events for input sets, allowing for observer pattern on inputs.
+    - You can also remove the events when unneeded to stop leaks
+  - Removed all redundant method overloads for GetKey/GetKeyDown/GetKeyUp, replaced with implicit conversions, it's now much cleaner
+  - Renamed some methods to be more clear
+  - Optimized non-lockable inputs (raw inputs), performance should be better on such cases
 - Multithreading Massive Improvements
-  - No longer fails to create threads randomly, requiring repeats (keeping thread ensure script around just in case tho)
+  - No longer fails to create threads randomly. (keeping thread ensure script around just in case tho)
   - I think they are a bit more optimized now, idk exactly
 - Entity Improvements
   - New Skill System, very similar to the revamped Effect System from v1.1.4
@@ -93,10 +99,6 @@
   - CompileDict now accounts for non-saved achievements
   - Saving/Loading of achievements now actually works lol
 - New Pointer<> Type, literally just to make references
-- Input Manager Improvements
-  - Removed all redundant method overloads for GetKey/GetKeyDown/GetKeyUp, replaced with implicit conversions, it's now much cleaner
-  - Renamed some methods to be more clear
-  - Optimized non-lockable inputs (raw inputs), performance should be better on such cases
 - Object Recorder System Improvements
   - Stop+Pickup now works when playing a recording backwards
 - TextFromData Improvements
