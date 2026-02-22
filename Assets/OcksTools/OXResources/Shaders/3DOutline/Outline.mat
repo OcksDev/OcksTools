@@ -47,7 +47,7 @@ Material:
     - _Power: 0.5
     - _St1: 0.02
     - _St2: 0.08
-    - _Thresh: 0.5
+    - _Thresh: 0.65
     - _subtrhesh: 0.5
     m_Colors:
     - _OutlineColer: {r: 1, g: 1, b: 1, a: 1}
