@@ -81,6 +81,7 @@
     - Added a bunch of random sound effects that I found online
     - 83 Total Sounds
   - New AudioLibrary (Scriptable Object) assets, pre-defined collections of sound effects that can just be thrown in as needed
+  - Added support for explicit parents of audio sources (instead of just playing a clip at a specific point)
   - No longer relies on PlayClipAtPoint (I made my own implementation) so 3D/directional audio now works betterer
   - Added Priority attribute on OXSounds
   - Added Spacial Blend attribute on OXSounds

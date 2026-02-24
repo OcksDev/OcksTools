@@ -7,12 +7,12 @@ public class SoundSystem : SingleInstance<SoundSystem>
     public float MasterVolume = 1;
     public float SFXVolume = 1;
     public float MusicVolume = 1;
-    public List<OXSoundData> AudioClips = new List<OXSoundData>();
-    public List<AudioLibrary> AudioLibraries = new List<AudioLibrary>();
-    public List<OXMixerData> AudioMixers = new List<OXMixerData>();
-    public Dictionary<string, OXSoundData> AudioClipDict = new Dictionary<string, OXSoundData>();
-    public Dictionary<string, AudioMixerGroup> AudioMixerDict = new Dictionary<string, AudioMixerGroup>();
-    private List<AudioSource> AudioSources = new List<AudioSource>();
+    public List<OXSoundData> AudioClips = new();
+    public List<AudioLibrary> AudioLibraries = new();
+    public List<OXMixerData> AudioMixers = new();
+    public Dictionary<string, OXSoundData> AudioClipDict = new();
+    public Dictionary<string, AudioMixerGroup> AudioMixerDict = new();
+    private Dictionary<Transform, List<AudioSource>> AudioSources = new();
 
 
     public OXEvent SoundMod = new OXEvent();
@@ -88,20 +88,38 @@ public class SoundSystem : SingleInstance<SoundSystem>
 
     public AudioSource FindOpenSource(OXSound sound, bool findexisting = false)
     {
+        if (sound._parent != null)
+        {
+            sound._parent = transform;
+        }
         if (sound._pos != null)
         {
-            Debug.Log("Running");
             var d = new GameObject("OXBetterOneShot");
             d.transform.position = sound._pos.Value;
+            d.transform.parent = sound._parent;
             var sex2 = d.AddComponent<AudioSource>();
             sex2.clip = AudioClipDict[sound.name].Clip;
             var sex3 = d.AddComponent<OneShotAudioKiller>();
             sex3.nb = sex2;
             return sex2;
         }
+        var keysToRemove = new List<Transform>();
+
+        foreach (var kvp in AudioSources)
+        {
+            if (kvp.Key == null) // catches destroyed Unity objects
+            {
+                keysToRemove.Add(kvp.Key);
+            }
+        }
+
+        foreach (var key in keysToRemove)
+        {
+            AudioSources.Remove(key);
+        }
         if (findexisting)
         {
-            foreach (var penis in AudioSources)
+            foreach (var penis in AudioSources.GetOrDefine(sound._parent, new()))
             {
                 if (penis.clip == AudioClipDict[sound.name].Clip)
                 {
@@ -110,7 +128,7 @@ public class SoundSystem : SingleInstance<SoundSystem>
                 }
             }
         }
-        foreach (var penis in AudioSources)
+        foreach (var penis in AudioSources.GetOrDefine(sound._parent, new()))
         {
             if (!penis.isPlaying)
             {
@@ -120,7 +138,7 @@ public class SoundSystem : SingleInstance<SoundSystem>
         }
         var sex = gameObject.AddComponent<AudioSource>();
         sex.clip = AudioClipDict[sound.name].Clip;
-        AudioSources.Add(sex);
+        AudioSources.GetOrDefine(sound._parent, new()).Add(sex);
         return sex;
     }
 
@@ -183,8 +201,9 @@ public class OXSound
     public AudioSource psource;
     public AudioMixerGroup _mixer = null;
     public float _pitch = 1;
-    public float? _rand_min;
-    public float? _rand_max;
+    public float? _rand_min = null;
+    public float? _rand_max = null;
+    public Transform _parent = null;
     public float _volume = 1;
     public float _pan = 0;
     public float _spaceblend = 0;
@@ -193,7 +212,7 @@ public class OXSound
     public bool _bypass = false;
     public bool _loop = false;
     public float _maxd = 0;
-    public Vector3? _pos;
+    public Vector3? _pos = null;
     public OXSound(string name, float volume)
     {
         this.name = name;
@@ -250,6 +269,11 @@ public class OXSound
     public OXSound Priority(byte x)
     {
         _priority = x;
+        return this;
+    }
+    public OXSound Parent(Transform x)
+    {
+        _parent = x;
         return this;
     }
     public OXSound Mixer(string x, bool AllowOverride = false)
