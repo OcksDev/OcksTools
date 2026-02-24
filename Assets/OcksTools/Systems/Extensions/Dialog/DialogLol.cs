@@ -1326,6 +1326,41 @@ public class DialogLol : SingleInstance<DialogLol>
         name_to_setting[speaker].Set(name, data);
     }
 
+
+    public static Dictionary<string, float> GetPitchMapForCharacters()
+    {
+        //the idea here is to crudely make beep-dialogue sound more realistic
+        return new Dictionary<string, float>
+        {
+            { "A", 0.3f },
+            { "B", -0.2f },
+            { "C", 0.0f },
+            { "D", -0.4f },
+            { "E", 0.8f },
+            { "F", 0.2f },
+            { "G", -0.1f },
+            { "H", 0.0f },
+            { "I", 1.0f },
+            { "J", 0.3f },
+            { "K", -0.5f },
+            { "L", 0.5f },
+            { "M", -0.3f },
+            { "N", -0.2f },
+            { "O", -0.6f },
+            { "P", -0.6f },
+            { "Q", -0.5f },
+            { "R", 0.0f },
+            { "S", 0.7f },
+            { "T", -0.7f },
+            { "U", -0.2f },
+            { "V", -1.0f },
+            { "W", -0.5f },
+            { "X", -0.2f },
+            { "Y", 0.6f },
+            { "Z", -0.4f }
+        };
+    }
+
 }
 [System.Serializable]
 public class DialogHolder
