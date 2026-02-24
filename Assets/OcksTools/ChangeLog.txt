@@ -21,6 +21,7 @@
   - Components no longer need to be manually initialized
 - New Shaders
   - 3D screen-space outline shader (taken from my Beyond Light project)
+  - 3D screen-space fog shader
   - 3D tiling (like existing tiling methods, but for 3d space)
   - 8Dir sub-graph to make making shaders easier, giving a compacted way to create vector2 offsets
 - Complete Notification System Remake
