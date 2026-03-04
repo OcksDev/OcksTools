@@ -42,6 +42,9 @@
 - Input Manager Improvements
   - Added events for input sets, allowing for observer pattern on inputs.
     - You can also remove the events when unneeded to stop leaks
+  - Added GetAxis(), simplifies the logic heavily when dealing with input axis 
+    - Also added an override which hooks into existing locking logic if desired
+    - Also added helper function (inside OXFunctions) for adding a slight deadzone, helpful for stickdrift
   - Removed all redundant method overloads for GetKey/GetKeyDown/GetKeyUp, replaced with implicit conversions, it's now much cleaner
   - Renamed some methods to be more clear
   - Optimized non-lockable inputs (raw inputs), performance should be better on such cases

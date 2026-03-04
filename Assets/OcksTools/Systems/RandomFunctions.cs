@@ -468,6 +468,10 @@ public static class OXFunctions
     {
         return (value - original_min) / (original_max - original_min) * (new_max - new_min) + new_min;
     }
+    public static float ApplyDeadzone(this float value, float deadzone = 0.15f)
+    {
+        return Mathf.Abs(value) < deadzone ? 0f : value;
+    }
 
     public static Dictionary<T, T2> MergeDictionary<T, T2>(this Dictionary<T, T2> ti, Dictionary<T, T2> tee)
     {

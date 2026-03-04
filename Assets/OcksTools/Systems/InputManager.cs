@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -390,6 +391,46 @@ public class InputManager : SingleInstance<InputManager>
         if (!InputPassesLockLevel(ide)) return false;
         return IsKeyUp(baller);
     }
+
+    public static float GetAxis(InputAxis a, BetterList<string> ide, int controller = 1)
+    {
+        if (!AllowInputToPass(ide)) return 0;
+        if (!InputPassesLockLevel(ide)) return 0;
+        return GetAxis(a, controller);
+    }
+
+    public static float GetAxis(InputAxis a, int controller = 1)
+    {
+        switch (a)
+        {
+            case InputAxis.SharedHorizontal: return Input.GetAxisRaw("Horizontal");
+            case InputAxis.SharedVertical: return Input.GetAxisRaw("Vertical");
+            case InputAxis.ControllerUpDown: return Input.GetAxisRaw($"joystick {controller} axis 2");
+            case InputAxis.ControllerRightLeft: return Input.GetAxisRaw($"joystick {controller} axis 1");
+            case InputAxis.MouseX: return Input.GetAxis("Mouse X");
+            case InputAxis.MouseY: return Input.GetAxis("Mouse Y");
+            case InputAxis.MouseWheel: return Input.GetAxis("Mouse ScrollWheel");
+            case InputAxis.MouseXRaw: return Input.GetAxisRaw("Mouse X");
+            case InputAxis.MouseYRaw: return Input.GetAxisRaw("Mouse Y");
+            case InputAxis.MouseWheelRaw: return Input.GetAxisRaw("Mouse ScrollWheel");
+            case InputAxis.ControllerLT: return Mathf.Clamp01(-Input.GetAxisRaw($"joystick {controller} axis 3"));
+            case InputAxis.ControllerRT: return Mathf.Clamp01(Input.GetAxisRaw($"joystick {controller} axis 3"));
+            case InputAxis.ControllerPlusUpDown: return Input.GetAxisRaw($"joystick {controller} axis 7");
+            case InputAxis.ControllerPlusRightLeft: return Input.GetAxisRaw($"joystick {controller} axis 6");
+            case InputAxis.ControllerUpDownOther: return Input.GetAxisRaw($"joystick {controller} axis 4");
+            case InputAxis.ControllerRightLeftOther: return Input.GetAxisRaw($"joystick {controller} axis 5");
+            default: throw new NotImplementedException();
+        }
+    }
+    public enum InputAxis
+    {
+        SharedHorizontal, SharedVertical,
+        ControllerUpDown, ControllerRightLeft,
+        MouseX, MouseY, MouseWheel,
+        MouseXRaw, MouseYRaw, MouseWheelRaw,
+        ControllerLT, ControllerRT, ControllerPlusUpDown, ControllerPlusRightLeft,
+        ControllerUpDownOther, ControllerRightLeftOther,
+    }
     public static void SetGameKeys()
     {
         keynames = new Dictionary<KeyCode, string>
@@ -523,7 +564,13 @@ public class InputManager : SingleInstance<InputManager>
             { KeyCode.JoystickButton6, "cBACK" },
             { KeyCode.JoystickButton7, "cSTRT" },
             { KeyCode.JoystickButton8, "cLSB" },
-            { KeyCode.JoystickButton9, "cRSB" }
+            { KeyCode.JoystickButton9, "cRSB" },
+            { KeyCode.JoystickButton10, "c10" }, // do these controller inputs have real names?
+            { KeyCode.JoystickButton11, "c11" },
+            { KeyCode.JoystickButton12, "c12" },
+            { KeyCode.JoystickButton13, "c13" },
+            { KeyCode.JoystickButton14, "c14" },
+            { KeyCode.JoystickButton15, "c15" },
         };
     }
 
