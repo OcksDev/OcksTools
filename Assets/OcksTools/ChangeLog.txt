@@ -5,6 +5,7 @@
 - New Scene Manager System
   - A long overdue addition
 - New ResettableValue type which does the boilerplate work of creating a value with an inital and current state
+- New ModdableValue type which is like ResettableValue on drugs, used for data that requires both pre-processed changes and dynamic-changes
 - New BetterList type which lets you define lists with single items easier
 - New Animation Sets (and Animation Parts)
   - Allows for decently flexible animation design
