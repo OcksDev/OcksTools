@@ -3,24 +3,31 @@ public class ModdableValue<T>
     public T BaseValue;
     public T ProcessedValue;
     public T Value;
-    public OXEventLayered<ModdableValue<T>> ActionsForCompile = new();
-    public OXEventLayered<ModdableValue<T>> ActionsForDynamic = new();
+    public OXEventLayered<ModdableValue<T>> ActionsCompile = new();
+    public OXEventLayered<ModdableValue<T>> ActionsDynamic = new();
 
-    public void SetBaseValue(T b)
+    public ModdableValue(T initial)
+    {
+        SetBaseValue(initial);
+        ProcessedValue = BaseValue;
+    }
+    public ModdableValue<T> SetBaseValue(T b)
     {
         BaseValue = b;
         Compile();
+        return this;
     }
 
-    public void Compile()
+    public ModdableValue<T> Compile()
     {
         ProcessedValue = BaseValue;
-        ActionsForCompile.Invoke(this);
+        ActionsCompile.Invoke(this);
+        return this;
     }
     public T GetValue()
     {
         Value = ProcessedValue;
-        ActionsForDynamic.Invoke(this);
+        ActionsDynamic.Invoke(this);
         return Value;
     }
     public static implicit operator T(ModdableValue<T> r) => r.GetValue();
