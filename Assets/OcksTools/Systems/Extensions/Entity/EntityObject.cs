@@ -12,6 +12,7 @@ public class EntityObject : MonoBehaviour
             KillSelf(Entity, new MultiRef<object, EntityType>(null, EntityType.World));
             return;
         }
+        Entity.ClampHealth();
         Entity.OnKillEvent.Append(99999, "KillSelf", KillSelf);
     }
 

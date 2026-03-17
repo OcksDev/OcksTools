@@ -56,6 +56,7 @@
   - New Skill System, very similar to the revamped Effect System from v1.1.4
   - Abtracted EntityEffectMiddleMan into its an abtract class to make similar systems easier to develope
   - EntityEffectMiddleMan now has a "Has" method, allowing you to easily check for the existence of a given effect
+  - Added a utility method called ClampHealth() which just updates the HP/Shield to make sure they are within mix/max
   - Fixed bug: EffectReadOnly no longer improperly appends clean up method to kill event priority 0
   - Effect Profile has been moved to its own file
   - EntityEffectMiddleMan renamed to EffectContainer

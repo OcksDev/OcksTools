@@ -76,6 +76,12 @@ public class EntityOXS
         Self = self;
         return this;
     }
+
+    public void ClampHealth()
+    {
+        Health = System.Math.Clamp(Health, 0, Max_Health);
+        Shield = System.Math.Clamp(Shield, 0, Max_Shield);
+    }
 }
 
 [System.Serializable]
