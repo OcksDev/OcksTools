@@ -422,7 +422,6 @@ public static class OXFunctions
 {
     public static float TimeStablePow(this float expo)
     {
-        expo = 1 - expo;
         return Mathf.Pow(expo, Time.deltaTime * 50 * Time.timeScale);
     }
     public static float TimeStableLerp(this float expo)
