@@ -43,7 +43,7 @@ public class Skill : Containable
         Cooldown -= x;
         if (Cooldown <= 0)
         {
-            Cooldown += data.Cooldown;
+            Cooldown += GetMaxCooldown();
             GrantStacks();
             if (data.MaxStacks >= 1 && Stacks >= data.MaxStacks) Cooldown = 0;
         }
@@ -69,12 +69,27 @@ public class Skill : Containable
         {
             if (Stacks == data.MaxStacks)
             {
-                Cooldown = data.Cooldown;
+                Cooldown = GetMaxCooldown();
             }
             TakeStacks(data.StacksPerUse);
-            InterUseCooldown = data.InterUseCooldown * CooldownMult;
-            Duration = data.Duration * DurationMult;
+            InterUseCooldown = GetMaxInterUseCooldown();
+            Duration = GetMaxDuration();
         }
         return b;
+    }
+
+    public float GetMaxCooldown()
+    {
+        return data.Cooldown * CooldownMult;
+    }
+
+    public float GetMaxInterUseCooldown()
+    {
+        return data.InterUseCooldown;
+    }
+
+    public float GetMaxDuration()
+    {
+        return data.Duration * DurationMult;
     }
 }
