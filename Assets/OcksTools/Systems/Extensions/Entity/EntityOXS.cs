@@ -117,6 +117,7 @@ public class DamageProfile
         Value = pp.Value;
         Procs = new HashSet<string>(pp.Procs);
         SourceLocation = pp.SourceLocation;
+        Crit = new(pp.Crit);
     }
     public double CalcAmount()
     {

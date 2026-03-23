@@ -24,7 +24,11 @@ public class CriticalChance
     public void RollDegree()
     {
         if (Degree > -1) return;
-        if (Chance <= 0) return;
+        if (Chance <= 0)
+        {
+            Degree = 0;
+            return;
+        }
         Degree = (int)Chance;
         if (new System.Random(seed).NextDouble() < (Chance % 1))
         {
