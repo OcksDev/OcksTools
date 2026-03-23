@@ -126,7 +126,8 @@
   - New method to collapse repeating strings into more compressed forms
   - New method to expand compressed string forms back into full strings
   - New extension methods TimeStablePow and TimeStableLerp, makes doing lerps and pows consistent across framerate and timescale 
-  - New extension methods AllignX, AllignY, and AllignZ, which condenses some logic repitiion
+  - New extension methods AllignX, AllignY, and AllignZ, which condenses some logic repetition
+  - New extension methods to GetIntensity or SetIntensity of colors, mainly used for HDR
 - New Extendable Chess System (W.I.P)
 - Old chat system completely removed, potentially planning on making a revamped version, but for now it's just gone
 - Misc

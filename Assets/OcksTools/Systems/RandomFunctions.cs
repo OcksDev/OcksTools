@@ -770,4 +770,20 @@ public static class OXFunctions
         v.x = z.transform.position.x;
         return v;
     }
+
+
+    public static Color SetIntensity(this Color a, float intensity)
+    {
+        float factor = Mathf.Pow(2, intensity);
+        return new Color(a.r * factor, a.g * factor, a.b * factor);
+    }
+
+    public static float GetIntensity(this Color a)
+    {
+        var maxColorComponent = a.maxColorComponent;
+        var scaleFactor = k_MaxByteForOverexposedColor / maxColorComponent;
+        return Mathf.Log(255f / scaleFactor) / Mathf.Log(2f);
+    }
+    private const byte k_MaxByteForOverexposedColor = 191; //internal Unity const
+
 }
