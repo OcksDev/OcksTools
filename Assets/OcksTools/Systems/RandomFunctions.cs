@@ -774,6 +774,7 @@ public static class OXFunctions
 
     public static Color SetIntensity(this Color a, float intensity)
     {
+        intensity -= GetIntensity(a);
         float factor = Mathf.Pow(2, intensity);
         return new Color(a.r * factor, a.g * factor, a.b * factor);
     }
