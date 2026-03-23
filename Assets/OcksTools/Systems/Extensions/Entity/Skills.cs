@@ -22,6 +22,8 @@ public class Skill : Containable
     public float Duration = 0;
     public float Cooldown = 0;
     public float InterUseCooldown = 0;
+    public float CooldownMult = 1;
+    public float DurationMult = 1;
     [HideInInspector]
     public SkillData data = null;
 
@@ -36,19 +38,14 @@ public class Skill : Containable
     {
         Duration = Mathf.Max(Duration - x, 0);
         if (Duration == 0 || data.AllowActivationWhileActive) InterUseCooldown = Mathf.Max(InterUseCooldown - x, 0);
+        if (data.MaxStacks >= 1 && Stacks >= data.MaxStacks) return;
         if (data.DisableAutoCooldown) return;
         Cooldown -= x;
         if (Cooldown <= 0)
         {
-            if (Stacks < data.MaxStacks || data.MaxStacks < 1)
-            {
-                Cooldown += data.Cooldown;
-                GrantStacks();
-            }
-            else
-            {
-                Cooldown = 0;
-            }
+            Cooldown += data.Cooldown;
+            GrantStacks();
+            if (data.MaxStacks >= 1 && Stacks >= data.MaxStacks) Cooldown = 0;
         }
     }
     public void GrantStacks(int amnt = -1)
@@ -75,8 +72,8 @@ public class Skill : Containable
                 Cooldown = data.Cooldown;
             }
             TakeStacks(data.StacksPerUse);
-            InterUseCooldown = data.InterUseCooldown;
-            Duration = data.Duration;
+            InterUseCooldown = data.InterUseCooldown * CooldownMult;
+            Duration = data.Duration * DurationMult;
         }
         return b;
     }
