@@ -94,6 +94,8 @@ public class DamageProfile
     public DamageType WhatItWas = DamageType.Unknown;
     public HashSet<string> Procs = new HashSet<string>();
     public OXEventLayered<DamageProfile> CalcEvent = new OXEventLayered<DamageProfile>();
+    public Vector3? SourceLocation = null;
+    public CriticalChance Crit = new(0);
     public DamageProfile(object src_orbject, EntityType src_type, DamageType How, DamageType What, double TheValue)
     {
         SourceObject = src_orbject;
@@ -114,6 +116,7 @@ public class DamageProfile
         HowItWasDealt = pp.HowItWasDealt;
         Value = pp.Value;
         Procs = new HashSet<string>(pp.Procs);
+        SourceLocation = pp.SourceLocation;
     }
     public double CalcAmount()
     {
@@ -121,7 +124,11 @@ public class DamageProfile
         CalcEvent.Invoke(this);
         var output_value = Value;
         Value = x;
-        //do some other calculaations
+        //do some other calculations on output_value
+
+        output_value *= Crit.GetDegree() + 1;
+
+
         return output_value;
     }
     public enum DamageType // add more as needed
