@@ -5,6 +5,7 @@ using UnityEngine;
 public class SpawnSystem : SingleInstance<SpawnSystem>
 {
     public List<Pool> Spawnables = new List<Pool>();
+    public OXEvent CompileSpawnDict = new OXEvent();
     public static Dictionary<string, Pool> SpawnableDict = new Dictionary<string, Pool>();
     public static Action<string> SpawnShareMethod;
     public override void Awake2()
@@ -13,6 +14,10 @@ public class SpawnSystem : SingleInstance<SpawnSystem>
         {
             SpawnableDict.Add(a.Name, a);
         }
+    }
+    private void Start()
+    {
+        CompileSpawnDict.Invoke();
     }
     public static GameObject BasicSpawn(string nerd, Vector3 pos = default, Quaternion rot = default, Transform parent = null)
     {

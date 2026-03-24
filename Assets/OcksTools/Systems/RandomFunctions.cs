@@ -787,4 +787,15 @@ public static class OXFunctions
     }
     private const byte k_MaxByteForOverexposedColor = 191; //internal Unity const
 
+    public static float Percent(this ResettableValue<float> nerd)
+    {
+        return nerd.Current / nerd.Initial;
+    }
+
+    public static double Percent(this ResettableValue<double> nerd)
+    {
+        return nerd.Current / nerd.Initial;
+    }
+
+
 }

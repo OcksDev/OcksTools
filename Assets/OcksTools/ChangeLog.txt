@@ -7,6 +7,7 @@
 - New ResettableValue type which does the boilerplate work of creating a value with an inital and current state
 - New ModdableValue type which is like ResettableValue on drugs, used for data that requires both pre-processed changes and dynamic-changes
 - New BetterList type which lets you define lists with single items easier
+- New OXParticle, an extendable baseplate for creating spawnable particles
 - New Animation Sets (and Animation Parts)
   - Allows for decently flexible animation design
 - New PlayerIdentity type (within Player Profiles)
@@ -128,6 +129,7 @@
   - New extension methods TimeStablePow and TimeStableLerp, makes doing lerps and pows consistent across framerate and timescale 
   - New extension methods AllignX, AllignY, and AllignZ, which condenses some logic repetition
   - New extension methods to GetIntensity or SetIntensity of colors, mainly used for HDR
+  - New extension methods for getting the percent of ResettableValues (specifically when using float/double types)
 - New Extendable Chess System (W.I.P)
 - Old chat system completely removed, potentially planning on making a revamped version, but for now it's just gone
 - Misc
@@ -142,6 +144,7 @@
   - CompileableDictionary and CompileableDictionaryAlt now inherit from Dictionary, so they are easier to use now
   - Moved some logic in Room Generation to allow for easier background generation
   - Weighted Averages modified to use Multiref and be slightly cooler
+  - Spawn System now has an event that allows other scripts to better add their own spawables to the main dictionary
   - New InputShow test script
   - New AdditionalScripts folder in the main systems folder, not an extension, to hold additional stuff that is less central
   - File System Download Handler "completed" bool changed to be a Reactable<bool> instead
