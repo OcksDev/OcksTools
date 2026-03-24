@@ -3,24 +3,14 @@ using UnityEngine;
 
 public class FPSLightweightReader : SingleInstance<FPSLightweightReader>
 {
-    public float ReadInterval = 0.025f; //how often to poll fps
-    public float OutReadInterval = 0.1f; // how share the fps (helps prevent fast changing numbers)
-    private float tm = 0f;
+    public float ReadInterval = 0.1f; // how share the fps (helps prevent fast changing numbers)
     private float otm = 0f;
-    private int frameCount = 0;
     public void Update()
     {
-        frameCount++;
-        if ((tm -= Time.unscaledDeltaTime) <= 0 && Time.time > 0.2)
-        {
-            tm += ReadInterval;
-            LastMeasuredFPS = Mathf.FloorToInt(frameCount / ReadInterval) + LastMeasuredFPS;
-            LastMeasuredFPS /= 2; // simple moving average to slightly smooth out fps
-            frameCount = 0;
-        }
+        LastMeasuredFPS = (int)Mathf.Lerp(LastMeasuredFPS, 1 / Time.smoothDeltaTime, 0.8f.TimeStableLerp());
         if ((otm -= Time.unscaledDeltaTime) <= 0 && Time.time > 0.2)
         {
-            otm += OutReadInterval;
+            otm += ReadInterval;
             LastOutgoingFPS = LastMeasuredFPS;
         }
     }

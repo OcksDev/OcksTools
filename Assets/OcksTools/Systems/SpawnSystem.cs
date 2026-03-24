@@ -12,6 +12,7 @@ public class SpawnSystem : SingleInstance<SpawnSystem>
     {
         foreach (var a in Spawnables)
         {
+            if (a.Name == null || a.Name == "" || a.Name == " ") a.Name = a.Object.name;
             SpawnableDict.Add(a.Name, a);
         }
     }
