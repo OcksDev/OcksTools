@@ -6,13 +6,14 @@ public class OXParticle : MonoBehaviour
     public ParticleSystem ParticleSystem;
     public ResettableValue<float> LifeTimer = new(2);
     public bool LiveForever = false;
-    public bool HasPlayback = false;
+    [HideInInspector]
+    public bool HasCustomPlayback = false;
     private void Awake()
     {
         OnAwake();
         LifeTimer.Reset();
         if (ParticleSystem != null) ParticleSystem.Play();
-        if (HasPlayback) StartCoroutine(Playback());
+        if (HasCustomPlayback) StartCoroutine(Playback());
     }
     private void FixedUpdate()
     {
