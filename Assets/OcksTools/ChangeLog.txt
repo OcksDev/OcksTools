@@ -94,6 +94,7 @@
   - No longer relies on PlayClipAtPoint (I made my own implementation) so 3D/directional audio now works betterer
   - Added Priority attribute on OXSounds
   - Added Spacial Blend attribute on OXSounds
+  - SoundMod event now sends the OXSound object
 - Multiplayer Improvements
   - New NetworkIDSync component for player objects, basically syncs up client IDs automatically.
   - Completely modified how sending messages works, removed janky stuff and streamlined the process
@@ -131,7 +132,7 @@
   - New extension methods TimeStablePow and TimeStableLerp, makes doing lerps and pows consistent across framerate and timescale 
   - New extension methods AllignX, AllignY, and AllignZ, which condenses some logic repetition
   - New extension methods to GetIntensity or SetIntensity of colors, mainly used for HDR
-  - New extension methods for getting the percent of ResettableValues (specifically when using float/double types)
+  - New extension methods for getting the percent of ResettableValues (specifically when using float/double/int/long types)
 - New Extendable Chess System (W.I.P)
 - Old chat system completely removed, potentially planning on making a revamped version, but for now it's just gone
 - Misc

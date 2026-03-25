@@ -15,8 +15,8 @@ public class SoundSystem : SingleInstance<SoundSystem>
     private Dictionary<Transform, List<AudioSource>> AudioSources = new();
 
 
-    public OXEvent SoundMod = new OXEvent();
-    public OXEvent SoundDictCompile = new OXEvent();
+    public OXEvent<OXSound> SoundMod = new();
+    public OXEvent SoundDictCompile = new();
 
     public override void Awake2()
     {
@@ -81,7 +81,7 @@ public class SoundSystem : SingleInstance<SoundSystem>
                 pvolume = SFXVolume * 1.5f;
                 break;
         }
-        SoundMod.Invoke();
+        SoundMod.Invoke(sound);
         sound._volume *= pvolume;
         sound.psource = FindOpenSource(sound, findexisting);
     }
