@@ -8,19 +8,19 @@ using UnityEngine;
 public static class Server
 {
     public static ServerGamer Instance;
-    public static ServerGamer Send(bool wait_first = false)
+    public static ServerGamer Send()
     {
-        Instance._Handover = new OXNetworkRpcData(Instance.ClientID, "", wait_first);
+        Instance._Handover = new OXNetworkRpcData(Instance.ClientID, "", false);
         return Instance;
     }
 
-    public static ServerGamer Send(FixedString64Bytes s, bool wait_first = false)
+    public static ServerGamer Send(FixedString64Bytes s, bool wait_first = true)
     {
         Instance._Handover = new OXNetworkRpcData(Instance.ClientID, s, wait_first);
         return Instance;
     }
 
-    public static ServerGamer Send(string s, FixedString64Bytes n, bool wait_first = false)
+    public static ServerGamer Send(string s, FixedString64Bytes n, bool wait_first = true)
     {
         Instance._Handover = new OXNetworkRpcData(s, n, wait_first);
         return Instance;

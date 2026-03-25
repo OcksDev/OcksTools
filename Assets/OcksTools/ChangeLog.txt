@@ -23,7 +23,7 @@
   - Components no longer need to be manually initialized
 - New Shaders
   - 3D screen-space outline shader (taken from my Beyond Light project)
-  - 3D screen-space fog shader
+  - 3D screen-space fog shader (kinda mid lol)
   - 3D tiling (like existing tiling methods, but for 3d space)
   - 8Dir sub-graph to make making shaders easier, giving a compacted way to create vector2 offsets
 - Complete Notification System Remake
@@ -38,7 +38,7 @@
 - 3D Movement Massively Overhauled
   - Added the abiltiy to Slide
   - Added the abiltiy to Dash (using the new Skill system from Entity)
-  - Added the ability to Wallrun (W.I.P)
+  - Added the ability to Wallrun
   - Moved to a sub-extension of Entity
   - Also removed the previous 3D stuff from v1.1.4 as it was buggy and not good
 - Input Manager Improvements
