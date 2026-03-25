@@ -88,7 +88,7 @@ public class SoundSystem : SingleInstance<SoundSystem>
 
     public AudioSource FindOpenSource(OXSound sound, bool findexisting = false)
     {
-        if (sound._parent != null)
+        if (sound._parent == null)
         {
             sound._parent = transform;
         }
