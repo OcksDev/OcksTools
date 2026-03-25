@@ -43,8 +43,11 @@ public class SpawnSystem : SingleInstance<SpawnSystem>
         {
             a = sp.GameObject;
         }
-        Tags.AddObjectToTag(a, sp._IDValue, "Exist");
-        Tags.AddObjectToTag(sp, sp._IDValue, "Spawns");
+        if (!sp._donttag)
+        {
+            Tags.AddObjectToTag(a, sp._IDValue, "Exist");
+            Tags.AddObjectToTag(sp, sp._IDValue, "Spawns");
+        }
 
         if (sp._share && SpawnShareMethod != null)
         {
@@ -75,6 +78,7 @@ public class SpawnData
     public Transform _parent;
     public string _parentrefid = "";
     public bool _share;
+    public bool _donttag = false;
     public bool _dospawn = true;
     public Dictionary<string, string> _data = new Dictionary<string, string>();
     public SpawnData(string nerd)
@@ -128,6 +132,11 @@ public class SpawnData
     {
         _dospawn = false;
         GameObject = a;
+        return this;
+    }
+    public SpawnData DontSaveTag()
+    {
+        _donttag = true;
         return this;
     }
     public SpawnData Data(Dictionary<string, string> d)

@@ -146,7 +146,6 @@ public class SoundSystem : SingleInstance<SoundSystem>
     public OXSound PlaySound(OXSound sound)
     {
         ModSound(sound, sound._clipping);
-        var volume = 1f;
         var p = sound.psource;
         p.outputAudioMixerGroup = sound._mixer;
         p.pitch = sound._pitch;
@@ -155,31 +154,16 @@ public class SoundSystem : SingleInstance<SoundSystem>
         p.loop = sound._loop;
         p.priority = sound._priority;
         p.spatialBlend = sound._spaceblend;
+        p.rolloffMode = sound._rolloffMode;
+        p.minDistance = sound._rollofffactor;
         if (sound._rand_min != null)
         {
             p.pitch *= Random.Range(sound._rand_min.Value, sound._rand_max.Value);
         }
-        volume *= MasterVolume;
-        volume *= sound._volume;
-        p.volume = volume;
+        sound.SetVolume(sound._volume);
         p.Play();
         return sound;
     }
-
-    /*public void PlaySound(string sound, Vector3 pos, bool randompitch = false, float volume = 1f, float pitchmod = 1f)
-    {
-        ModSound(sound);
-        var p = psource;
-        p.pitch = 1f;
-        p.pitch *= pitchmod;
-        if (randompitch)
-        {
-            p.pitch *= Random.Range(.7f, 1.3f);
-        }
-        pvolume *= MasterVolume;
-        pvolume *= volume;
-        AudioSource.PlayClipAtPoint(p.clip, pos, pvolume);
-    }*/
 
 }
 [System.Serializable]
@@ -212,6 +196,8 @@ public class OXSound
     public bool _bypass = false;
     public bool _loop = false;
     public float _maxd = 0;
+    public AudioRolloffMode _rolloffMode = AudioRolloffMode.Linear;
+    public float _rollofffactor = 0;
     public Vector3? _pos = null;
     public OXSound(string name, float volume)
     {
@@ -228,6 +214,12 @@ public class OXSound
         _pan = v;
         return this;
     }
+    public OXSound RandomPitch()
+    {
+        _rand_min = 0.95f;
+        _rand_max = 1.05f;
+        return this;
+    }
     public OXSound RandomPitch(float min, float max)
     {
         _rand_min = min;
@@ -236,6 +228,14 @@ public class OXSound
     }
     public OXSound Position(Vector3 v)
     {
+        //for 2d games MAKE SURE THE [z] CORDINATE IS SET TO THE SAME AS THE CAMERA
+        _pos = v;
+        _spaceblend = 1;
+        return this;
+    }
+    public OXSound Position(bool req, Vector3 v)
+    {
+        if (!req) return this;
         //for 2d games MAKE SURE THE [z] CORDINATE IS SET TO THE SAME AS THE CAMERA
         _pos = v;
         _spaceblend = 1;
@@ -266,6 +266,13 @@ public class OXSound
         _spaceblend = x;
         return this;
     }
+
+    public OXSound Rolloff(float factor, bool isLinear = false)
+    {
+        _rolloffMode = isLinear ? AudioRolloffMode.Linear : AudioRolloffMode.Logarithmic;
+        _rollofffactor = factor;
+        return this;
+    }
     public OXSound Priority(byte x)
     {
         _priority = x;
@@ -289,5 +296,17 @@ public class OXSound
         return this;
     }
 
+    public void Stop()
+    {
+        psource.Stop();
+    }
+
+    public void SetVolume(float volume)
+    {
+        var vol = 1f;
+        vol *= SoundSystem.Instance.MasterVolume;
+        vol *= volume;
+        psource.volume = vol;
+    }
 }
 

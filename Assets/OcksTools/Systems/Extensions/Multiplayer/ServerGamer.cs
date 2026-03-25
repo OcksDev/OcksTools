@@ -32,7 +32,7 @@ public static class Server
 
     public static Dictionary<FixedString64Bytes, NetworkIDSync> AllClients = new();
     public static Dictionary<ulong, NetworkIDSync> BADAllClients = new();
-    public static OXEvent<FixedString64Bytes, string> MessageEvent = new();
+    public static OXEvent<OXNetworkRpcData, FixedString64Bytes, string> MessageEvent = new();
     public static OXEvent<FixedString64Bytes> ClientIDSynced = new();
 }
 
@@ -172,7 +172,7 @@ public class ServerGamer : NetworkBehaviour
                     FlushBacklog(data);
                     break;
                 default:
-                    Server.MessageEvent.Invoke(type, data);
+                    Server.MessageEvent.Invoke(id, type, data);
                     break;
             }
         });
