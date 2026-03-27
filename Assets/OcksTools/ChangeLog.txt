@@ -91,6 +91,8 @@
     - Added some misc sound effects that I had lying around
     - Added a bunch of random sound effects that I found online
     - 83 Total Sounds
+  - Reworked sound volumes, no longer hard defined variables
+    - Also removed explicit references to saving sound in the save system
   - New AudioLibrary (Scriptable Object) assets, pre-defined collections of sound effects that can just be thrown in as needed
   - Some new interfacing methods like Stop() and SetVolume() for OXSounds
   - Added support for explicit parents of audio sources (instead of just playing a clip at a specific point)

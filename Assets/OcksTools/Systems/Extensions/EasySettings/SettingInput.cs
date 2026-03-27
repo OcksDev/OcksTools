@@ -40,13 +40,13 @@ public class SettingInput : MonoBehaviour
         switch (Type)
         {
             case "MasterVolume":
-                SoundSystem.Instance.MasterVolume = slider.value;
+                SoundSystem.Instance.Volumes.AddOrUpdate("Master", slider.value);
                 break;
             case "SFXVolume":
-                SoundSystem.Instance.SFXVolume = slider.value;
+                SoundSystem.Instance.Volumes.AddOrUpdate("SFX", slider.value);
                 break;
             case "MusicVolume":
-                SoundSystem.Instance.MusicVolume = slider.value;
+                SoundSystem.Instance.Volumes.AddOrUpdate("Music", slider.value);
                 break;
             case "TestToggle":
                 SaveSystem.Instance.TestBool = fard;
@@ -65,15 +65,15 @@ public class SettingInput : MonoBehaviour
         switch (Type)
         {
             case "MasterVolume":
-                slider.value = SoundSystem.Instance.MasterVolume;
+                slider.value = SoundSystem.Instance.Volumes.GetOrDefine("Master", 1);
                 UpdateValue();
                 break;
             case "SFXVolume":
-                slider.value = SoundSystem.Instance.SFXVolume;
+                slider.value = SoundSystem.Instance.Volumes.GetOrDefine("SFX", 1);
                 UpdateValue();
                 break;
             case "MusicVolume":
-                slider.value = SoundSystem.Instance.MusicVolume;
+                slider.value = SoundSystem.Instance.Volumes.GetOrDefine("Music", 1);
                 UpdateValue();
                 break;
             case "TestToggle":

@@ -4,9 +4,10 @@ using UnityEngine.Audio;
 
 public class SoundSystem : SingleInstance<SoundSystem>
 {
-    public float MasterVolume = 1;
-    public float SFXVolume = 1;
-    public float MusicVolume = 1;
+#if UNITY_EDITOR
+    public float DebugVolumeMult = 1.0f;
+#endif
+    public Dictionary<string, float> Volumes = new Dictionary<string, float>();
     public List<OXSoundData> AudioClips = new();
     public List<AudioLibrary> AudioLibraries = new();
     public List<OXMixerData> AudioMixers = new();
@@ -20,6 +21,9 @@ public class SoundSystem : SingleInstance<SoundSystem>
 
     public override void Awake2()
     {
+#if UNITY_EDITOR
+        DebugVolumeMult = 1.0f;
+#endif
         foreach (var l in AudioLibraries)
         {
             foreach (var s in l.Datas)
@@ -39,7 +43,37 @@ public class SoundSystem : SingleInstance<SoundSystem>
         {
             AddMixer(s);
         }
+        SaveSystem.SaveAllData.Append(-1, SaveVolumes);
+        SaveSystem.LoadAllData.Append(-1, LoadVolumes);
+
+
+        ConsoleCommandBuilder.Build(() =>
+        {
+            ConsoleLol.Instance.Add(new OXCommand("volume").Append(new OXCommand(OXCommand.ExpectedInputType.String).Append(new OXCommand(OXCommand.ExpectedInputType.Double).Action(VolumeCommand))));
+        });
     }
+    public void SetVolume(string v, float x)
+    {
+        Volumes.AddOrUpdate(v, x);
+    }
+    public float GetVolume(string v, float x)
+    {
+        return Volumes.ContainsKey(v) ? Volumes[v] : 1;
+    }
+    public void SaveVolumes(SaveProfile dict)
+    {
+        dict.SetDict("Volumes", Volumes.ABDictionaryToStringDictionary());
+    }
+
+    public void LoadVolumes(SaveProfile dict)
+    {
+        Volumes = dict.GetDict("Volumes", new()).StringDictionaryToABDictionary<string, float>();
+    }
+    public void VolumeCommand(OXCommandData dat)
+    {
+        SetVolume(dat.com_caps[1], float.Parse(dat.com[2]));
+    }
+
     private void Start()
     {
         SoundDictCompile.Invoke();
@@ -58,7 +92,6 @@ public class SoundSystem : SingleInstance<SoundSystem>
         switch (sound.name)
         {
             case "sound":
-                pvolume = SFXVolume;
                 /*
                 var k = Random.Range(0, 2);
                 switch (k)
@@ -75,10 +108,10 @@ public class SoundSystem : SingleInstance<SoundSystem>
                 }*/
                 break;
             case "A":
-                pvolume = SFXVolume * 1.2f;
+                pvolume = 1.2f;
                 break;
             case "B":
-                pvolume = SFXVolume * 1.5f;
+                pvolume = 1.5f;
                 break;
         }
         SoundMod.Invoke(sound);
@@ -142,7 +175,15 @@ public class SoundSystem : SingleInstance<SoundSystem>
         return sex;
     }
 
-
+    public float ChannelMult(string specific = "SFX")
+    {
+        float master = Volumes.GetOrDefine("Master", 1);
+#if UNITY_EDITOR
+        master *= DebugVolumeMult;
+#endif
+        if (specific == "") return master;
+        return master * Volumes.GetValueOrDefault(specific, 1);
+    }
     public OXSound PlaySound(OXSound sound)
     {
         ModSound(sound, sound._clipping);
@@ -184,6 +225,7 @@ public class OXSound
     public AudioClip clip;
     public AudioSource psource;
     public AudioMixerGroup _mixer = null;
+    public string _channel = "SFX";
     public float _pitch = 1;
     public float? _rand_min = null;
     public float? _rand_max = null;
@@ -224,6 +266,11 @@ public class OXSound
     {
         _rand_min = min;
         _rand_max = max;
+        return this;
+    }
+    public OXSound Channel(string s)
+    {
+        _channel = s;
         return this;
     }
     public OXSound Position(Vector3 v)
@@ -304,7 +351,7 @@ public class OXSound
     public void SetVolume(float volume)
     {
         var vol = 1f;
-        vol *= SoundSystem.Instance.MasterVolume;
+        vol *= SoundSystem.Instance.ChannelMult();
         vol *= volume;
         psource.volume = vol;
     }

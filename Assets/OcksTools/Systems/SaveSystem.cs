@@ -36,7 +36,6 @@ public class SaveSystem : SingleInstance<SaveSystem>
         ActiveProf = prof;
 
         InputManager.AssembleTheCodes();
-        var s = SoundSystem.Instance;
         List<string> list = new List<string>();
         Dictionary<string, string> dic = new Dictionary<string, string>();
 
@@ -60,13 +59,6 @@ public class SaveSystem : SingleInstance<SaveSystem>
             }
         }
 
-        if (s != null)
-        {
-            s.MasterVolume = float.Parse(prof.GetString("snd_mas", "1"));
-            s.SFXVolume = float.Parse(prof.GetString("snd_sfx", "1"));
-            s.MusicVolume = float.Parse(prof.GetString("snd_mus", "1"));
-        }
-
         test = int.Parse(prof.GetString("test_num", "0"));
         TestBool = bool.Parse(prof.GetString("test_bool", "False"));
         testkeybind = InputManager.namekeys[prof.GetString("test_keybind", "NONE")];
@@ -76,7 +68,6 @@ public class SaveSystem : SingleInstance<SaveSystem>
     public void SaveGame(string dict = "Profile1")
     {
         var prof = Profile(dict);
-        var s = SoundSystem.Instance;
         List<string> list = new List<string>();
         Dictionary<string, string> dic = new Dictionary<string, string>();
 
@@ -93,12 +84,6 @@ public class SaveSystem : SingleInstance<SaveSystem>
         prof.SetDict("keybinds", dic);
         //PlayerPrefs.SetInt("UnitySelectMonitor", index); // sets the monitor that unity uses
 
-        if (s != null)
-        {
-            prof.SetString("snd_mas", s.MasterVolume.ToString());
-            prof.SetString("snd_sfx", s.SFXVolume.ToString());
-            prof.SetString("snd_mus", s.MusicVolume.ToString());
-        }
 
         prof.SetString("test_num", test.ToString());
         prof.SetString("test_bool", TestBool.ToString());
