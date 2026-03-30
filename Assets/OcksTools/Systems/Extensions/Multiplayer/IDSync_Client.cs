@@ -2,7 +2,7 @@ using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
-public class NetworkIDSync : NetworkBehaviour
+public class IDSync_Client : NetworkBehaviour
 {
     private void Awake()
     {

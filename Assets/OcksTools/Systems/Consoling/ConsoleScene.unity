@@ -11884,6 +11884,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1798882000586106620, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
+      propertyPath: AudioLibraries.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1798882000586106620, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
+      propertyPath: 'AudioLibraries.Array.data[0]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 7be7f7393d9392347b692f4f33a39a06, type: 2}
     - target: {fileID: 6167858925768747828, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
       propertyPath: DialogBoxObject
       value: 

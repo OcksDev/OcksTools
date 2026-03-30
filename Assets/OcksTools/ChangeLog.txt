@@ -1,8 +1,6 @@
 
 ------------
    v1.2.0
-- SettingsManager WIP
-- EntityNetorkSync WIP
 - New Pool Selector Tool
 - New Scene Manager System
   - A long overdue addition
@@ -93,6 +91,8 @@
     - 83 Total Sounds
   - Reworked sound volumes, no longer hard defined variables
     - Also removed explicit references to saving sound in the save system
+  - Added console command "volume" to set volume of a given channel
+  - Added console command "playsound" to play a sound with a given volume
   - New AudioLibrary (Scriptable Object) assets, pre-defined collections of sound effects that can just be thrown in as needed
   - Some new interfacing methods like Stop() and SetVolume() for OXSounds
   - Added support for explicit parents of audio sources (instead of just playing a clip at a specific point)
@@ -102,7 +102,9 @@
   - Added Rolloff attribute on OXSounds
   - SoundMod event now sends the OXSound object
 - Multiplayer Improvements
-  - New NetworkIDSync component for player objects, basically syncs up client IDs automatically.
+  - New IDSync_Client component for player objects, basically syncs up client IDs automatically.
+  - New IDSync_Object component for other objects, basically syncs up their IDs automatically.
+    - This one has the downside of not working on objects that spawned prior to a client joining
   - Completely modified how sending messages works, removed janky stuff and streamlined the process
     - New format adds extra functionality, like easily being able to change where clients think a message is sent from
   - Added message backlogs with basic locking capability, so you can explicitly queue incoming messages into piles
@@ -161,6 +163,7 @@
   - CameraLol renamed to Camera2D
   - NavMesh renamed to NavMesh2D
   - OXEvents now use AddOrUpdate for their appending methods
+  - Removed "URPstuff" because it was redundant
 ------------
 
 ------------

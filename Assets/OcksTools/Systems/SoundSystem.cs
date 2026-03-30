@@ -49,7 +49,16 @@ public class SoundSystem : SingleInstance<SoundSystem>
 
         ConsoleCommandBuilder.Build(() =>
         {
-            ConsoleLol.Instance.Add(new OXCommand("volume").Append(new OXCommand(OXCommand.ExpectedInputType.String).Append(new OXCommand(OXCommand.ExpectedInputType.Double).Action(VolumeCommand))));
+            ConsoleLol.Instance.Add(new OXCommand("volume")
+                .Append(new OXCommand(OXCommand.ExpectedInputType.String)
+                  .Append(new OXCommand(OXCommand.ExpectedInputType.Double)
+                    .Action(VolumeCommand))));
+            ConsoleLol.Instance.Add(new OXCommand("playsound")
+                .Append(new OXCommand(OXCommand.ExpectedInputType.Double)
+                  .Append(new OXCommand(OXCommand.ExpectedInputType.String)
+                    .Action(PlaysoundCommand)))
+                .Append(new OXCommand(OXCommand.ExpectedInputType.String)
+                  .Action(PlaysoundCommandVarient)));
         });
     }
     public void SetVolume(string v, float x)
@@ -68,10 +77,6 @@ public class SoundSystem : SingleInstance<SoundSystem>
     public void LoadVolumes(SaveProfile dict)
     {
         Volumes = dict.GetDict("Volumes", new()).StringDictionaryToABDictionary<string, float>();
-    }
-    public void VolumeCommand(OXCommandData dat)
-    {
-        SetVolume(dat.com_caps[1], float.Parse(dat.com[2]));
     }
 
     private void Start()
@@ -206,6 +211,32 @@ public class SoundSystem : SingleInstance<SoundSystem>
         return sound;
     }
 
+    public void VolumeCommand(OXCommandData dat)
+    {
+        SetVolume(dat.com_caps[1], float.Parse(dat.com[2]));
+    }
+    public void PlaysoundCommand(OXCommandData dat)
+    {
+        string b = dat.raw_caps;
+        b = b.Substring(b.IndexOf(dat.com[1]) + dat.com[1].Length + 1);
+        if (!AudioClipDict.ContainsKey(b))
+        {
+            Console.LogError($"Sound {b} not found!");
+            return;
+        }
+        PlaySound(new OXSound(b, float.Parse(dat.com[1])));
+    }
+    public void PlaysoundCommandVarient(OXCommandData dat)
+    {
+        string b = dat.raw_caps;
+        b = b.Substring(b.IndexOf(" ") + 1);
+        if (!AudioClipDict.ContainsKey(b))
+        {
+            Console.LogError($"Sound {b} not found!");
+            return;
+        }
+        PlaySound(new OXSound(b, 1));
+    }
 }
 [System.Serializable]
 public class OXSoundData

@@ -30,10 +30,39 @@ public static class Server
         Send().SpawnObject(spawndata);
     }
 
-    public static Dictionary<FixedString64Bytes, NetworkIDSync> AllClients = new();
-    public static Dictionary<ulong, NetworkIDSync> BADAllClients = new();
+    public static Dictionary<FixedString64Bytes, IDSync_Client> AllClients = new();
+    public static Dictionary<ulong, IDSync_Client> BADAllClients = new();
+    public static Dictionary<ulong, IDSync_Object> BADAllObjects = new();
+    public static Dictionary<ulong, FixedString64Bytes> BADAllObjectIds = new();
     public static OXEvent<OXNetworkRpcData, FixedString64Bytes, string> MessageEvent = new();
     public static OXEvent<FixedString64Bytes> ClientIDSynced = new();
+
+    public static void AddObject(IDSync_Object o)
+    {
+        var x = o.NetworkObjectId;
+        if (BADAllObjectIds.ContainsKey(x))
+        {
+            SpawnSystem.Spawn(new SpawnData("").ID(BADAllObjectIds[x].ToString()).DontSpawn(o.gameObject));
+            BADAllObjectIds.Remove(x);
+        }
+        else
+        {
+            BADAllObjects.Add(x, o);
+        }
+    }
+
+    public static void AddObjectID(ulong x, FixedString64Bytes o)
+    {
+        if (BADAllObjects.ContainsKey(x))
+        {
+            SpawnSystem.Spawn(new SpawnData("").ID(o.ToString()).DontSpawn(BADAllObjects[x].gameObject));
+            BADAllObjects.Remove(x);
+        }
+        else
+        {
+            BADAllObjectIds.Add(x, o);
+        }
+    }
 }
 
 
@@ -228,6 +257,26 @@ public class ServerGamer : NetworkBehaviour
     }
 
 
+
+    public void SendObjectID(ulong i, FixedString64Bytes tag)
+    {
+        _SendObjectIDServerRpc(_Handover, i, tag);
+    }
+
+
+    [Rpc(SendTo.Everyone, InvokePermission = RpcInvokePermission.Everyone)]
+    public void _SendObjectIDServerRpc(OXNetworkRpcData id, ulong i, FixedString64Bytes tag)
+    {
+        _SendObjectIDClientRpc(id, i, tag);
+    }
+
+    [ClientRpc]
+    public void _SendObjectIDClientRpc(OXNetworkRpcData id, ulong i, FixedString64Bytes tag)
+    {
+        if (id.ClientID == ClientID) return;
+
+        Server.AddObjectID(i, tag);
+    }
 
 
     //OcksNetworkVars
