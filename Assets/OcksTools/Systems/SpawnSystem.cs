@@ -162,6 +162,7 @@ public class SpawnData
         da.Add("ID", _IDValue);
         if (_pos != default) da.Add("pos", _pos.ToString());
         if (_rot != Quaternion.identity) da.Add("rot", _rot.ToString());
+        if (_donttag) da.Add("dt","!");
         if (_parent != null)
         {
             if (_parentrefid == "")
@@ -189,6 +190,7 @@ public class SpawnData
         if (da.ContainsKey("pos")) _pos = Converter.StringToVector3(da["pos"]);
         if (da.ContainsKey("rot")) _rot = Converter.StringToQuaternion(da["rot"]);
         if (da.ContainsKey("dat")) _data = Converter.EscapedStringToDictionary(da["dat"], "!", "?");
+        if (da.ContainsKey("dt")) _donttag = true;
         if (da.ContainsKey("par"))
         {
 
