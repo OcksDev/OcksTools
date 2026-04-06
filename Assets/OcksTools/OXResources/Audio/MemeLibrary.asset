@@ -47,4 +47,16 @@ MonoBehaviour:
     Clip: {fileID: 8300000, guid: 2baa869736984854bb99a4eaba989aa0, type: 3}
   - Name: FNAF Yay
     Clip: {fileID: 8300000, guid: a54a02f4e94da874097bbec935f5c3f3, type: 3}
+  - Name: Discord Ping
+    Clip: {fileID: 8300000, guid: e61433f0600d6154aa1ee6d7070ce43e, type: 3}
+  - Name: Discord Call
+    Clip: {fileID: 8300000, guid: bdbcda0df47391c42bc28f30896acc91, type: 3}
+  - Name: Amogus
+    Clip: {fileID: 8300000, guid: 341078dc0b429f5448fc74d8eab058bc, type: 3}
+  - Name: Galaxy
+    Clip: {fileID: 8300000, guid: 59914e445ef500844aad194a4edc5079, type: 3}
+  - Name: Death
+    Clip: {fileID: 8300000, guid: 63e8679e73d488e46af545960bf0c825, type: 3}
+  - Name: What
+    Clip: {fileID: 8300000, guid: 617d360b27ae6a74086b26199f0ba4ce, type: 3}
   Mixers: []
