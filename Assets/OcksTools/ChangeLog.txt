@@ -31,7 +31,7 @@
   - Anchoring Notifications to corners now applies to rect transform of parent instead of canvas space, making it much more flexible in where notifications can be placed
   - Stacking direction and anchoring location are now seperatated, also making it much more flexible
   - Seperate parameters now also exist for spacing between notifications and spacing from the edge of the screen
-  - Currently looks less good than before due to lack of animation, but that will be fixed in future updates
+  - Animation exists, but could be improved.
   - New interfacing method to clear all notifications
   - New notification method to remove itself
   - No longer relies upon dumb methods that required manual edits in core system code to expand/change
@@ -112,6 +112,7 @@
   - Command "host" now has a sub command: "host copy"
     - Automatically copies the correct "join xxxxxx" command for the newly hosted instance
   - ServerGamer.Message now has an event, Server.MessageEvent, which allows for modularity without needing to modify base code
+  - Spawn System's Spawn Data multiplayer methods are now stored as extension methods in the Server class, so removing the multiplayer functionality no longer leaves behind useless methods
   - Removed the bloat commands for sending chat messages, since it is now gone
 - Achievement Improvements
   - New layered ox event for achievements being granted
@@ -119,6 +120,8 @@
   - Saving/Loading of achievements now actually works lol
 - Spawn System Improvements
   - Added new field on SpawnData to ignore the automatic tagging of spawned objects
+  - Multiplayer Sharing changed from a bool to an int, and given a new mode which allows the spawn system to direcly invoke the netork spawn method.
+    - You shouldn't ever need to use both methods on the same object, as they serve different purposes
   - Now infers the name of the gameobject if none is provided
   - Now has an event that allows other scripts to better add their own spawables to the main dictionary
 - FPS Reader Improvements

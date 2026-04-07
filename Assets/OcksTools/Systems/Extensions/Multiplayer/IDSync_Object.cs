@@ -6,14 +6,16 @@ public class IDSync_Object : NetworkBehaviour
     {
         if (IsHost)
         {
-            var sp = new SpawnData("").DontSpawn(gameObject);
-            SpawnSystem.Spawn(sp);
-            Server.Send().SendObjectID(NetworkObjectId, sp._IDValue);
+            Server.Send().SendObjectID(NetworkObjectId, Tags.GetIDOf(gameObject));
         }
         else
         {
             Server.AddObject(this);
         }
     }
-
+    public string IDRead = "";
+    private void FixedUpdate()
+    {
+        IDRead = Tags.GetIDOf(gameObject);
+    }
 }

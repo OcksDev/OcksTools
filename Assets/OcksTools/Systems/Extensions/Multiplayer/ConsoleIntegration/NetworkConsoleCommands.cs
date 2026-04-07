@@ -22,6 +22,7 @@ public class NetworkConsoleCommands : MonoBehaviour
         ConsoleLol.Instance.Append("test", new OXCommand("objectspawn").Action(objectspawn));
         ConsoleLol.Instance.Append("test", new OXCommand("message").Action(message));
         ConsoleLol.Instance.Append("test", new OXCommand("locking").Action(locking));
+        ConsoleLol.Instance.Append("test", new OXCommand("netob").Action(netob));
     }
     public static void host()
     {
@@ -44,7 +45,13 @@ public class NetworkConsoleCommands : MonoBehaviour
     {
         SpawnSystem.Spawn(new SpawnData("Triangle")
             .Position(new Vector3(Random.Range(-3f, 3f), Random.Range(-3f, 3f), 0))
-            .MultiplayerShare());
+            .MultiplayerRelayShare());
+    }
+    public static void netob()
+    {
+        SpawnSystem.Spawn(new SpawnData("Diamond")
+            .Position(new Vector3(Random.Range(-3f, 3f), Random.Range(-3f, 3f), 0))
+            .MultiplayeNetworkSpawn());
     }
     public static void message()
     {

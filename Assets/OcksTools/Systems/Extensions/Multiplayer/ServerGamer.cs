@@ -40,9 +40,11 @@ public static class Server
     public static void AddObject(IDSync_Object o)
     {
         var x = o.NetworkObjectId;
+        Console.Log($"Stored Object: {o.gameObject.name}");
         if (BADAllObjectIds.ContainsKey(x))
         {
             SpawnSystem.Spawn(new SpawnData("").ID(BADAllObjectIds[x].ToString()).DontSpawn(o.gameObject));
+            Console.Log($"Hit: {BADAllObjectIds[x].ToString()}");
             BADAllObjectIds.Remove(x);
         }
         else
@@ -53,15 +55,34 @@ public static class Server
 
     public static void AddObjectID(ulong x, FixedString64Bytes o)
     {
+        Console.Log($"Stored: {x} -> {o}");
         if (BADAllObjects.ContainsKey(x))
         {
             SpawnSystem.Spawn(new SpawnData("").ID(o.ToString()).DontSpawn(BADAllObjects[x].gameObject));
+            Console.Log($"Hit: {o}");
             BADAllObjects.Remove(x);
         }
         else
         {
             BADAllObjectIds.Add(x, o);
         }
+    }
+
+
+    public static void SpawnObect(SpawnData s)
+    {
+        s.GameObject.GetComponent<NetworkObject>().Spawn();
+    }
+
+    public static SpawnData MultiplayerRelayShare(this SpawnData b)
+    {
+        b._share = 1;
+        return b;
+    }
+    public static SpawnData MultiplayeNetworkSpawn(this SpawnData b)
+    {
+        b._share = 2;
+        return b;
     }
 }
 
@@ -88,6 +109,7 @@ public class ServerGamer : NetworkBehaviour
         ClientID = Tags.GenerateID();
         Console.Log("My ID: " + ClientID);
         SpawnSystem.SpawnShareMethod = Server.handjoib;
+        SpawnSystem.SpawnNetworkMethod = Server.SpawnObect;
 
     }
 
@@ -260,6 +282,7 @@ public class ServerGamer : NetworkBehaviour
 
     public void SendObjectID(ulong i, FixedString64Bytes tag)
     {
+        Console.Log($"Sending Object: {i} -> {tag}");
         _SendObjectIDServerRpc(_Handover, i, tag);
     }
 
