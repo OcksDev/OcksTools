@@ -15,6 +15,9 @@
   - Added a font folder called "Cyber" which will start getting populated by related theme fonts]
   - Re-rendered some fonts that needed to be higher-res
   - Removed some broken fonts or ones that looked like garbage
+- Multiplayer Improvements
+  - New PositionInterpolator_Rigidbody
+  - New PositionInterpolator_Transform
 - New Random Functions
   - Swap() method that swaps two variables
   - 3 new easing functions: EaseSin(), EaseCos(), EaseSinInAndOut()
