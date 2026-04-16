@@ -12,11 +12,11 @@ public class BigAssNumberInspectorMaker
     {
         if (Magnitude == Number.Magnitudes.None)
         {
-            return new BigAssNumber(Mantissa, Exponent);
+            return new BigAssNumber(Mantissa, Exponent, true);
         }
         else
         {
-            return new BigAssNumber(Mantissa, (long)Magnitude);
+            return new BigAssNumber(Mantissa, (long)Magnitude, true);
         }
     }
 
@@ -46,6 +46,12 @@ public struct BigAssNumber
     {
         Mantissa = man;
         Exponent = exp;
+    }
+    public BigAssNumber(double man, long exp, bool checkedexp = false)
+    {
+        Mantissa = man;
+        Exponent = exp;
+        FullResolveExpChange();
     }
     public BigAssNumber(BigAssNumber d)
     {
@@ -491,8 +497,10 @@ public class _ConsoleForBigAssNumber
         $"{new BigAssNumber(200000).Pow(2.5)}".Log();
         $"{new BigAssNumber(2000).Pow(2.5).ToDouble()} = {Math.Pow(2000, 2.5)}".Log();
         $"big thing: {new BigAssNumber(10000000).NumToRead()}".Log();
+        $"big thing 2: {new BigAssNumber(100, (long)Number.Magnitudes.DDe, true).NumToRead()}".Log();
         $"bigger thing: {new BigAssNumber(double.MaxValue).NumToRead()}".Log();
         $"super big thing: {new BigAssNumber(double.MaxValue).Pow(1000).NumToRead()}".Log();
         $"max-est big thing: {BigAssNumber.Max.NumToRead()}".Log();
+
     }
 }
