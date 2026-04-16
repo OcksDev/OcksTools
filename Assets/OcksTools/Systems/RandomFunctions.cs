@@ -160,6 +160,19 @@ public class RandomFunctions : SingleInstance<RandomFunctions>
         return x * a * perc * perc + (1 - x);
 
     }
+    public static float EaseSin(float perc)
+    {
+        return Mathf.Sin(perc * Mathf.PI / 2);
+    }
+    public static float EaseCos(float perc)
+    {
+        return 1 - Mathf.Cos(perc * Mathf.PI / 2);
+    }
+    public static float EaseSinInAndOut(float perc)
+    {
+        perc -= 0.5f;
+        return 0.5f + (0.5f * Mathf.Sin(perc * Mathf.PI));
+    }
     public static CompareState CompareTwoVersions(string I_Am, string compared_to)
     {
         //supports things in the format of v#.#.# or #.#.#

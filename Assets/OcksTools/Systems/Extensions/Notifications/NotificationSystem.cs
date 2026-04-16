@@ -217,7 +217,14 @@ public class OXNotif
         }
         else
         {
-            start_pos = n.CurrentNotifs[n.CurrentNotifs.Count - 2].rectTransform.anchoredPosition;
+            if (n.reversed)
+            {
+                start_pos = n.CurrentNotifs[n.CurrentNotifs.Count - 2].rectTransform.anchoredPosition;
+            }
+            else
+            {
+                start_pos = n.GetPos(size, false);
+            }
         }
         rectTransform.anchoredPosition = start_pos;
     }

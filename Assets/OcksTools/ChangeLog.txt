@@ -5,9 +5,11 @@
   - Now has stored 'constants' for min and max valuess
   - Added optional optimization, off by default, which lets you ignore very small changes during addition/subtraction to save on needing to calculate the exponents.
   - Added slight cache optimization for negative exponent power calculation
+- New Random Functions
+  - Swap() method that swaps two variables
+  - 3 new easing functions: EaseSin(), EaseCos(), EaseSinInAndOut()
 - Misc
-  - New Random Functions
-    - Swap() method swaps two variables
+  - Notification System animations fixed on reversed positioning styles
 ------------
 
 ------------
