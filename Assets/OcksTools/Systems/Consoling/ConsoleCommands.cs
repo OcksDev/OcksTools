@@ -99,6 +99,11 @@ public class ConsoleCommands : MonoBehaviour
     {
         Console.Log(0.5.Remap(0, 1, 0, 10));
         Console.Log(5.0.Remap(0, 10, 0, 1));
+        var hello = "Hello";
+        var world = "World";
+        Console.Log($"{hello} {world}");
+        RandomFunctions.Swap(ref hello, ref world);
+        Console.Log($"{hello} {world}");
     }
 
     [AddToEvent("TestEvent")]

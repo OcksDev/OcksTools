@@ -352,6 +352,10 @@ public class RandomFunctions : SingleInstance<RandomFunctions>
     }
 #endif
 
+    public static void Swap<T>(ref T a, ref T b)
+    {
+        var te = a; a = b; b = te;
+    }
 
     //Why do you not specify the file type in the string path? 
     public static T LoadResourceByPathRuntime<T>(string assetPath) where T : ScriptableObject
@@ -806,6 +810,5 @@ public static class OXFunctions
     {
         return ((double)nerd.Current) / nerd.Initial;
     }
-
 
 }

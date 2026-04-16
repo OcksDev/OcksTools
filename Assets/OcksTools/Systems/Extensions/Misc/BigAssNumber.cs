@@ -28,9 +28,14 @@ public class BigAssNumberInspectorMaker
 [System.Serializable]
 public struct BigAssNumber
 {
+    /// <summary>
+    /// During add/subtract calculations, if the difference in exponents is greater than 100, then simply keep the highest value instead of actually calculating the addition. This speeds up small additions/subtractions by ignoring them, sacrificing quality, but keeps all power calculations cached and fast.
+    /// </summary>
+    public static bool SmallNumDropOptimization = false;
+
+
     public double Mantissa;
     public long Exponent;
-
     public BigAssNumber(double value)
     {
         Mantissa = 0;
@@ -80,28 +85,6 @@ public struct BigAssNumber
 
 
 
-    public static BigAssNumber operator +(BigAssNumber a, BigAssNumber b)
-    {
-        if (a.Exponent == b.Exponent)
-        {
-            a.Mantissa += b.Mantissa;
-            a.QuickResolveExpChange();
-            return a;
-        }
-
-        if (a.Exponent < b.Exponent)
-        {
-            var t = a; a = b; b = t;
-        }
-
-        long diff = a.Exponent - b.Exponent;
-
-        b.Mantissa /= Pow10(diff);
-        a.Mantissa += b.Mantissa;
-
-        a.QuickResolveExpChange();
-        return a;
-    }
 
     public static BigAssNumber operator *(BigAssNumber left, BigAssNumber right)
     {
@@ -119,6 +102,30 @@ public struct BigAssNumber
         left.QuickResolveExpChange();
         return left;
     }
+    public static BigAssNumber operator +(BigAssNumber a, BigAssNumber b)
+    {
+        if (a.Exponent == b.Exponent)
+        {
+            a.Mantissa += b.Mantissa;
+            a.QuickResolveExpChange();
+            return a;
+        }
+
+        if (a.Exponent < b.Exponent)
+        {
+            var t = a; a = b; b = t;
+        }
+
+        long diff = a.Exponent - b.Exponent;
+
+        if (SmallNumDropOptimization && Math.Abs(diff) > 100) return a;
+
+        b.Mantissa /= Pow10(diff);
+        a.Mantissa += b.Mantissa;
+
+        a.QuickResolveExpChange();
+        return a;
+    }
     public static BigAssNumber operator -(BigAssNumber a, BigAssNumber b)
     {
         if (a.Exponent == b.Exponent)
@@ -134,6 +141,8 @@ public struct BigAssNumber
         }
 
         long diff = a.Exponent - b.Exponent;
+
+        if (SmallNumDropOptimization && Math.Abs(diff) > 100) return a;
 
         b.Mantissa /= Pow10(diff);
         a.Mantissa -= b.Mantissa;
@@ -183,7 +192,7 @@ public struct BigAssNumber
 
 
     private static readonly double[] Pow10Cache =
-{
+    {
     1e0, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9,
     1e10,1e11,1e12,1e13,1e14,1e15,1e16,1e17,1e18,1e19,
     1e20,1e21,1e22,1e23,1e24,1e25,1e26,1e27,1e28,1e29,
@@ -195,13 +204,15 @@ public struct BigAssNumber
     1e80,1e81,1e82,1e83,1e84,1e85,1e86,1e87,1e88,1e89,
     1e90,1e91,1e92,1e93,1e94,1e95,1e96,1e97,1e98,1e99,
     1e100
-};
+    };
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double Pow10(long exp)
     {
         if (exp >= 0 && exp < Pow10Cache.Length)
             return Pow10Cache[exp];
+        if (exp < 0 && -exp < Pow10Cache.Length)
+            return 1.0 / Pow10Cache[-exp];
         return Math.Pow(10.0, exp);
     }
     public override bool Equals(object obj)
@@ -259,6 +270,8 @@ public struct BigAssNumber
     {
         return a.Exponent != b.Exponent || a.Mantissa != b.Mantissa;
     }
+    public static readonly BigAssNumber Max = new BigAssNumber(9.99999999999999999999, long.MaxValue);
+    public static readonly BigAssNumber Min = new BigAssNumber(1, long.MinValue);
 }
 public static class BigAssNumberStuff
 {
@@ -477,8 +490,9 @@ public class _ConsoleForBigAssNumber
         $"{new BigAssNumber(200000).Pow(2)} = {new BigAssNumber(200000).Pow(2.0)}".Log();
         $"{new BigAssNumber(200000).Pow(2.5)}".Log();
         $"{new BigAssNumber(2000).Pow(2.5).ToDouble()} = {Math.Pow(2000, 2.5)}".Log();
-        $"super big thing: {new BigAssNumber(10000000).NumToRead()}".Log();
-        $"super big thing: {new BigAssNumber(double.MaxValue).NumToRead()}".Log();
+        $"big thing: {new BigAssNumber(10000000).NumToRead()}".Log();
+        $"bigger thing: {new BigAssNumber(double.MaxValue).NumToRead()}".Log();
         $"super big thing: {new BigAssNumber(double.MaxValue).Pow(1000).NumToRead()}".Log();
+        $"max-est big thing: {BigAssNumber.Max.NumToRead()}".Log();
     }
 }

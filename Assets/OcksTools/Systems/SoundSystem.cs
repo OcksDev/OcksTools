@@ -269,7 +269,7 @@ public class OXSound
     public bool _bypass = false;
     public bool _loop = false;
     public float _maxd = 0;
-    public AudioRolloffMode _rolloffMode = AudioRolloffMode.Linear;
+    public AudioRolloffMode _rolloffMode = AudioRolloffMode.Logarithmic;
     public float _rollofffactor = 0;
     public Vector3? _pos = null;
     public OXSound(string name, float volume)
