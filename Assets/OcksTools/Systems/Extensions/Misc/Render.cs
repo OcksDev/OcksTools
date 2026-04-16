@@ -55,6 +55,10 @@ public class Render
     {
         Screen.SetResolution(width, height, GetFullscreen());
     }
+    public static void SetWindowSize(Vector2Int size)
+    {
+        Screen.SetResolution(size.x, size.y, GetFullscreen());
+    }
     public static void SetTargetFramerate(int amount)
     {
         Application.targetFrameRate = amount;
@@ -80,7 +84,7 @@ public class _ConsoleRenderQueryererr
     {
         ConsoleCommandBuilder.Build(() =>
         {
-            ConsoleLol.Instance.Add(new OXCommand("query")
+            ConsoleLol.Instance.Add(new OXCommand("getrender")
                 .Append(new OXCommand("fps").Action(() => Console.Log(Render.GetTargetFramerate())))
                 .Append(new OXCommand("vsync").Action(() => Console.Log(Render.GetVSync())))
                 .Append(new OXCommand("fullscreen").Action(() => Console.Log(Render.GetFullscreen())))
@@ -89,6 +93,24 @@ public class _ConsoleRenderQueryererr
                 .Append(new OXCommand("hz").Action(() => Console.Log(Render.GetMonitorRefreshRate())))
                 .Append(new OXCommand("monitor_size").Action(() => Console.Log(Render.GetMonitorSize())))
                 .Append(new OXCommand("window_size").Action(() => Console.Log(Render.GetWindowSize())))
+                );
+            ConsoleLol.Instance.Add(new OXCommand("setrender")
+                .Append(new OXCommand("fps").Append(new OXCommand(OXCommand.ExpectedInputType.Long).Action((r) => Render.SetTargetFramerate(int.Parse(r.com[2])))))
+                .Append(new OXCommand("vsync").Append(new OXCommand(OXCommand.ExpectedInputType.Long).Action((r) => Render.SetVSync(int.Parse(r.com[2]).IntToBool()))))
+                .Append(new OXCommand("fullscreen").Append(new OXCommand(OXCommand.ExpectedInputType.Long).Action((r) => Render.SetFullscreen(int.Parse(r.com[2]).IntToBool() ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed))))
+                .Append(new OXCommand("anistropic").Append(new OXCommand(OXCommand.ExpectedInputType.Long).Action((r) => Render.SetAnisotropicFiltering(int.Parse(r.com[2]).IntToBool()))))
+                .Append(new OXCommand("antialiasing").Append(new OXCommand(OXCommand.ExpectedInputType.Long).Action((r) => Render.SetAntiAliasing(int.Parse(r.com[2])))))
+                .Append(new OXCommand("window_size").Append(new OXCommand(OXCommand.ExpectedInputType.Long).Append(new OXCommand(OXCommand.ExpectedInputType.Long).Action((r) =>
+                {
+                    var x = int.Parse(r.com_caps[2]);
+                    var y = int.Parse(r.com_caps[3]);
+                    if (x <= 250 || y <= 250)
+                    {
+                        Console.LogError("Trying to set the window too small, stopping this for your own good. (it's hard to undo if you get stuck in a small window)");
+                        return;
+                    }
+                    Render.SetWindowSize(x, y);
+                }))).Action((r) => Render.SetWindowSize(Render.GetMonitorSize())))
                 );
         });
     }

@@ -5,7 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/OcksTools/Systems/Extensions/Multiplayer/ConsoleIntegration/ConsoleHookTest.unity
     guid: c7a42b6c2e3f0d34dae4e6a9972005ec
   - enabled: 1
