@@ -18,6 +18,9 @@
 - Multiplayer Improvements
   - New PositionInterpolator_Rigidbody
   - New PositionInterpolator_Transform
+- Spawn System Improvements
+  - Added "Spawn Functions" which let you define generic functions to run on a given spawned object
+    - These can be easily conveyed over multiplayer spawns
 - New Random Functions
   - Swap() method that swaps two variables
   - 3 new easing functions: EaseSin(), EaseCos(), EaseSinInAndOut()

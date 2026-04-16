@@ -6,7 +6,8 @@ public class SpawnSystem : SingleInstance<SpawnSystem>
 {
     public List<Pool> Spawnables = new List<Pool>();
     public OXEvent CompileSpawnDict = new OXEvent();
-    public static Dictionary<string, Pool> SpawnableDict = new Dictionary<string, Pool>();
+    public static Dictionary<string, Pool> SpawnableDict = new();
+    public static Dictionary<string, Action<SpawnData>> SpawnFunctions = new();
     public static Action<string> SpawnShareMethod;
     public static Action<SpawnData> SpawnNetworkMethod;
     public override void Awake2()
@@ -17,6 +18,12 @@ public class SpawnSystem : SingleInstance<SpawnSystem>
             SpawnableDict.Add(a.Name, a);
         }
     }
+
+    public static void AddSpawnFunction(string name, Action<SpawnData> func)
+    {
+        SpawnFunctions.AddOrUpdate(name, func);
+    }
+
     private void Start()
     {
         CompileSpawnDict.Invoke();
@@ -49,6 +56,7 @@ public class SpawnSystem : SingleInstance<SpawnSystem>
             Tags.AddObjectToTag(a, sp._IDValue, "Exist");
             Tags.AddObjectToTag(sp, sp._IDValue, "Spawns");
         }
+        if (sp._spawnfunc != "") SpawnFunctions[sp._spawnfunc](sp);
         switch (sp._share)
         {
             case 1:
@@ -64,7 +72,6 @@ public class SpawnSystem : SingleInstance<SpawnSystem>
                 }
                 break;
         }
-
         return a;
     }
     public static void Kill(GameObject nerd)
@@ -91,6 +98,7 @@ public class SpawnData
     public int _share = 0;
     public bool _donttag = false;
     public bool _dospawn = true;
+    public string _spawnfunc = "";
     public Dictionary<string, string> _data = new Dictionary<string, string>();
     public SpawnData(string nerd)
     {
@@ -150,6 +158,11 @@ public class SpawnData
         this._data = d;
         return this;
     }
+    public SpawnData AfterSpawnFunction(string a)
+    {
+        this._spawnfunc = a;
+        return this;
+    }
     public SpawnData ID(string i)
     {
         this._IDValue = i;
@@ -168,6 +181,7 @@ public class SpawnData
         da.Add("ID", _IDValue);
         if (_pos != default) da.Add("pos", _pos.ToString());
         if (_rot != Quaternion.identity) da.Add("rot", _rot.ToString());
+        if (_spawnfunc != "") da.Add("sf", _spawnfunc);
         if (_donttag) da.Add("dt", "!");
         if (_parent != null)
         {
@@ -197,6 +211,7 @@ public class SpawnData
         if (da.ContainsKey("rot")) _rot = Converter.StringToQuaternion(da["rot"]);
         if (da.ContainsKey("dat")) _data = Converter.EscapedStringToDictionary(da["dat"], "!", "?");
         if (da.ContainsKey("dt")) _donttag = true;
+        if (da.ContainsKey("sf")) _spawnfunc = da["sf"];
         if (da.ContainsKey("par"))
         {
 
