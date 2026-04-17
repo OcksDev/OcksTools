@@ -105,6 +105,11 @@ public class SpawnData
         this.nerd = nerd;
         _IDValue = Tags.GenerateID();
     }
+    public SpawnData(string nerd, string id)
+    {
+        this.nerd = nerd;
+        _IDValue = id;
+    }
     public SpawnData(string nerd, int i)
     {
         //parse data from nerd
