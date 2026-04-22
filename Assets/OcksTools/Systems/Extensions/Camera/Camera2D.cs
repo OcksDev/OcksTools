@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Camera2D : SingleInstance<Camera2D>
@@ -8,27 +7,8 @@ public class Camera2D : SingleInstance<Camera2D>
     public float MouseFollowStrength = 1;
     public Vector3 targetpos = new Vector3(0, 0, 0);
     private Vector3 ppos = new Vector3(0, 0, 0);
-    private List<List<float>> shakeo = new List<List<float>>();
-    private List<Vector4> shoveo = new List<Vector4>();
     // Start is called before the first frame update
-    private void FixedUpdate()
-    {
-        int i = -1;
-        foreach (var shake in shakeo)
-        {
-            i++;
-            shake[0] *= shake[1];
-        }
-        while (i >= 0)
-        {
-            if (shakeo.Count > 0 && shakeo[i][0] <= 0.01f)
-            {
-                shakeo.RemoveAt(i);
-                //i++;
-            }
-            i--;
-        }
-    }
+    public ShakeHolder Shake = new ShakeHolder();
 
     private void LateUpdate()
     {
@@ -62,33 +42,8 @@ public class Camera2D : SingleInstance<Camera2D>
         */
         ppos = z;
         Vector3 ss = ppos;
-        foreach (var shake in shakeo)
-        {
-            float f1 = 1;
-            float f2 = 1;
-            if (shake[2] != 0 || shake[3] != 0)
-            {
-                f1 = shake[2];
-                f2 = shake[3];
-            }
-            float ff1 = UnityEngine.Random.Range(-f1, f1) * shake[0];
-            float ff2 = UnityEngine.Random.Range(-f2, f2) * shake[0];
-            ss.x += ff1;
-            ss.y += ff2;
-        }
+        ss += Shake.GetPos(Time.deltaTime);
         transform.position = ss;
-    }
-
-    public void Shake(float shake, float falloff, int dir1 = 0, int dir2 = 0)
-    {
-        List<float> balls = new List<float>
-        {
-            shake,
-            falloff,
-            dir1,
-            dir2,
-        };
-        shakeo.Add(balls);
     }
 
     private float Dist(Vector3 p1, Vector3 p2)

@@ -446,6 +446,15 @@ public static class OXFunctions
         expo = 1 - expo;
         return 1 - Mathf.Pow(expo, Time.deltaTime * 50 * Time.timeScale);
     }
+    public static float TimeStablePow(this float expo, float dt)
+    {
+        return Mathf.Pow(expo, dt * 50 * Time.timeScale);
+    }
+    public static float TimeStableLerp(this float expo, float dt)
+    {
+        expo = 1 - expo;
+        return 1 - Mathf.Pow(expo, dt * 50 * Time.timeScale);
+    }
 
     public static Vector3 PerpendicularTowardDirection(this Vector3 baseVector, Vector3 directionVector)
     {

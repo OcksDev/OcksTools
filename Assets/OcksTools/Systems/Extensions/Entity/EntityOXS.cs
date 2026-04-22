@@ -35,6 +35,7 @@ public class EntityOXS
             }
         }
         Shield = System.Math.Clamp(Shield, 0, Max_Shield);
+
     }
 
     public void Heal(DamageProfile amount)

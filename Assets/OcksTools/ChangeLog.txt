@@ -1,6 +1,9 @@
 
 ------------
    v1.2.1
+- New Shake System
+  - Replaces old shake functionality in Camera2D
+  - Created new "Camera" extension folder for this and Camera2D
 - Big Ass Number Improvements
   - Now has stored 'constants' for min and max values
   - Added optional optimization, off by default, which lets you ignore very small changes during addition/subtraction to save on needing to calculate the exponents.
@@ -12,7 +15,7 @@
   - Added an overload of SetWindowSize() to take a vector2int
 - Asset Changes
   - Added a bunch of new fonts
-  - Added a font folder called "Cyber" which will start getting populated by related theme fonts]
+  - Added a font folder called "Cyber" which will start getting populated by related theme fonts
   - Re-rendered some fonts that needed to be higher-res
   - Removed some broken fonts or ones that looked like garbage
 - Multiplayer Improvements
