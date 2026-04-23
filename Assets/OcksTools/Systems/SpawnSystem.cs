@@ -81,7 +81,7 @@ public class SpawnSystem : SingleInstance<SpawnSystem>
     }
     public static SpawnData GetSpawnData(GameObject nerd)
     {
-        return Tags.GetFromTag<SpawnData>("Spawns", Tags.GetIDOf(nerd));
+        return Tags.GetFromTag<SpawnData>(Tags.GetIDOf(nerd), "Spawns");
     }
 }
 
@@ -138,7 +138,7 @@ public class SpawnData
     }
     public SpawnData Parent(string id)
     {
-        this._parent = Tags.GetFromTag<GameObject>("Exist", id).transform;
+        this._parent = Tags.GetFromTag<GameObject>(id).transform;
         return this;
     }
     public SpawnData ParentFromRef(string refd)
@@ -222,7 +222,7 @@ public class SpawnData
 
             if (!da.ContainsKey("par_id"))
             {
-                _parent = Tags.GetFromTag<GameObject>("Exist", da["par"]).transform;
+                _parent = Tags.GetFromTag<GameObject>(da["par"]).transform;
             }
             else
             {

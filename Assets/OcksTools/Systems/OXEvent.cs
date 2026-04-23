@@ -27,7 +27,7 @@ public static class GlobalEvent
 }
 
 /*
- * WARNING: InvokeWithHitCheck() is NOT thread safe, if using oxevent on other threads: DO NOT USE THIS
+ * WARNING: InvokeWithHitCheck() is NOT thread safe, if using oxevent on other threads: DO NOT USE THIS METHOD
  */
 
 public class OXEvent
@@ -77,7 +77,7 @@ public class OXEvent
 }
 
 /*
- * WARNING: InvokeWithHitCheck() is NOT thread safe, if using oxevent on other threads: DO NOT USE THIS
+ * WARNING: InvokeWithHitCheck() is NOT thread safe, if using oxevent on other threads: DO NOT USE THIS METHOD
  */
 public class OXEvent<T>
 {
@@ -124,7 +124,7 @@ public class OXEvent<T>
     }
 }
 /*
- * WARNING: InvokeWithHitCheck() is NOT thread safe, if using oxevent on other threads: DO NOT USE THIS
+ * WARNING: InvokeWithHitCheck() is NOT thread safe, if using oxevent on other threads: DO NOT USE THIS METHOD
  */
 public class OXEvent<T, T2>
 {
@@ -172,7 +172,7 @@ public class OXEvent<T, T2>
 }
 
 /*
- * WARNING: InvokeWithHitCheck() is NOT thread safe, if using oxevent on other threads: DO NOT USE THIS
+ * WARNING: InvokeWithHitCheck() is NOT thread safe, if using oxevent on other threads: DO NOT USE THIS METHOD
  */
 public class OXEvent<T, T2, T3>
 {
@@ -220,7 +220,7 @@ public class OXEvent<T, T2, T3>
 }
 
 /*
- * WARNING: InvokeWithHitCheck() is NOT thread safe, if using oxevent on other threads: DO NOT USE THIS
+ * WARNING: InvokeWithHitCheck() is NOT thread safe, if using oxevent on other threads: DO NOT USE THIS METHOD
  */
 public class OXEvent<T, T2, T3, T4>
 {
@@ -268,7 +268,7 @@ public class OXEvent<T, T2, T3, T4>
 }
 
 /*
- * WARNING: InvokeWithHitCheck() is NOT thread safe, if using oxevent on other threads: DO NOT USE THIS
+ * WARNING: InvokeWithHitCheck() is NOT thread safe, if using oxevent on other threads: DO NOT USE THIS METHOD
  */
 public class OXEvent<T, T2, T3, T4, T5>
 {

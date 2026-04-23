@@ -45,7 +45,7 @@ public class Tags : SingleInstance<Tags>
         var aa = AllTagsReverse[tag];
         return aa.ContainsKey(a) ? aa[a] : "";
     }
-    public static T GetFromTag<T>(string tag, string name)
+    public static T GetFromTag<T>(string name, string tag = "Exist")
     {
         return (T)AllTags[tag][name];
     }
