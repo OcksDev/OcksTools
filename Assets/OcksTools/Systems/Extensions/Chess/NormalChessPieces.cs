@@ -12,7 +12,7 @@ public class Chess_DefaultBoard : BoardState
 
 public class Chess_Pawn : ChessPieceBase
 {
-    private bool has_double_push = false;
+    private bool has_double_push = true;
     public override void Initialize()
     {
         Name = "Pawn";
@@ -37,6 +37,11 @@ public class Chess_Pawn : ChessPieceBase
     {
         if (nerd.Name == "Pawn" && has_double_push && MovesMade == 1 && nerd.Team != Team && pos == Position + TeamRotation(Vector2Int.down)) return true;
         return base.CanBeCapturedByAt(state, nerd, pos);
+    }
+    public override void MoveTo(BoardState state, Vector2Int pos)
+    {
+        has_double_push = pos == Position + TeamRotation(Vector2Int.up * 2);
+        base.MoveTo(state, pos);
     }
 }
 
@@ -99,7 +104,7 @@ public class Chess_King : ChessPieceBase
         return base.CanMoveToFrom(state, pos, Position);
     }
 
-    public override bool CanMoveTo(BoardState state, Vector2Int pos)
+    public override void MoveTo(BoardState state, Vector2Int pos)
     {
         if (MovesMade == 0)
         {
@@ -112,7 +117,7 @@ public class Chess_King : ChessPieceBase
                 state.MovePiece(state.GetPieceAtPos(Position + TeamRotation(Vector2Int.left * GetOffsetForCastle().left)), Position + TeamRotation(Vector2Int.left));
             }
         }
-        return base.CanMoveTo(state, pos);
+        base.MoveTo(state, pos);
     }
 
 }

@@ -336,9 +336,8 @@ public abstract class ChessPieceBase
     }
     public virtual void Capture(BoardState state, ChessPieceBase nerd, Vector2Int pos)
     {
-        MovesMade++;
-        Position = pos;
         state.CurrentPieces.Remove(nerd);
+        MoveTo(state, pos);
     }
     public override string ToString()
     {
