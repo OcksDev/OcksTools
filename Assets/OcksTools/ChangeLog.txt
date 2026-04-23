@@ -10,6 +10,7 @@
   - Added slight cache optimization for negative exponent power calculation
   - Manual creations using the inspector maker automatically check the mantissa for overflow now
 - Chess Improvements
+  - Added assets that I totally didn't steal from chess.com
   - More things should work now like Castling and En Passant
 - Render Improvements
   - Added "setrender" command, which is just a writeable version of "getrender"
