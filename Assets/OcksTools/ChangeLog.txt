@@ -28,6 +28,7 @@
 - New Random Functions
   - Swap() method that swaps two variables
   - 3 new easing functions: EaseSin(), EaseCos(), EaseSinInAndOut()
+  - TimeStablePow and TimeStableLerp now have overloads to use arbitrary values as the delta time
 - Misc
   - Notification System animations fixed on reversed positioning styles
 ------------
