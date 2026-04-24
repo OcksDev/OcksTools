@@ -352,8 +352,9 @@ GameObject:
   - component: {fileID: 1413991772}
   - component: {fileID: 1413991771}
   - component: {fileID: 1413991770}
-  - component: {fileID: 1413991773}
   - component: {fileID: 1413991774}
+  - component: {fileID: 1413991775}
+  - component: {fileID: 1413991776}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -435,22 +436,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1413991773
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1413991769}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e376f5bf0167e9459b562c916d1c315, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  FollowsMouse: 1
-  MouseFollowSpeed: 1
-  MouseFollowStrength: 1
-  targetpos: {x: 0, y: 0, z: 0}
 --- !u!114 &1413991774
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -495,6 +480,52 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!114 &1413991775
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1413991769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77e9d2034eef4e84388f1a760fc7fb67, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MainCamera
+  Camera: {fileID: 0}
+--- !u!114 &1413991776
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1413991769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d11ebdc1d18c3419c2675b3c1d348a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Camera2D
+  Position:
+    AllowFollow: 0
+    FollowStrength: 0.2
+    Target:
+      Initial: {x: 0, y: 0, z: 0}
+      Current: {x: 0, y: 0, z: 0}
+    Override: 0
+  Rotation:
+    AllowFollow: 0
+    FollowStrength: 0.2
+    Target:
+      Initial: {x: 0, y: 0, z: 0, w: 1}
+      Current: {x: 0, y: 0, z: 0, w: 0}
+    Override: 0
+  WaypointState: 0
+  Is2D: 1
+  CameraZ: -10
+  FollowsMouse: 1
+  MouseFollowSpeed: 0.2
+  MouseFollowStrength: 1
+  WaypointStopsMouseFollow: 1
 --- !u!1001 &1602123810
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -710,6 +741,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: TestNumber3
+  AutomaticallyUpdate: 1
   UseFixedUpdate: 0
 --- !u!1 &1912176506 stripped
 GameObject:

@@ -1,5 +1,37 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1527966890927307
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3960072373737670016}
+  m_Layer: 0
+  m_Name: HeadStyle
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3960072373737670016
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1527966890927307}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2422868151831645781}
+  m_Father: {fileID: 6371845093491532323}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1547559579568946793
 GameObject:
   m_ObjectHideFlags: 0
@@ -10,7 +42,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4998704634607921774}
   m_Layer: 0
-  m_Name: Head (1)
+  m_Name: HeadXZ
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,6 +76,8 @@ GameObject:
   - component: {fileID: 1098055003720424356}
   - component: {fileID: 1717341717980133240}
   - component: {fileID: 8460357919653808641}
+  - component: {fileID: 4838639153601871683}
+  - component: {fileID: 7432999733698286961}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -64,7 +98,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 6371845093491532323}
+  m_Father: {fileID: 3960072373737670016}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!20 &1098055003720424356
 Camera:
@@ -169,6 +203,51 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!114 &4838639153601871683
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3169514038174057245}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe94e9b2576c2314291534e1dd3dd54d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Camera3D_FPS
+  Position:
+    AllowFollow: 0
+    FollowStrength: 0.2
+    Target:
+      Initial: {x: 0, y: 0, z: 0}
+      Current: {x: 0, y: 0, z: 0}
+    Override: 0
+  Rotation:
+    AllowFollow: 0
+    FollowStrength: 0.2
+    Target:
+      Initial: {x: 0, y: 0, z: 0, w: 1}
+      Current: {x: 0, y: 0, z: 0, w: 0}
+    Override: 0
+  WaypointState: 0
+  Is2D: 0
+  CameraZ: -10
+  HeadY: {fileID: 0}
+  HeadXZ: {fileID: 0}
+  HeadStyle: {fileID: 0}
+--- !u!114 &7432999733698286961
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3169514038174057245}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77e9d2034eef4e84388f1a760fc7fb67, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MainCamera
+  Camera: {fileID: 0}
 --- !u!1 &5121059995390726291
 GameObject:
   m_ObjectHideFlags: 0
@@ -179,7 +258,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6371845093491532323}
   m_Layer: 0
-  m_Name: Head
+  m_Name: HeadY
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -198,7 +277,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2422868151831645781}
+  - {fileID: 3960072373737670016}
   m_Father: {fileID: 4998704634607921774}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6838122281118527589
@@ -362,6 +441,7 @@ MonoBehaviour:
   wall_velocity_add: 5
   wall_orig_up_perc: 0.3
   wall_leave_force: 14
+  wall_min_speed_req: 4
   coyote_time: 0
   air_jumps_base: 0
   HeadY: {fileID: 6371845093491532323}

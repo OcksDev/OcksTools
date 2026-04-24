@@ -1,6 +1,11 @@
 using UnityEngine;
 
-public abstract class SingleInstance<T> : MonoBehaviour where T : SingleInstance<T>
+public abstract class SingleInstance<T> : SingleInstanceGeneric<T> where T : SingleInstance<T>
+{
+    public override void SetBaseInstance() => SetInstance((T)this);
+}
+
+public abstract class SingleInstanceGeneric<T> : MonoBehaviour
 {
     public static T Instance
     {
@@ -15,9 +20,10 @@ public abstract class SingleInstance<T> : MonoBehaviour where T : SingleInstance
     {
         if (transform.parent == null) DontDestroyOnLoad(gameObject);
     }
-    public void Awake()
+    public abstract void SetBaseInstance();
+    public virtual void Awake()
     {
-        SetInstance((T)this);
+        SetBaseInstance();
         DestroyOnLoad();
         Awake2();
     }

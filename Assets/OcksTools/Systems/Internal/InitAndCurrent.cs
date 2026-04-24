@@ -12,7 +12,7 @@ public class ResettableValue<T>
     public T Get() { return Current; }
     public void SetToInitial() { Current = Initial; }
     public void Reset() => SetToInitial();
-    public static implicit operator T(ResettableValue<T> a) { return a.Get(); }
+    public static implicit operator T(ResettableValue<T> a) => a.Get();
 
     public void FromString(string a)
     {

@@ -74,6 +74,10 @@ public class OXEvent
     {
         return StoredMethods.ContainsKey(name);
     }
+    public void Clear()
+    {
+        StoredMethods.Clear();
+    }
 }
 
 /*
@@ -122,6 +126,10 @@ public class OXEvent<T>
     {
         return StoredMethods.ContainsKey(name);
     }
+    public void Clear()
+    {
+        StoredMethods.Clear();
+    }
 }
 /*
  * WARNING: InvokeWithHitCheck() is NOT thread safe, if using oxevent on other threads: DO NOT USE THIS METHOD
@@ -169,6 +177,10 @@ public class OXEvent<T, T2>
         return StoredMethods.ContainsKey(name);
     }
 
+    public void Clear()
+    {
+        StoredMethods.Clear();
+    }
 }
 
 /*
@@ -216,6 +228,10 @@ public class OXEvent<T, T2, T3>
     public bool Contains(string name)
     {
         return StoredMethods.ContainsKey(name);
+    }
+    public void Clear()
+    {
+        StoredMethods.Clear();
     }
 }
 
@@ -265,6 +281,10 @@ public class OXEvent<T, T2, T3, T4>
     {
         return StoredMethods.ContainsKey(name);
     }
+    public void Clear()
+    {
+        StoredMethods.Clear();
+    }
 }
 
 /*
@@ -313,6 +333,10 @@ public class OXEvent<T, T2, T3, T4, T5>
     public bool Contains(string name)
     {
         return StoredMethods.ContainsKey(name);
+    }
+    public void Clear()
+    {
+        StoredMethods.Clear();
     }
 }
 
@@ -373,6 +397,10 @@ public class OXEventLayered
             aa.b.Invoke();
         }
     }
+    public void Clear()
+    {
+        StoredEvents.Clear();
+    }
 }
 public class OXEventLayered<T>
 {
@@ -420,6 +448,10 @@ public class OXEventLayered<T>
             aa.b.Invoke(a);
         }
     }
+    public void Clear()
+    {
+        StoredEvents.Clear();
+    }
 }
 public class OXEventLayered<T, T2>
 {
@@ -466,6 +498,10 @@ public class OXEventLayered<T, T2>
         {
             aa.b.Invoke(a, b);
         }
+    }
+    public void Clear()
+    {
+        StoredEvents.Clear();
     }
 }
 
@@ -515,6 +551,10 @@ public class OXEventLayered<T, T2, T3>
             aa.b.Invoke(a, b, c);
         }
     }
+    public void Clear()
+    {
+        StoredEvents.Clear();
+    }
 }
 
 public class OXEventLayered<T, T2, T3, T4>
@@ -562,6 +602,10 @@ public class OXEventLayered<T, T2, T3, T4>
         {
             aa.b.Invoke(a, b, c, d);
         }
+    }
+    public void Clear()
+    {
+        StoredEvents.Clear();
     }
 }
 
@@ -611,6 +655,10 @@ public class OXEventLayered<T, T2, T3, T4, T5>
         {
             aa.b.Invoke(a, b, c, d, e);
         }
+    }
+    public void Clear()
+    {
+        StoredEvents.Clear();
     }
 }
 

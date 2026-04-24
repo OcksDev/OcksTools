@@ -1,9 +1,15 @@
 
 ------------
    v1.2.1
-- New Shake System
-  - Replaces old shake functionality in Camera2D
-  - Created new "Camera" extension folder for this and Camera2D
+- Camera System Overhaul
+  - New Main Camera script, lets you easily define a camera to be accessed via SingleInstance
+  - New OXCamera abstract class to unify all camera behavior
+  - Nearly completely remade Camera2D
+  - New Shake System
+    - Replaces old shake functionality in Camera2D
+    - Created new "Camera" extension folder for this and Camera2D
+  - Removed "Dist" function in Camera2D as it already exists in RandomFunctions
+  - Cleaned up comments
 - Big Ass Number Improvements
   - Now has stored 'constants' for min and max values
   - Added optional optimization, off by default, which lets you ignore very small changes during addition/subtraction to save on needing to calculate the exponents.
@@ -41,6 +47,8 @@
   - 3 new easing functions: EaseSin(), EaseCos(), EaseSinInAndOut()
   - TimeStablePow and TimeStableLerp now have overloads to use arbitrary values as the delta time
 - Misc
+  - OXEvent and OXEventLayered now all have a Clear() method
+  - SingleInstance<> now inherits from higher level SingleInstanceGeneric<> that lets you pass in any type for T
   - AdditionalScripts folder renamed to Internal
   - Consoling folder renamed to Console
   - Notification System animations fixed on reversed positioning styles
