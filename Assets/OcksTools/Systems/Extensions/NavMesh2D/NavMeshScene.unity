@@ -506,7 +506,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Camera2D
   Position:
-    AllowFollow: 0
+    AllowFollow: 1
     FollowStrength: 0.2
     Target:
       Initial: {x: 0, y: 0, z: 0}

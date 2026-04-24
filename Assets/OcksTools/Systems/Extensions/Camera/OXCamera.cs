@@ -22,7 +22,7 @@ public abstract class OXCamera : MonoBehaviour
         {
             var a = pos.Value;
             if (Is2D) a.z = CameraZ;
-            Position.Target.Current = transform.position;
+            Position.Target.Initial = transform.position;
             Position.Target.Current = a;
         }
         if (rot.HasValue)
@@ -32,26 +32,33 @@ public abstract class OXCamera : MonoBehaviour
         }
         progress_to_waypoint.Initial = seconds;
         progress_to_waypoint.Current = 0;
+        movingtoway = true;
         if (WaypointState != 2 && HoldOnFinish) WaypointState = HoldOnFinish ? 2 : 1;
     }
     public void TakeControlBack()
     {
         WaypointState = 0;
     }
+    private bool movingtoway = false;
     public (Vector3? pos, Quaternion? rot) AdvanceTowardWaypoint(float dt)
     {
         progress_to_waypoint.Current += dt;
         float p = Mathf.Clamp01(progress_to_waypoint.Percent());
         Vector3? pos = null;
         Quaternion? rot = null;
-        if (Position.Override) pos = Vector3.Lerp(Position.Target.Initial, Position.Target.Current, RandomFunctions.EaseSinInAndOut(p));
-        if (Rotation.Override) rot = Quaternion.Slerp(Rotation.Target.Initial, Rotation.Target.Current, RandomFunctions.EaseSinInAndOut(p));
+        if (p >= 1 && !movingtoway)
+        {
+            if (Position.Override) pos = Position.Target.Current;
+            if (Rotation.Override) rot = Rotation.Target.Current;
+            return (pos, rot);
+        }
+        if (Position.Override) pos = Vector3.Lerp(Position.Target.Initial, Position.Target.Current, RandomFunctions.EaseInAndOut(p));
+        if (Rotation.Override) rot = Quaternion.Slerp(Rotation.Target.Initial, Rotation.Target.Current, RandomFunctions.EaseInAndOut(p));
         if (p >= 1)
         {
             OnWaypointReach.Invoke();
-            if (WaypointState == 1) WaypointState = 0;
-            Position.Override = false;
-            Rotation.Override = false;
+            if (WaypointState == 1) ExitWaypointMove();
+            movingtoway = false;
         }
         return (pos, rot);
     }
@@ -75,11 +82,19 @@ public abstract class OXCamera : MonoBehaviour
         }
         else
         {
-            return AdvanceTowardWaypoint(dt);
+            (pos, rot) = AdvanceTowardWaypoint(dt);
         }
+        pos += Shake.GetPos(dt);
         return (pos, rot);
     }
-
+    public void ExitWaypointMove()
+    {
+        WaypointState = 0;
+        Position.Override = false;
+        Rotation.Override = false;
+        if (Position.AllowFollow) Position.Target.Current = transform.localPosition;
+        if (Rotation.AllowFollow) Rotation.Target.Current = transform.localRotation;
+    }
     public void SetTargetPosition(Vector3 a)
     {
         if (Is2D) a.z = CameraZ;

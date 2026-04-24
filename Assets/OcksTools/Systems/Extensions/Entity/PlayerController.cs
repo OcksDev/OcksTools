@@ -25,23 +25,17 @@ public class PlayerController : MonoBehaviour
         }
         Vector3 bgalls = move * Time.deltaTime * move_speed * 20;
         rigid.linearVelocity += new Vector2(bgalls.x, bgalls.y);
-        if (MainCamera.Instance != null)
-        {
-            MainCamera.Instance.SetTargetPosition(transform.position);
-        }
+
 
     }
     private void Update()
     {
-
-        /*if (Input.GetKey(KeyCode.Mouse0))
+        if (MainCamera.Instance != null)
         {
-            Time.timeScale = 0.2f;
+            if (Input.GetKeyDown(KeyCode.P)) MainCamera.Instance.GoToWaypoint(1, Vector3.zero);
+            if (Input.GetKeyDown(KeyCode.O)) MainCamera.Instance.ExitWaypointMove();
+            MainCamera.Instance.SetTargetPosition(transform.position);
         }
-        else
-        {
-            Time.timeScale = 1f;
-        }*/
     }
 
 

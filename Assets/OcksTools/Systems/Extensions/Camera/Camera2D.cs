@@ -19,9 +19,8 @@ public class Camera2D : OXCamera
 
         var p = GetMouseFollow();
         CurMouse = Vector3.Lerp(CurMouse, p, MouseFollowSpeed.TimeStableLerp());
-
+        a += CurMouse;
         Vector3 ss = a.Value;
-        ss += Shake.GetPos(Time.deltaTime);
         ss.z = CameraZ;
         transform.position = ss;
     }

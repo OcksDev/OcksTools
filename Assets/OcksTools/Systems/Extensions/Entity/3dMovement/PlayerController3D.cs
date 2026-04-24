@@ -7,7 +7,8 @@ public class PlayerController3D : MonoBehaviour
 {
     public float player_height = 2;
     public float player_width = 1;
-
+    [Required]
+    public OXCamera MyCam;
     [ReadOnly]
     public Vector3 Vcel;
     private Vector3 Vcel_Prev;
@@ -17,7 +18,6 @@ public class PlayerController3D : MonoBehaviour
     private CapsuleCollider coll;
     public AllowedMovements Movements;
     public MoveState CurrentState = MoveState.Neutral;
-    public float mouse_sense = 1;
     public float move_speed = 2;
     public float jump_str = 2;
     public float grav_str = 2;
@@ -47,8 +47,8 @@ public class PlayerController3D : MonoBehaviour
     public float wall_min_speed_req = 4f;
     public float coyote_time = 0f;
     public int air_jumps_base = 0;
-    public Transform HeadY;
-    public Transform HeadXZ;
+    private Transform HeadY;
+    private Transform HeadXZ;
     [EnumFlags] public RigidbodyConstraints Normal;
     [EnumFlags] public RigidbodyConstraints Stationary;
     private float slip = -1;
@@ -58,6 +58,10 @@ public class PlayerController3D : MonoBehaviour
     private float cur_coyote = -1;
     private void Start()
     {
+        var c = (CameraFor3D)MyCam;
+        HeadY = c.GetHeadY();
+        HeadXZ = c.GetHeadXZ();
+
         rigid = GetComponent<Rigidbody>();
         coll = GetComponent<CapsuleCollider>();
         InitPos = transform.position;
@@ -460,8 +464,6 @@ public class PlayerController3D : MonoBehaviour
 
 
     public GameObject nerd = null;
-    private float rot_y = 0;
-    private float rot_x = 0;
     private float slidemin = 0;
     private void Update()
     {
@@ -473,12 +475,6 @@ public class PlayerController3D : MonoBehaviour
         CollisionGroundCheck();
 
 
-        var x = Input.GetAxis("Mouse X") * mouse_sense;
-        var y = Input.GetAxis("Mouse Y") * mouse_sense;
-        rot_x += x;
-        rot_y = Mathf.Clamp(rot_y - y, -90, 90);
-        HeadY.localRotation = Quaternion.Euler(rot_y, 0, 0);
-        HeadXZ.localRotation = Quaternion.Euler(0, rot_x, 0);
 
         if (Movements.HasFlag(AllowedMovements.Jump))
         {

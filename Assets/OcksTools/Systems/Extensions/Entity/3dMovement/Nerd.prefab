@@ -232,9 +232,9 @@ MonoBehaviour:
   WaypointState: 0
   Is2D: 0
   CameraZ: -10
-  HeadY: {fileID: 0}
-  HeadXZ: {fileID: 0}
-  HeadStyle: {fileID: 0}
+  HeadY: {fileID: 6371845093491532323}
+  HeadXZ: {fileID: 4998704634607921774}
+  HeadStyle: {fileID: 3960072373737670016}
 --- !u!114 &7432999733698286961
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -410,6 +410,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: OcksTools::PlayerController3D
   player_height: 2
   player_width: 1
+  MyCam: {fileID: 4838639153601871683}
   Vcel: {x: 0, y: 0, z: 0}
   VcelMag: 0
   Movements: -1
@@ -444,8 +445,6 @@ MonoBehaviour:
   wall_min_speed_req: 4
   coyote_time: 0
   air_jumps_base: 0
-  HeadY: {fileID: 6371845093491532323}
-  HeadXZ: {fileID: 4998704634607921774}
   Normal: 112
   Stationary: 122
   nerd: {fileID: 6909798639549162927, guid: b8f62317f6eab8c47858238051a1a4ab, type: 3}
