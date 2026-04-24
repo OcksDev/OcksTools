@@ -7,9 +7,10 @@
   - New OXCamera abstract class to unify all camera behavior
     - 3D Cameras also inherit from an interface called CamerasFor3D which adds some needed things
   - All Cameras now have "Waypoints" which let you smoothly detach and move/rotate the camera to anywhere you want
-  - Nearly completely remade Camera2D
+  - Rewrote Camera2D almost entirely
   - New Shake System
     - Replaces old shake functionality in Camera2D
+    - Works on all camera types
   - Created new "Camera" extension folder
   - Removed "Dist" function in Camera2D as it already exists in RandomFunctions
   - Cleaned up comments
