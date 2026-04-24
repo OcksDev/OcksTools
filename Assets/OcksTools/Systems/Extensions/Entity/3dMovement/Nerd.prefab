@@ -331,27 +331,39 @@ MonoBehaviour:
   m_EditorClassIdentifier: OcksTools::PlayerController3D
   player_height: 2
   player_width: 1
-  wall_cameratilt: 1
   Vcel: {x: 0, y: 0, z: 0}
+  VcelMag: 0
   Movements: -1
   CurrentState: 0
+  mouse_sense: 1
   move_speed: 6
-  air_speed: 0.1
   jump_str: 14
-  input_decay: 0
+  grav_str: 0.8
+  air_turn: 0.05
+  air_accel_mult: 0.4
+  air_accel_max_speed: 14
   slip_decay: 0.75
-  slip_opposite_force: 0.85
   xz_decay: 0.83
   slide_decay_steep: 1
   slide_decay_flat: 0.96
   slide_slope_mult: 1.2
+  slide_min_time: 0.5
   air_xz_decay: 1
-  air_crouched_xz_decay: 0.9
-  mouse_sense: 1
-  grav_str: 0.8
-  air_turn: 0.05
+  air_crouched_xz_decay: 0.94
   max_floor_angle: 45
   slide_steep_angle: 5
+  fast_punish: 0.9
+  fast_punish_speed: 10
+  dash_str: 70
+  dash_dur: 0.14
+  dash_end_str: 30
+  wall_grav_mod: 0.2
+  wall_up_str: 3
+  wall_velocity_add: 5
+  wall_orig_up_perc: 0.3
+  wall_leave_force: 14
+  coyote_time: 0
+  air_jumps_base: 0
   HeadY: {fileID: 6371845093491532323}
   HeadXZ: {fileID: 4998704634607921774}
   Normal: 112
@@ -359,6 +371,7 @@ MonoBehaviour:
   nerd: {fileID: 6909798639549162927, guid: b8f62317f6eab8c47858238051a1a4ab, type: 3}
   grounded: 0
   allow_movement_inputs: 0
+  override_allow_jump: 0
 --- !u!54 &8653577835142743007
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -381,7 +394,7 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 112

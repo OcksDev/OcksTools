@@ -2832,6 +2832,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae4376f568938f14886d41f6e0e56131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: OcksTools::InputManager
+  PollForEvents: 1
 --- !u!4 &1004372533
 Transform:
   m_ObjectHideFlags: 0
@@ -7129,14 +7130,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 52581739253764052, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
-      propertyPath: dash_dur
-      value: 0.14
-      objectReference: {fileID: 0}
-    - target: {fileID: 52581739253764052, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
-      propertyPath: dash_str
-      value: 70
-      objectReference: {fileID: 0}
-    - target: {fileID: 52581739253764052, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
       propertyPath: air_decay
       value: 0
       objectReference: {fileID: 0}
@@ -7145,36 +7138,8 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 52581739253764052, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
-      propertyPath: wall_up_str
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 52581739253764052, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
-      propertyPath: dash_end_str
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 52581739253764052, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
-      propertyPath: wall_grav_mod
-      value: 0.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 52581739253764052, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
-      propertyPath: wall_leave_force
-      value: 14
-      objectReference: {fileID: 0}
-    - target: {fileID: 52581739253764052, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
       propertyPath: slide_start_boost
       value: 15
-      objectReference: {fileID: 0}
-    - target: {fileID: 52581739253764052, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
-      propertyPath: wall_orig_up_perc
-      value: 0.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 52581739253764052, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
-      propertyPath: wall_velocity_add
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 52581739253764052, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
-      propertyPath: air_crouched_xz_decay
-      value: 0.94
       objectReference: {fileID: 0}
     - target: {fileID: 6838122281118527589, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
       propertyPath: m_Name
@@ -7182,10 +7147,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8460357919653808641, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
       propertyPath: m_RenderPostProcessing
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8653577835142743007, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
-      propertyPath: m_UseGravity
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8998951737039264408, guid: fc0f3e868997c9d4793f975c06469a66, type: 3}
