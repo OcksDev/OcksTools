@@ -10,6 +10,8 @@ public class PlayerController3D : MonoBehaviour
 
     [ReadOnly]
     public Vector3 Vcel;
+    [ReadOnly]
+    public float VcelMag;
     private Rigidbody rigid;
     private CapsuleCollider coll;
     public AllowedMovements Movements;
@@ -19,6 +21,8 @@ public class PlayerController3D : MonoBehaviour
     public float jump_str = 2;
     public float grav_str = 2;
     public float air_turn = 0.05f;
+    public float air_accel_mult = 0.4f;
+    public float air_accel_max_speed = 18;
     public float slip_decay = 0.8f;
     public float xz_decay = 0.9f;
     public float slide_decay_steep = 0.9f;
@@ -152,26 +156,19 @@ public class PlayerController3D : MonoBehaviour
         if (InputManager.IsKey("move_right", "Player")) dir += HeadY.right;
         if (InputManager.IsKey("move_left", "Player")) dir += HeadY.right * -1;
         move_dir = dir;
-        if (allow_movement_inputs)
+        if (dir.magnitude > 0.5f)
         {
-
+            slip = 1;
+            dir.Normalize();
         }
-        if (grounded)
-        {
-            if (dir.magnitude > 0.5f)
-            {
-                slip = 1;
-                dir.Normalize();
-            }
-        }
-        else
+        var xzy = rigid.linearVelocity;
+        var xz = xzy;
+        xz.y = 0;
+        bool canairacc = Movements.HasFlag(AllowedMovements.AirAccelerate);
+        if (!grounded)
         {
             if (dir.magnitude > 0.5f && allow_movement_inputs)
             {
-                dir.Normalize();
-                var xzy = rigid.linearVelocity;
-                var xz = xzy;
-                xz.y = 0;
                 float ang = Vector3.Angle(xz, dir) - 90;
                 ang *= -1;
 
@@ -200,15 +197,23 @@ public class PlayerController3D : MonoBehaviour
                 rigid.linearVelocity = xzy;
             }
 
-
-
-
-            dir = Vector3.zero;
+            if (!canairacc || xz.magnitude >= air_accel_max_speed)
+            {
+                dir = Vector3.zero;
+            }
         }
         Vector3 bgalls = Vector3.zero;
         if (dir.magnitude > 0.5f && allow_movement_inputs)
         {
-            bgalls += ground_normal.PerpendicularTowardDirection(dir) * move_speed * Time.deltaTime * 20;
+            float mm = 1;
+            if (!grounded && canairacc)
+            {
+                mm = xz.magnitude / air_accel_max_speed;
+                mm = 1 - mm;
+                mm *= air_accel_mult;
+                mm = Mathf.Clamp01(mm);
+            }
+            bgalls += ground_normal.PerpendicularTowardDirection(dir) * move_speed * Time.deltaTime * 20 * mm;
         }
 
         float grav_str = this.grav_str;
@@ -289,9 +294,9 @@ public class PlayerController3D : MonoBehaviour
                 };
 
                 var d = rigid.linearVelocity;
-                var xz = d;
-                xz.y = 0;
-                if (Vector3.Angle(xz, HeadXZ.forward) < 45)
+                var xz2 = d;
+                xz2.y = 0;
+                if (Vector3.Angle(xz2, HeadXZ.forward) < 45)
                 {
                     if (!riding && wall_shungle >= 0) bana(a, -1);
                     if (!riding && wall_shungle <= 0) bana(aa, 1);
@@ -311,12 +316,12 @@ public class PlayerController3D : MonoBehaviour
                     {
                         var newdir = wall_normal;
                         newdir.y = 0;
-                        newdir = newdir.PerpendicularTowardDirection(xz);
+                        newdir = newdir.PerpendicularTowardDirection(xz2);
                         StopCoroutine(Dc);
                         EndDash(newdir);
                         d = rigid.linearVelocity;
-                        xz = d;
-                        xz.y = 0;
+                        xz2 = d;
+                        xz2.y = 0;
                     }
                     switch (CurrentState)
                     {
@@ -329,9 +334,9 @@ public class PlayerController3D : MonoBehaviour
                             else d.y = (d.y * wall_orig_up_perc);
                             var newdir = wall_normal;
                             newdir.y = 0;
-                            newdir = newdir.PerpendicularTowardDirection(xz);
-                            if (boosteleibibi) newdir *= (xz.magnitude + wall_velocity_add / Mathf.Clamp(xz.magnitude, 1, 1000) * 10);
-                            else newdir *= xz.magnitude;
+                            newdir = newdir.PerpendicularTowardDirection(xz2);
+                            if (boosteleibibi) newdir *= (xz2.magnitude + wall_velocity_add / Mathf.Clamp(xz2.magnitude, 1, 1000) * 10);
+                            else newdir *= xz2.magnitude;
                             d.x = newdir.x;
                             d.z = newdir.z;
                             rigid.linearVelocity = d;
@@ -356,6 +361,7 @@ public class PlayerController3D : MonoBehaviour
         }
 
         Vcel = rigid.linearVelocity;
+        VcelMag = Vcel.magnitude;
     }
     public bool Jump()
     {
@@ -410,6 +416,7 @@ public class PlayerController3D : MonoBehaviour
         switch (CurrentState)
         {
             case MoveState.Dashing: return;
+            case MoveState.WallRunning: return;
             default:
                 Vector3 dir = Vector3.zero;
                 if (InputManager.IsKey("move_forward", "Player")) dir += HeadXZ.forward;
@@ -564,16 +571,19 @@ public class PlayerController3D : MonoBehaviour
         Wallride = 1 << 2,
         Slide = 1 << 3,
         AntiSlopeSlip = 1 << 4,
-        Sprint = 1 << 4,
+        AirAccelerate = 1 << 5,
+        //Sprint = 1 << 6,
+        //GrapplingHook = 1 << 7,
     }
     public enum MoveState
     {
         Neutral,
-        Sprinting,
         Jumping,
         Sliding,
         WallRunning,
         Dashing,
+        //Sprinting,
+        //Grappling,
     }
     private Vector3 ground_normal = Vector3.zero;
     private Vector3 wall_normal = Vector3.zero;
