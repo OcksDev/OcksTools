@@ -8,7 +8,7 @@ public class PlayerController3D : MonoBehaviour
     public float player_height = 2;
     public float player_width = 1;
     [Required]
-    public OXCamera MyCam;
+    public OXCamera3D MyCam;
     [ReadOnly]
     public Vector3 Vcel;
     private Vector3 Vcel_Prev;
@@ -58,9 +58,8 @@ public class PlayerController3D : MonoBehaviour
     private float cur_coyote = -1;
     private void Start()
     {
-        var c = (CameraFor3D)MyCam;
-        HeadY = c.GetHeadY();
-        HeadXZ = c.GetHeadXZ();
+        HeadY = MyCam.HeadY;
+        HeadXZ = MyCam.HeadXZ;
 
         rigid = GetComponent<Rigidbody>();
         coll = GetComponent<CapsuleCollider>();

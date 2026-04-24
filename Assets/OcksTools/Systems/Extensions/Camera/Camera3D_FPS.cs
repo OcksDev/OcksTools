@@ -1,15 +1,9 @@
 using UnityEngine;
 
-public class Camera3D_FPS : OXCamera, CameraFor3D
+public class Camera3D_FPS : OXCamera3D
 {
-    public Transform HeadY;
-    public Transform HeadXZ;
-    public Transform HeadStyle;
     public float vert_mouse_sense = 1;
     public float hori_mouse_sense = 1;
-    public Transform GetHeadStyle() => HeadStyle;
-    public Transform GetHeadXZ() => HeadXZ;
-    public Transform GetHeadY() => HeadY;
     private float rot_y = 0;
     private float rot_x = 0;
     private void Update()
