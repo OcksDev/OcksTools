@@ -10,6 +10,7 @@ public class PlayerController3D : MonoBehaviour
 
     [ReadOnly]
     public Vector3 Vcel;
+    private Vector3 Vcel_Prev;
     [ReadOnly]
     public float VcelMag;
     private Rigidbody rigid;
@@ -43,6 +44,7 @@ public class PlayerController3D : MonoBehaviour
     public float wall_velocity_add = 0.5f;
     public float wall_orig_up_perc = 0.5f;
     public float wall_leave_force = 10f;
+    public float wall_min_speed_req = 4f;
     public float coyote_time = 0f;
     public int air_jumps_base = 0;
     public Transform HeadY;
@@ -296,7 +298,9 @@ public class PlayerController3D : MonoBehaviour
                 var d = rigid.linearVelocity;
                 var xz2 = d;
                 xz2.y = 0;
-                if (Vector3.Angle(xz2, HeadXZ.forward) < 45)
+                var pxz = Vcel_Prev;
+                pxz.y = 0;
+                if (Vector3.Angle(xz2, HeadXZ.forward) < 45 && pxz.sqrMagnitude >= wall_min_speed_req * wall_min_speed_req)
                 {
                     if (!riding && wall_shungle >= 0) bana(a, -1);
                     if (!riding && wall_shungle <= 0) bana(aa, 1);
@@ -359,7 +363,7 @@ public class PlayerController3D : MonoBehaviour
                 }
                 break;
         }
-
+        Vcel_Prev = Vcel;
         Vcel = rigid.linearVelocity;
         VcelMag = Vcel.magnitude;
     }

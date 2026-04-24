@@ -1,0 +1,23 @@
+Message_ChangeTime: Time scale changed to 
+Message_StoppedDialog: All dialog has been stopped
+Message_Help: Showing page: 
+Message_HelpHelp: Tells you what's up
+Message_HelpData: Allows for the modification of saved game data
+Message_HelpScreenshot: Screenshots the current screen
+Message_HelpTest: Runs some tests and stuff
+Message_HelpDialog: Interact with the dialog manager
+Message_HelpTime: Sets a multiplier for how fast time progresses
+Message_HelpClear: Clears the console of all messages
+Message_NoHelp: No description available
+Error_InvalidCommand: Invalid command
+Error_UnknownCommand: Unknown Command: 
+Error_NoDataDump: Game not configured to allow for mass data viewing
+Error_NoReg: No registry inputted
+Error_NoData: - No Data -
+Error_NoDialogWithName: No Dialog or Choose file is defined with the name: 
+Error_InvalidTime: Invalid time scale input
+Error_InvalidData: Invalid data modification selected
+Error_NoScreenshot: No screenshot component is loaded in the scene
+Error_InvalidParameter: Invalid parameter: 
+Error_NoCode: Oops, no code is attached to this!
+Error_HelpInspect: Unknown: 

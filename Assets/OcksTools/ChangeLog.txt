@@ -12,6 +12,7 @@
 - 3D Movement Improvements
   - Added new movement option to air accelerate up to a maximum speed
   - Added debug inspector value for the total magnitude of the current velocity
+  - Fixed bug with wallrunning where you could start running without any horizontal speed
   - You can no longer dash while wall running
 - Chess Improvements
   - Added assets that I totally didn't steal from chess.com
@@ -40,6 +41,8 @@
   - 3 new easing functions: EaseSin(), EaseCos(), EaseSinInAndOut()
   - TimeStablePow and TimeStableLerp now have overloads to use arbitrary values as the delta time
 - Misc
+  - AdditionalScripts folder renamed to Internal
+  - Consoling folder renamed to Console
   - Notification System animations fixed on reversed positioning styles
   - Tags GetFromTag() parameter order swapped and given default tag, both to match the styling of GetIDOf()
 ------------
