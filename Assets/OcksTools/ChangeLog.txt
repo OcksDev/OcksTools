@@ -3,11 +3,14 @@
    v1.2.1
 - Camera System Overhaul
   - New Main Camera script, lets you easily define a camera to be accessed via SingleInstance
+  - New Camera3D_FPS script for a 3D First Person camera
   - New OXCamera abstract class to unify all camera behavior
+    - 3D Cameras also inherit from an interface called CamerasFor3D which adds some needed things
+  - All Cameras now have "Waypoints" which let you smoothly detach and move/rotate the camera to anywhere you want
   - Nearly completely remade Camera2D
   - New Shake System
     - Replaces old shake functionality in Camera2D
-    - Created new "Camera" extension folder for this and Camera2D
+  - Created new "Camera" extension folder
   - Removed "Dist" function in Camera2D as it already exists in RandomFunctions
   - Cleaned up comments
 - Big Ass Number Improvements
@@ -19,6 +22,7 @@
   - Added new movement option to air accelerate up to a maximum speed
   - Added debug inspector value for the total magnitude of the current velocity
   - Fixed bug with wallrunning where you could start running without any horizontal speed
+  - Camera logic extracted into Camera3D_FPS
   - You can no longer dash while wall running
 - Chess Improvements
   - Added assets that I totally didn't steal from chess.com
