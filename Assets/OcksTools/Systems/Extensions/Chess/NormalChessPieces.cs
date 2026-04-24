@@ -20,9 +20,9 @@ public class Chess_Pawn : ChessPieceBase
         MoveVectors.Add(new ChessBoardVector(Vector2Int.up + Vector2Int.left, Vector2Int.up, false, true));
         MoveVectors.Add(new ChessBoardVector(Vector2Int.up + Vector2Int.right, Vector2Int.up, false, true));
     }
-    public override bool CanMoveToFrom(BoardState state, Vector2Int pos, Vector2Int Position)
+    public override void UpdateSelf()
     {
-        if (MovesMade == 0 && Position == this.Position)
+        if (MovesMade == 0)
         {
             MoveVectors[0].Direction = Vector2Int.up * 2;
         }
@@ -30,7 +30,6 @@ public class Chess_Pawn : ChessPieceBase
         {
             MoveVectors[0].Direction = Vector2Int.up;
         }
-        return base.CanMoveToFrom(state, pos, Position);
     }
 
     public override bool CanBeCapturedByAt(BoardState state, ChessPieceBase nerd, Vector2Int pos)

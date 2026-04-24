@@ -18,7 +18,8 @@ public class Hover : SingleInstance<Hover>
         PointerEventData ped = new PointerEventData(EventSystem.current);
         ped.position = Input.mousePosition;
         List<RaycastResult> rcl = new List<RaycastResult>();
-        EventSystem.current.RaycastAll(ped, rcl);
+        if (EventSystem.current != null)
+            EventSystem.current.RaycastAll(ped, rcl);
 
         Camera cam = Camera.main;
         var winkle = (Vector2)cam.ScreenToWorldPoint(Input.mousePosition);

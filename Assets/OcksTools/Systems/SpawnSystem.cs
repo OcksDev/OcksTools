@@ -46,6 +46,7 @@ public class SpawnSystem : SingleInstance<SpawnSystem>
         {
             a = BasicSpawn(sp.nerd, sp._pos, sp._rot, sp._parent);
             sp.GameObject = a;
+            if (sp._scale != default) a.transform.localScale = sp._scale;
         }
         else
         {
@@ -92,6 +93,7 @@ public class SpawnData
     public GameObject GameObject;
     public string _IDValue;
     public Vector3 _pos;
+    public Vector3 _scale;
     public Quaternion _rot = Quaternion.identity;
     public Transform _parent;
     public string _parentrefid = "";
@@ -119,6 +121,12 @@ public class SpawnData
     public SpawnData Position(Vector3 pos)
     {
         this._pos = pos;
+        return this;
+    }
+
+    public SpawnData Scale(Vector3 scale)
+    {
+        this._scale = scale;
         return this;
     }
     public SpawnData Rotation(Quaternion rot)
@@ -185,6 +193,7 @@ public class SpawnData
         da.Add("nerd", nerd);
         da.Add("ID", _IDValue);
         if (_pos != default) da.Add("pos", _pos.ToString());
+        if (_scale != default) da.Add("scl", _scale.ToString());
         if (_rot != Quaternion.identity) da.Add("rot", _rot.ToString());
         if (_spawnfunc != "") da.Add("sf", _spawnfunc);
         if (_donttag) da.Add("dt", "!");
@@ -213,6 +222,7 @@ public class SpawnData
         nerd = da["nerd"];
         _IDValue = da["ID"];
         if (da.ContainsKey("pos")) _pos = Converter.StringToVector3(da["pos"]);
+        if (da.ContainsKey("scl")) _scale = Converter.StringToVector3(da["scl"]);
         if (da.ContainsKey("rot")) _rot = Converter.StringToQuaternion(da["rot"]);
         if (da.ContainsKey("dat")) _data = Converter.EscapedStringToDictionary(da["dat"], "!", "?");
         if (da.ContainsKey("dt")) _donttag = true;

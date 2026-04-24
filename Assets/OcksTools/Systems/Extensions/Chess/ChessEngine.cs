@@ -114,6 +114,7 @@ public abstract class BoardState
         nerd.Initialize();
         if (nerd.Name == "<Unset>") throw new System.Exception("Bro forgot to give the piece a name");
         ChangedThisTurn.Add(nerd);
+        CurrentPieces.Add(nerd);
     }
     public void RecordHistory(ChessPieceBase nerd)
     {
@@ -234,6 +235,7 @@ public abstract class ChessPieceBase
     /// </summary>
     public abstract void Initialize();
     private bool calced_valids = false;
+    public GameObject _object;
     public void CalculateValids(BoardState state)
     {
         calced_valids = false;
@@ -264,10 +266,14 @@ public abstract class ChessPieceBase
         return pos;
     }
 
+    public virtual void UpdateSelf()
+    {
 
+    }
     public virtual List<Vector2Int> GetAllValidMoves(BoardState state, Vector2Int Position)
     {
         if (Position == this.Position && calced_valids) return ValidMoves;
+        UpdateSelf();
         List<Vector2Int> fin = new List<Vector2Int>();
         foreach (ChessBoardVector v in MoveVectors)
         {
@@ -287,6 +293,7 @@ public abstract class ChessPieceBase
     public virtual List<Vector2Int> GetAllValidCaptures(BoardState state, Vector2Int Position)
     {
         if (Position == this.Position && calced_valids) return ValidCaptures;
+        UpdateSelf();
         List<Vector2Int> fin = new List<Vector2Int>();
         foreach (ChessBoardVector v in MoveVectors)
         {
@@ -301,9 +308,19 @@ public abstract class ChessPieceBase
                     fin.Add(p2);
                     break;
                 }
+                if (state.IsOccupied(p2)) break;
             }
         }
         return fin;
+    }
+
+    public virtual List<Vector2Int> GetAllValidMoves(BoardState state)
+    {
+        return GetAllValidMoves(state, Position);
+    }
+    public virtual List<Vector2Int> GetAllValidCaptures(BoardState state)
+    {
+        return GetAllValidCaptures(state, Position);
     }
     public virtual bool CanMoveTo(BoardState state, Vector2Int pos)
     {
