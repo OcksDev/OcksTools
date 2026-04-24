@@ -201,7 +201,7 @@ public class SoundSystem : SingleInstance<SoundSystem>
         p.priority = sound._priority;
         p.spatialBlend = sound._spaceblend;
         p.rolloffMode = sound._rolloffMode;
-        p.minDistance = sound._rollofffactor;
+        p.minDistance = sound._mind;
         if (sound._rand_min != null)
         {
             p.pitch *= Random.Range(sound._rand_min.Value, sound._rand_max.Value);
@@ -270,7 +270,7 @@ public class OXSound
     public bool _loop = false;
     public float _maxd = 0;
     public AudioRolloffMode _rolloffMode = AudioRolloffMode.Logarithmic;
-    public float _rollofffactor = 0;
+    public float _mind = 0;
     public Vector3? _pos = null;
     public OXSound(string name, float volume)
     {
@@ -334,23 +334,32 @@ public class OXSound
         _loop = true;
         return this;
     }
-    public OXSound MaxDistance(float x)
-    {
-        _maxd = x;
-        return this;
-    }
     public OXSound SpacialBlend(float x)
     {
         _spaceblend = x;
         return this;
     }
 
-    public OXSound Rolloff(float factor, bool isLinear = false)
+    public OXSound MaxDistance(float x)
     {
-        _rolloffMode = isLinear ? AudioRolloffMode.Linear : AudioRolloffMode.Logarithmic;
-        _rollofffactor = factor;
+        _maxd = x;
         return this;
     }
+    public OXSound MinDistance(float factor, bool isLinear = false)
+    {
+        _rolloffMode = isLinear ? AudioRolloffMode.Linear : AudioRolloffMode.Logarithmic;
+        _mind = factor;
+        return this;
+    }
+
+    public OXSound MinFinalMax(float min = 5, float volume_after_max = 0, float max = 500, bool linear = false)
+    {
+        if (volume_after_max >= _volume || _volume == 0) Debug.LogError("Bald volume choices lol");
+        MinDistance(min, linear);
+        MaxDistance(max);
+        return SpacialBlend(1 - (volume_after_max / _volume));
+    }
+
     public OXSound Priority(byte x)
     {
         _priority = x;

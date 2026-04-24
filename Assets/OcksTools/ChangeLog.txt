@@ -28,6 +28,9 @@
   - Added "Spawn Functions" which let you define generic functions to run on a given spawned object
     - These can be easily conveyed over multiplayer spawns
   - New constructor overload for SpawnData to explicitly set the ID value and skip generation
+- Sound System Improvements
+  - Added MinFinalMax(), which isn't any new functionality technically, but makes it easier to handle 3d sounds
+  - Renamed Rolloff() to MinDistance()
 - New Random Functions
   - Swap() method that swaps two variables
   - 3 new easing functions: EaseSin(), EaseCos(), EaseSinInAndOut()
