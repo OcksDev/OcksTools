@@ -77,10 +77,16 @@ public abstract class BoardState
     {
         foreach (var a in ChangedThisTurn)
         {
-            a.CalculateValids(this);
             RecordHistory(a);
         }
         ChangedThisTurn.Clear();
+        CurrentTeam = NextTeam(CurrentTeam);
+        CurrentTurn++;
+        IsGameUnderCheck = IsTeamInCheck(CurrentTeam).valid;
+    }
+
+    public static ChessTeam NextTeam(ChessTeam CurrentTeam)
+    {
         switch (CurrentTeam)
         {
             case ChessTeam.White:
@@ -103,10 +109,8 @@ public abstract class BoardState
                 break;
 
         }
-        CurrentTurn++;
-        IsGameUnderCheck = IsTeamInCheck(CurrentTeam).valid;
+        return CurrentTeam;
     }
-
 
     public void AddPiece(ChessPieceBase nerd, Vector2Int pos)
     {
@@ -136,6 +140,15 @@ public abstract class BoardState
         foreach (var piece in CurrentPieces)
         {
             if (piece.Position == pos) return piece;
+        }
+        return null;
+    }
+    public virtual ChessPieceBase GetPieceAtPosCaptureSecure(ChessPieceBase taker, Vector2Int pos)
+    {
+        foreach (var piece in CurrentPieces)
+        {
+            if (piece.Position == pos) return piece;
+            if (piece.CanBeCapturedByAt(this, taker, pos)) return piece;
         }
         return null;
     }
@@ -234,15 +247,9 @@ public abstract class ChessPieceBase
     /// Sets the unique name and move vectors
     /// </summary>
     public abstract void Initialize();
-    private bool calced_valids = false;
     public GameObject _object;
-    public void CalculateValids(BoardState state)
-    {
-        calced_valids = false;
-        ValidMoves = GetAllValidMoves(state, Position);
-        ValidCaptures = GetAllValidCaptures(state, Position);
-        calced_valids = true;
-    }
+    public OXEvent<ChessPieceBase> OnPositionChange = new();
+    public OXEvent<ChessPieceBase> OnDestroy = new();
 
 
     public Vector2Int TeamRotation(Vector2Int pos)
@@ -272,7 +279,6 @@ public abstract class ChessPieceBase
     }
     public virtual List<Vector2Int> GetAllValidMoves(BoardState state, Vector2Int Position)
     {
-        if (Position == this.Position && calced_valids) return ValidMoves;
         UpdateSelf();
         List<Vector2Int> fin = new List<Vector2Int>();
         foreach (ChessBoardVector v in MoveVectors)
@@ -292,7 +298,6 @@ public abstract class ChessPieceBase
     }
     public virtual List<Vector2Int> GetAllValidCaptures(BoardState state, Vector2Int Position)
     {
-        if (Position == this.Position && calced_valids) return ValidCaptures;
         UpdateSelf();
         List<Vector2Int> fin = new List<Vector2Int>();
         foreach (ChessBoardVector v in MoveVectors)
@@ -350,9 +355,11 @@ public abstract class ChessPieceBase
     {
         MovesMade++;
         Position = pos;
+        OnPositionChange.Invoke(this);
     }
     public virtual void Capture(BoardState state, ChessPieceBase nerd, Vector2Int pos)
     {
+        nerd.OnDestroy.Invoke(nerd);
         state.CurrentPieces.Remove(nerd);
         MoveTo(state, pos);
     }

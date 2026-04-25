@@ -51,6 +51,8 @@
   - Swap() method that swaps two variables
   - 3 new easing functions: EaseSin(), EaseCos(), EaseSinInAndOut()
   - TimeStablePow and TimeStableLerp now have overloads to use arbitrary values as the delta time
+- Chess (W.I.P) now has an interactive scene to test it out, currently still very unusable
+  - Chess folder moved to UnstableOrUnfinished until I actually make this thing work
 - Misc
   - OXEvent and OXEventLayered now all have a Clear() method
   - SingleInstance<> now inherits from higher level SingleInstanceGeneric<> that lets you pass in any type for T
