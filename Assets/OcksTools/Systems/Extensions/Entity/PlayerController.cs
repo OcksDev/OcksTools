@@ -32,8 +32,6 @@ public class PlayerController : MonoBehaviour
     {
         if (MainCamera.Instance != null)
         {
-            if (Input.GetKeyDown(KeyCode.P)) MainCamera.Instance.GoToWaypoint(1, Vector3.zero);
-            if (Input.GetKeyDown(KeyCode.O)) MainCamera.Instance.ExitWaypointMove();
             MainCamera.Instance.SetTargetPosition(transform.position);
         }
     }
