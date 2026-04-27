@@ -439,21 +439,21 @@ public static class OXFunctions
 {
     public static float TimeStablePow(this float expo)
     {
-        return Mathf.Pow(expo, Time.deltaTime * 50 * Time.timeScale);
+        return Mathf.Pow(expo, Time.deltaTime * 50);
     }
     public static float TimeStableLerp(this float expo)
     {
         expo = 1 - expo;
-        return 1 - Mathf.Pow(expo, Time.deltaTime * 50 * Time.timeScale);
+        return 1 - Mathf.Pow(expo, Time.deltaTime * 50);
     }
     public static float TimeStablePow(this float expo, float dt)
     {
-        return Mathf.Pow(expo, dt * 50 * Time.timeScale);
+        return Mathf.Pow(expo, dt * 50);
     }
     public static float TimeStableLerp(this float expo, float dt)
     {
         expo = 1 - expo;
-        return 1 - Mathf.Pow(expo, dt * 50 * Time.timeScale);
+        return 1 - Mathf.Pow(expo, dt * 50);
     }
 
     public static Vector3 PerpendicularTowardDirection(this Vector3 baseVector, Vector3 directionVector)

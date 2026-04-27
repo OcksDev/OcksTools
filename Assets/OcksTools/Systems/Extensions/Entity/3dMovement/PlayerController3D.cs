@@ -406,6 +406,7 @@ public class PlayerController3D : MonoBehaviour
                 dd.z *= fast_punish;
             }
         }
+        cur_coyote = -1;
         rigid.linearVelocity = dd;
         SetState(MoveState.Jumping);
         return true;

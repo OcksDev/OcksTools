@@ -21,10 +21,11 @@
   - Manual creations using the inspector maker automatically check the mantissa for overflow now
 - 3D Movement Improvements
   - Added new movement option to air accelerate up to a maximum speed
+  - Camera logic extracted into Camera3D_FPS
   - Added debug inspector value for the total magnitude of the current velocity
   - Fixed bug with wallrunning where you could start running without any horizontal speed
-  - Camera logic extracted into Camera3D_FPS
-  - You can no longer dash while wall running
+  - Fixed bug with coyote time, jumping now resets the timer
+  - Fixed bug with wallrunning, you can no longer dash while wallrunning
 - Chess Improvements
   - Added assets that I totally didn't steal from chess.com
   - More things should work now like Castling and En Passant
@@ -56,6 +57,7 @@
 - Misc
   - OXEvent and OXEventLayered now all have a Clear() method
   - SingleInstance<> now inherits from higher level SingleInstanceGeneric<> that lets you pass in any type for T
+  - TimeStableLerp, TimeStablePow, and their overloads now dont break when changing the time scale (I was being dumb before lol)
   - AdditionalScripts folder renamed to Internal
   - Consoling folder renamed to Console
   - Notification System animations fixed on reversed positioning styles
