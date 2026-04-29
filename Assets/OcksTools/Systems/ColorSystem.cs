@@ -15,6 +15,12 @@ public class ColorSystem : SingleInstance<ColorSystem>
         Colors.Compile();
         Materials.Compile();
     }
+    public Color GetColor(string name)
+    {
+        if (Colors.TryGetValue(name, out var c)) return c;
+        if (HDRColors.TryGetValue(name, out var hc)) return hc.color;
+        return Color.pink;
+    }
 }
 
 [System.Serializable]
