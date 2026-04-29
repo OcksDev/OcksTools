@@ -4,20 +4,11 @@ using UnityEngine;
 
 public class SpawnSystem : SingleInstance<SpawnSystem>
 {
-    public List<Pool> Spawnables = new List<Pool>();
+    public CompileableDictionary<Pool> Spawnables = new();
     public OXEvent CompileSpawnDict = new OXEvent();
-    public static Dictionary<string, Pool> SpawnableDict = new();
     public static Dictionary<string, Action<SpawnData>> SpawnFunctions = new();
     public static Action<string> SpawnShareMethod;
     public static Action<SpawnData> SpawnNetworkMethod;
-    public override void Awake2()
-    {
-        foreach (var a in Spawnables)
-        {
-            if (a.Name == null || a.Name == "" || a.Name == " ") a.Name = a.Object.name;
-            SpawnableDict.Add(a.Name, a);
-        }
-    }
 
     public static void AddSpawnFunction(string name, Action<SpawnData> func)
     {
@@ -27,16 +18,18 @@ public class SpawnSystem : SingleInstance<SpawnSystem>
     private void Start()
     {
         CompileSpawnDict.Invoke();
+        Spawnables.Auto = (x) => x.Name;
+        Spawnables.Compile();
     }
     public static GameObject BasicSpawn(string nerd, Vector3 pos = default, Quaternion rot = default, Transform parent = null)
     {
         if (parent != null)
         {
-            return Instantiate(SpawnableDict[nerd].Object, pos, rot, parent);
+            return Instantiate(Instance.Spawnables[nerd].Object, pos, rot, parent);
         }
         else
         {
-            return Instantiate(SpawnableDict[nerd].Object, pos, rot);
+            return Instantiate(Instance.Spawnables[nerd].Object, pos, rot);
         }
     }
     public static GameObject Spawn(SpawnData sp)

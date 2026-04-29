@@ -14,6 +14,8 @@
   - Created new "Camera" extension folder
   - Removed "Dist" function in Camera2D as it already exists in RandomFunctions
   - Cleaned up comments
+- New Color System, manages shared colors
+  - Added HDRColor struct for easier inspector editing of HDR colors
 - Big Ass Number Improvements
   - Now has stored 'constants' for min and max values
   - Added optional optimization, off by default, which lets you ignore very small changes during addition/subtraction to save on needing to calculate the exponents.
@@ -26,6 +28,10 @@
   - Fixed bug with wallrunning where you could start running without any horizontal speed
   - Fixed bug with coyote time, jumping now resets the timer
   - Fixed bug with wallrunning, you can no longer dash while wallrunning
+- Compilable Dictionaries Improvements
+  - New varient, an override of the base type which automatically defines strings as keys (you can also set a method to get the name of an object if it is left empty)
+  - All dictionaries have been giving better inspector readouts so they look like normal lists in the inspector instead of being nested instead an object
+  - Moved to their own file to reduce clutter (also cuz the old location didn't make sense)
 - Chess Improvements
   - Added assets that I totally didn't steal from chess.com
   - More things should work now like Castling and En Passant
@@ -45,6 +51,7 @@
   - Added "Spawn Functions" which let you define generic functions to run on a given spawned object
     - These can be easily conveyed over multiplayer spawns
   - New constructor overload for SpawnData to explicitly set the ID value and skip generation
+  - Spawnables is now a compileable dictionary for easier gaming
 - Sound System Improvements
   - Added MinFinalMax(), which isn't any new functionality technically, but makes it easier to handle 3d sounds
   - Renamed Rolloff() to MinDistance()

@@ -17,5 +17,5 @@ public class ExampleNotif : Notification
         return pp.GetActualSizeOfUI();
     }
 
-    public override GameObject GetPrefab() => SpawnSystem.SpawnableDict["ExampleNotif"].Object;
+    public override GameObject GetPrefab() => SpawnSystem.Instance.Spawnables["ExampleNotif"].Object;
 }

@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
+#if UNITY_EDITOR
+#endif
+
 public readonly struct BetterList<T>
 {
     private readonly List<T> _values;
@@ -711,7 +714,6 @@ public static class Converter
 
 }
 
-public class ConvertType<T> { }
 
 
 
@@ -758,33 +760,5 @@ public struct MultiRef<A, B, C, D>
         this.b = b;
         this.c = c;
         this.d = d;
-    }
-}
-
-[System.Serializable]
-public class CompileableDictionary<A, B> : Dictionary<A, B>
-{
-    public List<MultiRef<A, B>> List = new List<MultiRef<A, B>>();
-    public void Compile()
-    {
-        Clear();
-        foreach (var a in List)
-        {
-            Add(a.a, a.b);
-        }
-    }
-}
-
-[System.Serializable]
-public class CompileableDictionaryAlt<A, B> : Dictionary<A, B>
-{
-    public List<B> List = new List<B>();
-    public void Compile(Func<B, A> funky)
-    {
-        Clear();
-        foreach (var a in List)
-        {
-            Add(funky(a), a);
-        }
     }
 }
