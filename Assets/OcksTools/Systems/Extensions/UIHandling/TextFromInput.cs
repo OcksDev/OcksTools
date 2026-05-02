@@ -1,13 +1,12 @@
 public class TextFromInput : TextDisplay
 {
-    public string InputName = "?";
     public string PreText = "";
     public string PostText = "";
     public string Splitter = ", ";
     public int SpecificIndex = -1;
     public override string GetDisplayString()
     {
-        var shids = InputManager.gamekeys[InputName].AListToBList((x) => InputManager.keynames[x]);
+        var shids = InputManager.gamekeys[type].AListToBList((x) => InputManager.keynames[x]);
         string s = PreText;
         if (SpecificIndex >= 0 && SpecificIndex < shids.Count)
         {
