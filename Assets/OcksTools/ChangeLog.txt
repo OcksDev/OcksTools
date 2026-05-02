@@ -35,6 +35,9 @@
 - Chess Improvements
   - Added assets that I totally didn't steal from chess.com
   - More things should work now like Castling and En Passant
+  - Chess now has an interactive scene to test it out, currently still very unusable
+  - Chess folder moved to UnstableOrUnfinished until I actually make this thing work
+- New TextFromInput class, which is a TextDisplay for showing key inputs
 - Render Improvements
   - Added "setrender" command, which is just a writeable version of "getrender"
   - Renamed "query" command to "getrender"
@@ -42,6 +45,7 @@
 - Asset Changes
   - Added a bunch of new fonts
   - Added a font folder called "Cyber" which will start getting populated by related theme fonts
+  - Added 3 new basic images, different fading sprites
   - Re-rendered some fonts that needed to be higher-res
   - Removed some broken fonts or ones that looked like garbage
 - Multiplayer Improvements
@@ -58,9 +62,9 @@
 - New Random Functions
   - Swap() method that swaps two variables
   - 3 new easing functions: EaseSin(), EaseCos(), EaseSinInAndOut()
+  - New ProjectOnto extension method for Vector3s and Vector2s
+    - This is already exists in base unity functionality but this provides a different syntax
   - TimeStablePow and TimeStableLerp now have overloads to use arbitrary values as the delta time
-- Chess (W.I.P) now has an interactive scene to test it out, currently still very unusable
-  - Chess folder moved to UnstableOrUnfinished until I actually make this thing work
 - Misc
   - OXEvent and OXEventLayered now all have a Clear() method
   - SingleInstance<> now inherits from higher level SingleInstanceGeneric<> that lets you pass in any type for T
@@ -69,6 +73,7 @@
   - Consoling folder renamed to Console
   - Notification System animations fixed on reversed positioning styles
   - Tags GetFromTag() parameter order swapped and given default tag, both to match the styling of GetIDOf()
+  - Removed InputManager.gamekeynames
 ------------
 
 ------------

@@ -10,7 +10,6 @@ public class InputManager : SingleInstance<InputManager>
     public static Dictionary<string, KeyCode> namekeys = new Dictionary<string, KeyCode>();
     public static Dictionary<string, List<KeyCode>> gamekeys = new Dictionary<string, List<KeyCode>>();
     public static Dictionary<string, List<KeyCode>> defaultgamekeys = new Dictionary<string, List<KeyCode>>();
-    public static Dictionary<string, string> gamekeynames = new Dictionary<string, string>();
     public static OXEvent CollectInputAllocs = new OXEvent();
 
 
@@ -28,7 +27,6 @@ public class InputManager : SingleInstance<InputManager>
         namekeys.Clear();
         gamekeys.Clear();
         defaultgamekeys.Clear();
-        gamekeynames.Clear();
 
         SetGameKeys();
 

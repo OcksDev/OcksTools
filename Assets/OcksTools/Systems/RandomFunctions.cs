@@ -472,6 +472,16 @@ public static class OXFunctions
 
         return perpendicular.normalized;
     }
+
+    public static Vector3 ProjectOnto(this Vector3 baseVector, Vector3 directionVector)
+    {
+        return Vector3.Dot(baseVector, directionVector) * directionVector.normalized;
+    }
+
+    public static Vector2 ProjectOnto(this Vector2 baseVector, Vector2 directionVector)
+    {
+        return Vector2.Dot(baseVector, directionVector) * directionVector.normalized;
+    }
     public static int Mod(this int r, int max) => ((r % max) + max) % max;
     public static float Mod(this float r, float max) => ((r % max) + max) % max;
     public static double Mod(this double r, double max) => ((r % max) + max) % max;
