@@ -1,5 +1,19 @@
 
 ------------
+   v1.2.2
+- New AutoCompressedInspector and CompressedInspector unity editor classes which flatten an object into its fields in the inspector
+  - Also AutoCompressedInspectorWithName which keeps the name of the object visible in the inspector and indents the fields
+- Spawn System Improvements
+  - Now uses AutoCompressedInspector for its pool class
+  - Fixed multiplayer share code just calling the wrong function lol
+  - Fixed inspector duplicate values lol
+- Misc
+  - CompilableDictionaries moved to Internal folder
+  - Fixed some broken scenes caused by the edits made to Spawn System last update
+  - Console "pathcomps" is now hidden lol
+------------
+
+------------
    v1.2.1
 - Camera System Overhaul
   - New Main Camera script, lets you easily define a camera to be accessed via SingleInstance

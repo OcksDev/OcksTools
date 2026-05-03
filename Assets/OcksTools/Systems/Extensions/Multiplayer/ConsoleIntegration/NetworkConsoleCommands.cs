@@ -43,9 +43,16 @@ public class NetworkConsoleCommands : MonoBehaviour
     }
     public static void objectspawn()
     {
-        SpawnSystem.Spawn(new SpawnData("Triangle")
-            .Position(new Vector3(Random.Range(-3f, 3f), Random.Range(-3f, 3f), 0))
-            .MultiplayerRelayShare());
+        try
+        {
+            SpawnSystem.Spawn(new SpawnData("Triangle")
+                .Position(new Vector3(Random.Range(-3f, 3f), Random.Range(-3f, 3f), 0))
+                .MultiplayerRelayShare());
+        }
+        catch (System.Exception e)
+        {
+            Console.Log(e);
+        }
     }
     public static void netob()
     {

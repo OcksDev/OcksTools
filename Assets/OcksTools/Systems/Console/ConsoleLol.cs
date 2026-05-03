@@ -526,6 +526,7 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
     {
         CommandDict.Add(x.Value, x);
     }
+    [HideInInspector]
     public List<MultiRef<string, OXCommand>> pathcomps = new List<MultiRef<string, OXCommand>>();
     public void Append(string path, OXCommand x)
     {

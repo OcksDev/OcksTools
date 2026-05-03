@@ -268,6 +268,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae4376f568938f14886d41f6e0e56131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InputManager
+  PollForEvents: 1
 --- !u!1 &1549550806
 GameObject:
   m_ObjectHideFlags: 0
@@ -490,18 +491,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2972709682924619404, guid: a20532b8dfe5af44dba599a220343dc0, type: 3}
-      propertyPath: corner
-      value: 0
+    - target: {fileID: -5947997023332889064, guid: a20532b8dfe5af44dba599a220343dc0, type: 3}
+      propertyPath: Spawnables.List.Array.size
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: -5947997023332889064, guid: a20532b8dfe5af44dba599a220343dc0, type: 3}
+      propertyPath: Spawnables.List.Array.data[0].a
+      value: ExampleNotif
+      objectReference: {fileID: 0}
+    - target: {fileID: -5947997023332889064, guid: a20532b8dfe5af44dba599a220343dc0, type: 3}
+      propertyPath: Spawnables.List.Array.data[0].b.Object
+      value: 
+      objectReference: {fileID: 6750865390813945322, guid: 53035a664afa4b04a9da816bf5eb1597, type: 3}
     - target: {fileID: 2972709682924619404, guid: a20532b8dfe5af44dba599a220343dc0, type: 3}
       propertyPath: NotifParent
       value: 
       objectReference: {fileID: 2023265947}
-    - target: {fileID: 2972709682924619404, guid: a20532b8dfe5af44dba599a220343dc0, type: 3}
-      propertyPath: stackingDirection
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6438754589900973316, guid: a20532b8dfe5af44dba599a220343dc0, type: 3}
       propertyPath: Direction
       value: 1

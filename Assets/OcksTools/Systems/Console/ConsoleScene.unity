@@ -6362,6 +6362,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: TestNumber5
+  UpdateOnEnable: 1
+  IgnoreProgramStart: 0
   AutomaticallyUpdate: 1
   UseFixedUpdate: 0
 --- !u!1 &1681775482

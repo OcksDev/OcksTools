@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class SpawnSystem : SingleInstance<SpawnSystem>
@@ -18,7 +19,7 @@ public class SpawnSystem : SingleInstance<SpawnSystem>
     private void Start()
     {
         CompileSpawnDict.Invoke();
-        Spawnables.Auto = (x) => x.Name;
+        Spawnables.Auto = (x) => x.Object.name;
         Spawnables.Compile();
     }
     public static GameObject BasicSpawn(string nerd, Vector3 pos = default, Quaternion rot = default, Transform parent = null)
@@ -54,9 +55,9 @@ public class SpawnSystem : SingleInstance<SpawnSystem>
         switch (sp._share)
         {
             case 1:
-                if (SpawnNetworkMethod != null)
+                if (SpawnShareMethod != null)
                 {
-                    SpawnNetworkMethod(sp);
+                    SpawnShareMethod(sp.ConvertToString());
                 }
                 break;
             case 2:
@@ -239,23 +240,12 @@ public class SpawnData
 [Serializable]
 public class Pool
 {
-    public string Name = "";
     public GameObject Object;
-    /*public int PoolSize = 0;
-    public bool UsePoolForObject = true;
-    [HideInInspector]
-    public Queue<GameObject> PoolLol = new Queue<GameObject>();
-
-    public GameObject PullObject()
-    {
-        if (PoolLol.Count == 0) SpawnSystem.Instance.SpawnPoolObject(this);
-        var e = PoolLol.Dequeue();
-        e.SetActive(true);
-        return e;
-    }
-    public void ReturnObject(GameObject ret)
-    {
-        ret.SetActive(false);
-        PoolLol.Enqueue(ret);
-    }*/
 }
+
+#if UNITY_EDITOR
+[CustomPropertyDrawer(typeof(Pool))]
+public class FuckassDrawer_Pool : AutoCompressedInspector
+{
+}
+#endif

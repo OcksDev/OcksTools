@@ -47,11 +47,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NotificationSystem
   NotifParent: {fileID: 0}
   MaxNotifsOnScreen: 3
-  corner: 1
-  stackingDirection: 0
+  corner: 0
+  stackingDirection: 1
   VerticalPadding: 10
   HorizontalPadding: 10
   Spacing: 10
+  pos_y_inperp: 0
+  pos_y: 0
+  reversed: 0
 --- !u!114 &-5947997023332889064
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -65,5 +68,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnSystem
   Spawnables:
-  - Name: ExampleNotif
-    Object: {fileID: 6750865390813945322, guid: 53035a664afa4b04a9da816bf5eb1597, type: 3}
+    List: []

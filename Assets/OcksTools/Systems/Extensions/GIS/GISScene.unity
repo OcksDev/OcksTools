@@ -448,6 +448,7 @@ MonoBehaviour:
   CanMassShiftClickItems: 1
   CanCtrlClickItems: 1
   CanDoubleClickItems: 1
+  CanSortItems: 1
   CtrlClickPriority: -1
   AutomaticallyAddChildren: 1
   GenerateRandomItems: 0
@@ -1272,6 +1273,7 @@ MonoBehaviour:
   CanMassShiftClickItems: 1
   CanCtrlClickItems: 1
   CanDoubleClickItems: 1
+  CanSortItems: 1
   CtrlClickPriority: 0
   AutomaticallyAddChildren: 1
   GenerateRandomItems: 1
@@ -1764,7 +1766,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4007473491773129349, guid: 32aa07c1d97c2ed4cac286e0d66c9ab0, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -35.650024
+      value: -35.649994
       objectReference: {fileID: 0}
     - target: {fileID: 4049151182853182029, guid: 32aa07c1d97c2ed4cac286e0d66c9ab0, type: 3}
       propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
@@ -3047,6 +3049,7 @@ MonoBehaviour:
   CanMassShiftClickItems: 1
   CanCtrlClickItems: 1
   CanDoubleClickItems: 1
+  CanSortItems: 1
   CtrlClickPriority: 0
   AutomaticallyAddChildren: 1
   GenerateRandomItems: 0
@@ -3823,6 +3826,7 @@ MonoBehaviour:
   CanMassShiftClickItems: 1
   CanCtrlClickItems: 1
   CanDoubleClickItems: 1
+  CanSortItems: 1
   CtrlClickPriority: -1
   AutomaticallyAddChildren: 1
   GenerateRandomItems: 0
@@ -4180,14 +4184,6 @@ PrefabInstance:
     - target: {fileID: 324499805810810541, guid: e0c709a7a21216947a721dc882abbf55, type: 3}
       propertyPath: UseLanguageFile
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 324499805810810541, guid: e0c709a7a21216947a721dc882abbf55, type: 3}
-      propertyPath: Items.Array.size
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 324499805810810541, guid: e0c709a7a21216947a721dc882abbf55, type: 3}
-      propertyPath: Items.Array.data[2].Name
-      value: Shield
       objectReference: {fileID: 0}
     - target: {fileID: 324499805810810541, guid: e0c709a7a21216947a721dc882abbf55, type: 3}
       propertyPath: Items.Array.data[5].Name

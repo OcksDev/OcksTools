@@ -371,6 +371,10 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: -1114879185048792904, guid: 6322f23dea144e04b9fa9443ed389dff, type: 3}
+      propertyPath: Spawnables.List.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: -1114879185048792904, guid: 6322f23dea144e04b9fa9443ed389dff, type: 3}
       propertyPath: Spawnables.Array.data[1].Name
       value: Triangle
       objectReference: {fileID: 0}
@@ -386,6 +390,22 @@ PrefabInstance:
       propertyPath: Spawnables.Array.data[2].Object
       value: 
       objectReference: {fileID: 3483921271748500659, guid: a726c2b86bf27e048ab55939779092d0, type: 3}
+    - target: {fileID: -1114879185048792904, guid: 6322f23dea144e04b9fa9443ed389dff, type: 3}
+      propertyPath: Spawnables.List.Array.data[1].a
+      value: Diamond
+      objectReference: {fileID: 0}
+    - target: {fileID: -1114879185048792904, guid: 6322f23dea144e04b9fa9443ed389dff, type: 3}
+      propertyPath: Spawnables.List.Array.data[2].a
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: -1114879185048792904, guid: 6322f23dea144e04b9fa9443ed389dff, type: 3}
+      propertyPath: Spawnables.List.Array.data[1].b.Object
+      value: 
+      objectReference: {fileID: 3483921271748500659, guid: a726c2b86bf27e048ab55939779092d0, type: 3}
+    - target: {fileID: -1114879185048792904, guid: 6322f23dea144e04b9fa9443ed389dff, type: 3}
+      propertyPath: Spawnables.List.Array.data[2].b.Object
+      value: 
+      objectReference: {fileID: 522952103151037963, guid: 31d7ab23d8a02cd41afa4275411b9bb0, type: 3}
     - target: {fileID: 8019270817284996194, guid: 6322f23dea144e04b9fa9443ed389dff, type: 3}
       propertyPath: m_Name
       value: ConsoleHandler

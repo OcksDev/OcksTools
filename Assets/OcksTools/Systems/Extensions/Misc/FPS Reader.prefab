@@ -151,7 +151,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FPSLightweightReader
   ReadInterval: 0.025
-  OutReadInterval: 0.1
   LastMeasuredFPS: 0
   LastOutgoingFPS: 0
 --- !u!114 &3494144988294876128
@@ -167,4 +166,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TextFromData
   type: FPS
+  UpdateOnEnable: 0
+  IgnoreProgramStart: 0
+  AutomaticallyUpdate: 1
   UseFixedUpdate: 1
