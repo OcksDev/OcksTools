@@ -2,6 +2,21 @@ using System.Collections.Generic;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
+#endif
+
+public class AutoCompressFieldAttribute : PropertyAttribute { }
+public class AutoCompressFieldWithNameAttribute : PropertyAttribute { }
+
+#if UNITY_EDITOR
+[CustomPropertyDrawer(typeof(AutoCompressFieldAttribute))]
+public class AutoCompressDrawer : AutoCompressedInspector
+{
+}
+[CustomPropertyDrawer(typeof(AutoCompressFieldWithNameAttribute))]
+public class AutoCompressWithNameDrawer : AutoCompressedInspector
+{
+}
+
 
 public abstract class AutoCompressedInspector : PropertyDrawer
 {

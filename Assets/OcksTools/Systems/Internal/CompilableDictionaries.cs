@@ -54,17 +54,17 @@ public class CompileableDictionary<B> : Dictionary<string, B>
 
 #if UNITY_EDITOR
 [CustomPropertyDrawer(typeof(CompileableDictionary<,>), true)]
-public class CompileableDictionaryDrawer : AutoCompressedInspector
+public class CompileableDictionaryDrawer : AutoCompressedInspectorWithName
 {
 }
 
 [CustomPropertyDrawer(typeof(CompileableDictionaryAlt<,>), true)]
-public class CompileableDictionaryDrawer2 : AutoCompressedInspector
+public class CompileableDictionaryDrawer2 : AutoCompressedInspectorWithName
 {
 }
 
 [CustomPropertyDrawer(typeof(CompileableDictionary<>), true)]
-public class CompileableDictionaryDrawer3 : AutoCompressedInspector
+public class CompileableDictionaryDrawer3 : AutoCompressedInspectorWithName
 {
 }
 

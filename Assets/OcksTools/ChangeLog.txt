@@ -3,6 +3,8 @@
    v1.2.2
 - New AutoCompressedInspector and CompressedInspector unity editor classes which flatten an object into its fields in the inspector
   - Also AutoCompressedInspectorWithName which keeps the name of the object visible in the inspector and indents the fields
+  - Added AutoCompressField c# attribute to allow you to just flatten a specific field instead of the whole object type
+    - Also AutoCompressFieldWithName c# attribute
 - Spawn System Improvements
   - Now uses AutoCompressedInspector for its pool class
   - Fixed multiplayer share code just calling the wrong function lol
