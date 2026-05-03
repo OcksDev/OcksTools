@@ -4,6 +4,14 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
+/*
+ * This entire file is vibe-coded lol
+ * I hate dealing with the inspector stuff, I'm letting an AI do this BS for me
+ */
+
+
+
+
 public class AutoCompressFieldAttribute : PropertyAttribute { }
 public class AutoCompressFieldWithNameAttribute : PropertyAttribute { }
 
@@ -167,17 +175,10 @@ public abstract class AutoCompressedInspectorWithName : PropertyDrawer
         return prop.depth == parentDepth + 1;
     }
 
-    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+    // 🔹 Helper: get all direct children
+    private System.Collections.Generic.List<SerializedProperty> GetChildren(SerializedProperty property)
     {
-        EditorGUI.BeginProperty(position, label, property);
-
-        float y = position.y;
-
-        // ✅ Draw the main label
-        Rect labelRect = new Rect(position.x, y, position.width, EditorGUIUtility.singleLineHeight);
-        EditorGUI.LabelField(labelRect, label);
-
-        y += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+        var list = new System.Collections.Generic.List<SerializedProperty>();
 
         int parentDepth = property.depth;
 
@@ -186,27 +187,62 @@ public abstract class AutoCompressedInspectorWithName : PropertyDrawer
 
         bool enterChildren = true;
 
-        // ✅ Indent children like Unity normally does
-        EditorGUI.indentLevel++;
-
         while (iterator.NextVisible(enterChildren) && !SerializedProperty.EqualContents(iterator, end))
         {
-            if (!ShouldDraw(iterator, parentDepth))
+            if (ShouldDraw(iterator, parentDepth))
             {
-                enterChildren = false;
-                continue;
+                list.Add(iterator.Copy());
             }
 
-            float height = EditorGUI.GetPropertyHeight(iterator, true);
+            enterChildren = false;
+        }
+
+        return list;
+    }
+
+    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+    {
+        EditorGUI.BeginProperty(position, label, property);
+
+        var children = GetChildren(property);
+
+        // ✅ CASE 1: Single field → inline
+        if (children.Count == 1)
+        {
+            var child = children[0];
+
+            EditorGUI.PropertyField(
+                position,
+                child,
+                label, // 👈 use object label instead of field name
+                true
+            );
+
+            EditorGUI.EndProperty();
+            return;
+        }
+
+        // ✅ CASE 2: Multiple fields → your original layout
+        float y = position.y;
+
+        Rect labelRect = new Rect(position.x, y, position.width, EditorGUIUtility.singleLineHeight);
+        EditorGUI.LabelField(labelRect, label);
+
+        y += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+
+        EditorGUI.indentLevel++;
+
+        foreach (var child in children)
+        {
+            float height = EditorGUI.GetPropertyHeight(child, true);
 
             EditorGUI.PropertyField(
                 new Rect(position.x, y, position.width, height),
-                iterator,
+                child,
                 true
             );
 
             y += height + EditorGUIUtility.standardVerticalSpacing;
-            enterChildren = false;
         }
 
         EditorGUI.indentLevel--;
@@ -216,35 +252,25 @@ public abstract class AutoCompressedInspectorWithName : PropertyDrawer
 
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
     {
-        float total = 0f;
+        var children = GetChildren(property);
 
-        // ✅ Account for the label height
-        total += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
-
-        int parentDepth = property.depth;
-
-        var iterator = property.Copy();
-        var end = iterator.GetEndProperty();
-
-        bool enterChildren = true;
-
-        while (iterator.NextVisible(enterChildren) && !SerializedProperty.EqualContents(iterator, end))
+        // ✅ Single field → just return its height
+        if (children.Count == 1)
         {
-            if (!ShouldDraw(iterator, parentDepth))
-            {
-                enterChildren = false;
-                continue;
-            }
+            return EditorGUI.GetPropertyHeight(children[0], true);
+        }
 
-            total += EditorGUI.GetPropertyHeight(iterator, true);
+        // ✅ Multiple fields → label + children
+        float total = EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+
+        foreach (var child in children)
+        {
+            total += EditorGUI.GetPropertyHeight(child, true);
             total += EditorGUIUtility.standardVerticalSpacing;
-
-            enterChildren = false;
         }
 
         return total;
     }
 }
-
 
 #endif
