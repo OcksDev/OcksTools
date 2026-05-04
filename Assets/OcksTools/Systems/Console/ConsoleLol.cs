@@ -207,6 +207,7 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
             .Append(new OXCommand("gevent").Action(ConsoleCommands.Test_gevent))
             .Append(new OXCommand("remap").Action(ConsoleCommands.Test_remap))
             .Append(new OXCommand("cleanstack").Action(ConsoleCommands.Test_cleanstack))
+            .Append(new OXCommand("eventinputs").Action(ConsoleCommands.Test_eventinputs))
             .Append(new OXCommand("comp")
                 .Append(new OXCommand(OXCommand.ExpectedInputType.String)
                     .Append(new OXCommand(OXCommand.ExpectedInputType.String).Action(ConsoleCommands.Test_comp))))

@@ -69,6 +69,12 @@ public class ConsoleCommands : MonoBehaviour
         "----".Log();
         a.run(OXFunctions.GetCleanStackTraceRichtextified);
     }
+    public static void Test_eventinputs()
+    {
+        InputManager.IsKeyDownEvent("shoot").Append("aa", () => { "Shoot event triggered".Log(); });
+        InputManager.IsKeyDownEvent("alt_shoot").Append("aa", () => { "Alt shoot event triggered".Log(); });
+        "Events made, try left/right clicking lol".Log();
+    }
     private static OXThreadPoolA thread_a;
     public static void Test_threadedlogs()
     {

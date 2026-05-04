@@ -203,6 +203,7 @@ GameObject:
   - component: {fileID: 464091842}
   - component: {fileID: 464091843}
   - component: {fileID: 464091844}
+  - component: {fileID: 464091845}
   m_Layer: 0
   m_Name: Testi
   m_TagString: Untagged
@@ -307,6 +308,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25c9cbb07b5da5840ade9d0e7d4232a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: OcksTools::MultiThreaderEnsure
+--- !u!114 &464091845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 464091836}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae4376f568938f14886d41f6e0e56131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InputManager
+  PollForEvents: 1
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0

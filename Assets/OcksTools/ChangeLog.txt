@@ -5,6 +5,15 @@
   - Also AutoCompressedInspectorWithName which keeps the name of the object visible in the inspector and indents the fields
   - Added AutoCompressField c# attribute to allow you to just flatten a specific field instead of the whole object type
     - Also AutoCompressFieldWithName c# attribute
+- Input Buffer Improvements
+  - New EventListen method to interface with the new InputManager events
+  - ActiveListen updated to use new InputManager implicit datatypes
+  - BufferListen renamed to ActiveListen
+- Input Manager Improvements
+  - Massively simplied the input event logic
+  - Added new helper methods to get existing events for a given input
+  - IsKeyEvent (and varients) now return an existing OXEvent if the listener already exists
+  - CreateEvent renamed to IsKeyEvent, same for its varients
 - Spawn System Improvements
   - Now uses AutoCompressedInspector for its pool class
   - Fixed multiplayer share code just calling the wrong function lol

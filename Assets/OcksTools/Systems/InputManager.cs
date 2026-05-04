@@ -56,9 +56,9 @@ public class InputManager : SingleInstance<InputManager>
 
     }
 
-    public static Dictionary<string, List<MultiRef<string, List<string>, OXEvent>>> InputEvents = new();
-    public static Dictionary<string, List<MultiRef<string, List<string>, OXEvent>>> InputEventsUp = new();
-    public static Dictionary<string, List<MultiRef<string, List<string>, OXEvent>>> InputEventsDown = new();
+    public static Dictionary<string, MultiRef<string, List<string>, OXEvent>> InputEvents = new();
+    public static Dictionary<string, MultiRef<string, List<string>, OXEvent>> InputEventsUp = new();
+    public static Dictionary<string, MultiRef<string, List<string>, OXEvent>> InputEventsDown = new();
     private void Update()
     {
         if (!PollForEvents) return;
@@ -70,18 +70,15 @@ public class InputManager : SingleInstance<InputManager>
                 {
                     if (InputEvents.ContainsKey(a.Key))
                     {
-                        var p = InputEvents[a.Key];
-                        foreach (var c in p)
+                        var c = InputEvents[a.Key];
+                        if (c.b == null)
                         {
-                            if (c.b == null)
-                            {
-                                c.c.Invoke();
-                                continue;
-                            }
-                            if (!AllowInputToPass(c.b)) continue;
-                            if (!InputPassesLockLevel(c.b)) continue;
                             c.c.Invoke();
+                            continue;
                         }
+                        if (!AllowInputToPass(c.b)) continue;
+                        if (!InputPassesLockLevel(c.b)) continue;
+                        c.c.Invoke();
                     }
                     break;
                 }
@@ -92,18 +89,15 @@ public class InputManager : SingleInstance<InputManager>
                 {
                     if (InputEventsUp.ContainsKey(a.Key))
                     {
-                        var p = InputEventsUp[a.Key];
-                        foreach (var c in p)
+                        var c = InputEventsUp[a.Key];
+                        if (c.b == null)
                         {
-                            if (c.b == null)
-                            {
-                                c.c.Invoke();
-                                continue;
-                            }
-                            if (!AllowInputToPass(c.b)) continue;
-                            if (!InputPassesLockLevel(c.b)) continue;
                             c.c.Invoke();
+                            continue;
                         }
+                        if (!AllowInputToPass(c.b)) continue;
+                        if (!InputPassesLockLevel(c.b)) continue;
+                        c.c.Invoke();
                     }
                     break;
                 }
@@ -114,18 +108,15 @@ public class InputManager : SingleInstance<InputManager>
                 {
                     if (InputEventsDown.ContainsKey(a.Key))
                     {
-                        var p = InputEventsDown[a.Key];
-                        foreach (var c in p)
+                        var c = InputEventsDown[a.Key];
+                        if (c.b == null)
                         {
-                            if (c.b == null)
-                            {
-                                c.c.Invoke();
-                                continue;
-                            }
-                            if (!AllowInputToPass(c.b)) continue;
-                            if (!InputPassesLockLevel(c.b)) continue;
                             c.c.Invoke();
+                            continue;
                         }
+                        if (!AllowInputToPass(c.b)) continue;
+                        if (!InputPassesLockLevel(c.b)) continue;
+                        c.c.Invoke();
                     }
                     break;
                 }
@@ -133,85 +124,70 @@ public class InputManager : SingleInstance<InputManager>
         }
     }
 
-    public static OXEvent CreateEvent(string Identity, string nerd, BetterList<string>? ide = null)
+    public static OXEvent IsKeyEvent(string name, BetterList<string>? ide = null)
     {
-        var pp = InputEvents.GetOrDefine(nerd, new());
+        var sex = GetExistingEvent(name);
+        if (sex != null) return sex;
         MultiRef<string, List<string>, OXEvent> b = new();
-        b.a = Identity;
+        b.a = name;
         b.b = ide.HasValue ? ide.Value.ToList() : null;
         b.c = new OXEvent();
-        pp.Add(b);
+        InputEvents.GetOrDefine(name, b);
         return b.c;
     }
 
-    public static OXEvent CreateEventUp(string Identity, string nerd, BetterList<string>? ide = null)
+    public static OXEvent IsKeyUpEvent(string name, BetterList<string>? ide = null)
     {
-        var pp = InputEventsUp.GetOrDefine(nerd, new());
+        var sex = GetExistingEventUp(name);
+        if (sex != null) return sex;
         MultiRef<string, List<string>, OXEvent> b = new();
-        b.a = Identity;
+        b.a = name;
         b.b = ide.HasValue ? ide.Value.ToList() : null;
         b.c = new OXEvent();
-        pp.Add(b);
+        InputEventsUp.GetOrDefine(name, b);
         return b.c;
     }
 
-    public static OXEvent CreateEventDown(string Identity, string nerd, BetterList<string>? ide = null)
+    public static OXEvent IsKeyDownEvent(string name, BetterList<string>? ide = null)
     {
-        var pp = InputEventsDown.GetOrDefine(nerd, new());
+        var sex = GetExistingEventDown(name);
+        if (sex != null) return sex;
         MultiRef<string, List<string>, OXEvent> b = new();
-        b.a = Identity;
+        b.a = name;
         b.b = ide.HasValue ? ide.Value.ToList() : null;
         b.c = new OXEvent();
-        pp.Add(b);
+        InputEventsDown.GetOrDefine(name, b);
         return b.c;
     }
 
-    public void RemoveEvent(string Identity, string nerd)
+    public static OXEvent GetExistingEvent(string name)
     {
-        if (InputEvents.ContainsKey(nerd))
-        {
-            for (int i = 0; i < InputEvents[nerd].Count; i++)
-            {
-                if (InputEvents[nerd][i].a == Identity)
-                {
-                    InputEvents[nerd].RemoveAt(i);
-                    break;
-                }
-            }
-            if (InputEvents[nerd].Count == 0) InputEvents.Remove(nerd);
-        }
+        return InputEvents.ContainsKey(name) ? InputEvents[name].c : null;
     }
 
-    public void RemoveEventUp(string Identity, string nerd)
+    public static OXEvent GetExistingEventUp(string name)
     {
-        if (InputEventsUp.ContainsKey(nerd))
-        {
-            for (int i = 0; i < InputEventsUp[nerd].Count; i++)
-            {
-                if (InputEventsUp[nerd][i].a == Identity)
-                {
-                    InputEventsUp[nerd].RemoveAt(i);
-                    break;
-                }
-            }
-            if (InputEventsUp[nerd].Count == 0) InputEventsUp.Remove(nerd);
-        }
+        return InputEventsUp.ContainsKey(name) ? InputEventsUp[name].c : null;
     }
 
-    public void RemoveEventDown(string Identity, string nerd)
+    public static OXEvent GetExistingEventDown(string name)
     {
-        if (InputEventsDown.ContainsKey(nerd))
-        {
-            for (int i = 0; i < InputEventsDown[nerd].Count; i++)
-            {
-                if (InputEventsDown[nerd][i].a == Identity)
-                {
-                    InputEventsDown[nerd].RemoveAt(i);
-                    break;
-                }
-            }
-            if (InputEventsDown[nerd].Count == 0) InputEventsDown.Remove(nerd);
-        }
+        return InputEventsDown.ContainsKey(name) ? InputEventsDown[name].c : null;
+    }
+
+    public static void RemoveEvent(string name)
+    {
+        InputEvents.Remove(name);
+    }
+
+    public static void RemoveEventUp(string name)
+    {
+        InputEventsUp.Remove(name);
+    }
+
+    public static void RemoveEventDown(string name)
+    {
+        InputEventsDown.Remove(name);
     }
 
 

@@ -100,7 +100,7 @@ public class OXThreadPoolA : IOXThreadPool
     public ConcurrentDictionary<int, byte> SuccessfulThreads
         = new ConcurrentDictionary<int, byte>();
     public bool allconfirmed = false;
-    private void Awaiter(int i)
+    public void Awaiter(int i)
     {
         bool a = false;
         try { SuccessfulThreads.TryAdd(i, 0); } catch { a = true; }
@@ -167,7 +167,7 @@ public class OXThreadPoolB : IOXThreadPool
     public ConcurrentDictionary<int, byte> SuccessfulThreads
         = new ConcurrentDictionary<int, byte>();
     public bool allconfirmed = false;
-    private void Awaiter(int i)
+    public void Awaiter(int i)
     {
         if (i > ThreadCount) return;
         bool a = false;

@@ -19,27 +19,33 @@ public class InputBuffer : SingleInstance<InputBuffer>
         if (buffer.ContainsKey(name)) buffer.Remove(name);
     }
 
-    public void BufferListen(string key, string ide, string name, float time, bool isdown = true)
+    public void ActiveListen(InputManagerKeyVal key, BetterList<string> ide, string name, float time, bool isdown = true)
     {
-        //would be run every frame
+        //run every frame
         if (isdown ? InputManager.IsKeyDown(key, ide) : InputManager.IsKey(key, ide))
         {
-            var b = new BufferedInput();
-            b.Name = name;
-            b.Time = time;
+            var b = new BufferedInput
+            {
+                Name = name,
+                Time = time
+            };
             buffer.AddOrUpdate(name, b);
         }
     }
-    public void BufferListen(KeyCode key, string ide, string name, float time, bool isdown = true)
+
+    public void EventListen(string key, BetterList<string> ide, string name, float time, bool isdown = true)
     {
-        //would be run every frame
-        if (isdown ? InputManager.IsKeyDown(key, ide) : InputManager.IsKey(key, ide))
+        //run once
+        var eevent = InputManager.IsKeyEvent(key, ide);
+        eevent.Append(name, () =>
         {
-            var b = new BufferedInput();
-            b.Name = name;
-            b.Time = time;
+            var b = new BufferedInput
+            {
+                Name = name,
+                Time = time
+            };
             buffer.AddOrUpdate(name, b);
-        }
+        });
     }
 
     public Dictionary<string, BufferedInput> buffer = new Dictionary<string, BufferedInput>();

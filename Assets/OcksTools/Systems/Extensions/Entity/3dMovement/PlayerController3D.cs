@@ -467,9 +467,9 @@ public class PlayerController3D : MonoBehaviour
     private float slidemin = 0;
     private void Update()
     {
-        if (Movements.HasFlag(AllowedMovements.Jump)) InputBuffer.Instance.BufferListen("jump", "Player", "Jump", 0.1f);
-        if (Movements.HasFlag(AllowedMovements.Dash)) InputBuffer.Instance.BufferListen("dash", "Player", "Dash", 0.1f);
-        if (Movements.HasFlag(AllowedMovements.Slide)) InputBuffer.Instance.BufferListen("slide", "Player", "Slide", 0.1f, false);
+        if (Movements.HasFlag(AllowedMovements.Jump)) InputBuffer.Instance.ActiveListen("jump", "Player", "Jump", 0.1f);
+        if (Movements.HasFlag(AllowedMovements.Dash)) InputBuffer.Instance.ActiveListen("dash", "Player", "Dash", 0.1f);
+        if (Movements.HasFlag(AllowedMovements.Slide)) InputBuffer.Instance.ActiveListen("slide", "Player", "Slide", 0.1f, false);
 
         cur_coyote -= Time.deltaTime;
         CollisionGroundCheck();
