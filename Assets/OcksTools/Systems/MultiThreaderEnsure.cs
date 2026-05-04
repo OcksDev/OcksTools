@@ -252,7 +252,7 @@ public class OXThreadPoolC : IOXThreadPool
     public ConcurrentDictionary<int, byte> SuccessfulThreads
         = new ConcurrentDictionary<int, byte>();
     public bool allconfirmed = false;
-    private void Awaiter(int i)
+    public void Awaiter(int i)
     {
         bool a = false;
         try { SuccessfulThreads.TryAdd(i, 0); } catch { a = true; }
@@ -289,6 +289,7 @@ public interface IOXThreadPool
 {
     void Add(System.Action gaming);
     bool CheckAll();
+    void Awaiter(int i);
 
 }
 

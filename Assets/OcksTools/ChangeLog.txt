@@ -13,6 +13,7 @@
   - CompilableDictionaries moved to Internal folder
   - Fixed some broken scenes caused by the edits made to Spawn System last update
   - Console "pathcomps" is now hidden lol
+  - IOXThreadPool now defines a required method, Awaiter()
 ------------
 
 ------------
