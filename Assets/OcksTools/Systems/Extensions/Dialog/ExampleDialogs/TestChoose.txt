@@ -4,6 +4,6 @@ Choose The Sex
 Replay
 Continue
 </>
-<Scene=Test1>
+<Event=RewatchDemo> <Scene=Test1>
 <Scene=Test3>
 </>

@@ -14,6 +14,16 @@
   - Added new helper methods to get existing events for a given input
   - IsKeyEvent (and varients) now return an existing OXEvent if the listener already exists
   - CreateEvent renamed to IsKeyEvent, same for its varients
+- Dialog System Improvements
+  - New "~" syntax for variables, which applies them without recursively checking for new data within
+  - New Conditional functions, which, just like variables, can easily be defined via code
+  - New "{Name}<Attribute>" syntax for attributes, which checks a named condition function and only applies the attribute if the function returns true
+    - Can be inverted with "{!Name}<Attribute>"
+  - New "{*Variable==Value}<Attribute>" syntax for attributes, which compares too values
+    - Can be inverted with "{*Variable!=Value}<Attribute>"
+    - This should also work for things like "{!LangName==Value}" although I am not sure why you would want to do this
+  - New Build event for easier interfacing
+  - Adjusted the internals of the attribute parsing to re-use more functions, unifying the way attributes are parsed
 - Spawn System Improvements
   - Now uses AutoCompressedInspector for its pool class
   - Fixed multiplayer share code just calling the wrong function lol

@@ -9,7 +9,7 @@ public class DialogLol : SingleInstance<DialogLol>
 {
     public Dictionary<string, OXLanguageFileIndex> LanguageFileIndexes = new Dictionary<string, OXLanguageFileIndex>();
     public bool UseLanguageFileSystem = false;
-    public static string BadGex = @"[\^*!&,]";
+    public static string BadGex = @"[\^*~!&,]";
     public GameObject DialogBoxObject;
     private DialogBoxL pp;
     public List<DialogHolder> DialogFiles = new List<DialogHolder>();
@@ -61,11 +61,14 @@ public class DialogLol : SingleInstance<DialogLol>
     private string ActiveFileName = "";
     private string baldcharacters = " \n\t";
     private Dictionary<string, string> variables = new Dictionary<string, string>();
+    private Dictionary<string, Func<bool>> conditions = new Dictionary<string, Func<bool>>();
     private Dictionary<string, DialogSettings> name_to_setting = new Dictionary<string, DialogSettings>();
 
 
     public DialogDefaults TrueDefaults;
     private DialogSettings CurrentSettings;
+
+    public static OXEvent Build = new();
 
 
     // Start is called before the first frame update
@@ -124,12 +127,11 @@ public class DialogLol : SingleInstance<DialogLol>
     private void Start()
     {
         ResetDialog();
-
-        GlobalEvent.Append("SecondInChain", () => StartDialog("TestSecondChain"));
-
         pp = DialogBoxObject.GetComponent<DialogBoxL>();
+
         //lets you write <*=*Var> as shorthand to insert a variable into the dialog
         SetVariable("", "Text");
+
         //some testing variables for the dialog system
         SetVariable("TestVar", "*VarInSideAVar");
         SetVariable("VarInSideAVar", "Name");
@@ -141,6 +143,14 @@ public class DialogLol : SingleInstance<DialogLol>
         SetVariable("Green", "255,0");
         SetVariable("ExtraDialog", "</> <Name=Red></> This is some bonus content!</> </> <Name=Blue></> Sure is!</>");
         SetVariable("CoolNameColor", "<TitleColor=0,255,255>");
+        SetVariable("HiddenMessage", ".... wait a minute, nani the fuck?");
+        SetVariable("HiddenMessage2", "pp lol");
+        GlobalEvent.Append("SecondInChain", () => StartDialog("TestSecondChain"));
+        SetCondition("True", () => true);
+        SetCondition("False", () => false);
+        SetCondition("Rewatched", () => GetVariable("Rewatched", "No") == "Yes");
+        GlobalEvent.Append("RewatchDemo", () => SetVariable("Rewatched", "Yes"));
+
 
         if (GetUseLFS())
         {
@@ -170,7 +180,10 @@ public class DialogLol : SingleInstance<DialogLol>
                 LanguageFileSystem.Instance.AddFile(a.Value);
             }
         }
+
+        Build.Invoke();
     }
+
 
     // Update is called once per frame
     private void Update()
@@ -339,19 +352,60 @@ public class DialogLol : SingleInstance<DialogLol>
         return a;
     }
 
-
-    public bool ApplyAttribute(string key_input, string data_input, bool ignorewarning = false)
+    public static bool EvaledGood = false;
+    public bool ApplyAttribute(string key_input, string data_input, bool ignorewarning = false, string cond = "")
     {
+        EvaledGood = false;
         // attribute style to be applied by default for this file
         //   ^AttributeName
         // attribute style to be applied to any time the same speaker talks in this file going forward
         //   &AttributeName
         // variable to have it's value replaced
         //   *VariableName
+        // variable to have it's value replaced, will not recurse
+        //   ~VariableName
         // language file system variable to have it's value replaced 
         //   !VariableName
+        // conditional that must be true for the attribute to be applied, can be inverted with !
+        //   {ConditionName}<AttributeName=Value>
         // pre-processor that runs on file load, gets replaced with the contents of the variable
         //   @<VariableName>
+
+        if (cond.Length > 1)
+        {
+            if (cond.Contains("==") || cond.Contains("!="))
+            {
+                bool invert = cond.Contains("!=");
+                string t1 = invert ? cond.Substring(0, cond.IndexOf("!=")) : cond.Substring(0, cond.IndexOf("=="));
+                string t2 = invert ? cond.Substring(cond.IndexOf("!=") + 2) : cond.Substring(cond.IndexOf("==") + 2);
+                //Debug.Log($"Checking condition: {(VariableParse(t1)[0])} {(invert ? " !=" : "==")} {VariableParse(t2)[0]}, which gets {(VariableParse(t1)[0] != VariableParse(t2)[0]) ^ invert}");
+                if ((VariableParse(t1)[0] != VariableParse(t2)[0]) ^ invert)
+                {
+                    EvaledGood = false;
+                    return true;
+                }
+            }
+            else
+            {
+                bool invert = cond[0] == '!';
+                if (invert) cond = cond.Substring(1);
+                if (conditions.ContainsKey(cond))
+                {
+                    //Debug.Log("Condition \"" + cond + "\" evaluated to " + conditions[cond]() + " (invert: " + invert + ")");
+                    if (!conditions[cond]() ^ invert)
+                    {
+                        EvaledGood = false;
+                        return true;
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning("Condition \"" + cond + "\" does not exist! (Dialog File: " + ActiveFileName + ")");
+                    return false;
+                }
+            }
+        }
+
         foundendcall = false;
         List<string> slist = new List<string>();
         var key = VariableParse(key_input)[0];
@@ -767,10 +821,15 @@ public class DialogLol : SingleInstance<DialogLol>
             Debug.LogWarning("Invalid named default assignment: \"" + key + "\"  (Dialog File: " + ActiveFileName + ")\n(this attribute can not be used to set a name based default value)");
         }
 
+        EvaledGood = succeeded;
         return succeeded;
     }
 
 
+    public static void SetCondition(string name, Func<bool> condition)
+    {
+        Instance.conditions.AddOrUpdate(name, condition);
+    }
     public void SetVariable(string key, string val)
     {
         variables.AddOrUpdate(key, val);
@@ -802,12 +861,16 @@ public class DialogLol : SingleInstance<DialogLol>
             {
                 string ba = CleanText(a);
                 var dd = Regex.Match(ba, $"^{BadGex}+");
-                var prepend = Regex.Replace(dd.Value, $"[!*]+", "");
+                var prepend = Regex.Replace(dd.Value, $"[!*~]+", "");
                 var realdata = Regex.Replace(ba, $"{BadGex}+", "");
                 if (dd.Success && dd.Value.Contains("*"))
                 {
-                    var smegleton = VariableParse(variables[realdata]);
+                    var smegleton = VariableParse(GetVariable(realdata));
                     foreach (var b in smegleton) { outpi.Add(prepend + b); }
+                }
+                else if (dd.Success && dd.Value.Contains("~"))
+                {
+                    outpi.Add(prepend + GetVariable(realdata));
                 }
                 else if (dd.Success && dd.Value.Contains("!"))
                 {
@@ -827,8 +890,8 @@ public class DialogLol : SingleInstance<DialogLol>
             return null;
         }
     }
-
-    public bool UseEnding(string r)
+    public bool ParseAttributesInString(string r) => ParseAttributesInString_EndingStop(r, ignore_end_short: true);
+    public bool ParseAttributesInString_EndingStop(string r, bool ignore_end_short = false)
     {
         //Debug.Log("Ending To Parse: "+ r);
         string h = "";
@@ -841,19 +904,33 @@ public class DialogLol : SingleInstance<DialogLol>
                 var ind = h.IndexOf(">");
                 var e = r.Substring(i + 1, ind - 1);
                 int ind2 = e.IndexOf("=");
+
+                string cond = "";
+                if (i >= 1 && r[i - 1] == '}')
+                {
+                    var h2 = r.Substring(0, i);
+                    var ind3 = h2.LastIndexOf("{");
+                    if (ind3 != -1)
+                    {
+                        cond = h2.Substring(ind3 + 1, h2.Length - ind3 - 2);
+                    }
+                }
+
+
                 if (ind2 > -1)
                 {
                     //Debug.Log(e.Substring(0, ind2));
-                    ApplyAttribute(e.Substring(0, ind2), e.Substring(ind2 + 1));
+                    ApplyAttribute(e.Substring(0, ind2), e.Substring(ind2 + 1), cond: cond);
                     didf = foundendcall;
                 }
                 else
                 {
-                    ApplyAttribute(e, "");
+                    ApplyAttribute(e, "", cond: cond);
                     didf = foundendcall;
                 }
 
                 i += ind + 1;
+                if (ignore_end_short) didf = false;
             }
         }
 
@@ -1041,7 +1118,21 @@ public class DialogLol : SingleInstance<DialogLol>
     {
     ithoughtifartedbutishit:
         //Debug.Log(charl);
-        if (RichTextEnabled && CurrentCharacter < fulltext.Length && CurrentCharacter >= 0 && e.Substring(CurrentCharacter, 1) == "<" && (DelayTimer <= 0 || waitoverride))
+
+        if (!(RichTextEnabled && CurrentCharacter < fulltext.Length && CurrentCharacter >= 0)) return e;
+        string skipped = "";
+        if (e.Substring(CurrentCharacter, 1) == "{")
+        {
+            string text = e.Substring(CurrentCharacter + 1);
+            int tt = text.IndexOf("}<");
+            if (text.Length > 0 && tt > -1)
+            {
+                skipped = text.Substring(0, tt);
+                e = e.Substring(0, CurrentCharacter) + e.Substring(CurrentCharacter + skipped.Length + 2);
+                fulltext = e;
+            }
+        }
+        if (e.Substring(CurrentCharacter, 1) == "<" && (DelayTimer <= 0 || waitoverride))
         {
             var h = e.Substring(CurrentCharacter);
             var ii = h.IndexOf('>');
@@ -1054,6 +1145,9 @@ public class DialogLol : SingleInstance<DialogLol>
                 try
                 {
                     var sh = e.Substring(oldcharl + 1, ii - 1);
+
+                    string cond = skipped;
+
                     string[] stuff = sh.Split('=');
                     var charlpreatt = CurrentCharacter;
                     if (waitoverride && VariableParse(stuff[0])[0] == "Wait")
@@ -1065,13 +1159,13 @@ public class DialogLol : SingleInstance<DialogLol>
                     }
                     else
                     {
-                        bool jjj = stuff.Length > 1 && ApplyAttribute(stuff[0], stuff[1], true);
-                        if (stuff.Length == 1) jjj = ApplyAttribute(stuff[0], "", true);
+                        bool jjj = stuff.Length > 1 && ApplyAttribute(stuff[0], stuff[1], true, cond);
+                        if (stuff.Length == 1) jjj = ApplyAttribute(stuff[0], "", true, cond);
                         if (jjj)
                         {
                             string mid = "";
                             string voop = VariableParse(stuff[0])[0];
-                            if (voop == "Text")
+                            if (voop == "Text" && EvaledGood)
                             {
                                 mid = VariableParse(stuff[1])[0];
                             }
@@ -1079,18 +1173,19 @@ public class DialogLol : SingleInstance<DialogLol>
                             {
                                 mid = "\n";
                             }
+                            int more = 0;
                             if (oldcharl < fulltext.Length)
                             {
-                                fulltext = fulltext.Substring(0, oldcharl) + mid + fulltext.Substring(charlpreatt);
+                                fulltext = fulltext.Substring(0, oldcharl - more) + mid + fulltext.Substring(charlpreatt - more);
                             }
                             else
                             {
-                                fulltext = fulltext + mid;
+                                fulltext = fulltext.Substring(0, fulltext.Length - more) + mid;
                             }
                             var off = CurrentCharacter - charlpreatt;
                             CurrentCharacter = oldcharl + off;
                             e = fulltext;
-                            if (voop == "Animate" && ta != null)
+                            if (voop == "Animate" && ta != null && EvaledGood)
                             {
                                 ta.startindex = CurrentCharacter;
                                 ta.endindex = CurrentCharacter + ta.endindex;
@@ -1123,7 +1218,7 @@ public class DialogLol : SingleInstance<DialogLol>
             }
             else
             {
-                Debug.LogWarning("No '>' found, baka");
+                Debug.LogWarning("No '>' found, baka: " + filename);
             }
         }
         return e;
@@ -1180,7 +1275,7 @@ public class DialogLol : SingleInstance<DialogLol>
                         CurrentCharacter = -1;
                         int ln = Math.Clamp(CurrentLine - 2, 0, str.Count);
                         string r = str[ln];
-                        if (ln == 0 || !UseEnding(r))
+                        if (ln == 0 || !ParseAttributesInString_EndingStop(r))
                         {
                             string g = "";
                             try
@@ -1196,22 +1291,9 @@ public class DialogLol : SingleInstance<DialogLol>
                             fulltext = str[CurrentLine];
                             fulltext = Regex.Replace(fulltext, @"[ \n\r\t]+$", "");
                             SetDefaultParams();
-                            foreach (var attribute in list23)
-                            {
-                                if (attribute.Contains(">"))
-                                {
-                                    string he = attribute.Substring(0, attribute.IndexOf(">"));
-                                    List<string> he2 = new List<string>(he.Split("="));
-                                    if (he2.Count > 1)
-                                    {
-                                        ApplyAttribute(he2[0], he2[1]);
-                                    }
-                                    else
-                                    {
-                                        ApplyAttribute(he2[0], "");
-                                    }
-                                }
-                            }
+
+                            ParseAttributesInString(g);
+
                             if (InstantShowAllText)
                             {
                                 NextLine();
@@ -1251,26 +1333,9 @@ public class DialogLol : SingleInstance<DialogLol>
                     pp.TitleObject.GetComponent<TextAnimator>().anims.Clear();
                     pp.TextObject.GetComponent<TextAnimator>().anims.Clear();
 
-                    List<string> list23a = new List<string>(str[1].Split("<"));
 
-                    foreach (var attribute in list23a)
-                    {
-                        if (attribute.Contains(">"))
-                        {
-                            string he = attribute.Substring(0, attribute.IndexOf(">"));
-                            if (he == "/") continue;
-                            //Debug.Log(he);
-                            List<string> he2 = new List<string>(he.Split("="));
-                            if (he2.Count > 1)
-                            {
-                                ApplyAttribute(he2[0], he2[1]);
-                            }
-                            else
-                            {
-                                ApplyAttribute(he2[0], "");
-                            }
-                        }
-                    }
+                    ParseAttributesInString(str[1]);
+
                     str.RemoveAt(1);
 
 
@@ -1310,8 +1375,7 @@ public class DialogLol : SingleInstance<DialogLol>
         string g2 = str[2];
         List<string> list2 = new List<string>(g2.Split(Environment.NewLine));
         list2.RemoveAt(0);
-        UseEnding(list2[index]);
-
+        ParseAttributesInString_EndingStop(list2[index]);
     }
 
     public bool GetUseLFS()
