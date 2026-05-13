@@ -3,6 +3,7 @@ using static EntityOXS;
 
 public class EntityObject : MonoBehaviour
 {
+    [AutoCompressField]
     public EntityOXS Entity;
     public void Awake()
     {

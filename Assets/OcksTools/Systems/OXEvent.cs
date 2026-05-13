@@ -29,7 +29,6 @@ public static class GlobalEvent
 /*
  * WARNING: InvokeWithHitCheck() is NOT thread safe, if using oxevent on other threads: DO NOT USE THIS METHOD
  */
-
 public class OXEvent
 {
     public Dictionary<string, Action> StoredMethods = new Dictionary<string, Action>();
