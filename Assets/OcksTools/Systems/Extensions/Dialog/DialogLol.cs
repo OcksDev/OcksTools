@@ -156,11 +156,12 @@ public class DialogLol : SingleInstance<DialogLol>
         SetTempVariable("CoolNameColor", "<TitleColor=0,255,255>");
         SetVariable("HiddenMessage", ".... wait a minute, nani the fuck?");
         SetTempVariable("HiddenMessage2", "pp lol");
+        SetTempVariable("Changing", "Initial");
         GlobalEvent.Append("SecondInChain", () => StartDialog("TestSecondChain"));
         SetCondition("True", () => true);
         SetCondition("False", () => false);
         SetCondition("Rewatched", () => GetVariable("Rewatched", "No") == "Yes");
-        GlobalEvent.Append("RewatchDemo", () => SetVariable("Rewatched", "Yes"));
+        GlobalEvent.Append("RewatchDemo", () => SetTempVariable("Rewatched", "Yes"));
 
 
         if (GetUseLFS())

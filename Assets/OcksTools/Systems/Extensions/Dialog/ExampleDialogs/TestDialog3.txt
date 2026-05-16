@@ -16,6 +16,7 @@
 </> 
 </> <Speed=15, -, 1> <Name=Ball Sucker>
 </> <Animate=Text,ZoomIn> Will this text zoomies? God I mother fucking hope it does.
+<*=*Changing> becomes <SetTemp=Changing,New Value><*=*Changing>
 </> 
 </> <Name=Boner>
 </> Smell my greasy balls <End> 
