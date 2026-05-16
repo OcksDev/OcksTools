@@ -1,6 +1,39 @@
 
 ------------
    v1.2.2
+- Massive Dialog System Improvements!
+  - New Conditional functions, which, just like variables, can easily be defined via code
+  - New "{Name}<Attribute>" syntax for attributes, which checks a named condition function and only runs/applies the attribute if the function returns true
+    - Can be inverted with "{!Name}<Attribute>"
+  - New "{*Variable==Value}<Attribute>" syntax for attributes, which compares too values before attribute execution
+    - Can be inverted with "{*Variable!=Value}<Attribute>"
+    - You should be able to compare variables with "{*Variable1==*Variable2}<Attribute>" but I haven't tested this lol
+    - This should also work for things like "{!LangName==Value}" although I am not sure why you would want to do this
+  - Dialog now can store the state of variables, so they will persist between runs
+    - Added temp variables, accessed/interfaced with the same as normal variables (same asterisk: "*Variable"), but they dont get saved or loaded
+  - All dialogs now keep track of if you have started watching them, if you have finished them, and how many times you have done either action.
+    - This is also save/loaded
+    - "{@FileName}<Attribute>" checks for if you have started a file
+    - "{#FileName}<Attribute>" checks for if you have finished a file
+  - New "~" prepend syntax for variables, which applies them without recursively checking for new data within
+  - New "@" prepend syntax for filenames, which gets the amount of times that file was started
+  - New "#" prepend syntax for filenames, which gets the amount of times that file was finished
+  - Added new Dialog Attributes for dealing with state
+    - SetTemp
+    - ClearTemp
+    - Save
+    - Load
+    - Mark
+    - EndNoMark
+    - TextL
+      - This one shows the text within itself literally, no variable parsing
+      - Can be written as "<TextL=Hello World>" or shortened to "<=Hello World>"
+  - New Build event for easier interfacing
+  - Adjusted the internals of the attribute parsing to re-use more functions, unifying the way attributes are parsed
+  - IsActive boolean is now hidden
+  - CurrentFile and CurrentLine now only show up in the inspector when an active dialog is playing
+  - Added toggle to opt-out of automatic saving and loading dialog state
+  - Internal usage of variables now uses existing Get/Set methods for more consistent behavior
 - New AutoCompressedInspector and CompressedInspector unity editor classes which flatten an object into its fields in the inspector
   - Also AutoCompressedInspectorWithName which keeps the name of the object visible in the inspector and indents the fields
   - Added AutoCompressField c# attribute to allow you to just flatten a specific field instead of the whole object type
@@ -14,32 +47,6 @@
   - Added new helper methods to get existing events for a given input
   - IsKeyEvent (and varients) now return an existing OXEvent if the listener already exists
   - CreateEvent renamed to IsKeyEvent, same for its varients
-- Massive Dialog System Improvements!
-  - New "~" syntax for variables, which applies them without recursively checking for new data within
-  - New Conditional functions, which, just like variables, can easily be defined via code
-  - New "{Name}<Attribute>" syntax for attributes, which checks a named condition function and only runs/applies the attribute if the function returns true
-    - Can be inverted with "{!Name}<Attribute>"
-  - New "{*Variable==Value}<Attribute>" syntax for attributes, which compares too values before attribute execution
-    - Can be inverted with "{*Variable!=Value}<Attribute>"
-    - You should be able to compare variables with "{*Variable1==*Variable2}<Attribute>" but I haven't tested this lol
-    - This should also work for things like "{!LangName==Value}" although I am not sure why you would want to do this
-  - Dialog now can store the state of variables, so they will persist between runs
-    - Added temp variables, accessed/interfaced with the same as normal variables (same asterisk: "*Variable"), but they dont get saved or loaded
-  - All dialogs now keep track of if you have started watching them, if you have finished them, and how many times you have done either action.
-    - This is also save/loaded
-  - Added new Dialog Attributes for dealing with state
-    - SetTemp
-    - ClearTemp
-    - Save
-    - Load
-    - Mark
-    - EndNoMark
-  - New Build event for easier interfacing
-  - Adjusted the internals of the attribute parsing to re-use more functions, unifying the way attributes are parsed
-  - IsActive boolean is now hidden
-  - CurrentFile and CurrentLine now only show up in the inspector when an active dialog is playing
-  - Added toggle to opt-out of automatic saving and loading dialog state
-  - Internal usage of variables now uses existing Get/Set methods for more consistent behavior
 - Spawn System Improvements
   - Now uses AutoCompressedInspector for its pool class
   - Fixed multiplayer share code just calling the wrong function lol

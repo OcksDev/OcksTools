@@ -6,7 +6,7 @@
 </> I guess I will join <*=*AttributeInsideVar>
 </> 
 </> <Name=Boner>
-</> Yay!
+</> Yay! Btw, you watched Test1 <*=@Test1> Times!{@Test2==3}<= That's exactly 3, kinda fuckin wild yo.>
 </> 
 </> <Speed=15, -, 1> <AutoSkip=1>
 </> <Animate=Text,Gravity,6969>banana <Text=Sucky Toes>

@@ -11,7 +11,7 @@ public class DialogLol : SingleInstance<DialogLol>
     public Dictionary<string, OXLanguageFileIndex> LanguageFileIndexes = new Dictionary<string, OXLanguageFileIndex>();
     public bool UseLanguageFileSystem = false;
     public bool SaveState = true;
-    public static string BadGex = @"[\^*~!&,]";
+    public static string BadGex = @"[\^*~!&,@#]";
     public GameObject DialogBoxObject;
     private DialogBoxL pp;
     public List<DialogHolder> DialogFiles = new List<DialogHolder>();
@@ -420,7 +420,30 @@ public class DialogLol : SingleInstance<DialogLol>
             {
                 bool invert = cond[0] == '!';
                 if (invert) cond = cond.Substring(1);
-                if (conditions.ContainsKey(cond))
+
+                bool special = cond[0] == '@' || cond[0] == '#';
+                if (special)
+                {
+                    string mcond = cond.Substring(1);
+                    switch (cond[0])
+                    {
+                        case '@':
+                            if (!HasStarted(mcond) ^ invert)
+                            {
+                                EvaledGood = false;
+                                return true;
+                            }
+                            break;
+                        case '#':
+                            if (!HasWatched(mcond) ^ invert)
+                            {
+                                EvaledGood = false;
+                                return true;
+                            }
+                            break;
+                    }
+                }
+                else if (conditions.ContainsKey(cond))
                 {
                     //Debug.Log("Condition \"" + cond + "\" evaluated to " + conditions[cond]() + " (invert: " + invert + ")");
                     if (!conditions[cond]() ^ invert)
@@ -460,6 +483,8 @@ public class DialogLol : SingleInstance<DialogLol>
         switch (key)
         {
             case "br": //fallthrough case to make sure this works properly
+            case "":
+            case "TextL":
             case "Text":
                 // Used to display text inside dialog, pretty much always used in conjunction with dialog variables
                 succeeded = true;
@@ -1015,7 +1040,7 @@ public class DialogLol : SingleInstance<DialogLol>
     {
         try
         {
-
+            if (data == "") return new List<string>() { "" };
             //attribute variable format
             //*var_name
 
@@ -1027,7 +1052,7 @@ public class DialogLol : SingleInstance<DialogLol>
             {
                 string ba = CleanText(a);
                 var dd = Regex.Match(ba, $"^{BadGex}+");
-                var prepend = Regex.Replace(dd.Value, $"[!*~]+", "");
+                var prepend = Regex.Replace(dd.Value, $"[!*~@#]+", "");
                 var realdata = Regex.Replace(ba, $"{BadGex}+", "");
                 if (dd.Success && dd.Value.Contains("*"))
                 {
@@ -1037,6 +1062,14 @@ public class DialogLol : SingleInstance<DialogLol>
                 else if (dd.Success && dd.Value.Contains("~"))
                 {
                     outpi.Add(prepend + GetVariable(realdata));
+                }
+                else if (dd.Success && dd.Value.Contains("@"))
+                {
+                    outpi.Add(prepend + GetStarts(realdata));
+                }
+                else if (dd.Success && dd.Value.Contains("#"))
+                {
+                    outpi.Add(prepend + GetWatches(realdata));
                 }
                 else if (dd.Success && dd.Value.Contains("!"))
                 {
@@ -1335,6 +1368,10 @@ public class DialogLol : SingleInstance<DialogLol>
                             if (voop == "Text" && EvaledGood)
                             {
                                 mid = VariableParse(stuff[1])[0];
+                            }
+                            else if ((voop == "" || voop == "TextL") && EvaledGood)
+                            {
+                                mid = stuff[1];
                             }
                             else if (voop == "br")
                             {
