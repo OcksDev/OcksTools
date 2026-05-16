@@ -388,24 +388,26 @@ public class DialogLol : SingleInstance<DialogLol>
     public bool ApplyAttribute(string key_input, string data_input, bool ignorewarning = false, string cond = "")
     {
         EvaledGood = false;
-        // attribute style to be applied by default for this file
-        //   ^AttributeName
-        // attribute style to be applied to any time the same speaker talks in this file going forward
-        //   &AttributeName
         // variable to have it's value replaced
         //   *VariableName
         // variable to have it's value replaced, will not recurse
         //   ~VariableName
         // language file system variable to have it's value replaced 
         //   !VariableName
+        // attribute style to be applied by default for this file
+        //   ^AttributeName
+        // attribute style to be applied to any time the same speaker talks in this file going forward
+        //   &AttributeName
         // gets the amount of times a file was started
         //   @FileName
         // gets the amount of times a file was completed
         //   #FileName
         // conditional that must be true for the attribute to be applied, can be inverted with !
         //   {ConditionName}<AttributeName=Value>
+        //   {!ConditionName}<AttributeName=Value>
         // conditional that must be true for the attribute to be applied, can be inverted with !=
         //   {*VariableName==SomeValue}<AttributeName=Value>
+        //   {*VariableName!=SomeValue}<AttributeName=Value>
         // pre-processor that runs on file load, gets replaced with the contents of the variable
         //   @<VariableName>
 

@@ -18,7 +18,7 @@
   - New "~" prepend syntax for variables, which applies them without recursively checking for new data within
   - New "@" prepend syntax for filenames, which gets the amount of times that file was started
   - New "#" prepend syntax for filenames, which gets the amount of times that file was finished
-  - Added new Dialog Attributes for dealing with state
+  - Added new Dialog Attributes, mainly for dealing with state
     - SetTemp
     - ClearTemp
     - Save
@@ -27,7 +27,7 @@
     - EndNoMark
     - TextL
       - This one shows the text within itself literally, no variable parsing
-      - Can be written as "<TextL=Hello World>" or shortened to "<=Hello World>"
+      - Can be written as "<TextL=Hello World>" or shortened to "<=Hello World>", useful for the newly added conditionals
   - New Build event for easier interfacing
   - Adjusted the internals of the attribute parsing to re-use more functions, unifying the way attributes are parsed
   - IsActive boolean is now hidden
