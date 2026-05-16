@@ -33,6 +33,7 @@
   - IsActive boolean is now hidden
   - CurrentFile and CurrentLine now only show up in the inspector when an active dialog is playing
   - Added toggle to opt-out of automatic saving and loading dialog state
+  - Preprocessors now should be able to recursively parse variables
   - Internal usage of variables now uses existing Get/Set methods for more consistent behavior
 - New AutoCompressedInspector and CompressedInspector unity editor classes which flatten an object into its fields in the inspector
   - Also AutoCompressedInspectorWithName which keeps the name of the object visible in the inspector and indents the fields

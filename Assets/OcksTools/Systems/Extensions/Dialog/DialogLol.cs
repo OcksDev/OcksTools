@@ -397,8 +397,14 @@ public class DialogLol : SingleInstance<DialogLol>
         //   ~VariableName
         // language file system variable to have it's value replaced 
         //   !VariableName
+        // gets the amount of times a file was started
+        //   @FileName
+        // gets the amount of times a file was completed
+        //   #FileName
         // conditional that must be true for the attribute to be applied, can be inverted with !
         //   {ConditionName}<AttributeName=Value>
+        // conditional that must be true for the attribute to be applied, can be inverted with !=
+        //   {*VariableName==SomeValue}<AttributeName=Value>
         // pre-processor that runs on file load, gets replaced with the contents of the variable
         //   @<VariableName>
 
@@ -1264,7 +1270,7 @@ public class DialogLol : SingleInstance<DialogLol>
             var dingsing = smegglesnin[i];
             var gar = dingsing.Substring(2);
             gar = gar.Substring(0, gar.Length - 1);
-            var single = variables.GetValueOrDefault(gar, "");
+            var single = GetVariable(VariableParse(gar)[0], "");
             ppsex = Regex.Replace(ppsex, Regex.Escape(dingsing), single);
         }
 
