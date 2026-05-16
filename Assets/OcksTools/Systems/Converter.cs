@@ -82,7 +82,7 @@ public static class Converter
         return (A)ConversionMethods[typename](data);
     }
 
-    public static List<string> AListToStringList<A>(this List<A> eee)
+    public static List<string> AToString<A>(this List<A> eee)
     {
         var a = new List<string>();
         foreach (var b in eee)
@@ -91,7 +91,7 @@ public static class Converter
         }
         return a;
     }
-    public static List<B> AListToBList_DownCast<A, B>(this List<A> eee) where A : B
+    public static List<B> AToB_DownCast<A, B>(this List<A> eee) where A : B
     {
         var a = new List<B>();
         foreach (var b in eee)
@@ -100,7 +100,7 @@ public static class Converter
         }
         return a;
     }
-    public static List<B> AListToBList<A, B>(this List<A> eee, Func<A, B> convert)
+    public static List<B> AToB<A, B>(this List<A> eee, Func<A, B> convert)
     {
         var a = new List<B>();
         foreach (var b in eee)
@@ -109,7 +109,7 @@ public static class Converter
         }
         return a;
     }
-    public static List<B> AListToBList_UpCast<A, B>(this List<A> eee) where B : A
+    public static List<B> AToB_UpCast<A, B>(this List<A> eee) where B : A
     {
         var a = new List<B>();
         foreach (var b in eee)
@@ -118,7 +118,7 @@ public static class Converter
         }
         return a;
     }
-    public static List<A> StringListToAList<A>(this List<string> eee)
+    public static List<A> StringToA<A>(this List<string> eee)
     {
         var a = new List<A>();
         string tA = typeof(A).Name;
@@ -149,17 +149,7 @@ public static class Converter
         if (d.Count == 1 && d[0] == "") return new List<string>();
         return d;
     }
-    public static Dictionary<string, string> ABDictionaryToStringDictionary<A, B>(this Dictionary<A, B> dic)
-    {
-        var t = new Dictionary<string, string>();
-        foreach (var key in dic)
-        {
-            t.Add(key.Key.ToString(), key.Value.ToString());
-        }
-        return t;
-    }
-
-    public static Dictionary<C, D> ABDictionaryToCDDictionary<A, B, C, D>(this Dictionary<A, B> eee, Func<A, C> convertAC, Func<B, D> convertBD)
+    public static Dictionary<C, D> ABToCD<A, B, C, D>(this Dictionary<A, B> eee, Func<A, C> convertAC, Func<B, D> convertBD)
     {
         var d = new Dictionary<C, D>();
         foreach (var thing in eee)
@@ -168,7 +158,7 @@ public static class Converter
         }
         return d;
     }
-    public static Dictionary<C, D> ABDictionaryToCDDictionary<A, B, C, D>(this Dictionary<A, B> eee, Func<A, B, C> convertAC, Func<A, B, D> convertBD)
+    public static Dictionary<C, D> ABToCD<A, B, C, D>(this Dictionary<A, B> eee, Func<A, B, C> convertAC, Func<A, B, D> convertBD)
     {
         var d = new Dictionary<C, D>();
         foreach (var thing in eee)
@@ -178,8 +168,18 @@ public static class Converter
         return d;
     }
 
+    public static Dictionary<string, string> ABToString<A, B>(this Dictionary<A, B> dic)
+    {
+        var t = new Dictionary<string, string>();
+        foreach (var key in dic)
+        {
+            t.Add(key.Key.ToString(), key.Value.ToString());
+        }
+        return t;
+    }
 
-    public static Dictionary<A, B> StringDictionaryToABDictionary<A, B>(this Dictionary<string, string> dic)
+
+    public static Dictionary<A, B> StringToAB<A, B>(this Dictionary<string, string> dic)
     {
         var t = new Dictionary<A, B>();
         string tA = typeof(A).Name;
@@ -191,6 +191,7 @@ public static class Converter
         }
         return t;
     }
+
     public static string DictionaryToRead<A, B>(this Dictionary<A, B> dic)
     {
         List<string> a = new List<string>();

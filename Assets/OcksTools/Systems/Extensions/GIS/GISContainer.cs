@@ -182,7 +182,7 @@ public class GISContainer : MonoBehaviour
         if (SaveLoadData)
         {
             GISLol.Instance.LoadTempForAll();
-            dict.SetList(GetName(), slots.AListToBList((x) => x.Held_Item));
+            dict.SetList(GetName(), slots.AToB((x) => x.Held_Item));
         }
     }
 

@@ -279,12 +279,12 @@ public class SaveProfile
 
     public void SetList<A>(string key, List<A> data)
     {
-        SetList(key, data.AListToStringList());
+        SetList(key, data.AToString());
     }
 
     public void SetDict<A, B>(string key, Dictionary<A, B> data)
     {
-        SetDict(key, data.ABDictionaryToStringDictionary());
+        SetDict(key, data.ABToString());
     }
 
 
@@ -420,11 +420,11 @@ public class SaveProfile
     }
     public List<A> GetList<A>(string key, List<A> defaul = null)
     {
-        return GetList(key, defaul.AListToStringList()).StringListToAList<A>();
+        return GetList(key, defaul.AToString()).StringToA<A>();
     }
     public Dictionary<A, B> GetDict<A, B>(string key, Dictionary<A, B> defaul = null)
     {
-        return GetDict(key, defaul.ABDictionaryToStringDictionary()).StringDictionaryToABDictionary<A, B>();
+        return GetDict(key, defaul.ABToString()).StringToAB<A, B>();
     }
 
 

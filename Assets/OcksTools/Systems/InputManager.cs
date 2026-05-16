@@ -194,7 +194,7 @@ public class InputManager : SingleInstance<InputManager>
 
     public static string GetReadableStringOf(List<KeyCode> n, bool first_only = false)
     {
-        var dd = n.AListToBList((x) => keynames[x]);
+        var dd = n.AToB((x) => keynames[x]);
         if (first_only && dd.Count > 1)
         {
             dd = dd.GetRange(0, 1);

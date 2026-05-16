@@ -71,12 +71,12 @@ public class SoundSystem : SingleInstance<SoundSystem>
     }
     public void SaveVolumes(SaveProfile dict)
     {
-        dict.SetDict("Volumes", Volumes.ABDictionaryToStringDictionary());
+        dict.SetDict("Volumes", Volumes.ABToString());
     }
 
     public void LoadVolumes(SaveProfile dict)
     {
-        Volumes = dict.GetDict("Volumes", new()).StringDictionaryToABDictionary<string, float>();
+        Volumes = dict.GetDict("Volumes", new()).StringToAB<string, float>();
     }
 
     private void Start()

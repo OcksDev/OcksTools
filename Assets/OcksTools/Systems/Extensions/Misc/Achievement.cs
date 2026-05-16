@@ -76,7 +76,7 @@ public class Achievement : SingleInstance<Achievement>
     }
     public void LoadAchievements(SaveProfile a)
     {
-        var Achievements = a.GetString("Achievements").StringToDictionary().ABDictionaryToCDDictionary(x => x, x =>
+        var Achievements = a.GetString("Achievements").StringToDictionary().ABToCD(x => x, x =>
         {
             AchievementData ad = new AchievementData();
             ad.FromString(x);

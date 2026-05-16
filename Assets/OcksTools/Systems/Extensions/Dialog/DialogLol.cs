@@ -1,3 +1,4 @@
+using NaughtyAttributes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,14 +10,12 @@ public class DialogLol : SingleInstance<DialogLol>
 {
     public Dictionary<string, OXLanguageFileIndex> LanguageFileIndexes = new Dictionary<string, OXLanguageFileIndex>();
     public bool UseLanguageFileSystem = false;
+    public bool SaveState = true;
     public static string BadGex = @"[\^*~!&,]";
     public GameObject DialogBoxObject;
     private DialogBoxL pp;
     public List<DialogHolder> DialogFiles = new List<DialogHolder>();
     public List<DialogHolder> ChooseFiles = new List<DialogHolder>();
-    public bool IsActive = false;
-    public string filename = "";
-    public int CurrentLine = 0;
     [HideInInspector]
     public float CharactersPerSecond = -1;
     [HideInInspector]
@@ -60,7 +59,9 @@ public class DialogLol : SingleInstance<DialogLol>
     private List<string> str = new List<string>();
     private string ActiveFileName = "";
     private string baldcharacters = " \n\t";
+    private Dictionary<string, (int starts, int watches)> starts_and_watches = new();
     private Dictionary<string, string> variables = new Dictionary<string, string>();
+    private Dictionary<string, string> variables_temp = new Dictionary<string, string>();
     private Dictionary<string, Func<bool>> conditions = new Dictionary<string, Func<bool>>();
     private Dictionary<string, DialogSettings> name_to_setting = new Dictionary<string, DialogSettings>();
 
@@ -70,6 +71,14 @@ public class DialogLol : SingleInstance<DialogLol>
 
     public static OXEvent Build = new();
 
+    [HideInInspector]
+    public bool IsActive = false;
+    [ShowIf("IsActive")]
+    [ReadOnly]
+    public string CurrentFile = "";
+    [ShowIf("IsActive")]
+    [ReadOnly]
+    public int CurrentLine = 0;
 
     // Start is called before the first frame update
 
@@ -82,6 +91,8 @@ public class DialogLol : SingleInstance<DialogLol>
             InputManager.CreateInputSet("dialog_skip", new List<KeyCode>() { KeyCode.Space, KeyCode.Mouse0, KeyCode.RightArrow });
             InputManager.CreateInputSet("dialog_skip_back", KeyCode.LeftArrow);
         });
+        SaveSystem.SaveAllData.Append("DialogM", Save);
+        SaveSystem.LoadAllData.Append("DialogM", Load);
     }
 
     [RuntimeInitializeOnLoadMethod]
@@ -130,21 +141,21 @@ public class DialogLol : SingleInstance<DialogLol>
         pp = DialogBoxObject.GetComponent<DialogBoxL>();
 
         //lets you write <*=*Var> as shorthand to insert a variable into the dialog
-        SetVariable("", "Text");
+        SetTempVariable("", "Text");
 
         //some testing variables for the dialog system
-        SetVariable("TestVar", "*VarInSideAVar");
-        SetVariable("VarInSideAVar", "Name");
-        SetVariable("Fuck", "Shit");
-        SetVariable("Wank", "Wank");
-        SetVariable("AttributeInsideVar", "<Name=Bone Eater>");
-        SetVariable("NestedAttribute", "<Animate=Text,Rainbow>");
-        SetVariable("MassApplyVariable", "ApplyStyle");
-        SetVariable("Green", "255,0");
-        SetVariable("ExtraDialog", "</> <Name=Red></> This is some bonus content!</> </> <Name=Blue></> Sure is!</>");
-        SetVariable("CoolNameColor", "<TitleColor=0,255,255>");
+        SetTempVariable("TestVar", "*VarInSideAVar");
+        SetTempVariable("VarInSideAVar", "Name");
+        SetTempVariable("Fuck", "Shit");
+        SetTempVariable("Wank", "Wank");
+        SetTempVariable("AttributeInsideVar", "<Name=Bone Eater>");
+        SetTempVariable("NestedAttribute", "<Animate=Text,Rainbow>");
+        SetTempVariable("MassApplyVariable", "ApplyStyle");
+        SetTempVariable("Green", "255,0");
+        SetTempVariable("ExtraDialog", "</> <Name=Red></> This is some bonus content!</> </> <Name=Blue></> Sure is!</>");
+        SetTempVariable("CoolNameColor", "<TitleColor=0,255,255>");
         SetVariable("HiddenMessage", ".... wait a minute, nani the fuck?");
-        SetVariable("HiddenMessage2", "pp lol");
+        SetTempVariable("HiddenMessage2", "pp lol");
         GlobalEvent.Append("SecondInChain", () => StartDialog("TestSecondChain"));
         SetCondition("True", () => true);
         SetCondition("False", () => false);
@@ -181,9 +192,29 @@ public class DialogLol : SingleInstance<DialogLol>
             }
         }
 
+
         Build.Invoke();
     }
 
+    public void Save(SaveProfile dict)
+    {
+        if (!SaveState) return;
+        dict.SetDict("DialogVars", variables);
+        dict.SetDict("DialogSWs", starts_and_watches);
+        GetStarts("Test1").DLog();
+        starts_and_watches.DictionaryToRead().DLog();
+    }
+
+    public void Load(SaveProfile dict)
+    {
+        if (!SaveState) return;
+        variables = variables.MergeDictionary(dict.GetDict("DialogVars", new()));
+        starts_and_watches = dict.GetDict("DialogSWs", new()).ABToCD<string, string, string, (int, int)>(x => x, x =>
+        {
+            var v = x.StringToVector2Int();
+            return (v.x, v.y);
+        });
+    }
 
     // Update is called once per frame
     private void Update()
@@ -724,6 +755,10 @@ public class DialogLol : SingleInstance<DialogLol>
                 break;
             case "End":
                 // Ends current dialog
+                MarkWatched(CurrentFile);
+                goto case "EndNoMark";
+            case "EndNoMark":
+                // Ends current dialog without marking it
                 ResetDialog();
                 pp.text = "";
                 pp.title = "";
@@ -743,7 +778,46 @@ public class DialogLol : SingleInstance<DialogLol>
                 break;
             case "Set":
                 //sets a variable
-                variables[data[0]] = data[1];
+                SetVariable(data[0], data[1]);
+                succeeded = true;
+                break;
+            case "SetTemp":
+                //sets a temp variable
+                SetTempVariable(data[0], data[1]);
+                succeeded = true;
+                break;
+            case "ClearTemp":
+                //clears temp state
+                variables_temp.Clear();
+                succeeded = true;
+                break;
+            case "Save":
+                //saves game data
+                if (data.Count > 0 && data[0] != "")
+                {
+                    SaveSystem.Instance.SaveGame(data[0]);
+                }
+                else
+                {
+                    SaveSystem.Instance.SaveGame();
+                }
+                succeeded = true;
+                break;
+            case "Load":
+                //loads game data
+                if (data.Count > 0 && data[0] != "")
+                {
+                    SaveSystem.Instance.LoadGame(data[0]);
+                }
+                else
+                {
+                    SaveSystem.Instance.LoadGame();
+                }
+                succeeded = true;
+                break;
+            case "Mark":
+                //Marks the current file as having been watched
+                MarkWatched(CurrentFile);
                 succeeded = true;
                 break;
             case "Animate":
@@ -834,6 +908,10 @@ public class DialogLol : SingleInstance<DialogLol>
     {
         variables.AddOrUpdate(key, val);
     }
+    public void SetTempVariable(string key, string val)
+    {
+        variables_temp.AddOrUpdate(key, val);
+    }
     public string GetVariable(string key, string defaultval = "(No Data)")
     {
         if (variables.ContainsKey(key))
@@ -842,9 +920,97 @@ public class DialogLol : SingleInstance<DialogLol>
         }
         else
         {
-            return defaultval;
+            if (variables_temp.ContainsKey(key))
+            {
+                return variables_temp[key];
+            }
+            else
+            {
+                return defaultval;
+            }
         }
     }
+    public int GetStarts(string key)
+    {
+        if (starts_and_watches.ContainsKey(key))
+        {
+            return starts_and_watches[key].starts;
+        }
+        else
+        {
+            if (!LanguageFileIndexes.ContainsKey(key))
+            {
+                Console.LogWarning($"No known file named \"{key}\"");
+            }
+            return 0;
+        }
+    }
+    public int GetWatches(string key)
+    {
+        if (starts_and_watches.ContainsKey(key))
+        {
+            return starts_and_watches[key].watches;
+        }
+        else
+        {
+            if (!LanguageFileIndexes.ContainsKey(key))
+            {
+                Console.LogWarning($"No known file named \"{key}\"");
+            }
+            return 0;
+        }
+    }
+    public bool HasStarted(string key)
+    {
+        if (starts_and_watches.ContainsKey(key))
+        {
+            return starts_and_watches[key].starts > 0;
+        }
+        else
+        {
+            if (!LanguageFileIndexes.ContainsKey(key))
+            {
+                Console.LogWarning($"No known file named \"{key}\"");
+            }
+            return false;
+        }
+    }
+    public bool HasWatched(string key)
+    {
+        if (starts_and_watches.ContainsKey(key))
+        {
+            return starts_and_watches[key].watches > 0;
+        }
+        else
+        {
+            if (!LanguageFileIndexes.ContainsKey(key))
+            {
+                Console.LogWarning($"No known file named \"{key}\"");
+            }
+            return false;
+        }
+    }
+
+    public void MarkStart(string file)
+    {
+        if (!starts_and_watches.ContainsKey(file))
+        {
+            starts_and_watches.Add(file, (1, 0));
+            return;
+        }
+        starts_and_watches[file] = (starts_and_watches[file].starts + 1, starts_and_watches[file].watches);
+    }
+
+    public void MarkWatched(string file)
+    {
+        if (!starts_and_watches.ContainsKey(file))
+        {
+            Console.LogWarning($"No known file named \"{file}\"");
+            return;
+        }
+        starts_and_watches[file] = (starts_and_watches[file].starts, starts_and_watches[file].watches + 1);
+    }
+
     private List<string> VariableParse(string data)
     {
         try
@@ -977,7 +1143,7 @@ public class DialogLol : SingleInstance<DialogLol>
 
     public void ResetDialog()
     {
-        filename = "";
+        CurrentFile = "";
         fulltext = "?";
         CurrentCharacter = 1;
         CurrentLine = -2;
@@ -999,11 +1165,11 @@ public class DialogLol : SingleInstance<DialogLol>
         switch (datat)
         {
             case "Dialog":
-                str = GetFormattedFromFile(filename);
+                str = GetFormattedFromFile(CurrentFile);
                 StartDialogOverhead2();
                 break;
             case "Choose":
-                str = GetFormattedFromFile(filename, datat);
+                str = GetFormattedFromFile(CurrentFile, datat);
                 StartDialogOverhead2();
                 break;
         }
@@ -1026,13 +1192,14 @@ public class DialogLol : SingleInstance<DialogLol>
         ResetDialog();
         IsActive = true;
         DialogBoxObject.SetActive(true);
-        filename = dialog;
+        CurrentFile = dialog;
         datatype = datat;
         // charl = -1;
         InputManager.AddLockLevel("Dialog");
         //just closes the OcksTools Console when opening any dialog.
         ConsoleLol.Instance.CloseConsole();
 
+        MarkStart(CurrentFile);
     }
 
     private void StartDialogOverhead2()
@@ -1058,7 +1225,7 @@ public class DialogLol : SingleInstance<DialogLol>
         }
 
         //pre-processing
-        var smegglesnin = Regex.Matches(ppsex, @"@<.*?>").ToList().AListToBList((x) => x.Value).RemoveDuplicates();
+        var smegglesnin = Regex.Matches(ppsex, @"@<.*?>").ToList().AToB((x) => x.Value).RemoveDuplicates();
         for (int i = 0; i < smegglesnin.Count; i++)
         {
             var dingsing = smegglesnin[i];
@@ -1218,7 +1385,7 @@ public class DialogLol : SingleInstance<DialogLol>
             }
             else
             {
-                Debug.LogWarning("No '>' found, baka: " + filename);
+                Debug.LogWarning("No '>' found, baka: " + CurrentFile);
             }
         }
         return e;
@@ -1258,7 +1425,7 @@ public class DialogLol : SingleInstance<DialogLol>
     public bool LoadingNextDialog = false;
     public void NextLine(bool wank = false)
     {
-        if (filename != "")
+        if (CurrentFile != "")
         {
             switch (datatype)
             {

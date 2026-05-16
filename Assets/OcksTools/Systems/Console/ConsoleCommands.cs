@@ -26,7 +26,7 @@ public class ConsoleCommands : MonoBehaviour
         bananas.Add("3");
         bananas.Add("4");
         bananas.ListToString().Log();
-        var dd = bananas.StringListToAList<TestClass>();
+        var dd = bananas.StringToA<TestClass>();
         dd.ListToString().Log();
         "---".Log();
         Dictionary<string, string> d1 = new Dictionary<string, string>()

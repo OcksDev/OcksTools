@@ -6,7 +6,7 @@ public class TextFromInput : TextDisplay
     public int SpecificIndex = -1;
     public override string GetDisplayString()
     {
-        var shids = InputManager.gamekeys[type].AListToBList((x) => InputManager.keynames[x]);
+        var shids = InputManager.gamekeys[type].AToB((x) => InputManager.keynames[x]);
         string s = PreText;
         if (SpecificIndex >= 0 && SpecificIndex < shids.Count)
         {
