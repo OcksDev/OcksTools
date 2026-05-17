@@ -1,0 +1,12 @@
+
+Only works for Visual Studio
+
+https://github.com/OcksDev/OcksTools-DLG-File-Highligher/releases/
+
+Find the release for the given version of OcksTools you are using and download the .zip to get started.
+
+More detailed installation instructions will be given in the zip file.
+
+I plan to keep this project on-pace with OcksTools, as I will be using the extension myself to make dialogs easier to parse at a glance.
+
+Releases for this will probably come out before official OcksTools releases, just getting sent whenever I make them, independant of the wider project.

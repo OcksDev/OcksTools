@@ -28,6 +28,10 @@
     - TextL
       - This one shows the text within itself literally, no variable parsing
       - Can be written as "<TextL=Hello World>" or shortened to "<=Hello World>", useful for the newly added conditionals
+  - Dialog Files can now be made with the .dlg file extension, and will have highlighting in Visual Studio based on an extension for VS I made
+    - https://github.com/OcksDev/OcksTools-DLG-File-Highligher/releases/
+    - I will keep this public extension in line with the latest version of the dialog system going forward, as I will be using it myself.
+    - Changes to this extension will also be listed here when appropriate
   - New Build event for easier interfacing
   - Adjusted the internals of the attribute parsing to re-use more functions, unifying the way attributes are parsed
   - IsActive boolean is now hidden
