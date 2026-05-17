@@ -24,6 +24,10 @@ public static class GlobalEvent
     {
         if (Nerds.ContainsKey(even)) Nerds[even].Invoke();
     }
+    public static bool Contains(string name)
+    {
+        return Nerds.ContainsKey(name);
+    }
 }
 
 /*

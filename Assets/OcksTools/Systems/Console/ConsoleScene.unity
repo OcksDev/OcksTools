@@ -11416,7 +11416,7 @@ PrefabInstance:
     - target: {fileID: 6167858925768747828, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
       propertyPath: ChooseFiles.Array.data[0].File
       value: 
-      objectReference: {fileID: 4900000, guid: 3c594fbc940fc8543ac46e05ed5914d6, type: 3}
+      objectReference: {fileID: 1042094116111776886, guid: f8a6983103e9eb147b7d3dc3e28c257d, type: 3}
     - target: {fileID: 6167858925768747828, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
       propertyPath: ChooseFiles.Array.data[0].Name
       value: Test1C
@@ -11424,7 +11424,7 @@ PrefabInstance:
     - target: {fileID: 6167858925768747828, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
       propertyPath: DialogFiles.Array.data[0].File
       value: 
-      objectReference: {fileID: 4900000, guid: 3f6f739fade369144b5676f2797ade03, type: 3}
+      objectReference: {fileID: 1042094116111776886, guid: 3f6f739fade369144b5676f2797ade03, type: 3}
     - target: {fileID: 6167858925768747828, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
       propertyPath: DialogFiles.Array.data[0].Name
       value: Test1
@@ -11432,7 +11432,7 @@ PrefabInstance:
     - target: {fileID: 6167858925768747828, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
       propertyPath: DialogFiles.Array.data[1].File
       value: 
-      objectReference: {fileID: 4900000, guid: 1b6e7448726c9f148bf3aafb46127126, type: 3}
+      objectReference: {fileID: 1042094116111776886, guid: 7bf9e598df2b39a4eb2e5e4017a5056d, type: 3}
     - target: {fileID: 6167858925768747828, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
       propertyPath: DialogFiles.Array.data[1].Name
       value: Test2
@@ -11440,7 +11440,7 @@ PrefabInstance:
     - target: {fileID: 6167858925768747828, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
       propertyPath: DialogFiles.Array.data[2].File
       value: 
-      objectReference: {fileID: 4900000, guid: c23a6e8e1e0f6e340b36ae24df447192, type: 3}
+      objectReference: {fileID: 1042094116111776886, guid: 8245ffc65b58bb0468f26bce5f8d76ba, type: 3}
     - target: {fileID: 6167858925768747828, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
       propertyPath: DialogFiles.Array.data[2].Name
       value: Test3
@@ -11448,7 +11448,7 @@ PrefabInstance:
     - target: {fileID: 6167858925768747828, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
       propertyPath: DialogFiles.Array.data[3].File
       value: 
-      objectReference: {fileID: 4900000, guid: 4f936147568b8874a80bc1f927518972, type: 3}
+      objectReference: {fileID: 1042094116111776886, guid: 99bcc25414a2d2a419df1a8145654e69, type: 3}
     - target: {fileID: 6167858925768747828, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
       propertyPath: DialogFiles.Array.data[3].Name
       value: TestA
@@ -11456,7 +11456,7 @@ PrefabInstance:
     - target: {fileID: 6167858925768747828, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
       propertyPath: DialogFiles.Array.data[4].File
       value: 
-      objectReference: {fileID: 4900000, guid: a93656362a8e6384d91530dd915b9625, type: 3}
+      objectReference: {fileID: 1042094116111776886, guid: 65d87b8f17d5f6744bd5421c0cc1d621, type: 3}
     - target: {fileID: 6167858925768747828, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
       propertyPath: DialogFiles.Array.data[4].Name
       value: TestN

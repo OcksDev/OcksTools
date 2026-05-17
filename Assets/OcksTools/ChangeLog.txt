@@ -27,7 +27,13 @@
     - EndNoMark
     - TextL
       - This one shows the text within itself literally, no variable parsing
-      - Can be written as "<TextL=Hello World>" or shortened to "<=Hello World>", useful for the newly added conditionals
+  - Added some Dialog Attribute shorthands
+    - "<Textl=...>" can be written as "<=...>"
+    - "<Event=...>" can be written as "<...>"
+      - Shorthand only works for events which aren't named an existing attribute keyword like "End" or "Save" 
+      - (you can still call these edge cases using the non-shortened event call "<Event=...>")
+    - "<Set=...,...>" can be written as "<S=...,...>"
+    - "<SetTemp=...,...>" can be written as "<ST=...,...>"
   - Dialog Files can now be made with the .dlg file extension, and will have highlighting in Visual Studio based on an extension for VS I made
     - https://github.com/OcksDev/OcksTools-DLG-File-Highligher/releases/
     - I will keep this public extension in line with the latest version of the dialog system going forward, as I will be using it myself.
@@ -62,6 +68,7 @@
   - Fixed some broken example scenes caused by the edits made to Spawn System last update
   - Console "pathcomps" is now hidden lol
   - IOXThreadPool now defines a required method, Awaiter()
+  - Added Contains method for GlobalEvents
 ------------
 
 ------------

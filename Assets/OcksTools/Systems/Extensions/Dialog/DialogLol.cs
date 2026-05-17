@@ -162,6 +162,7 @@ public class DialogLol : SingleInstance<DialogLol>
         SetCondition("False", () => false);
         SetCondition("Rewatched", () => GetVariable("Rewatched", "No") == "Yes");
         GlobalEvent.Append("RewatchDemo", () => SetTempVariable("Rewatched", "Yes"));
+        GlobalEvent.Append("PrintFunnyEvent", () => Console.Log("Funny!"));
 
 
         if (GetUseLFS())
@@ -810,11 +811,13 @@ public class DialogLol : SingleInstance<DialogLol>
                 Application.Quit();
                 succeeded = true;
                 break;
+            case "S":
             case "Set":
                 //sets a variable
                 SetVariable(data[0], data[1]);
                 succeeded = true;
                 break;
+            case "ST":
             case "SetTemp":
                 //sets a temp variable
                 SetTempVariable(data[0], data[1]);
@@ -916,7 +919,15 @@ public class DialogLol : SingleInstance<DialogLol>
                 succeeded = true;
                 break;
             default:
-                if (!ignorewarning) Debug.LogWarning("Unknown Dialog Attribute: \"" + key + "\"  (Dialog File: " + ActiveFileName + ")");
+                if (GlobalEvent.Contains(key))
+                {
+                    GlobalEvent.Invoke(key);
+                    succeeded = true;
+                }
+                else
+                {
+                    if (!ignorewarning) Debug.LogWarning("Unknown Dialog Attribute: \"" + key + "\"  (Dialog File: " + ActiveFileName + ")");
+                }
                 break;
         }
 
