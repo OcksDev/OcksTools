@@ -4,7 +4,6 @@ using Unity.Netcode;
 public class IDSync_Object : NetworkBehaviour
 {
     [ShowFixedBetter]
-    [NaughtyAttributes.ReadOnly]
     public FixedString64Bytes MyID = "-";
     private void Start()
     {
