@@ -1,23 +1,22 @@
+using Unity.Collections;
 using Unity.Netcode;
 
 public class IDSync_Object : NetworkBehaviour
 {
+    [ShowFixedBetter]
+    [NaughtyAttributes.ReadOnly]
+    public FixedString64Bytes MyID = "-";
     private void Start()
     {
         if (IsHost)
         {
-            Server.Send().SendObjectID(NetworkObjectId, Tags.GetIDOf(gameObject));
+            var id = Tags.GetIDOf(gameObject);
+            Server.Send().SendObjectID(NetworkObjectId, id);
+            MyID = id;
         }
         else
         {
             Server.AddObject(this);
         }
     }
-#if UNITY_EDITOR
-    public string IDRead = "";
-    private void FixedUpdate()
-    {
-        IDRead = Tags.GetIDOf(gameObject);
-    }
-#endif
 }

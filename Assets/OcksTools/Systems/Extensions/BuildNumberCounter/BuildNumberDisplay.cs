@@ -8,8 +8,7 @@ public class BuildNumberDisplay : MonoBehaviour
     private void Awake()
     {
         var s = FileSystem.GameVer;
-        //if (buildNumberHolder.BuildNumber > 0) 
-        s += "_b" + buildNumberHolder.BuildNumber;
+        if (buildNumberHolder.BuildNumber > 0) s += "_b" + buildNumberHolder.BuildNumber;
         tt.text = s;
     }
 }

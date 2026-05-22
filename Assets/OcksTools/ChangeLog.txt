@@ -69,7 +69,7 @@
   - Added RandomElement() extension method for Lists, Arrays, Dictionaries, and Hashsets
 - Misc
   - IDSync_Client now has a property to get the ID from the component itself
-  - IDSync_Object's debug property to view ID from the component has been made editor-only
+  - IDSync_Object's debug property to read the ID from the component itself has been changed to be a reliable and efficient way to read the ID
   - CompilableDictionaries moved to Internal folder
   - EntityObject now uses a more compressed inspector
   - Fixed some broken example scenes caused by the edits made to Spawn System last update

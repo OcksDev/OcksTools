@@ -45,6 +45,7 @@ public static class Server
         {
             SpawnSystem.Spawn(new SpawnData("").ID(BADAllObjectIds[x].ToString()).DontSpawn(o.gameObject));
             Console.Log($"Hit: {BADAllObjectIds[x].ToString()}");
+            o.MyID = BADAllObjectIds[x].ToString();
             BADAllObjectIds.Remove(x);
         }
         else
@@ -60,6 +61,7 @@ public static class Server
         {
             SpawnSystem.Spawn(new SpawnData("").ID(o.ToString()).DontSpawn(BADAllObjects[x].gameObject));
             Console.Log($"Hit: {o}");
+            BADAllObjects[x].MyID = o;
             BADAllObjects.Remove(x);
         }
         else
