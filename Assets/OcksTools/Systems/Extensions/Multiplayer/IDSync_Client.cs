@@ -1,9 +1,12 @@
 using System.Collections;
+using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
 public class IDSync_Client : NetworkBehaviour
 {
+    [ShowFixedBetter]
+    public FixedString64Bytes MyID = "-";
     private void Awake()
     {
         StartCoroutine(waitforserver());
@@ -17,6 +20,7 @@ public class IDSync_Client : NetworkBehaviour
         {
             Server.AllClients.Add(Server.Instance.ClientID, this);
             Server.Send().IDSync(Server.Instance.ClientID, OwnerClientId);
+            MyID = Server.Instance.ClientID;
         }
     }
 

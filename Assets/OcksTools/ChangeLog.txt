@@ -62,12 +62,17 @@
   - Now uses AutoCompressedInspector for its pool class
   - Fixed multiplayer share code just calling the wrong function lol
   - Fixed inspector duplicate values lol
+- New ShowFixedBetter c# attribute for FixedStringXBytes fields, makes them actually readable and cool
+  - Entirely slop coded this one because I hate writing custom inspector stuff
 - Misc
+  - IDSync_Client now has a property to get the ID from the component itself
+  - IDSync_Object's debug property to view ID from the component has been made editor-only
   - CompilableDictionaries moved to Internal folder
   - EntityObject now uses a more compressed inspector
   - Fixed some broken example scenes caused by the edits made to Spawn System last update
   - Console "pathcomps" is now hidden lol
   - IOXThreadPool now defines a required method, Awaiter()
+  - Entity Health/Shield now start are relevant values
   - Added Contains method for GlobalEvents
 ------------
 

@@ -8,8 +8,8 @@ public class EntityOXS
     public GameObject Self;
     public EntityType Type = EntityType.Enemy;
     public double Health = 100;
-    public double Shield = 100;
-    public double Max_Health = 0;
+    public double Max_Health = 100;
+    public double Shield = 0;
     public double Max_Shield = 0;
     public OXEventLayered<EntityOXS, DamageProfile> OnHitEvent = new OXEventLayered<EntityOXS, DamageProfile>();
     public OXEventLayered<EntityOXS, DamageProfile> OnHealEvent = new OXEventLayered<EntityOXS, DamageProfile>();
@@ -34,8 +34,7 @@ public class EntityOXS
                 Kill();
             }
         }
-        Shield = System.Math.Clamp(Shield, 0, Max_Shield);
-
+        ClampHealth();
     }
 
     public void Heal(DamageProfile amount)
@@ -55,6 +54,7 @@ public class EntityOXS
             //runs if heal was successful
             OnHealEvent.Invoke(this, amount);
         }
+        ClampHealth(); // this shouldn't do anything, but still
     }
 
     public void Kill()

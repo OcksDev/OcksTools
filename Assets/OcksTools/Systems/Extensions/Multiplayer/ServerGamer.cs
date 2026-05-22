@@ -256,6 +256,7 @@ public class ServerGamer : NetworkBehaviour
         if (Server.BADAllClients.ContainsKey(bad_id))
         {
             Server.AllClients.Add(ID, Server.BADAllClients[bad_id]);
+            Server.BADAllClients[bad_id].MyID = ID;
             LockBacklog(ID);
             Server.ClientIDSynced.Invoke(ID);
             yield break;
@@ -268,6 +269,7 @@ public class ServerGamer : NetworkBehaviour
         if (Server.BADAllClients.ContainsKey(bad_id))
         {
             Server.AllClients.Add(ID, Server.BADAllClients[bad_id]);
+            Server.BADAllClients[bad_id].MyID = ID;
             LockBacklog(ID);
             Server.ClientIDSynced.Invoke(ID);
             yield break;

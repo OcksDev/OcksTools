@@ -13,9 +13,11 @@ public class IDSync_Object : NetworkBehaviour
             Server.AddObject(this);
         }
     }
+#if UNITY_EDITOR
     public string IDRead = "";
     private void FixedUpdate()
     {
         IDRead = Tags.GetIDOf(gameObject);
     }
+#endif
 }

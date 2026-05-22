@@ -1,3 +1,4 @@
+using Unity.Collections;
 using UnityEngine;
 
 public class TestShake : MonoBehaviour
@@ -13,4 +14,18 @@ public class TestShake : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha5)) shakeHolder.Add(new Shake(1, 5f, 0.95f, Shake.RandomType.Circle));
         transform.position = shakeHolder.GetPos(Time.deltaTime);
     }
+    public string NormalString = "Hello";
+    [ShowFixedBetter]
+    public FixedString32Bytes FixedTest = "Initial";
+    [NaughtyAttributes.Button]
+    public void ReadFixedTest()
+    {
+        Debug.Log(FixedTest.ToString());
+    }
+    [NaughtyAttributes.Button]
+    public void SetFixedTest()
+    {
+        FixedTest = "Hello World";
+    }
+
 }
