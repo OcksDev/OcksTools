@@ -1,5 +1,10 @@
 
 ------------
+   v1.2.3
+- It begins...
+------------
+
+------------
    v1.2.2
 - Massive Dialog System Improvements!
   - New Conditional functions, which, just like variables, can easily be defined via code
