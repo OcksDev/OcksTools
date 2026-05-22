@@ -718,6 +718,25 @@ public static class OXFunctions
         return ti;
     }
 
+    public static T RandomElement<T>(this List<T> ti)
+    {
+        return ti[UnityEngine.Random.Range(0, ti.Count)];
+    }
+
+    public static T RandomElement<T>(this T[] ti)
+    {
+        return ti[UnityEngine.Random.Range(0, ti.Length)];
+    }
+
+    public static KeyValuePair<T, T2> RandomElement<T, T2>(this Dictionary<T, T2> ti)
+    {
+        return ti.ToList().RandomElement();
+    }
+    public static T RandomElement<T>(this HashSet<T> ti)
+    {
+        return ti.ToList().RandomElement();
+    }
+
     public static Vector3 AllignZ(this Vector3 v, float z)
     {
         v.z = z;

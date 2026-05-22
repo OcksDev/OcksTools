@@ -45,6 +45,7 @@
   - Added toggle to opt-out of automatic saving and loading dialog state
   - Preprocessors now should be able to recursively parse variables
   - Internal usage of variables now uses existing Get/Set methods for more consistent behavior
+  - Added stored regexes to make the parsing like 0.0001% faster
 - New AutoCompressedInspector and CompressedInspector unity editor classes which flatten an object into its fields in the inspector
   - Also AutoCompressedInspectorWithName which keeps the name of the object visible in the inspector and indents the fields
   - Added AutoCompressField c# attribute to allow you to just flatten a specific field instead of the whole object type
@@ -64,6 +65,8 @@
   - Fixed inspector duplicate values lol
 - New ShowFixedBetter c# attribute for FixedStringXBytes fields, makes them actually readable and cool
   - Entirely slop coded this one because I hate writing custom inspector stuff
+- New Random Functions
+  - Added RandomElement() extension method for Lists, Arrays, Dictionaries, and Hashsets
 - Misc
   - IDSync_Client now has a property to get the ID from the component itself
   - IDSync_Object's debug property to view ID from the component has been made editor-only

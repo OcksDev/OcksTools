@@ -378,10 +378,14 @@ public class DialogLol : SingleInstance<DialogLol>
     [HideInInspector]
     public bool backwardskip = false;
 
+    private static readonly Regex LeadingWhitespaceRegex = new Regex(@"^[ \n]+", RegexOptions.Compiled);
+
+    private static readonly Regex TrailingWhitespaceRegex = new Regex(@"[ \n]+$", RegexOptions.Compiled);
     public static string CleanText(string a)
     {
-        a = Regex.Replace(a, @"^[ \n]+", "");
-        a = Regex.Replace(a, @"[ \n]+$", "");
+        a = LeadingWhitespaceRegex.Replace(a, "");
+        a = TrailingWhitespaceRegex.Replace(a, "");
+
         return a;
     }
 

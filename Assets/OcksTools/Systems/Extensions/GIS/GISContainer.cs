@@ -86,7 +86,7 @@ public class GISContainer : MonoBehaviour
             //this is some debug shit for creating a bunch of randomly generated new containers.
             foreach (var s in slots)
             {
-                s.Held_Item = new GISItem(GISLol.Instance.Items[UnityEngine.Random.Range(0, GISLol.Instance.Items.Count)].Name);
+                s.Held_Item = new GISItem(GISLol.Instance.Items.RandomElement().Name);
                 s.Held_Item.Amount = new(69);
                 s.Held_Item.Container = this;
                 if (s.Held_Item.Name == "Empty")

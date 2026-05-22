@@ -214,7 +214,7 @@ public class OXGenerator_Username : MonoBehaviour
     private string PullNoun()
     {
         var a = Converter.StringToList(Nouns.text, System.Environment.NewLine);
-        return a[Random.Range(0, a.Count)];
+        return a.RandomElement();
     }
     private string PullNounEnd()
     {
@@ -234,17 +234,17 @@ public class OXGenerator_Username : MonoBehaviour
     private string PullName()
     {
         var a = Converter.StringToList(Names.text, System.Environment.NewLine);
-        return a[Random.Range(0, a.Count)];
+        return a.RandomElement();
     }
     private string PullEnder()
     {
         var a = Converter.StringToList(Enders.text, System.Environment.NewLine);
-        return a[Random.Range(0, a.Count)];
+        return a.RandomElement();
     }
     private string PullMod()
     {
         var a = Converter.StringToList(Mods.text, System.Environment.NewLine);
-        return a[Random.Range(0, a.Count)];
+        return a.RandomElement();
     }
     private CapStyle GetCap()
     {

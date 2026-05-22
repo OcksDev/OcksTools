@@ -18,7 +18,7 @@ public class ShowFixedBetterAttribute : Attribute { }
 #if UNITY_EDITOR
 
 [CustomPropertyDrawer(typeof(FixedString32Bytes))]
-public class FixedString32Drawer : FixedStringDrawerBase
+public class _FixedString32Drawer : _FixedStringDrawerBase
 {
     protected override int MaxBytes => 29;
     protected override string ReadStr(object o) => ((FixedString32Bytes)o).ToString();
@@ -26,7 +26,7 @@ public class FixedString32Drawer : FixedStringDrawerBase
 }
 
 [CustomPropertyDrawer(typeof(FixedString64Bytes))]
-public class FixedString64Drawer : FixedStringDrawerBase
+public class _FixedString64Drawer : _FixedStringDrawerBase
 {
     protected override int MaxBytes => 61;
     protected override string ReadStr(object o) => ((FixedString64Bytes)o).ToString();
@@ -34,7 +34,7 @@ public class FixedString64Drawer : FixedStringDrawerBase
 }
 
 [CustomPropertyDrawer(typeof(FixedString128Bytes))]
-public class FixedString128Drawer : FixedStringDrawerBase
+public class _FixedString128Drawer : _FixedStringDrawerBase
 {
     protected override int MaxBytes => 125;
     protected override string ReadStr(object o) => ((FixedString128Bytes)o).ToString();
@@ -42,7 +42,7 @@ public class FixedString128Drawer : FixedStringDrawerBase
 }
 
 [CustomPropertyDrawer(typeof(FixedString512Bytes))]
-public class FixedString512Drawer : FixedStringDrawerBase
+public class _FixedString512Drawer : _FixedStringDrawerBase
 {
     protected override int MaxBytes => 509;
     protected override string ReadStr(object o) => ((FixedString512Bytes)o).ToString();
@@ -50,14 +50,14 @@ public class FixedString512Drawer : FixedStringDrawerBase
 }
 
 [CustomPropertyDrawer(typeof(FixedString4096Bytes))]
-public class FixedString4096Drawer : FixedStringDrawerBase
+public class _FixedString4096Drawer : _FixedStringDrawerBase
 {
     protected override int MaxBytes => 4093;
     protected override string ReadStr(object o) => ((FixedString4096Bytes)o).ToString();
     protected override object ToFixed(string s) => (FixedString4096Bytes)s;
 }
 
-public abstract class FixedStringDrawerBase : PropertyDrawer
+public abstract class _FixedStringDrawerBase : PropertyDrawer
 {
     protected abstract int MaxBytes { get; }
     protected abstract string ReadStr(object o);

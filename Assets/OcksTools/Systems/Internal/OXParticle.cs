@@ -38,7 +38,7 @@ public class OXParticle : MonoBehaviour
             case ParticleStartType.None:
                 break;
             case ParticleStartType.Random:
-                ParticleSystems[Random.Range(0, ParticleSystems.Count)].Play();
+                ParticleSystems.RandomElement().Play();
                 break;
 
         }

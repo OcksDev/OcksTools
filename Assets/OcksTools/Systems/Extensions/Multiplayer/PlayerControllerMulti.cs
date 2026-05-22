@@ -7,6 +7,7 @@ public class PlayerControllerMulti : NetworkBehaviour
     public float move_speed = 2;
     public bool Owner;
     public Vector3 move = new Vector3(0, 0, 0);
+
     // Start is called before the first frame update
     private void Start()
     {
