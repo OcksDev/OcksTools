@@ -413,6 +413,8 @@ public class DialogLol : SingleInstance<DialogLol>
         // conditional that must be true for the attribute to be applied, can be inverted with !=
         //   {*VariableName==SomeValue}<AttributeName=Value>
         //   {*VariableName!=SomeValue}<AttributeName=Value>
+        // pre-processor that runs on file load, replaces itself with a random item from the literal text contained within (runs before the other pre-processor)
+        //   @[Item1,Item2,Item3]
         // pre-processor that runs on file load, gets replaced with the contents of the variable
         //   @<VariableName>
 
@@ -1281,7 +1283,21 @@ public class DialogLol : SingleInstance<DialogLol>
             ppsex = LanguageFileIndexes[filename].GetDefaultData();
         }
 
-        //pre-processing
+        //pre-processing randoms
+        var smegglesnin2 = Regex.Matches(ppsex, @"@\[.*?\]").ToList();
+        for (int i = 0; i < smegglesnin2.Count; i++)
+        {
+            int j = smegglesnin2.Count - 1;
+            j -= i;
+            var s = smegglesnin2[j].Value;
+            s = s.Substring(0, s.Length - 1);
+            s = s.Substring(2);
+            var list = s.StringToList(",");
+            s = list.RandomElement();
+            ppsex = ppsex.Substring(0, smegglesnin2[j].Index) + s + ppsex.Substring(smegglesnin2[j].Index + smegglesnin2[j].Length);
+        }
+
+        //pre-processing inserts
         var smegglesnin = Regex.Matches(ppsex, @"@<.*?>").ToList().AToB((x) => x.Value).RemoveDuplicates();
         for (int i = 0; i < smegglesnin.Count; i++)
         {

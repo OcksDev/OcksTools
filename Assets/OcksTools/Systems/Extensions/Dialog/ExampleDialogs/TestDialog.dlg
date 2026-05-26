@@ -1,6 +1,6 @@
 -Test Dialog-
 </> <Name=Gamer> <Speed=10, -, 1> <TitleColor=150,0,0,255> <TextColor=150,0,0,255> <BgColor=150,0,0,255>
-</> Gaming time <color=#000000>Gaming time</color></color></color></color></color> Gaming time<Name=Fuck><TitleColor=75,0,150,255><TextColor=150,150,0,255><Name=Fuck><Name=Fuck><Name=Fuck><Name=Fuck> Gaming <Text=*Fuck> Gaming <*TestVar=*Fuck> Gaming <*=*Fuck> Gaming time Gaming time Gaming time Gaming timeGaming time Gaming time
+</> Gaming time <color=#000000>Gaming time</color></color></color></color></color> Gaming time<Name=Fuck><TitleColor=75,0,150,255><TextColor=150,150,0,255><Name=Fuck><Name=Fuck><Name=Fuck><Name=Fuck> Gaming <Text=*Fuck> Gaming <*TestVar=*Fuck> Gaming <*=*Fuck> Gaming time Gaming time Gaming time Gaming timeGaming time Gaming time <Text=@[1,2,3,4,5,6,7,8]>
 </> 
 </> <Speed=10,-,1> <Name=Boner> {!Rewatched}<RichText=False> <SoundOnType=A>
 </> I eat hair, <Name=Baller>Disabled Rich Text{Rewatched}<*=~HiddenMessage> {*Rewatched==Yes}<*=~HiddenMessage2> {*Rewatched==Never}<*=~HiddenMessage3> {*Rewatched!=Yes}<*=~HiddenMessage3>

@@ -23,13 +23,6 @@ public class GISDisplay : MonoBehaviour
     {
         if (item == null) item = new(new GISItem());
 
-        /*if (StoreOldAndCompare && !force)
-        {
-            if (olditem == item) return;
-            olditem = item;
-        }*/
-
-
 
         if (!hasfoundcomponents) GetStuff();
         var data = new GISDisplayData(item);

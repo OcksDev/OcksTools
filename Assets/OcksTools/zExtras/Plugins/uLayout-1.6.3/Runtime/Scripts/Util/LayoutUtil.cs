@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2025 Alex Howe
+    Copyright (c) 2026 Alex Howe
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -42,8 +42,12 @@ namespace Poke.UI
             DrawDebugBox((Vector3)rect.position + new Vector3(0, 0, z), rect.width, rect.height, color);
         }
         
-        public static Vector2 With(this Vector2 vec, float? x = null, float? y = null) {
-            return new Vector2(x ?? vec.x, y ?? vec.y);
+        public static Vector2 SetX(this Vector2 v, float x) {
+            return new Vector2 (x, v.y);
+        }
+        
+        public static Vector2 SetY(this Vector2 v, float y) {
+            return new Vector2 (v.x, y);
         }
     }
     

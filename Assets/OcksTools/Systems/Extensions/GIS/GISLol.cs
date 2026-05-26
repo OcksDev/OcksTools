@@ -359,7 +359,9 @@ public class GISDisplayData
 
     public GISDisplayData(GISItem gissy)
     {
-        Images = new Sprite[1] { GISLol.Instance.ItemDict[gissy.Name].Sprite };
+        var itemdata = GISLol.Instance.ItemDict[gissy.Name];
+        Images = new Sprite[1] { itemdata.Sprite };
         Count = gissy.Amount > 0 ? "x" + gissy.Amount : "";
+        if (itemdata.MaxAmount <= 1 && gissy.Amount <= 1) Count = "";
     }
 }

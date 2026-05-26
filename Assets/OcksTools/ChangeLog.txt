@@ -1,7 +1,11 @@
 
 ------------
    v1.2.3
-- It begins...
+- Dialog System Improvements
+  - New "@[Item1,Item2,Item3]" style pre-processor, which selects one of the elements randomly to replace itself with
+  - DLG File Highlighter has been updated to match new language rules
+- Misc
+  - uLayout updated from v1.4.2 to v1.6.3
 ------------
 
 ------------

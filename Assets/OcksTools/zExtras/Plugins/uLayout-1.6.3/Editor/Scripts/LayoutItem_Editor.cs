@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2025 Alex Howe
+    Copyright (c) 2026 Alex Howe
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -22,15 +22,25 @@ namespace Poke.UI
     ]
     public class LayoutItem_Editor : Editor
     {
+        private LayoutItem _item;
+
+        private SerializedProperty _log;
         private SerializedProperty _ignoreLayout;
         private SerializedProperty _sizing;
 
-        protected virtual void Awake() {
+        protected virtual void OnEnable() {
+            _item = target as LayoutItem;
+
+            _log = serializedObject.FindProperty("m_log");
             _ignoreLayout = serializedObject.FindProperty("m_ignoreLayout");
             _sizing = serializedObject.FindProperty("m_sizing");
         }
 
         public override void OnInspectorGUI() {
+            if(!_item)
+                return;
+            
+            EditorGUILayout.PropertyField(_log);
             EditorGUILayout.PropertyField(_ignoreLayout);
             
             // disable sizing options if ignoreLayout is true
@@ -38,7 +48,15 @@ namespace Poke.UI
             EditorGUILayout.PropertyField(_sizing);
             GUI.enabled = true;
 
-            serializedObject.ApplyModifiedProperties();
+            if(serializedObject.hasModifiedProperties) {
+                serializedObject.ApplyModifiedProperties();
+                
+                foreach(var obj in serializedObject.targetObjects) {
+                    (obj as LayoutItem).SetDirty();
+                }
+                
+                EditorApplication.QueuePlayerLoopUpdate();
+            }
         }
     }
 }

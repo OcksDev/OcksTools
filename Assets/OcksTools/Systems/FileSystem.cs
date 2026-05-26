@@ -177,7 +177,6 @@ public class FileSystem : SingleInstance<FileSystem>
         DDH.ErrorLol = false;
         UnityWebRequest webRequest = UnityWebRequestMultimedia.GetAudioClip(
             fileName, AudioType.MPEG);
-        //Debug.Log("SexPath: "+ DirectoryLol + "/" + fileName);
         yield return webRequest.SendWebRequest();
         try
         {

@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2025 Alex Howe
+    Copyright (c) 2026 Alex Howe
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -28,9 +28,10 @@ namespace Poke.UI
         private SerializedProperty _justifyContent;
         private SerializedProperty _alignContent;
         private SerializedProperty _innerSpacing;
+        private SerializedProperty _ignoreChildScale;
         
-        protected override void Awake() {
-            base.Awake();
+        protected override void OnEnable() {
+            base.OnEnable();
             _layout = target as Layout;
 
             _padding = serializedObject.FindProperty("m_padding");
@@ -38,10 +39,14 @@ namespace Poke.UI
             _justifyContent = serializedObject.FindProperty("m_justifyContent");
             _alignContent = serializedObject.FindProperty("m_alignContent");
             _innerSpacing = serializedObject.FindProperty("m_innerSpacing");
+            _ignoreChildScale = serializedObject.FindProperty("m_ignoreChildScale");
         }
 
         public override void OnInspectorGUI() {
             base.OnInspectorGUI();
+
+            if(!_layout)
+                return;
 
             EditorGUILayout.PropertyField(_padding);
             EditorGUILayout.PropertyField(_direction);
@@ -53,15 +58,19 @@ namespace Poke.UI
             }
             EditorGUILayout.PropertyField(_innerSpacing);
             GUI.enabled = true;
+            
+            EditorGUILayout.PropertyField(_ignoreChildScale);
 
             if(serializedObject.hasModifiedProperties) {
-                _layout.SetDirty();
                 serializedObject.ApplyModifiedProperties();
+                foreach(var obj in serializedObject.targetObjects) {
+                    (obj as Layout).SetDirty();
+                }
             }
             
             EditorGUILayout.Space();
             EditorGUILayout.HelpBox(
-                $"Tracking {_layout.ChildCount} layout elements." + (_layout.GrowChildCount > 0 ? $"\n({_layout.GrowChildCount} grow)" : ""),
+                $"Tracking {_layout.ChildCount} layout elements.\nHorizontal Grow: {_layout.GrowChildCount.x}, Vertical Grow: {_layout.GrowChildCount.y}",
                 MessageType.Info
             );
             if(GUILayout.Button("Refresh Child Cache")) {

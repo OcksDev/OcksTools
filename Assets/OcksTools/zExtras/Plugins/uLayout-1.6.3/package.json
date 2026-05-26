@@ -1,7 +1,7 @@
 {
   "name": "com.pokeblokdude.ulayout",
   "displayName": "uLayout",
-  "version": "1.4.2",
+  "version": "1.6.3",
   "description": "A simple UI layout library for uGUI.",
   "dependencies": {},
   "homepage": "https://github.com/pokeblokdude/uLayout",
