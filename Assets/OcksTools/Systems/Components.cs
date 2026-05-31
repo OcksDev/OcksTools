@@ -65,14 +65,15 @@ public class ComponentHolder
     }
     public T GetComponent<T>() where T : OXComponentBase
     {
-        var s = OXComponentData.ClassToIdentifier[typeof(T).Name];
-        if (!Components.ContainsKey(s)) return null;
-        return (T)Components[s];
+        return (T)Components.GetValueOrDefault(OXComponentData.ClassToIdentifier[typeof(T).Name], null);
+    }
+    public T GetComponent<T>(string s) where T : OXComponentBase
+    {
+        return (T)Components.GetValueOrDefault(s, null);
     }
     public bool HasComponent<T>() where T : OXComponentBase
     {
-        var s = OXComponentData.ClassToIdentifier[typeof(T).Name];
-        return Components.ContainsKey(s);
+        return Components.ContainsKey(OXComponentData.ClassToIdentifier[typeof(T).Name]);
     }
     public bool HasComponent(string s)
     {
@@ -121,13 +122,6 @@ public abstract class OXComponentBase
     /// Converts the current component instance into its string representation for serialization.
     /// </summary>
     public abstract string GetString();
-    /// <summary>
-    /// Method that can be called on loading a component
-    /// </summary>
-    public virtual void OnLoad(object caller)
-    {
-
-    }
 
     /// <summary>
     /// Creates a new instance by parsing the specified string representation.

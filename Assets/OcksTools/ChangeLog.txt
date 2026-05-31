@@ -5,6 +5,9 @@
   - New "@[Item1,Item2,Item3]" style pre-processor, which selects one of the elements randomly to replace itself with
   - DLG File Highlighter has been updated to match new language rules
 - Misc
+  - Added new optional overload for GetComponent in OXComponents, which takes a string to speed up the process
+  - Slightly compacted the code of GetComponent/HasComponent in OXComponents, also might run a tiny bit faster now idk
+  - Removed OnLoad() method from OXComponents, it was redundant
   - uLayout updated from v1.4.2 to v1.6.3
 ------------
 
@@ -37,7 +40,7 @@
     - TextL
       - This one shows the text within itself literally, no variable parsing
   - Added some Dialog Attribute shorthands
-    - "<Textl=...>" can be written as "<=...>"
+    - "<TextL=...>" can be written as "<=...>"
     - "<Event=...>" can be written as "<...>"
       - Shorthand only works for events which aren't named an existing attribute keyword like "End" or "Save" 
       - (you can still call these edge cases using the non-shortened event call "<Event=...>")
