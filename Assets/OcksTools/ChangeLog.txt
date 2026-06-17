@@ -1,14 +1,17 @@
 
 ------------
    v1.2.3
+- Organization Improvements
+  - All system-specific assets/resources have been moved into their own section within OXResources
 - Dialog System Improvements
   - New "@[Item1,Item2,Item3]" style pre-processor, which selects one of the elements randomly to replace itself with
   - DLG File Highlighter has been updated to match new language rules
+  - New DialogNPC base class to provide a simple and extendable jumping point
 - Misc
   - Added new optional overload for GetComponent in OXComponents, which takes a string to speed up the process
   - Slightly compacted the code of GetComponent/HasComponent in OXComponents, also might run a tiny bit faster now idk
   - Removed OnLoad() method from OXComponents, it was redundant
-  - uLayout updated from v1.4.2 to v1.6.3
+  - Removed uLayout plugin, it is cool, but I'd rather it be seperate.
 ------------
 
 ------------
