@@ -1,3 +1,4 @@
+using System.Globalization;
 using UnityEngine;
 
 public class Render
@@ -35,6 +36,11 @@ public class Render
     {
         if (QualitySettings.vSyncCount > 1) throw new System.Exception("Fuck your dumb ass higher vsyncs");
         return QualitySettings.vSyncCount == 1;
+    }
+    public static string GetLanguage()
+    {
+        //should be forced to "en", based on some code in Converter.cs, feel free to remove the forced language culture when you want to deal with localization fr.
+        return CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
     }
     public static bool GetAnisotropicFiltering()
     {
@@ -93,6 +99,7 @@ public class _ConsoleRenderQueryererr
                 .Append(new OXCommand("hz").Action(() => Console.Log(Render.GetMonitorRefreshRate())))
                 .Append(new OXCommand("monitor_size").Action(() => Console.Log(Render.GetMonitorSize())))
                 .Append(new OXCommand("window_size").Action(() => Console.Log(Render.GetWindowSize())))
+                .Append(new OXCommand("language").Action(() => Console.Log(Render.GetLanguage())))
                 );
             ConsoleLol.Instance.Add(new OXCommand("setrender")
                 .Append(new OXCommand("fps").Append(new OXCommand(OXCommand.ExpectedInputType.Long).Action((r) => Render.SetTargetFramerate(int.Parse(r.com[2])))))

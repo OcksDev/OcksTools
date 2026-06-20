@@ -13,6 +13,8 @@
   - NumToRead and other misc code shouldn't break on different cultures anymore (forced en-US)
   - NumToRead scientific notation standardized to use "E" instead of "e"
   - All system-specific assets/resources have been moved into their own section within OXResources
+  - Getrender has a new subcommand, "language" to get the current language detected by the program
+    - Since this is being forced to en-US for now, it should just return "en"
   - Removed uLayout plugin, it is cool, but I'd rather it be seperate.
 ------------
 
