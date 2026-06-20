@@ -1,12 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
-
-#if UNITY_EDITOR
-#endif
-
 public readonly struct BetterList<T>
 {
     private readonly List<T> _values;
@@ -37,6 +34,11 @@ public static class Converter
 
     public static Dictionary<string, Func<string, object>> ConversionMethods = new Dictionary<string, Func<string, object>>();
 
+    [RuntimeInitializeOnLoadMethod]
+    public static void SetCulture()
+    {
+        CultureInfo.CurrentCulture = System.Globalization.CultureInfo.CreateSpecificCulture("en-US");
+    }
 
     // to use custom objects, mark a function which takes in a string as [ConversionMethod]
     public static A StringToObject<A>(this string data, string explicit_type = null)
@@ -566,7 +568,7 @@ public static class Converter
                     n = boner + nmb + deci;
                     break;
                 case 3:
-                    // roman numerals, not very fast but cool, cant do big numbers but thats a fault of roman numerals
+                    // roman numerals, not very fast, but cool, cant do larger numbers but thats a fault of roman numerals
                     string fina = "";
                     Dictionary<string, string> weewee = new Dictionary<string, string>
                     {

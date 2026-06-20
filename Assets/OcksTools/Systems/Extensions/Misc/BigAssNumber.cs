@@ -72,12 +72,12 @@ public struct BigAssNumber
 
     public override string ToString()
     {
-        return $"{Mantissa}e{Exponent}";
+        return $"{Mantissa}E{Exponent}";
     }
 
     public static BigAssNumber FromString(string a)
     {
-        var split = a.Split('e');
+        var split = a.Split('E');
         var d = new BigAssNumber(double.Parse(split[0]), long.Parse(split[1]));
         return d;
     }
@@ -323,7 +323,7 @@ public static class BigAssNumberStuff
         var x = (Math.Max(d.Exponent - 3, 0) / 300);
         if (x >= 2)
         {
-            return $"{d.Mantissa.ToString("F2")}e+{d.Exponent}";
+            return $"{d.Mantissa.ToString("F2")}E{d.Exponent}";
         }
         var f = "F2";
         var shi = d.Exponent % 3;

@@ -10,6 +10,8 @@
   - Slightly compacted the code of GetComponent/HasComponent, also might run a tiny bit faster now idk
   - Removed OnLoad() method, it was redundant
 - Misc
+  - NumToRead and other misc code shouldn't break on different cultures anymore (forced en-US)
+  - NumToRead scientific notation standardized to use "E" instead of "e"
   - All system-specific assets/resources have been moved into their own section within OXResources
   - Removed uLayout plugin, it is cool, but I'd rather it be seperate.
 ------------
