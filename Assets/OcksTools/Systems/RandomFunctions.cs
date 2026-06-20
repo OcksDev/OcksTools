@@ -482,6 +482,25 @@ public static class OXFunctions
     {
         return Vector2.Dot(baseVector, directionVector) * directionVector.normalized;
     }
+
+    public static Vector3 TransformFromFOVs(this Vector3 point_with_offset, Quaternion rotation, float start_fov, float target_fov)
+    {
+        Vector3 local = Quaternion.Inverse(rotation) * point_with_offset;
+
+        float scale =
+            Mathf.Tan(target_fov * Mathf.Deg2Rad * 0.5f) /
+            Mathf.Tan(start_fov * Mathf.Deg2Rad * 0.5f);
+
+        local.x *= scale;
+        local.y *= scale;
+
+        return rotation * local;
+    }
+
+    public static Vector3 TransformFromFOVs(this Vector3 point, Transform cam_transform, float start_fov, float target_fov)
+    {
+        return TransformFromFOVs(point - cam_transform.position, cam_transform.rotation, start_fov, target_fov) + cam_transform.position;
+    }
     public static int Mod(this int r, int max) => ((r % max) + max) % max;
     public static float Mod(this float r, float max) => ((r % max) + max) % max;
     public static double Mod(this double r, double max) => ((r % max) + max) % max;

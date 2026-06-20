@@ -9,6 +9,8 @@
   - Added new optional overload for GetComponent, which takes a string to speed up the process
   - Slightly compacted the code of GetComponent/HasComponent, also might run a tiny bit faster now idk
   - Removed OnLoad() method, it was redundant
+- New Random Functions
+  - TransformFromFOVs extension method, allows you to easily take a take a position and move it between different FOVs while staying at a consistent position on the screen
 - Misc
   - NumToRead and other misc code shouldn't break on different cultures anymore (forced en-US)
   - NumToRead scientific notation standardized to use "E" instead of "e"
