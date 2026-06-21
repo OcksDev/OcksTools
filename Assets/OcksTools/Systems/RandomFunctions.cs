@@ -57,27 +57,26 @@ public class RandomFunctions : SingleInstance<RandomFunctions>
         };
     }
 
-    public static float SpreadCalc(int index, int max, float spread, bool fix = false)
+    public static float SpreadConstantAngle(int index, int max, float spread)
     {
-        // a spread calculation used to spread out objects over an angle
-        int i = max;
-        int j = index;
-        float k = spread;
-        k /= 2;
-        float p = j * spread;
-        p += fix ? k : -k;
-        p -= i * spread / 2;
+        // a spread calculation used to spread out angles
+        float p = index * spread;
+        p += spread / 2;
+        p -= max * spread / 2;
         return p;
     }
-    public static void SpreadCalcArc(int index, int max, float total_arc, int buffer = 2, bool fix = false)
+    public static float SpreadArc(int index, int max, int max_expands, float max_arc)
     {
-        //untested, should allow for slightly more complex arcs
-        // should work the same as SpreadCalc(), except that it expands up to a point first
-        buffer = Math.Clamp(buffer, 2, 1000000);
-        float f = (total_arc * (buffer - 1));
-        if (max > 1) f /= (max - 1);
-        float spread = f;
-        SpreadCalc(index, max, spread, fix);
+        // a spread calculation used to spread out angles evenly across a maximum arc, and if there are less than the max_expands, it will use (max_arc / max_expands) for each new item until the maximum arc is reached.
+        if (max <= 1) return 0;
+
+        max_expands = Math.Max(1, max_expands);
+
+        if (max_expands - max >= 0)
+        {
+            return SpreadConstantAngle(index, max, max_arc / max_expands);
+        }
+        return SpreadConstantAngle(index, max, max_arc / max);
     }
 
     public static string CharPrepend(string input, int length, char nerd = '0')
