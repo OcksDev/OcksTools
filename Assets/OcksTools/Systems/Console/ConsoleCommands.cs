@@ -63,7 +63,7 @@ public class ConsoleCommands : MonoBehaviour
     }
     public static void Test_cleanstack()
     {
-        var a = new TestClass2(OXFunctions.GetCleanStackTrace, null, Vector3.one, null);
+        var a = new TestClass2(() => Environment.StackTrace, null, Vector3.one, null);
         "--------------".Log();
         a.run(OXFunctions.GetCleanStackTrace);
         "----".Log();

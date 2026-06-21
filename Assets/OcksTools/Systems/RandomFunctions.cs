@@ -445,6 +445,10 @@ public static class OXFunctions
         expo = 1 - expo;
         return 1 - Mathf.Pow(expo, Time.deltaTime * 50);
     }
+    public static float TimeStableLerp(this double expo)
+    {
+        return TimeStableLerp((float)expo);
+    }
     public static float TimeStablePow(this float expo, float dt)
     {
         return Mathf.Pow(expo, dt * 50);
@@ -453,6 +457,10 @@ public static class OXFunctions
     {
         expo = 1 - expo;
         return 1 - Mathf.Pow(expo, dt * 50);
+    }
+    public static float TimeStableLerp(this double expo, float dt)
+    {
+        return TimeStableLerp((float)expo, dt);
     }
 
     public static Vector3 PerpendicularTowardDirection(this Vector3 baseVector, Vector3 directionVector)
@@ -580,9 +588,14 @@ public static class OXFunctions
 
 
 
-    public static List<T> AddIfCan<T>(this List<T> ti, T t)
+    public static List<T> AddIfUnique<T>(this List<T> ti, T t)
     {
         if (!ti.Contains(t)) ti.Add(t);
+        return ti;
+    }
+    public static Dictionary<T, T2> AddIfUnique<T, T2>(this Dictionary<T, T2> ti, T t, T2 v)
+    {
+        if (!ti.ContainsKey(t)) ti.Add(t, v);
         return ti;
     }
     public static List<T> CombineLists<T>(this List<T> ti, List<T> tee)
@@ -649,20 +662,25 @@ public static class OXFunctions
     public static bool ListMatchesListOrderless<T>(this List<T> ti, List<T> tee)
     {
         if (ti.Count != tee.Count) return false;
-        var tea = new List<T>(ti);
-        var teatea = new List<T>(tee);
-        for (int t = 0; t < tea.Count;)
+
+        var counts = new Dictionary<T, int>();
+
+        foreach (var item in ti)
         {
-            if (!teatea.Contains(tea[0])) return false;
-            else
-            {
-                teatea.Remove(tea[0]);
-                tea.RemoveAt(0);
-            }
+            counts.TryGetValue(item, out int c);
+            counts[item] = c + 1;
         }
+
+        foreach (var item in tee)
+        {
+            if (!counts.TryGetValue(item, out int c) || c == 0)
+                return false;
+
+            counts[item] = c - 1;
+        }
+
         return true;
     }
-
     public static Vector2 GetActualSizeOfUI(this RectTransform re) =>
         //sizeDelta and Rect.width both dont get the actual size, somehow
         (re.rect.max - re.rect.min);
@@ -684,7 +702,7 @@ public static class OXFunctions
             remain = Regex.Replace(remain, @"\)", $"</color>)</color>");
             remain = Regex.Replace(remain, @"\[", $"<color=#d68829>[");
             remain = Regex.Replace(remain, @"\]", $"]</color>");
-            remain = Regex.Replace(remain, @" : ", $"<color=#d4d948> : ");
+            remain = Regex.Replace(remain, @" : ", $"<color=#ad66e3> : ");
             outp.Add(nerd + remain + "</color>");
         }
         return outp.ListToString("\n");

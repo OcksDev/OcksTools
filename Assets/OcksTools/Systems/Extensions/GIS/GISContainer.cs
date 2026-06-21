@@ -566,7 +566,7 @@ public class GISContainer : MonoBehaviour
             int j = i;
             if (!reversed) j = (slots.Count - 1) - i;
             slots[j].Held_Item = items[i];
-            interacts.AddIfCan(slots[j]);
+            interacts.AddIfUnique(slots[j]);
         }
         foreach (GISSlot slot in interacts)
         {
