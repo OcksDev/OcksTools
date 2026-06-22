@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using UnityEngine;
+using WebSocketSharp;
 
 /*
  * What is this?
@@ -22,7 +24,7 @@ public class OXFile
     public const double ParserVersion = 1;
     public static bool DoObsure = true;
     //no touchy
-    public double FileVersion = 0;
+    public double FileVersion = 1;
     public OXFileData Data = new OXFileData(OXFileData.OXFileType.OXFileData);
     public bool ReadFile(string str)
     {
@@ -110,6 +112,7 @@ public class OXFileData
     public byte DataByte;
     public int DataInt;
     public bool DataBool;
+    public _IOXFile DataCustom;
     public Dictionary<string, OXFileData> DataOXFiles = new Dictionary<string, OXFileData>();
     public List<OXFileData> DataListOXFiles = new List<OXFileData>();
     public byte[] DataRaw;
@@ -173,6 +176,9 @@ public class OXFileData
                 break;
             case OXFileType.DictStringString:
                 DataDictStringString = Get_DictStringString();
+                break;
+            case OXFileType.Custom:
+                DataCustom = Get_Custom();
                 break;
             case OXFileType.ListOXFileData:
                 DataListOXFiles = Get_ListOXFileData();
@@ -258,6 +264,14 @@ public class OXFileData
         var dat = new OXFileData();
         dat.Type = OXFileData.OXFileType.ListString;
         dat.DataListString = DataIn;
+        Add(Name, dat);
+    }
+
+    public void Add(string Name, _IOXFile DataIn)
+    {
+        var dat = new OXFileData();
+        dat.Type = OXFileData.OXFileType.Custom;
+        dat.DataCustom = DataIn;
         Add(Name, dat);
     }
     public void Add(string Name, Dictionary<string, string> DataIn)
@@ -387,6 +401,13 @@ public class OXFileData
                     ret.Add(b);
                 }
                 break;
+            case OXFileType.Custom:
+                var bytez2 = DataCustom.GetBytes();
+                foreach (var b in bytez2)
+                {
+                    ret.Add(b);
+                }
+                break;
             case OXFileType.Raw: //I dont think this will ever be called
                 return DataRaw.ToList();
             case OXFileType.ListString:
@@ -458,6 +479,16 @@ public class OXFileData
     private double Get_Double()
     {
         return BitConverter.ToDouble(DataRaw, 0);
+    }
+
+    public static Dictionary<string, Func<byte[], _IOXFile>> CustomFormats = new();
+
+    private _IOXFile Get_Custom()
+    {
+        byte length = DataRaw[0];
+        byte[] selection = DataRaw.SubArray(1, length);
+        string id = Encoding.UTF8.GetString(selection);
+        return CustomFormats[id](DataRaw.SubArray(length + 1, DataRaw.Length - length - 1));
     }
     private bool Get_Bool()
     {
@@ -542,6 +573,7 @@ public class OXFileData
         Double,
         Bool,
         Raw,
+        Custom,
     }
     private byte[] WankFuckYou(byte[] array, int offset, int length)
     {
@@ -574,6 +606,7 @@ public class OXFileData
             case OXFileType.Bool: return DataBool.ToString();
             case OXFileType.ListString: return Converter.ListToString(DataListString);
             case OXFileType.DictStringString: return Converter.DictionaryToString(DataDictStringString);
+            case OXFileType.Custom: return DataCustom.ToString();
             default: return "Error";
         }
     }
@@ -583,4 +616,47 @@ public class FileRetData
 {
     public int Length;
     public OXFileData me;
+}
+
+public static class OXFileLoader
+{
+    [RuntimeInitializeOnLoadMethod]
+    public static void InitFiles()
+    {
+        OXFileData.CustomFormats.Clear();
+        var g = RandomFunctions.GetListOfInheritors<_IOXFile>();
+        foreach (var f in g)
+        {
+            OXFileData.CustomFormats.Add(f.OXF_GetIdentifier(), f.Link);
+        }
+    }
+}
+
+public interface _IOXFile
+{
+    string OXF_GetIdentifier();
+    byte[] OXF_GetBytes();
+    _IOXFile Link(byte[] data);
+
+    virtual List<byte> GetBytes()
+    {
+        var oxconfirm = Encoding.UTF8.GetBytes(OXF_GetIdentifier());
+        byte length = (byte)oxconfirm.Length;
+        var li = oxconfirm.ToList();
+        li.Insert(0, length);
+        var d = OXF_GetBytes();
+        foreach (byte b in d)
+        {
+            li.Add(b);
+        }
+        return li;
+    }
+}
+public interface IOXFile_SaveLoadable<T> : _IOXFile where T : IOXFile_SaveLoadable<T>
+{
+    T OXF_CreateInstanceFromBytes(byte[] data);
+    _IOXFile _IOXFile.Link(byte[] data)
+    {
+        return OXF_CreateInstanceFromBytes(data);
+    }
 }

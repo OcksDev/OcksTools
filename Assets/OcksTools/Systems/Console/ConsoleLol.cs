@@ -215,6 +215,7 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
             .Append(new OXCommand("refs").Action(ConsoleCommands.Test_refs))
             .Append(new OXCommand("threadedlogs").Action(ConsoleCommands.Test_threadedlogs))
             .Append(new OXCommand("destroy").Action(ConsoleCommands.Test_destroy))
+            .Append(new OXCommand("oxfile").Action(ConsoleCommands.Test_oxfile))
             .Append(new OXCommand("read")
                 .Append(new OXCommand(OXCommand.ExpectedInputType.String).Action(ConsoleCommands.Test_read)))
             .Append(new OXCommand("events").Action(ConsoleCommands.Test_events)));

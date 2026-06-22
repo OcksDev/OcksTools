@@ -24,6 +24,9 @@
   - Added overloads to TimeStableLerp() to allow for a double to be passed and downcast to a float
   - AddIfUnique() varient created for dictionaries
     - Renamed AddIfCan() to AddIfUnique() for the existing list version
+  - Fixed oversight in GetListOfInheritors(), it now also works for finding implementations of interfaces
+- OXFile Improvements
+  - Finally added ability to save/load arbitrary classes so long as they inherit from IOXFile_SaveLoadable<>
 - Misc
   - Big bug fixed in OXEventLayered<>, the name of events is actually used now lol
   - NumToRead and other misc code shouldn't break on different cultures anymore (forced en-US)

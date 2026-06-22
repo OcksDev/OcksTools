@@ -101,6 +101,25 @@ public class ConsoleCommands : MonoBehaviour
     {
         GlobalEvent.Invoke("TestEvent");
     }
+    public static void Test_oxfile()
+    {
+        try
+        {
+            var oxf = new OXFile();
+            oxf.Data.Add("num", 69);
+            oxf.Data.Add("coolnums", new TestClass3(-1, 420));
+            oxf.WriteFile(FileSystem.Instance.GameDirectory + "/Temp.ox", true);
+
+            var oxf2 = new OXFile();
+            oxf2.ReadFile(FileSystem.Instance.GameDirectory + "/Temp.ox");
+            Console.Log($"num: {oxf2.Data["num"].DataInt}");
+            Console.Log($"coolnums: {oxf2.Data["coolnums"].DataCustom}");
+        }
+        catch (Exception e)
+        {
+            Console.LogError(e);
+        }
+    }
     public static void Test_remap()
     {
         Console.Log(0.5.Remap(0, 1, 0, 10));
@@ -567,5 +586,43 @@ public class TestClass2
     public void run(Func<string> inp)
     {
         inp().Log();
+    }
+}
+
+public class TestClass3 : IOXFile_SaveLoadable<TestClass3>
+{
+    public int Data1 = 1;
+    public int Data2 = 2;
+
+    public TestClass3(int a, int b)
+    {
+        Data1 = a;
+        Data2 = b;
+    }
+
+    public TestClass3()
+    {
+
+    }
+
+    public TestClass3 OXF_CreateInstanceFromBytes(byte[] data) => new TestClass3(BitConverter.ToInt32(data, 0), BitConverter.ToInt32(data, data.Length / 2));
+
+
+    public byte[] OXF_GetBytes()
+    {
+        var a = BitConverter.GetBytes(Data1).ToList();
+        var b = BitConverter.GetBytes(Data2).ToList();
+        foreach (var i in b)
+        {
+            a.Add(i);
+        }
+        return a.ToArray();
+    }
+
+    public string OXF_GetIdentifier() => "TC3";
+
+    public override string ToString()
+    {
+        return $"({Data1}/{Data2})";
     }
 }
