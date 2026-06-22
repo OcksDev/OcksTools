@@ -12,7 +12,7 @@ public static class GlobalEvent
     public static void Append(string even, Action method)
     {
         if (!Nerds.ContainsKey(even)) Nerds.Add(even, new OXEvent());
-        Nerds[even].Append(name, method);
+        Nerds[even].Append(method);
     }
 
     public static void Remove(string even, string name)
