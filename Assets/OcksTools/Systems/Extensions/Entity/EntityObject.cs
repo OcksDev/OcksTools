@@ -7,7 +7,7 @@ public class EntityObject : MonoBehaviour
     public EntityOXS Entity;
     public void Awake()
     {
-        Entity.SetSelf(gameObject);
+        Entity.SetSelf(this);
         if (Entity.IsDead)
         {
             KillSelf(Entity, new MultiRef<object, EntityType>(null, EntityType.World));

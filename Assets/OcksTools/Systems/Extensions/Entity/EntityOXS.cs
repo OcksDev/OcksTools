@@ -5,7 +5,7 @@ using static EntityOXS;
 [System.Serializable]
 public class EntityOXS
 {
-    public GameObject Self;
+    public EntityObject Self;
     public EntityType Type = EntityType.Enemy;
     public double Health = 100;
     public double Max_Health = 100;
@@ -13,6 +13,7 @@ public class EntityOXS
     public double Max_Shield = 0;
     public OXEventLayered<EntityOXS, DamageProfile> OnHitEvent = new OXEventLayered<EntityOXS, DamageProfile>();
     public OXEventLayered<EntityOXS, DamageProfile> OnHealEvent = new OXEventLayered<EntityOXS, DamageProfile>();
+    public OXEventLayered<EntityOXS, DamageProfile> OnHealEventPostCalc = new OXEventLayered<EntityOXS, DamageProfile>();
     public OXEventLayered<EntityOXS, MultiRef<object, EntityType>> OnKillEvent = new OXEventLayered<EntityOXS, MultiRef<object, EntityType>>();
     public OXEventLayered<EntityOXS, EffectProfile> OnEffectGain = new OXEventLayered<EntityOXS, EffectProfile>();
     public bool IsDead = false;
@@ -20,8 +21,9 @@ public class EntityOXS
     private EntityType KillerType = EntityType.World;
     public void Hit(DamageProfile hit)
     {
+        OnHitEvent.Append(500, "c", (x, y) => hit.CalcAmount());
         OnHitEvent.Invoke(this, hit);
-        var dmg = hit.CalcAmount();
+        var dmg = hit.StoredDamage;
         KillerObject = hit.SourceObject;
         KillerType = hit.SourceType;
 
@@ -72,7 +74,7 @@ public class EntityOXS
         NPC = 2,
         World = 3,
     }
-    public EntityOXS SetSelf(GameObject self)
+    public EntityOXS SetSelf(EntityObject self)
     {
         Self = self;
         return this;
@@ -89,7 +91,7 @@ public class EntityOXS
 public class DamageProfile
 {
     public double Value;
-    public object SourceObject = null;
+    public EntityObject SourceObject = null;
     public EntityType SourceType = EntityType.World;
     public DamageType HowItWasDealt = DamageType.Unknown;
     public DamageType WhatItWas = DamageType.Unknown;
@@ -97,7 +99,7 @@ public class DamageProfile
     public OXEventLayered<DamageProfile> CalcEvent = new OXEventLayered<DamageProfile>();
     public Vector3? SourceLocation = null;
     public CriticalChance Crit = new(0);
-    public DamageProfile(object src_orbject, EntityType src_type, DamageType How, DamageType What, double TheValue)
+    public DamageProfile(EntityObject src_orbject, EntityType src_type, DamageType How, DamageType What, double TheValue)
     {
         SourceObject = src_orbject;
         SourceType = src_type;
@@ -120,18 +122,19 @@ public class DamageProfile
         SourceLocation = pp.SourceLocation;
         Crit = new(pp.Crit);
     }
+    public double StoredDamage = -1;
     public double CalcAmount()
     {
         var x = Value;
         CalcEvent.Invoke(this);
-        var output_value = Value;
+        StoredDamage = Value;
         Value = x;
         //do some other calculations on output_value
 
-        output_value *= Crit.GetDegree() + 1;
+        StoredDamage *= Crit.GetDegree() + 1;
 
 
-        return output_value;
+        return StoredDamage;
     }
     public enum DamageType // add more as needed
     {

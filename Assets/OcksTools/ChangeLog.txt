@@ -5,6 +5,12 @@
   - New "@[Item1,Item2,Item3]" style pre-processor, which selects one of the elements randomly to replace itself with
   - DLG File Highlighter has been updated to match new language rules
   - New DialogNPC base class to provide a simple and extendable jumping point
+- Entity Improvements
+  - New AggroBase class to more easily make enemy aggrression mechanics
+    - New sub-class, MostDamageAggro, which targets whatever has done the most damage to it
+  - EntityOXS now calculates the hit damage on layer 500 of it's hit event, so things can be scheduled for before or after this
+  - "Self" of EntityOXS was changed to be EntityObject instead of GameObject
+  - "SourceObject" of DamageProfile was changed to be EntityObject instead of System.object
 - OXComponent Improvements
   - Added new optional overload for GetComponent, which takes a string to speed up the process
   - Slightly compacted the code of GetComponent/HasComponent, also might run a tiny bit faster now idk
@@ -19,6 +25,7 @@
   - AddIfUnique() varient created for dictionaries
     - Renamed AddIfCan() to AddIfUnique() for the existing list version
 - Misc
+  - Big bug fixed in OXEventLayered<>, the name of events is actually used now lol
   - NumToRead and other misc code shouldn't break on different cultures anymore (forced en-US)
   - NumToRead scientific notation standardized to use "E" instead of "e"
   - All system-specific assets/resources have been moved into their own section within OXResources

@@ -67,7 +67,6 @@ public class PlayerController3D : MonoBehaviour
         entity = new EntityOXS();
         SkillManager.Instance.AllSkills["DashSkill"].OnSkillActivation.Append("PlayerAction", Dash);
         entity.Skill().Add(new Skill("DashSkill"));
-        entity.SetSelf(gameObject);
         ToggleMouseState(true);
     }
 
