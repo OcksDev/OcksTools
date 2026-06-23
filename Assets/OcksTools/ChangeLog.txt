@@ -28,6 +28,11 @@
 - OXFile Improvements
   - Finally added ability to save/load arbitrary classes so long as they inherit from IOXFile_SaveLoadable<>
   - Optimized the boilerplace space usage of the file format, it should use a bit less space
+- Sound System Improvements
+  - OXSound.SetVolume now respects the 'channel' volume rather than always using SFX, and also applies changes to internal volume
+    - Added UpdateVolume()
+  - Added UpdateAllVolumesCurrentlyInChannel(), runs UpdateVolume on all currently playing audio
+  - Added internal tracker of all currently playing audio which gets pruned every few seconds
 - Misc
   - Big bug fixed in OXEventLayered<>, the name of events is actually used now lol
   - NumToRead and other misc code shouldn't break on different cultures anymore (forced en-US)

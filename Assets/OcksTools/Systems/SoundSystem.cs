@@ -1,4 +1,6 @@
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -14,6 +16,8 @@ public class SoundSystem : SingleInstance<SoundSystem>
     public Dictionary<string, OXSoundData> AudioClipDict = new();
     public Dictionary<string, AudioMixerGroup> AudioMixerDict = new();
     private Dictionary<Transform, List<AudioSource>> AudioSources = new();
+    public Dictionary<AudioSource, int> Generations = new();
+    private Dictionary<string, List<OXSound>> CurrentPlays = new();
 
 
     public OXEvent<OXSound> SoundMod = new();
@@ -60,7 +64,26 @@ public class SoundSystem : SingleInstance<SoundSystem>
                 .Append(new OXCommand(OXCommand.ExpectedInputType.String)
                   .Action(PlaysoundCommandVarient)));
         });
+
+        StartCoroutine(CurrentPlayCleaner());
     }
+
+    public IEnumerator CurrentPlayCleaner()
+    {
+        float wait = 2;
+        while (true)
+        {
+            if (CurrentPlays.Count == 0) { yield return new WaitForSeconds(3); continue; }
+            var c = CurrentPlays.ToList();
+            if (CurrentPlays.Count > 0) wait = 1 / c.Count;
+            foreach (var c2 in c)
+            {
+                c2.Value.RemoveAll(x => !x.IsAlive);
+                yield return new WaitForSeconds(wait);
+            }
+        }
+    }
+
     public void SetVolume(string v, float x)
     {
         Volumes.AddOrUpdate(v, x);
@@ -122,6 +145,15 @@ public class SoundSystem : SingleInstance<SoundSystem>
         SoundMod.Invoke(sound);
         sound._volume *= pvolume;
         sound.psource = FindOpenSource(sound, findexisting);
+        if (sound._pos != null)
+        {
+            Generations.AddIfUnique(sound.psource, -1);
+            int x = Generations[sound.psource];
+            x++;
+            sound._generation = Generations[sound.psource] = x;
+            CurrentPlays.AddIfUnique(sound._channel, new());
+            CurrentPlays[sound._channel].Add(sound);
+        }
     }
 
     public AudioSource FindOpenSource(OXSound sound, bool findexisting = false)
@@ -211,6 +243,16 @@ public class SoundSystem : SingleInstance<SoundSystem>
         return sound;
     }
 
+    public void UpdateAllVolumesCurrentlyInChannel(string ch)
+    {
+        var c = CurrentPlays.GetOrDefine(ch, new());
+        c.RemoveAll(x => !x.IsAlive);
+        foreach (var item in c)
+        {
+            item.UpdateVolume();
+        }
+    }
+
     public void VolumeCommand(OXCommandData dat)
     {
         SetVolume(dat.com_caps[1], float.Parse(dat.com[2]));
@@ -272,6 +314,7 @@ public class OXSound
     public AudioRolloffMode _rolloffMode = AudioRolloffMode.Logarithmic;
     public float _mind = 0;
     public Vector3? _pos = null;
+    public int _generation = -1;
     public OXSound(string name, float volume)
     {
         this.name = name;
@@ -390,10 +433,17 @@ public class OXSound
 
     public void SetVolume(float volume)
     {
-        var vol = 1f;
+        _volume = volume;
+        UpdateVolume();
+    }
+
+    public void UpdateVolume()
+    {
+        var vol = _volume;
         vol *= SoundSystem.Instance.ChannelMult(_channel);
-        vol *= volume;
         psource.volume = vol;
     }
+
+    public bool IsAlive => psource != null && psource.isPlaying && SoundSystem.Instance.Generations[psource] == _generation;
 }
 
