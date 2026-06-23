@@ -27,6 +27,7 @@
   - Fixed oversight in GetListOfInheritors(), it now also works for finding implementations of interfaces
 - OXFile Improvements
   - Finally added ability to save/load arbitrary classes so long as they inherit from IOXFile_SaveLoadable<>
+  - Optimized the boilerplace space usage of the file format, it should use a bit less space
 - Misc
   - Big bug fixed in OXEventLayered<>, the name of events is actually used now lol
   - NumToRead and other misc code shouldn't break on different cultures anymore (forced en-US)

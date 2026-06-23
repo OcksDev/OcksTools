@@ -21,25 +21,20 @@ using WebSocketSharp;
 public class OXFile
 {
     //touch away
-    public const double ParserVersion = 1;
+    public const Int16 ParserVersion = 1;
     public static bool DoObsure = true;
     //no touchy
-    public double FileVersion = 1;
+    public int FileVersion = 1;
     public OXFileData Data = new OXFileData(OXFileData.OXFileType.OXFileData);
     public bool ReadFile(string str)
     {
-        var oxconfirm = Encoding.UTF8.GetBytes("OXFile");
 
 
         var cd = File.ReadAllBytes(str);
-        if (cd.Length < oxconfirm.Length) return false;
-        for (int i = 0; i < oxconfirm.Length; i++)
-        {
-            if (cd[i] != oxconfirm[i]) return false;
-        }
-        int index = oxconfirm.Length;
-        FileVersion = BitConverter.ToDouble(cd, index);
-        index += 8;
+        if (cd.Length < 8) return false;
+        int index = 0;
+        FileVersion = BitConverter.ToInt16(cd, index);
+        index += 2;
         Data = new OXFileData(OXFileData.OXFileType.OXFileData);
         Data.pVersion = FileVersion;
         var ccd = WankFuckYou(cd, index, cd.Length - index);
@@ -60,10 +55,9 @@ public class OXFile
             var wank = Data.ByteSizeOfData();
             SmallObscure(wank, 6969420);
             List<byte> bytes = new List<byte>();
-            var oxconfirm = Encoding.UTF8.GetBytes("OXFile");
-            foreach (byte b in oxconfirm) { bytes.Add(b); }
             var ver = BitConverter.GetBytes(ParserVersion);
             foreach (byte b in ver) { bytes.Add(b); }
+
             wank = bytes.CombineLists(wank);
             File.WriteAllBytes(FileName, wank.ToArray());
         }
@@ -141,14 +135,28 @@ public class OXFileData
     public OXFileData(byte[] dat, int index)
     {
         int initiniex = index;
-        var length = BitConverter.ToInt32(dat, index);
-        var bodylength = BitConverter.ToInt32(dat, index + 4);
+        byte length = dat[index];
+        bool longermode = false;
+        if (length > 127)
+        {
+            longermode = true;
+        }
+        length &= 127;
+        int bodylength = 0;
+        if (longermode)
+        {
+            bodylength = BitConverter.ToInt32(dat, index + 1);
+        }
+        else
+        {
+            bodylength = dat[index + 1];
+        }
         if (length == 0) goto end;
-        index += 8;
+        index += longermode ? 5 : 2;
         Name = Encoding.UTF8.GetString(WankFuckYou(dat, index, length));
         index += length;
-        Type = (OXFileType)BitConverter.ToInt32(dat, index);
-        index += 4;
+        Type = (OXFileType)dat[index];
+        index += 1;
         DataRaw = WankFuckYou(dat, index, bodylength);
         index += bodylength;
         switch (Type)
@@ -316,10 +324,23 @@ public class OXFileData
             }
             return 1;
         };
-        AppendAll(BitConverter.GetBytes(w.Length));
-        AppendAll(BitConverter.GetBytes(w2.Length));
+
+        byte[] data_size = new byte[1];
+        byte l = (byte)w.Length;
+        l &= 127;
+        if (w2.Length < 256)
+        {
+            data_size = new byte[1] { (byte)w2.Length };
+        }
+        else
+        {
+            data_size = BitConverter.GetBytes(w2.Length);
+            l |= 128;
+        }
+        AppendAll(new byte[1] { l });
+        AppendAll(data_size);
         AppendAll(w);
-        AppendAll(BitConverter.GetBytes((int)Type));
+        AppendAll(new byte[1] { (byte)Type });
         AppendAll(w2);
         return ret;
     }
