@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using WebSocketSharp;
+using static OXFileData;
 
 /*
  * What is this?
@@ -66,7 +67,7 @@ public class OXFile
 
         if (CanOverride || !e)
         {
-            var wank = Data.ByteSizeOfData(GetFileData());
+            var wank = Data.ByteSizeOfData(GetFileData(), 0);
             SmallObscure(wank, 6969420);
             List<byte> bytes = new List<byte>();
             SetVersionIntoFlag();
@@ -142,6 +143,14 @@ public class OXFile
      * Flags:
      * 0 -> Linker
      */
+    public static readonly Dictionary<OXFileType, byte> DefinedLengths = new()
+    {
+        { OXFileType.Bool, 1 },
+        { OXFileType.Int, 4 },
+        { OXFileType.Long, 8 },
+        { OXFileType.Float, 4 },
+        { OXFileType.Double, 8 },
+    };
 }
 
 public class OXFileData
@@ -200,7 +209,11 @@ public class OXFileData
         byte l = (byte)w.Length;
         if (fd.File.GetFlag(0)) l = fd.File.NameLinker[Name];
         l &= 127;
-        if (w2.Length < 256)
+        if (OXFile.DefinedLengths.ContainsKey(Type))
+        {
+            data_size = new byte[1] { OXFile.DefinedLengths[Type] };
+        }
+        else if (w2.Length < 256)
         {
             data_size = new byte[1] { (byte)w2.Length };
         }
@@ -210,9 +223,9 @@ public class OXFileData
             l |= 128;
         }
         AppendAll(new byte[1] { l });
-        AppendAll(data_size);
-        if (!fd.File.GetFlag(0)) AppendAll(w);
         AppendAll(new byte[1] { (byte)Type });
+        if (!OXFile.DefinedLengths.ContainsKey(Type)) AppendAll(data_size);
+        if (!fd.File.GetFlag(0)) AppendAll(w);
         AppendAll(w2);
         return ret;
     }
@@ -228,16 +241,25 @@ public class OXFileData
         }
         length &= 127;
         int bodylength = 0;
-        if (longermode)
+        int incindex = 1;
+        index++;
+        Type = (OXFileType)dat[index];
+        if (OXFile.DefinedLengths.ContainsKey(Type))
+        {
+            bodylength = OXFile.DefinedLengths[Type];
+        }
+        else if (longermode)
         {
             bodylength = BitConverter.ToInt32(dat, index + 1);
+            incindex += 4;
         }
         else
         {
             bodylength = dat[index + 1];
+            incindex += 1;
         }
         if (length == 0 && !fd.File.GetFlag(0)) goto end;
-        index += longermode ? 5 : 2;
+        index += incindex;
         if (fd.File.GetFlag(0))
         {
             Name = fd.File.IndexLinker[length];
@@ -247,8 +269,6 @@ public class OXFileData
             Name = Encoding.UTF8.GetString(WankFuckYou(dat, index, length));
             index += length;
         }
-        Type = (OXFileType)dat[index];
-        index += 1;
         DataRaw = WankFuckYou(dat, index, bodylength);
         index += bodylength;
         switch (Type)
@@ -402,8 +422,9 @@ public class OXFileData
                 break;
         }
     }
-
-    public List<byte> ByteSizeOfData(FileData fd)
+    public byte RepeatRun = 0;
+    public bool ExcludeCuzRepeated = false;
+    public List<byte> ByteSizeOfData(FileData fd, int current_step)
     {
         List<byte> ret = new List<byte>();
         List<byte> bytes = new List<byte>();
@@ -411,7 +432,40 @@ public class OXFileData
         switch (Type)
         {
             case OXFileType.OXFileData:
-                foreach (var a in DataOXFiles)
+                var p = DataOXFiles.ToList();
+                p.Sort((a, b) => a.Value.Type.CompareTo(b.Value.Type));
+                OXFileType c = p[0].Value.Type;
+                int same = 0;
+                int index = 0;
+                Action fard = () =>
+                {
+                    if (same >= 3)
+                    {
+                        p[index - same].Value.RepeatRun = (byte)(same - 2);
+                        for (int i = 1; i < same; i++)
+                        {
+                            p[(index - same) + i].Value.ExcludeCuzRepeated = true;
+                        }
+                    }
+                };
+                foreach (var a in p)
+                {
+                    a.Value.RepeatRun = 0;
+                    a.Value.ExcludeCuzRepeated = false;
+                    if (a.Value.Type == c && same <= 256)
+                    {
+                        same++;
+                    }
+                    else
+                    {
+                        fard();
+                        c = a.Value.Type;
+                        same = 0;
+                    }
+                    index++;
+                }
+                fard();
+                foreach (var a in p)
                 {
                     if (a.Value.DataRaw != null && a.Value.DataRaw.Length > 0)
                     {
@@ -419,7 +473,8 @@ public class OXFileData
                     }
                     else
                     {
-                        a.Value.DataRaw = a.Value.ByteSizeOfData(fd).ToArray();
+                        fd.CurrentStep++;
+                        a.Value.DataRaw = a.Value.ByteSizeOfData(fd, fd.CurrentStep).ToArray();
                         bytes = a.Value.ToByte(fd);
                     }
                     foreach (var b in bytes)
@@ -437,7 +492,8 @@ public class OXFileData
                     }
                     else
                     {
-                        a.DataRaw = a.ByteSizeOfData(fd).ToArray();
+                        fd.CurrentStep++;
+                        a.DataRaw = a.ByteSizeOfData(fd, fd.CurrentStep).ToArray();
                         bytes = a.ToByte(fd);
                     }
                     foreach (var b in bytes)
@@ -654,6 +710,7 @@ public class OXFileData
         Bool,
         Raw,
         Custom,
+        Repeat,
     }
     private byte[] WankFuckYou(byte[] array, int offset, int length)
     {
@@ -695,6 +752,7 @@ public class OXFileData
 public class FileData
 {
     public OXFile File;
+    public int CurrentStep = 0;
 }
 
 public static class OXFileLoader
