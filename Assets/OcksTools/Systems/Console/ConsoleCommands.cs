@@ -108,12 +108,23 @@ public class ConsoleCommands : MonoBehaviour
             var oxf = new OXFile();
             oxf.Data.Add("num", 69);
             oxf.Data.Add("coolnums", new TestClass3(-1, 420));
+            oxf.Data.Add("bigname", "Hello my name is balls");
             oxf.WriteFile(FileSystem.Instance.GameDirectory + "/Temp.ox", true);
 
             var oxf2 = new OXFile();
             oxf2.ReadFile(FileSystem.Instance.GameDirectory + "/Temp.ox");
             Console.Log($"num: {oxf2.Data["num"].DataInt}");
             Console.Log($"coolnums: {oxf2.Data["coolnums"].DataCustom}");
+            Console.Log($"name: {oxf2.Data["bigname"].DataString}");
+
+            Dictionary<string, string> s = new()
+            {
+                {"num", "69"},
+                {"coolnums", new TestClass3(-1, 420).ToString()},
+                {"bigname", "Hello my name is balls"},
+            };
+            System.IO.File.WriteAllText(FileSystem.Instance.GameDirectory + "/Temp2.txt", s.DictionaryToString(Environment.NewLine, ": "));
+
         }
         catch (Exception e)
         {
