@@ -111,8 +111,19 @@ public class ConsoleCommands : MonoBehaviour
             oxf.Data.Add("bigname", "Hello my name is balls");
             oxf.WriteFile(FileSystem.Instance.GameDirectory + "/Temp.ox", true);
 
-            var oxf2 = new OXFile();
-            oxf2.ReadFile(FileSystem.Instance.GameDirectory + "/Temp.ox");
+
+
+            oxf.LinkOptimizer(new()
+            {
+                {"num", 0 },
+                {"coolnums", 1 },
+                {"bigname", 2 },
+            }).WriteFile(FileSystem.Instance.GameDirectory + "/TempLinker.ox", true);
+
+
+            var oxf2 = new OXFile().LinkOptimizer(oxf.NameLinker);
+            oxf2.ReadFile(FileSystem.Instance.GameDirectory + "/TempLinker.ox");
+
             Console.Log($"num: {oxf2.Data["num"].DataInt}");
             Console.Log($"coolnums: {oxf2.Data["coolnums"].DataCustom}");
             Console.Log($"name: {oxf2.Data["bigname"].DataString}");

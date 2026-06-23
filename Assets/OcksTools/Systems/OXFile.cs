@@ -21,27 +21,41 @@ using WebSocketSharp;
 public class OXFile
 {
     //touch away
-    public const Int16 ParserVersion = 1;
-    public static bool DoObsure = true;
+    public const short ParserVersion = 1;
+    public static bool DoObsure = false;
     //no touchy
     public int FileVersion = 1;
     public OXFileData Data = new OXFileData(OXFileData.OXFileType.OXFileData);
+    public Dictionary<string, byte> NameLinker = new();
+    public Dictionary<byte, string> IndexLinker = new();
+
+    public OXFile LinkOptimizer(Dictionary<string, byte> n)
+    {
+        var p = new Dictionary<byte, string>();
+        NameLinker = n;
+        foreach (var k in NameLinker)
+        {
+            p.Add(k.Value, k.Key);
+        }
+        IndexLinker = p;
+        SetFlag(0);
+        return this;
+    }
+
     public bool ReadFile(string str)
     {
-
-
         var cd = File.ReadAllBytes(str);
-        if (cd.Length < 8) return false;
+        if (cd.Length < 4) return false;
         int index = 0;
-        FileVersion = BitConverter.ToInt16(cd, index);
-        index += 2;
+        Flags = BitConverter.ToInt32(cd, index);
+        SetVersionFromFlag();
+        index += 4;
         Data = new OXFileData(OXFileData.OXFileType.OXFileData);
         Data.pVersion = FileVersion;
         var ccd = WankFuckYou(cd, index, cd.Length - index);
         SmallObscure(ccd, 6969420);
         Data.DataRaw = ccd;
-
-        Data.DataOXFiles = Data.Get_OXFileData();
+        Data.DataOXFiles = Data.Get_OXFileData(GetFileData());
 
         return true;
     }
@@ -52,10 +66,11 @@ public class OXFile
 
         if (CanOverride || !e)
         {
-            var wank = Data.ByteSizeOfData();
+            var wank = Data.ByteSizeOfData(GetFileData());
             SmallObscure(wank, 6969420);
             List<byte> bytes = new List<byte>();
-            var ver = BitConverter.GetBytes(ParserVersion);
+            SetVersionIntoFlag();
+            var ver = BitConverter.GetBytes(Flags);
             foreach (byte b in ver) { bytes.Add(b); }
 
             wank = bytes.CombineLists(wank);
@@ -91,6 +106,42 @@ public class OXFile
         Array.Copy(array, offset, result, 0, length);
         return result;
     }
+
+    public FileData GetFileData()
+    {
+        var x = new FileData();
+        x.File = this;
+        return x;
+    }
+    public int Flags;
+    public void SetVersionIntoFlag()
+    {
+        int p = 255;
+        p |= p << 8;
+        Flags &= ~p;
+        Flags |= ParserVersion;
+    }
+    public void SetVersionFromFlag()
+    {
+        int p = 255;
+        p |= p << 8;
+        FileVersion = Flags & p;
+    }
+    public void SetFlag(int i, bool enabled = true)
+    {
+        int mask = (1 << (i + 16));
+        Flags &= ~mask;
+        if (enabled) Flags |= mask;
+    }
+    public bool GetFlag(int i)
+    {
+        int mask = (1 << (i + 16));
+        return (Flags & mask) != 0;
+    }
+    /*
+     * Flags:
+     * 0 -> Linker
+     */
 }
 
 public class OXFileData
@@ -131,8 +182,42 @@ public class OXFileData
     }
 
 
+    public List<byte> ToByte(FileData fd)
+    {
+        List<byte> ret = new List<byte>();
+        var w = Encoding.UTF8.GetBytes(Name);
+        var w2 = DataRaw;
+        Func<byte[], int> AppendAll = (x) =>
+        {
+            foreach (var a in x)
+            {
+                ret.Add(a);
+            }
+            return 1;
+        };
 
-    public OXFileData(byte[] dat, int index)
+        byte[] data_size = new byte[1];
+        byte l = (byte)w.Length;
+        if (fd.File.GetFlag(0)) l = fd.File.NameLinker[Name];
+        l &= 127;
+        if (w2.Length < 256)
+        {
+            data_size = new byte[1] { (byte)w2.Length };
+        }
+        else
+        {
+            data_size = BitConverter.GetBytes(w2.Length);
+            l |= 128;
+        }
+        AppendAll(new byte[1] { l });
+        AppendAll(data_size);
+        if (!fd.File.GetFlag(0)) AppendAll(w);
+        AppendAll(new byte[1] { (byte)Type });
+        AppendAll(w2);
+        return ret;
+    }
+
+    public OXFileData(byte[] dat, int index, FileData fd)
     {
         int initiniex = index;
         byte length = dat[index];
@@ -151,10 +236,17 @@ public class OXFileData
         {
             bodylength = dat[index + 1];
         }
-        if (length == 0) goto end;
+        if (length == 0 && !fd.File.GetFlag(0)) goto end;
         index += longermode ? 5 : 2;
-        Name = Encoding.UTF8.GetString(WankFuckYou(dat, index, length));
-        index += length;
+        if (fd.File.GetFlag(0))
+        {
+            Name = fd.File.IndexLinker[length];
+        }
+        else
+        {
+            Name = Encoding.UTF8.GetString(WankFuckYou(dat, index, length));
+            index += length;
+        }
         Type = (OXFileType)dat[index];
         index += 1;
         DataRaw = WankFuckYou(dat, index, bodylength);
@@ -177,7 +269,7 @@ public class OXFileData
                 DataDouble = Get_Double();
                 break;
             case OXFileType.OXFileData:
-                DataOXFiles = Get_OXFileData();
+                DataOXFiles = Get_OXFileData(fd);
                 break;
             case OXFileType.ListString:
                 DataListString = Get_ListString();
@@ -189,7 +281,7 @@ public class OXFileData
                 DataCustom = Get_Custom();
                 break;
             case OXFileType.ListOXFileData:
-                DataListOXFiles = Get_ListOXFileData();
+                DataListOXFiles = Get_ListOXFileData(fd);
                 break;
             default: break;
         }
@@ -311,40 +403,7 @@ public class OXFileData
         }
     }
 
-    public List<byte> ToByte()
-    {
-        List<byte> ret = new List<byte>();
-        var w = Encoding.UTF8.GetBytes(Name);
-        var w2 = DataRaw;
-        Func<byte[], int> AppendAll = (x) =>
-        {
-            foreach (var a in x)
-            {
-                ret.Add(a);
-            }
-            return 1;
-        };
-
-        byte[] data_size = new byte[1];
-        byte l = (byte)w.Length;
-        l &= 127;
-        if (w2.Length < 256)
-        {
-            data_size = new byte[1] { (byte)w2.Length };
-        }
-        else
-        {
-            data_size = BitConverter.GetBytes(w2.Length);
-            l |= 128;
-        }
-        AppendAll(new byte[1] { l });
-        AppendAll(data_size);
-        AppendAll(w);
-        AppendAll(new byte[1] { (byte)Type });
-        AppendAll(w2);
-        return ret;
-    }
-    public List<byte> ByteSizeOfData()
+    public List<byte> ByteSizeOfData(FileData fd)
     {
         List<byte> ret = new List<byte>();
         List<byte> bytes = new List<byte>();
@@ -356,12 +415,12 @@ public class OXFileData
                 {
                     if (a.Value.DataRaw != null && a.Value.DataRaw.Length > 0)
                     {
-                        bytes = a.Value.ToByte();
+                        bytes = a.Value.ToByte(fd);
                     }
                     else
                     {
-                        a.Value.DataRaw = a.Value.ByteSizeOfData().ToArray();
-                        bytes = a.Value.ToByte();
+                        a.Value.DataRaw = a.Value.ByteSizeOfData(fd).ToArray();
+                        bytes = a.Value.ToByte(fd);
                     }
                     foreach (var b in bytes)
                     {
@@ -374,12 +433,12 @@ public class OXFileData
                 {
                     if (a.DataRaw != null && a.DataRaw.Length > 0)
                     {
-                        bytes = a.ToByte();
+                        bytes = a.ToByte(fd);
                     }
                     else
                     {
-                        a.DataRaw = a.ByteSizeOfData().ToArray();
-                        bytes = a.ToByte();
+                        a.DataRaw = a.ByteSizeOfData(fd).ToArray();
+                        bytes = a.ToByte(fd);
                     }
                     foreach (var b in bytes)
                     {
@@ -515,14 +574,14 @@ public class OXFileData
     {
         return DataRaw[0] == (byte)69;
     }
-    public Dictionary<string, OXFileData> Get_OXFileData()
+    public Dictionary<string, OXFileData> Get_OXFileData(FileData fd)
     {
         var ret = new Dictionary<string, OXFileData>();
 
         int index = 0;
-        while (index + 7 < DataRaw.Length)
+        while (index + 1 < DataRaw.Length)
         {
-            var cd = new OXFileData(DataRaw, index);
+            var cd = new OXFileData(DataRaw, index, fd);
             cd.pVersion = pVersion;
             ret.Add(cd.Name, cd);
             index += cd.LengthOffset;
@@ -530,14 +589,14 @@ public class OXFileData
 
         return ret;
     }
-    public List<OXFileData> Get_ListOXFileData()
+    public List<OXFileData> Get_ListOXFileData(FileData fd)
     {
         var ret = new List<OXFileData>();
 
         int index = 0;
         while (index + 7 < DataRaw.Length)
         {
-            var cd = new OXFileData(DataRaw, index);
+            var cd = new OXFileData(DataRaw, index, fd);
             cd.pVersion = pVersion;
             ret.Add(cd);
             index += cd.LengthOffset;
@@ -633,10 +692,9 @@ public class OXFileData
     }
 }
 
-public class FileRetData
+public class FileData
 {
-    public int Length;
-    public OXFileData me;
+    public OXFile File;
 }
 
 public static class OXFileLoader
