@@ -180,7 +180,7 @@ public class SoundSystem : SingleInstance<SoundSystem>
         return sex;
     }
 
-    public float ChannelMult(string specific = "SFX")
+    public float ChannelMult(string specific)
     {
         float master = Volumes.GetOrDefine("Master", 1);
 #if UNITY_EDITOR
@@ -391,7 +391,7 @@ public class OXSound
     public void SetVolume(float volume)
     {
         var vol = 1f;
-        vol *= SoundSystem.Instance.ChannelMult();
+        vol *= SoundSystem.Instance.ChannelMult(_channel);
         vol *= volume;
         psource.volume = vol;
     }
