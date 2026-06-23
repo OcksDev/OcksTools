@@ -33,6 +33,8 @@
     - Added UpdateVolume()
   - Added UpdateAllVolumesCurrentlyInChannel(), runs UpdateVolume on all currently playing audio
   - Added internal tracker of all currently playing audio which gets pruned every few seconds
+  - SoundSystem.SetVolume renamed to SetChannelVolume
+    - It now also runs UpdateAllVolumesCurrentlyInChannel(), which can be opted-out
 - Misc
   - Big bug fixed in OXEventLayered<>, the name of events is actually used now lol
   - NumToRead and other misc code shouldn't break on different cultures anymore (forced en-US)

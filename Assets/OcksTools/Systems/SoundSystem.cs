@@ -84,11 +84,12 @@ public class SoundSystem : SingleInstance<SoundSystem>
         }
     }
 
-    public void SetVolume(string v, float x)
+    public void SetChannelVolume(string v, float x, bool dont_update = false)
     {
         Volumes.AddOrUpdate(v, x);
+        if (!dont_update) UpdateAllVolumesCurrentlyInChannel(v);
     }
-    public float GetVolume(string v, float x)
+    public float GetChannelVolume(string v, float x)
     {
         return Volumes.ContainsKey(v) ? Volumes[v] : 1;
     }
@@ -255,7 +256,7 @@ public class SoundSystem : SingleInstance<SoundSystem>
 
     public void VolumeCommand(OXCommandData dat)
     {
-        SetVolume(dat.com_caps[1], float.Parse(dat.com[2]));
+        SetChannelVolume(dat.com_caps[1], float.Parse(dat.com[2]));
     }
     public void PlaysoundCommand(OXCommandData dat)
     {
