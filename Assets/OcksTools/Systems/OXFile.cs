@@ -223,14 +223,31 @@ public class OXFileData
             l |= 128;
         }
         AppendAll(new byte[1] { l });
-        AppendAll(new byte[1] { (byte)Type });
+        if (RepeatRun < 0)
+        {
+            switch (RepeatRun)
+            {
+                case -3: AppendAll(new byte[1] { (byte)OXFileType.r3 }); break;
+                case -4: AppendAll(new byte[1] { (byte)OXFileType.r4 }); break;
+                case -5: AppendAll(new byte[1] { (byte)OXFileType.r5 }); break;
+                case -6: AppendAll(new byte[1] { (byte)OXFileType.r6 }); break;
+                case -7: AppendAll(new byte[1] { (byte)OXFileType.r7 }); break;
+                case -8: AppendAll(new byte[1] { (byte)OXFileType.r8 }); break;
+                case -9: AppendAll(new byte[1] { (byte)OXFileType.r9 }); break;
+                case -10: AppendAll(new byte[1] { (byte)OXFileType.r10 }); break;
+            }
+        }
+        else if (RepeatRun > 0)
+        {
+            AppendAll(new byte[2] { (byte)OXFileType.Repeat, (byte)RepeatRun });
+        }
+        if (!ExcludeCuzRepeated) AppendAll(new byte[1] { (byte)Type });
         if (!OXFile.DefinedLengths.ContainsKey(Type)) AppendAll(data_size);
         if (!fd.File.GetFlag(0)) AppendAll(w);
         AppendAll(w2);
         return ret;
     }
-
-    public OXFileData(byte[] dat, int index, FileData fd)
+    public OXFileData Parse(byte[] dat, int index, FileData fd)
     {
         int initiniex = index;
         byte length = dat[index];
@@ -242,8 +259,28 @@ public class OXFileData
         length &= 127;
         int bodylength = 0;
         int incindex = 1;
-        index++;
-        Type = (OXFileType)dat[index];
+        if (!ExcludeCuzRepeated)
+        {
+            index++;
+            Type = (OXFileType)dat[index];
+        }
+        switch (Type)
+        {
+            case OXFileType.r3: RepeatRun = -3; index++; Type = (OXFileType)dat[index]; break;
+            case OXFileType.r4: RepeatRun = -4; index++; Type = (OXFileType)dat[index]; break;
+            case OXFileType.r5: RepeatRun = -5; index++; Type = (OXFileType)dat[index]; break;
+            case OXFileType.r6: RepeatRun = -6; index++; Type = (OXFileType)dat[index]; break;
+            case OXFileType.r7: RepeatRun = -7; index++; Type = (OXFileType)dat[index]; break;
+            case OXFileType.r8: RepeatRun = -8; index++; Type = (OXFileType)dat[index]; break;
+            case OXFileType.r9: RepeatRun = -9; index++; Type = (OXFileType)dat[index]; break;
+            case OXFileType.r10: RepeatRun = -10; index++; Type = (OXFileType)dat[index]; break;
+            case OXFileType.Repeat:
+                index++;
+                RepeatRun = dat[index];
+                index++;
+                Type = (OXFileType)dat[index];
+                break;
+        }
         if (OXFile.DefinedLengths.ContainsKey(Type))
         {
             bodylength = OXFile.DefinedLengths[Type];
@@ -313,6 +350,7 @@ public class OXFileData
 
     end:
         LengthOffset = index - initiniex;
+        return this;
     }
 
     public void Add(string Name, string DataIn)
@@ -422,8 +460,9 @@ public class OXFileData
                 break;
         }
     }
-    public byte RepeatRun = 0;
+    public int RepeatRun = 0;
     public bool ExcludeCuzRepeated = false;
+    private const int repeatmax = 11;
     public List<byte> ByteSizeOfData(FileData fd, int current_step)
     {
         List<byte> ret = new List<byte>();
@@ -437,22 +476,31 @@ public class OXFileData
                 OXFileType c = p[0].Value.Type;
                 int same = 0;
                 int index = 0;
+                Action forwardupdate = () =>
+                {
+                    for (int i = 1; i < same; i++)
+                    {
+                        p[(index - same) + i].Value.ExcludeCuzRepeated = true;
+                    }
+                };
                 Action fard = () =>
                 {
-                    if (same >= 3)
+                    if (same >= repeatmax)
                     {
-                        p[index - same].Value.RepeatRun = (byte)(same - 2);
-                        for (int i = 1; i < same; i++)
-                        {
-                            p[(index - same) + i].Value.ExcludeCuzRepeated = true;
-                        }
+                        p[index - same].Value.RepeatRun = (byte)(same - (repeatmax - 1));
+                        forwardupdate();
+                    }
+                    else if (same >= 3)
+                    {
+                        p[index - same].Value.RepeatRun = -same;
+                        forwardupdate();
                     }
                 };
                 foreach (var a in p)
                 {
                     a.Value.RepeatRun = 0;
                     a.Value.ExcludeCuzRepeated = false;
-                    if (a.Value.Type == c && same <= 256)
+                    if (a.Value.Type == c && same <= 253 + repeatmax)
                     {
                         same++;
                     }
@@ -460,7 +508,7 @@ public class OXFileData
                     {
                         fard();
                         c = a.Value.Type;
-                        same = 0;
+                        same = 1;
                     }
                     index++;
                 }
@@ -635,12 +683,33 @@ public class OXFileData
         var ret = new Dictionary<string, OXFileData>();
 
         int index = 0;
+        OXFileType stored = OXFileType.Repeat;
+        int reps = 0;
         while (index + 1 < DataRaw.Length)
         {
-            var cd = new OXFileData(DataRaw, index, fd);
+            var cd = new OXFileData();
+            if (reps > 0)
+            {
+                reps--;
+                cd.Type = stored;
+                cd.ExcludeCuzRepeated = true;
+            }
+            cd.Parse(DataRaw, index, fd);
             cd.pVersion = pVersion;
             ret.Add(cd.Name, cd);
             index += cd.LengthOffset;
+            if (cd.RepeatRun > 0)
+            {
+                reps = cd.RepeatRun;
+                reps += (repeatmax - 2);
+                stored = cd.Type;
+            }
+            else if (cd.RepeatRun < 0)
+            {
+                reps = -cd.RepeatRun;
+                reps--;
+                stored = cd.Type;
+            }
         }
 
         return ret;
@@ -648,11 +717,11 @@ public class OXFileData
     public List<OXFileData> Get_ListOXFileData(FileData fd)
     {
         var ret = new List<OXFileData>();
-
         int index = 0;
-        while (index + 7 < DataRaw.Length)
+
+        while (index + 1 < DataRaw.Length)
         {
-            var cd = new OXFileData(DataRaw, index, fd);
+            var cd = new OXFileData().Parse(DataRaw, index, fd);
             cd.pVersion = pVersion;
             ret.Add(cd);
             index += cd.LengthOffset;
@@ -711,6 +780,7 @@ public class OXFileData
         Raw,
         Custom,
         Repeat,
+        r3, r4, r5, r6, r7, r8, r9, r10
     }
     private byte[] WankFuckYou(byte[] array, int offset, int length)
     {

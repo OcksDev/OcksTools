@@ -109,6 +109,8 @@ public class ConsoleCommands : MonoBehaviour
             oxf.Data.Add("num", 69);
             oxf.Data.Add("coolnums", new TestClass3(-1, 420));
             oxf.Data.Add("bigname", "Hello my name is balls");
+            oxf.Data.Add("num2", 5000);
+            oxf.Data.Add("num3", 123456789);
             oxf.WriteFile(FileSystem.Instance.GameDirectory + "/Temp.ox", true);
 
 
@@ -118,6 +120,8 @@ public class ConsoleCommands : MonoBehaviour
                 {"num", 0 },
                 {"coolnums", 1 },
                 {"bigname", 2 },
+                {"num2", 3 },
+                {"num3", 4 },
             }).WriteFile(FileSystem.Instance.GameDirectory + "/TempLinker.ox", true);
 
 
@@ -125,12 +129,16 @@ public class ConsoleCommands : MonoBehaviour
             oxf2.ReadFile(FileSystem.Instance.GameDirectory + "/TempLinker.ox");
 
             Console.Log($"num: {oxf2.Data["num"].DataInt}");
+            Console.Log($"num2: {oxf2.Data["num2"].DataInt}");
+            Console.Log($"num3: {oxf2.Data["num3"].DataInt}");
             Console.Log($"coolnums: {oxf2.Data["coolnums"].DataCustom}");
             Console.Log($"name: {oxf2.Data["bigname"].DataString}");
 
             Dictionary<string, string> s = new()
             {
                 {"num", "69"},
+                {"num2", "5000"},
+                {"num3", "123456789"},
                 {"coolnums", new TestClass3(-1, 420).ToString()},
                 {"bigname", "Hello my name is balls"},
             };
