@@ -67,7 +67,7 @@ public class OXFile
 
         if (CanOverride || !e)
         {
-            var wank = Data.ByteSizeOfData(GetFileData(), 0);
+            var wank = Data.BytesOfData(GetFileData(), 0);
             SmallObscure(wank, 6969420);
             List<byte> bytes = new List<byte>();
             SetVersionIntoFlag();
@@ -520,7 +520,7 @@ public class OXFileData
     public int RepeatRun = 0;
     public bool ExcludeCuzRepeated = false;
     private const int repeatmax = 11;
-    public List<byte> ByteSizeOfData(FileData fd, int current_step)
+    public List<byte> BytesOfData(FileData fd, int current_step)
     {
         List<byte> ret = new List<byte>();
         List<byte> bytes = new List<byte>();
@@ -579,7 +579,7 @@ public class OXFileData
                     else
                     {
                         fd.CurrentStep++;
-                        a.Value.DataRaw = a.Value.ByteSizeOfData(fd, fd.CurrentStep).ToArray();
+                        a.Value.DataRaw = a.Value.BytesOfData(fd, fd.CurrentStep).ToArray();
                         bytes = a.Value.ToByte(fd);
                     }
                     foreach (var b in bytes)
@@ -598,7 +598,7 @@ public class OXFileData
                     else
                     {
                         fd.CurrentStep++;
-                        a.DataRaw = a.ByteSizeOfData(fd, fd.CurrentStep).ToArray();
+                        a.DataRaw = a.BytesOfData(fd, fd.CurrentStep).ToArray();
                         bytes = a.ToByte(fd);
                     }
                     foreach (var b in bytes)

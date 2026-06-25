@@ -28,7 +28,9 @@
 - OXFile Improvements
   - Finally added ability to save/load arbitrary classes so long as they inherit from IOXFile_SaveLoadable<>
   - Optimized the boilerplace space usage of the file format, it should use a bit less space
+  - Changed all accessor fields to now reference once single internal object, removing the need for like 50 runtime allocations
   - Added optional space otimization flag, however you must provide the lookup table yourself and are limited to 0-127 entries
+  - Renamed ByteSizeOfData() to BytesOfData()
 - Sound System Improvements
   - OXSound.SetVolume now respects the 'channel' volume rather than always using SFX, and also applies changes to internal volume
     - Added UpdateVolume()
@@ -42,6 +44,7 @@
   - NumToRead and other misc code shouldn't break on different cultures anymore (forced en-US)
   - NumToRead scientific notation standardized to use "E" instead of "e"
   - All system-specific assets/resources have been moved into their own section within OXResources
+  - Fixed a (seemingly) harmless bug in the GIS where the container value wasn't being set
   - Console command Getrender has a new subcommand, "language" to get the current language detected by the program
     - Since this is being forced to en-US for now, it should just return "en", I think
   - Removed uLayout plugin, it was cool, but I'd rather it be seperate.
