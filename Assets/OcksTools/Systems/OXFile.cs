@@ -172,7 +172,7 @@ public class OXFileData
     public byte[] DataRaw;
     //public string Data = "";
     public int LengthOffset;
-    public double pVersion = 0;
+    public int pVersion = 0;
     public OXFileData() { }
     public OXFileData(OXFileType tp)
     {
@@ -412,7 +412,7 @@ public class OXFileData
     public void Add(string Name, List<OXFileData> DataIn)
     {
         var dat = new OXFileData();
-        dat.Type = OXFileData.OXFileType.OXFileData;
+        dat.Type = OXFileData.OXFileType.ListOXFileData;
         dat.DataListOXFiles = DataIn;
         Add(Name, dat);
     }

@@ -235,7 +235,7 @@ public class GISItem
     }
     public void SetContainer(GISContainer gis)
     {
-        if (gis == null)
+        if (gis != null)
         {
             Container = gis;
         }
@@ -274,7 +274,7 @@ public class GISItem
         return e;
     }
     [ConversionMethod]
-    public GISItem ConvertToItem(string e)
+    public static GISItem ConvertToItem(string e)
     {
         var a = new GISItem();
         a.StringToItem(e);
@@ -314,13 +314,6 @@ public class GISItem_Data
         Description = "Nothing";
         MaxAmount = 0;
         Type = ItemType.None;
-    }
-    public GISItem_Data(GISItem_Data data)
-    {
-        Sprite = data.Sprite;
-        Name = data.Name;
-        Description = data.Description;
-        MaxAmount = data.MaxAmount;
     }
     public enum ItemType
     {

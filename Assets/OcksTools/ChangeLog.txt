@@ -36,6 +36,7 @@
   - Added internal tracker of all currently playing audio which gets pruned every few seconds
   - SoundSystem.SetVolume renamed to SetChannelVolume
     - It now also runs UpdateAllVolumesCurrentlyInChannel(), which can be opted-out
+  - Fixed bug with non-positional audio parenting
 - Misc
   - Big bug fixed in OXEventLayered<>, the name of events is actually used now lol
   - NumToRead and other misc code shouldn't break on different cultures anymore (forced en-US)

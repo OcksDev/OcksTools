@@ -89,7 +89,7 @@ public class SoundSystem : SingleInstance<SoundSystem>
         Volumes.AddOrUpdate(v, x);
         if (!dont_update) UpdateAllVolumesCurrentlyInChannel(v);
     }
-    public float GetChannelVolume(string v, float x)
+    public float GetChannelVolume(string v)
     {
         return Volumes.ContainsKey(v) ? Volumes[v] : 1;
     }
@@ -207,7 +207,7 @@ public class SoundSystem : SingleInstance<SoundSystem>
                 return penis;
             }
         }
-        var sex = gameObject.AddComponent<AudioSource>();
+        var sex = sound._parent.gameObject.AddComponent<AudioSource>();
         sex.clip = AudioClipDict[sound.name].Clip;
         AudioSources.GetOrDefine(sound._parent, new()).Add(sex);
         return sex;
@@ -445,6 +445,7 @@ public class OXSound
         psource.volume = vol;
     }
 
-    public bool IsAlive => psource != null && psource.isPlaying && SoundSystem.Instance.Generations[psource] == _generation;
+    public bool IsAlive => psource != null && psource.isPlaying && SoundSystem.Instance.Generations.TryGetValue(psource, out var gen)
+      && gen == _generation;
 }
 
