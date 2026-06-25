@@ -158,11 +158,6 @@ public class OXFileData
     public string Name = "";
     public OXFileType Type;
 
-    // Single backing field — only one value is ever allocated per node.
-    // Primitives (int, float, long, double, bool) are boxed into this field,
-    // which is a trade-off: we avoid allocating 5+ unused reference fields,
-    // but primitives incur one boxing allocation each. For the typical case
-    // of string/collection/nested nodes the saving is significant.
     private object _value;
 
     public string DataString
@@ -233,8 +228,6 @@ public class OXFileData
     public OXFileData(OXFileType tp)
     {
         Type = tp;
-        // Pre-allocate the collection types that are accessed before any data
-        // is parsed — these are the only two that were default-initialised before.
         if (tp == OXFileType.OXFileData)
             _value = new Dictionary<string, OXFileData>();
         else if (tp == OXFileType.ListOXFileData)
