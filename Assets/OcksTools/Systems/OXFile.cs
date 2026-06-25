@@ -157,26 +157,88 @@ public class OXFileData
 {
     public string Name = "";
     public OXFileType Type;
-    public string DataString;
-    public List<string> DataListString;
-    public Dictionary<string, string> DataDictStringString;
-    public float DataFloat;
-    public double DataDouble;
-    public long DataLong;
-    public byte DataByte;
-    public int DataInt;
-    public bool DataBool;
-    public _IOXFile DataCustom;
-    public Dictionary<string, OXFileData> DataOXFiles = new Dictionary<string, OXFileData>();
-    public List<OXFileData> DataListOXFiles = new List<OXFileData>();
+
+    // Single backing field — only one value is ever allocated per node.
+    // Primitives (int, float, long, double, bool) are boxed into this field,
+    // which is a trade-off: we avoid allocating 5+ unused reference fields,
+    // but primitives incur one boxing allocation each. For the typical case
+    // of string/collection/nested nodes the saving is significant.
+    private object _value;
+
+    public string DataString
+    {
+        get => (string)_value;
+        set => _value = value;
+    }
+    public List<string> DataListString
+    {
+        get => (List<string>)_value;
+        set => _value = value;
+    }
+    public Dictionary<string, string> DataDictStringString
+    {
+        get => (Dictionary<string, string>)_value;
+        set => _value = value;
+    }
+    public float DataFloat
+    {
+        get => _value is float f ? f : 0f;
+        set => _value = value;
+    }
+    public double DataDouble
+    {
+        get => _value is double d ? d : 0.0;
+        set => _value = value;
+    }
+    public long DataLong
+    {
+        get => _value is long l ? l : 0L;
+        set => _value = value;
+    }
+    public byte DataByte
+    {
+        get => _value is byte b ? b : (byte)0;
+        set => _value = value;
+    }
+    public int DataInt
+    {
+        get => _value is int i ? i : 0;
+        set => _value = value;
+    }
+    public bool DataBool
+    {
+        get => _value is bool b && b;
+        set => _value = value;
+    }
+    public _IOXFile DataCustom
+    {
+        get => (_IOXFile)_value;
+        set => _value = value;
+    }
+    public Dictionary<string, OXFileData> DataOXFiles
+    {
+        get => _value as Dictionary<string, OXFileData>;
+        set => _value = value;
+    }
+    public List<OXFileData> DataListOXFiles
+    {
+        get => _value as List<OXFileData>;
+        set => _value = value;
+    }
+
     public byte[] DataRaw;
-    //public string Data = "";
     public int LengthOffset;
     public int pVersion = 0;
     public OXFileData() { }
     public OXFileData(OXFileType tp)
     {
         Type = tp;
+        // Pre-allocate the collection types that are accessed before any data
+        // is parsed — these are the only two that were default-initialised before.
+        if (tp == OXFileType.OXFileData)
+            _value = new Dictionary<string, OXFileData>();
+        else if (tp == OXFileType.ListOXFileData)
+            _value = new List<OXFileData>();
     }
 
     public OXFileData this[int index]
@@ -446,9 +508,11 @@ public class OXFileData
         switch (this.Type)
         {
             case OXFileType.ListOXFileData:
+                if (_value == null) _value = new List<OXFileData>();
                 DataListOXFiles.Add(dat);
                 break;
             default:
+                if (_value == null) _value = new Dictionary<string, OXFileData>();
                 if (ContainsKey(Name))
                 {
                     DataOXFiles[Name] = dat;
