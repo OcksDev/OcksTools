@@ -14,10 +14,10 @@ public class EntityOXS
     public OXEventLayered<EntityOXS, DamageProfile> OnHitEvent = new OXEventLayered<EntityOXS, DamageProfile>();
     public OXEventLayered<EntityOXS, DamageProfile> OnHealEvent = new OXEventLayered<EntityOXS, DamageProfile>();
     public OXEventLayered<EntityOXS, DamageProfile> OnHealEventPostCalc = new OXEventLayered<EntityOXS, DamageProfile>();
-    public OXEventLayered<EntityOXS, MultiRef<object, EntityType>> OnKillEvent = new OXEventLayered<EntityOXS, MultiRef<object, EntityType>>();
+    public OXEventLayered<EntityOXS, MultiRef<EntityObject, EntityType>> OnKillEvent = new OXEventLayered<EntityOXS, MultiRef<EntityObject, EntityType>>();
     public OXEventLayered<EntityOXS, EffectProfile> OnEffectGain = new OXEventLayered<EntityOXS, EffectProfile>();
     public bool IsDead = false;
-    private object KillerObject = null;
+    private EntityObject KillerObject = null;
     private EntityType KillerType = EntityType.World;
     public void Hit(DamageProfile hit)
     {
@@ -44,12 +44,12 @@ public class EntityOXS
         var oldh = Health;
         var heal = amount.CalcAmount();
         Health = System.Math.Clamp(Health + heal, 0, Max_Health);
-        var change = heal - (Health - oldh);
+        var leftovers = heal - (Health - oldh);
         var olds = Shield;
-        Shield = System.Math.Clamp(Shield + change, 0, Max_Shield);
-        var change2 = change - (Shield - olds);
+        Shield = System.Math.Clamp(Shield + leftovers, 0, Max_Shield);
+        var leftovers_unable = leftovers - (Shield - olds);
 
-        // Amount Healed: amount - change2
+        // Amount Healed: heal - leftovers_unable
 
         if (Health != oldh || Shield != olds)
         {
@@ -63,7 +63,7 @@ public class EntityOXS
     {
         if (IsDead) return;
         IsDead = true;
-        var mf = new MultiRef<object, EntityType>(KillerObject, KillerType);
+        var mf = new MultiRef<EntityObject, EntityType>(KillerObject, KillerType);
         OnKillEvent.Invoke(this, mf);
     }
 
@@ -116,7 +116,10 @@ public class DamageProfile
     public DamageProfile(DamageProfile pp)
     {
         SourceObject = pp.SourceObject;
+        SourceType = pp.SourceType;
         HowItWasDealt = pp.HowItWasDealt;
+        WhatItWas = pp.WhatItWas;
+        CalcEvent = pp.CalcEvent;
         Value = pp.Value;
         Procs = new HashSet<string>(pp.Procs);
         SourceLocation = pp.SourceLocation;
@@ -129,7 +132,6 @@ public class DamageProfile
         CalcEvent.Invoke(this);
         StoredDamage = Value;
         Value = x;
-        //do some other calculations on output_value
 
         StoredDamage *= Crit.GetDegree() + 1;
 

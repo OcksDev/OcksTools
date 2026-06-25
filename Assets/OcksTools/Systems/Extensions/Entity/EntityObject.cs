@@ -10,14 +10,14 @@ public class EntityObject : MonoBehaviour
         Entity.SetSelf(this);
         if (Entity.IsDead)
         {
-            KillSelf(Entity, new MultiRef<object, EntityType>(null, EntityType.World));
+            KillSelf(Entity, new MultiRef<EntityObject, EntityType>(null, EntityType.World));
             return;
         }
         Entity.ClampHealth();
         Entity.OnKillEvent.Append(99999, "KillSelf", KillSelf);
     }
 
-    public void KillSelf(EntityOXS a, MultiRef<object, EntityType> b)
+    public void KillSelf(EntityOXS a, MultiRef<EntityObject, EntityType> b)
     {
         Destroy(gameObject);
     }

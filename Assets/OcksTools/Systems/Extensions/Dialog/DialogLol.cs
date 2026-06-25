@@ -203,8 +203,6 @@ public class DialogLol : SingleInstance<DialogLol>
         if (!SaveState) return;
         dict.SetDict("DialogVars", variables);
         dict.SetDict("DialogSWs", starts_and_watches);
-        GetStarts("Test1").DLog();
-        starts_and_watches.DictionaryToRead().DLog();
     }
 
     public void Load(SaveProfile dict)
@@ -521,7 +519,7 @@ public class DialogLol : SingleInstance<DialogLol>
                 succeeded = true;
                 if (is_default_set)
                 {
-                    CurrentSettings.Set("CanSkipBack", CanSkip.ToString());
+                    CurrentSettings.Set("CanSkipBack", CanSkipBack.ToString());
                     succeeded_defaulting = true;
                 }
                 break;

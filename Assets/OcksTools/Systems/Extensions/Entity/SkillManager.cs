@@ -37,7 +37,7 @@ public static class ExtensionForEntityOXSForSkills
         }
     }
 
-    public static void CleanUpSkills(EntityOXS nerd, MultiRef<object, EntityType> b)
+    public static void CleanUpSkills(EntityOXS nerd, MultiRef<EntityObject, EntityType> b)
     {
         if (SkillsTicking.ContainsKey(nerd))
         {

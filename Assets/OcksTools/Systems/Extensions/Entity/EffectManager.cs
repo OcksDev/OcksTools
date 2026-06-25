@@ -32,7 +32,7 @@ public static class ExtensionForEntityOXSForEffects
         }
     }
 
-    public static void CleanUpEffects(EntityOXS nerd, MultiRef<object, EntityType> b)
+    public static void CleanUpEffects(EntityOXS nerd, MultiRef<EntityObject, EntityType> b)
     {
         if (EffectsTicking.ContainsKey(nerd))
         {
