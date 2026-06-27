@@ -5,7 +5,7 @@
   - New "@[Item1,Item2,Item3]" style pre-processor, which selects one of the elements randomly to replace itself with
   - DLG File Highlighter has been updated to match new language rules
   - New DialogNPC base class to provide a simple and extendable jumping point
-  - Fixed typo causing CanSkipBack to not be saved
+  - Fixed typo causing CanSkipBack to not be correctly integrated with the settings object
   - Cleaned up some leftover debug stuff
 - Entity Improvements
   - New AggroBase class to more easily make enemy aggrression mechanics

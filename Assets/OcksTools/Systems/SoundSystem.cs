@@ -70,12 +70,13 @@ public class SoundSystem : SingleInstance<SoundSystem>
 
     public IEnumerator CurrentPlayCleaner()
     {
-        float wait = 2;
+        const float wait_base = 2;
+        float wait = wait_base;
         while (true)
         {
             if (CurrentPlays.Count == 0) { yield return new WaitForSeconds(3); continue; }
             var c = CurrentPlays.ToList();
-            if (CurrentPlays.Count > 0) wait = 1 / c.Count;
+            if (CurrentPlays.Count > 0) wait = wait_base / c.Count;
             foreach (var c2 in c)
             {
                 c2.Value.RemoveAll(x => !x.IsAlive);
