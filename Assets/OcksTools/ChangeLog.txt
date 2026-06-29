@@ -12,6 +12,16 @@
     - New sub-class, MostDamageAggro, which targets whatever has done the most damage to it
   - EntityOXS now calculates the hit damage on layer 500 of it's hit event, so things can be scheduled for before or after this
   - All generic System.object or GameObject references have been changed to EntityObject
+- GIS Improvements
+  - Added new "Type for stacking" feature, which lets you use the keyboard to easily type the amount of items to take/place from a stack
+  - Added Add() Method on Containers for adding items to a container without worry
+    - Massively simplified AbstractAdd()
+    - Simplified CtrlClick()
+  - Ctrl + Ckick now stacks items properly, and can distribute across multiple containers on partial fills
+  - Item bar now can be switched to an event based updating method
+  - Optimized item bar display updating
+  - Fixed bug where temp contents wouldn't be saved on load, leading to containers sometimes not resetting
+  - Fixed a (seemingly?) harmless bug where the container value wasn't being set on items sometimes
 - OXComponent Improvements
   - Added new optional overload for GetComponent, which takes a string to speed up the process
   - Slightly compacted the code of GetComponent/HasComponent, also might run a tiny bit faster now idk
@@ -40,12 +50,6 @@
   - SoundSystem.SetVolume renamed to SetChannelVolume
     - It now also runs UpdateAllVolumesCurrentlyInChannel(), which can be opted-out
   - Fixed bug with non-positional audio parenting
-- GIS Improvements
-  - Added new "Type for stacking" feature, which lets you use the keyboard to easily type the amount of items to take/place from a stack
-  - Item bar now can be switched to an event based updating method
-  - Optimized item bar display updating
-  - Fixed bug where temp contents wouldn't be saved on load, leading to containers sometimes not resetting
-  - Fixed a (seemingly?) harmless bug where the container value wasn't being set on items sometimes
 - Input Manager Improvements
   - Added GetNumberKeyDown() to easily read numeric inputs 0-9 from either Alpha keys or Numpad keys
   - Slightly optimized checked input calls by shortcutting all checks if no keys are currently being pressed.

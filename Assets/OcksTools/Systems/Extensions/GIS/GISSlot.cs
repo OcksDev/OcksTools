@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GISSlot : MonoBehaviour
@@ -327,44 +328,21 @@ public class GISSlot : MonoBehaviour
     public void CtrlClick(bool left)
     {
         var g = GISLol.Instance;
-        int cc = int.MinValue;
-        GISContainer nerd = null;
-        if (left)
+
+        var kvps = g.All_Containers.ToList().Clean();
+        kvps.Sort((x, y) => x.Value.CtrlClickPriority.CompareTo(y.Value.CtrlClickPriority));
+        if (left) kvps.Reverse();
+
+        foreach (var nerd in kvps)
         {
-            foreach (var a in g.All_Containers)
-            {
-                if (a.Value != Conte && a.Value.CtrlClickPriority > cc)
-                {
-                    if (a.Value.FindEmptySlot() >= 0)
-                    {
-                        cc = a.Value.CtrlClickPriority;
-                        nerd = a.Value;
-                    }
-                }
-            }
-        }
-        else
-        {
-            cc = int.MaxValue;
-            foreach (var a in g.All_Containers)
-            {
-                if (a.Value != Conte && a.Value.CtrlClickPriority < cc)
-                {
-                    if (a.Value.FindEmptySlot() >= 0)
-                    {
-                        cc = a.Value.CtrlClickPriority;
-                        nerd = a.Value;
-                    }
-                }
-            }
-        }
-        if (nerd != null)
-        {
-            int x = nerd.FindEmptySlot();
-            nerd.slots[x].Held_Item = Held_Item;
-            Held_Item = new GISItem();
-            nerd.SaveTempContents();
+            if (nerd.Value == Conte) continue;
+            if (nerd.Value.IsAbstract) continue;
+            var overflow = nerd.Value.Add(Held_Item);
+            Held_Item = overflow != null ? overflow : new GISItem();
+            nerd.Value.SaveTempContents();
+            Conte.SaveTempContents();
             OnInteract();
+            if (overflow == null) return;
         }
     }
 

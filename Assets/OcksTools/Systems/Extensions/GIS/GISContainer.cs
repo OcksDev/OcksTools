@@ -1,5 +1,4 @@
 using NaughtyAttributes;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -287,6 +286,50 @@ public class GISContainer : MonoBehaviour
         return total;
     }
 
+    public GISItem Add(GISItem item)
+    {
+        foreach (var st in slots)
+        {
+            var i = st.Held_Item;
+            if (i.IsEmpty())
+            {
+                st.Held_Item = item;
+                return null;
+            }
+            if (i.Compare(item))
+            {
+                int max = GISLol.Instance.ItemDict[item.Name].MaxAmount;
+                if (max > 0)
+                {
+                    int ideal = i.Amount + item.Amount;
+                    if (ideal > max)
+                    {
+                        int overflow = ideal - max;
+                        i.Amount.SetValue(max);
+                        item.Amount.SetValue(overflow);
+                        continue;
+                    }
+                    else
+                    {
+                        i.Amount.SetValue(ideal);
+                        return null;
+                    }
+                }
+                else
+                {
+                    i.Amount.SetValue(i.Amount + item.Amount);
+                    return null;
+                }
+            }
+        }
+        if (item.Amount > 0)
+        {
+            return item;
+        }
+
+        return null;
+    }
+
     public bool ReturnItem(GISItem Held_Item)
     {
         bool left = true;
@@ -339,67 +382,13 @@ public class GISContainer : MonoBehaviour
     //any method prefixed with "Abstract" should only be used if the container is abstract.
     public void AbstractAdd(GISItem item)
     {
-        var f = GISLol.Instance.ItemDict[item.Name].MaxAmount;
-        foreach (var s in slots)
+        var remained = Add(item);
+        if (remained != null)
         {
-            if (item.Compare(s.Held_Item))
-            {
-                int z = s.Held_Item.Amount;
-                z += item.Amount;
-                if (f > 0)
-                {
-                    s.Held_Item.Amount.SetValue(Math.Clamp(z, 0, f));
-                    if (z > f)
-                    {
-                        z -= f;
-                    }
-                    else
-                    {
-                        z = 0;
-                        item.Amount.SetValue(z);
-                        break;
-                    }
-                    item.Amount.SetValue(z);
-                }
-                else
-                {
-                    s.Held_Item.Amount.SetValue(z);
-                    z = 0;
-                    item.Amount.SetValue(z);
-                    break;
-                }
-            }
-        }
-        if (item.Amount > 0)
-        {
-            if (f > 0)
-            {
-                while (item.Amount > f)
-                {
-                    //Debug.Log("sex: " +item.Amount);
-                    var ns = new GISSlot();
-                    ns._SetConte(this);
-                    var pp = new GISItem(item);
-                    pp.Amount.SetValue(f);
-                    ns.Held_Item = pp;
-                    slots.Add(ns);
-                    item.Amount.SetValue(item.Amount - f);
-                }
-                if (item.Amount > 0)
-                {
-                    var ns = new GISSlot();
-                    ns._SetConte(this);
-                    ns.Held_Item = item;
-                    slots.Add(ns);
-                }
-            }
-            else
-            {
-                var ns = new GISSlot();
-                ns._SetConte(this);
-                ns.Held_Item = item;
-                slots.Add(ns);
-            }
+            var pp = new GISSlot();
+            pp._SetConte(this);
+            pp.Held_Item = remained;
+            slots.Add(pp);
         }
         OnContentsChanged.Invoke();
     }
