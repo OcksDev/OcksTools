@@ -54,17 +54,21 @@ public class GISSlot : MonoBehaviour
         return false;
     }
 
-    public void OnInteract()
+    public void OnInteract(bool allowsave = true)
     {
         switch (Name)
         {
             case "AbstractAdd":
                 var mitem = Held_Item;
+                Held_Item.AddConnection(Conte);
                 Conte.AbstractAdd(mitem);
+                if (allowsave) SaveItemContainerData();
                 Held_Item = new GISItem();
                 break;
+            default:
+                if (allowsave) SaveItemContainerData();
+                break;
         }
-        SaveItemContainerData();
         OnInteractEvent.Invoke(this);
     }
 
@@ -214,12 +218,15 @@ public class GISSlot : MonoBehaviour
         {
             Held_Item.Amount.SetValue(Held_Item.Amount + 1);
         }
+        Held_Item.AddConnection(Conte);
+        g.Mouse_Held_Item.AddConnection(Conte);
         g.Mouse_Held_Item.Amount.SetValue(g.Mouse_Held_Item.Amount - 1);
         if (g.Mouse_Held_Item.Amount <= 0)
         {
             g.Mouse_Held_Item = new GISItem();
+            SaveItemContainerData();
         }
-        OnInteract();
+        OnInteract(false);
     }
 
     public int _DistributeToNerds(List<GISSlot> nerds, GISItem item, int amnt, int max)

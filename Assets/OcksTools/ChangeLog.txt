@@ -40,12 +40,16 @@
   - SoundSystem.SetVolume renamed to SetChannelVolume
     - It now also runs UpdateAllVolumesCurrentlyInChannel(), which can be opted-out
   - Fixed bug with non-positional audio parenting
+- GIS Improvements
+  - Item bar now can be switched to an event based updating method
+  - Optmized item bar display updating
+  - Fixed bug where temp contents wouodn't be saved on load, leading to containers sometimes not resetting
+  - Fixed a (seemingly) harmless bug where the container value wasn't being set on items
 - Misc
   - Big bug fixed in OXEventLayered<>, the name of events is actually used now lol
   - NumToRead and other misc code shouldn't break on different cultures anymore (forced en-US)
   - NumToRead scientific notation standardized to use "E" instead of "e"
   - All system-specific assets/resources have been moved into their own section within OXResources
-  - Fixed a (seemingly) harmless bug in the GIS where the container value wasn't being set
   - Console command Getrender has a new subcommand, "language" to get the current language detected by the program
     - Since this is being forced to en-US for now, it should just return "en", I think
   - Removed uLayout plugin, it was cool, but I'd rather it be seperate.

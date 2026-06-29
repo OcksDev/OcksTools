@@ -5,19 +5,21 @@ public class GISItemBar : MonoBehaviour
 {
     public GISContainer Container;
     public GameObject DisplayPrefab;
+    public CheckingMethod UpdateMethod = CheckingMethod.Event;
     private List<GISDisplay> shites = new List<GISDisplay>();
     // Start is called before the first frame update
     private void Start()
     {
         //updates the display on start
         UpdateDisplay();
+        Container.OnContentsChanged.Append(() => { if (UpdateMethod == CheckingMethod.Event) UpdateDisplay(); });
     }
 
     // Update is called once per frame
     private void FixedUpdate()
     {
         //updates the display every fixed update
-        UpdateDisplay();
+        if (UpdateMethod == CheckingMethod.FixedUpdate) UpdateDisplay();
     }
 
     public void UpdateDisplay()
@@ -47,7 +49,13 @@ public class GISItemBar : MonoBehaviour
         for (int iz = 0; iz < shites.Count; iz++)
         {
             shites[iz].item.SetValue(Container.slots[iz].Held_Item);
-            shites[iz].UpdateDisplay();
+            if (shites[iz].item.HasChanged()) shites[iz].UpdateDisplay();
         }
+    }
+
+    public enum CheckingMethod
+    {
+        FixedUpdate,
+        Event,
     }
 }

@@ -16,7 +16,7 @@ public class GISDisplay : MonoBehaviour
         GetStuff();
         if (item == null) item = new(new GISItem());
         item.OnValueChanged.Append(() => { UpdateDisplay(false); });
-        item.CompareFunc = (x, y) => x.Amount == y.Amount && !y.Amount.HasChanged() && x.Equals(y);
+        item.CompareFunc = (x, y) => x.Amount == y.Amount && !y.Amount.HasChanged() && x.Compare(y, true);
     }
     //GISItem olditem = null;
     public void UpdateDisplay(bool force = false)

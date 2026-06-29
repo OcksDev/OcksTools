@@ -44,6 +44,7 @@ public class GISContainer : MonoBehaviour
     }
     [HideInInspector]
     public List<GISItem> saved_items = new List<GISItem>();
+    public OXEvent OnContentsChanged = new();
     // Start is called before the first frame update
     private void Start()
     {
@@ -94,6 +95,11 @@ public class GISContainer : MonoBehaviour
                     s.Held_Item.Amount = new(0);
                 }
             }
+            SaveTempContents();
+        }
+        else
+        {
+            SaveTempContents();
         }
     }
     public IEnumerator WaitForSaveSystem()
@@ -158,6 +164,7 @@ public class GISContainer : MonoBehaviour
                 i++;
             }
         }
+        OnContentsChanged.Invoke();
         if (GISLol.Instance.Mouse_Held_Item.Container == this) GISLol.Instance.Mouse_Held_Item = new GISItem();
     }
     public int FindEmptySlot()
@@ -230,6 +237,7 @@ public class GISContainer : MonoBehaviour
 
             }
             SaveTempContents();
+            OnContentsChanged.Invoke();
         }
     }
 
@@ -390,6 +398,7 @@ public class GISContainer : MonoBehaviour
                 slots.Add(ns);
             }
         }
+        OnContentsChanged.Invoke();
     }
 
     public void AbstractCollapseEmpty()
@@ -402,6 +411,7 @@ public class GISContainer : MonoBehaviour
                 i--;
             }
         }
+        OnContentsChanged.Invoke();
     }
 
 
@@ -503,6 +513,7 @@ public class GISContainer : MonoBehaviour
                 ns.OnInteract();
             }
         }
+        OnContentsChanged.Invoke();
     }
     public void GenerateSlots(int amount)
     {

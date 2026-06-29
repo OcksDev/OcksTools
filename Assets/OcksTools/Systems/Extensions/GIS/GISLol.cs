@@ -20,7 +20,11 @@ public class GISLol : SingleInstance<GISLol>
         nono = true;
         foreach (var con in All_Containers)
         {
-            if (con.Value != null && !con.Value.IsAbstract) con.Value.LoadTempContents();
+            if (con.Value != null)
+            {
+                Debug.Log("Loading temp for " + con.Key);
+                con.Value.LoadTempContents();
+            }
         }
     }
 
@@ -188,6 +192,7 @@ public class GISItem
         Name = sexnut.Name;
         Container = sexnut.Container;
         Components = new ComponentHolder(sexnut.Components);
+        Interacted_Containers = new(sexnut.Interacted_Containers);
     }
     public bool IsEmpty()
     {
