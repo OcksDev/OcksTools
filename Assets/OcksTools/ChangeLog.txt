@@ -3,21 +3,21 @@
    v1.2.3
 - Dialog System Improvements
   - New "@[Item1,Item2,Item3]" style pre-processor, which selects one of the elements randomly to replace itself with
-  - DLG File Highlighter has been updated to match new language rules
+    - DLG File Highlighter has been updated to match new language rules
   - New DialogNPC base class to provide a simple and extendable jumping point
   - Fixed typo causing CanSkipBack to not be correctly integrated with the settings object
   - Cleaned up some leftover debug stuff
 - Entity Improvements
   - New AggroBase class to more easily make enemy aggrression mechanics
     - New sub-class, MostDamageAggro, which targets whatever has done the most damage to it
-  - EntityOXS now calculates the hit damage on layer 500 of it's hit event, so things can be scheduled for before or after this
+  - EntityOXS now calculates the hit damage on layer 500 of its hit event, so things can be scheduled for before or after this
   - All generic System.object or GameObject references have been changed to EntityObject
 - GIS Improvements
   - Added new "Type for stacking" feature, which lets you use the keyboard to easily type the amount of items to take/place from a stack
-  - Added Add() Method on Containers for adding items to a container without worry
+  - Added Add() Method on Containers for adding items to a container
     - Massively simplified AbstractAdd()
     - Simplified CtrlClick()
-  - Ctrl + Ckick now stacks items properly, and can distribute across multiple containers on partial fills
+  - Ctrl + Click now stacks items properly, and can distribute across multiple containers on partial fills
   - Item bar now can be switched to an event based updating method
   - Optimized item bar display updating
   - Fixed bug where temp contents wouldn't be saved on load, leading to containers sometimes not resetting
@@ -45,13 +45,13 @@
 - Sound System Improvements
   - OXSound.SetVolume now respects the 'channel' volume rather than always using SFX, and also applies changes to internal volume
     - Added UpdateVolume()
-  - Added UpdateAllVolumesCurrentlyInChannel(), runs UpdateVolume on all currently playing audio within a given channel
+  - Added UpdateAllVolumesCurrentlyInChannel(), runs UpdateVolume() on all currently playing audio within a given channel
   - Added internal tracker of all currently playing audio which gets pruned every few seconds
   - SoundSystem.SetVolume renamed to SetChannelVolume
     - It now also runs UpdateAllVolumesCurrentlyInChannel(), which can be opted-out
   - Fixed bug with non-positional audio parenting
 - Input Manager Improvements
-  - Added GetNumberKeyDown() to easily read numeric inputs 0-9 from either Alpha keys or Numpad keys
+  - Added GetNumberKeyDown() to easily read numeric inputs 0-9 from both Alpha keys and/or Numpad keys
   - Slightly optimized checked input calls by shortcutting all checks if no keys are currently being pressed.
   - Standardized all IsKey methods to use CheckAvailability() instead of rewriting its functionality
 - Misc
@@ -59,8 +59,8 @@
   - NumToRead and other misc code shouldn't break on different cultures anymore (forced en-US)
   - NumToRead scientific notation standardized to use "E" instead of "e"
   - All system-specific assets/resources have been moved into their own section within OXResources
-  - Console command Getrender has a new subcommand, "language" to get the current language detected by the program
-    - Since this is being forced to en-US for now, it should just return "en", I think
+  - Console command "getrender" has a new subcommand, "language" to get the current language detected by the program
+    - Since this is being forced to en-US for now, it should just return "en" (I think)
   - Removed uLayout plugin, it was cool, but I'd rather it be seperate.
 ------------
 
