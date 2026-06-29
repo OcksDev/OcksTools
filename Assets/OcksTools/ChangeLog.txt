@@ -35,16 +35,21 @@
 - Sound System Improvements
   - OXSound.SetVolume now respects the 'channel' volume rather than always using SFX, and also applies changes to internal volume
     - Added UpdateVolume()
-  - Added UpdateAllVolumesCurrentlyInChannel(), runs UpdateVolume on all currently playing audio
+  - Added UpdateAllVolumesCurrentlyInChannel(), runs UpdateVolume on all currently playing audio within a given channel
   - Added internal tracker of all currently playing audio which gets pruned every few seconds
   - SoundSystem.SetVolume renamed to SetChannelVolume
     - It now also runs UpdateAllVolumesCurrentlyInChannel(), which can be opted-out
   - Fixed bug with non-positional audio parenting
 - GIS Improvements
+  - Added new "Type for stacking" feature, which lets you use the keyboard to easily type the amount of items to take/place from a stack
   - Item bar now can be switched to an event based updating method
-  - Optmized item bar display updating
-  - Fixed bug where temp contents wouodn't be saved on load, leading to containers sometimes not resetting
-  - Fixed a (seemingly) harmless bug where the container value wasn't being set on items
+  - Optimized item bar display updating
+  - Fixed bug where temp contents wouldn't be saved on load, leading to containers sometimes not resetting
+  - Fixed a (seemingly?) harmless bug where the container value wasn't being set on items sometimes
+- Input Manager Improvements
+  - Added GetNumberKeyDown() to easily read numeric inputs 0-9 from either Alpha keys or Numpad keys
+  - Slightly optimized checked input calls by shortcutting all checks if no keys are currently being pressed.
+  - Standardized all IsKey methods to use CheckAvailability() instead of rewriting its functionality
 - Misc
   - Big bug fixed in OXEventLayered<>, the name of events is actually used now lol
   - NumToRead and other misc code shouldn't break on different cultures anymore (forced en-US)

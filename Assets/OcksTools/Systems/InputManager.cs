@@ -303,8 +303,7 @@ public class InputManager : SingleInstance<InputManager>
     {
         //set a = false to deny inputs
         bool a = true;
-
-
+        if (!Input.anyKey) a = false;
 
         return a;
     }
@@ -349,27 +348,23 @@ public class InputManager : SingleInstance<InputManager>
     }
     public static bool IsKeyDown(InputManagerKeyVal baller, BetterList<string> ide)
     {
-        if (!AllowInputToPass(ide)) return false;
-        if (!InputPassesLockLevel(ide)) return false;
+        if (!CheckAvailability(ide)) return false;
         return IsKeyDown(baller);
     }
     public static bool IsKey(InputManagerKeyVal baller, BetterList<string> ide)
     {
-        if (!AllowInputToPass(ide)) return false;
-        if (!InputPassesLockLevel(ide)) return false;
+        if (!CheckAvailability(ide)) return false;
         return IsKey(baller);
     }
     public static bool IsKeyUp(InputManagerKeyVal baller, BetterList<string> ide)
     {
-        if (!AllowInputToPass(ide)) return false;
-        if (!InputPassesLockLevel(ide)) return false;
+        if (!CheckAvailability(ide)) return false;
         return IsKeyUp(baller);
     }
 
     public static float GetAxis(InputAxis a, BetterList<string> ide, int controller = 1)
     {
-        if (!AllowInputToPass(ide)) return 0;
-        if (!InputPassesLockLevel(ide)) return 0;
+        if (!CheckAvailability(ide)) return 0;
         return GetAxis(a, controller);
     }
 
@@ -405,6 +400,23 @@ public class InputManager : SingleInstance<InputManager>
         ControllerLT, ControllerRT, ControllerPlusUpDown, ControllerPlusRightLeft,
         ControllerUpDownOther, ControllerRightLeftOther,
     }
+
+    public int GetNumberKeyDown()
+    {
+        if (!Input.anyKey) return -1;
+        if (Input.GetKeyDown(KeyCode.Alpha0) || Input.GetKeyDown(KeyCode.Keypad0)) return 0;
+        if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1)) return 1;
+        if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2)) return 2;
+        if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Keypad3)) return 3;
+        if (Input.GetKeyDown(KeyCode.Alpha4) || Input.GetKeyDown(KeyCode.Keypad4)) return 4;
+        if (Input.GetKeyDown(KeyCode.Alpha5) || Input.GetKeyDown(KeyCode.Keypad5)) return 5;
+        if (Input.GetKeyDown(KeyCode.Alpha6) || Input.GetKeyDown(KeyCode.Keypad6)) return 6;
+        if (Input.GetKeyDown(KeyCode.Alpha7) || Input.GetKeyDown(KeyCode.Keypad7)) return 7;
+        if (Input.GetKeyDown(KeyCode.Alpha8) || Input.GetKeyDown(KeyCode.Keypad8)) return 8;
+        if (Input.GetKeyDown(KeyCode.Alpha9) || Input.GetKeyDown(KeyCode.Keypad9)) return 9;
+        return -1;
+    }
+
     public static void SetGameKeys()
     {
         keynames = new Dictionary<KeyCode, string>

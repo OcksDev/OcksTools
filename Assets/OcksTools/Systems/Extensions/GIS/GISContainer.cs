@@ -22,6 +22,8 @@ public class GISContainer : MonoBehaviour
     public bool CanDoubleClickItems = true;
     [HideIf("IsAbstract")]
     public bool CanSortItems = true;
+    [HideIf("IsAbstract")]
+    public bool CanTypeForStackSize = true;
     public int CtrlClickPriority = 0;
     [HideIf("IsAbstract")]
     public bool AutomaticallyAddChildren = true;
@@ -161,6 +163,7 @@ public class GISContainer : MonoBehaviour
             foreach (var h in saved_items)
             {
                 slots[i].Held_Item = new GISItem(h);
+                slots[i].ResetTypeStack();
                 i++;
             }
         }

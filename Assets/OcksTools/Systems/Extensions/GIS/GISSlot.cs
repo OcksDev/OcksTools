@@ -71,16 +71,18 @@ public class GISSlot : MonoBehaviour
         }
         OnInteractEvent.Invoke(this);
     }
-
     public void UpdateCall()
     {
         var g = GISLol.Instance;
         DoubleClickTimer -= Time.deltaTime;
-        if (FailToClick()) return;
-        if (!IsHovering()) return;
+        if (FailToClick()) { ResetTypeStack(); return; }
+        if (!IsHovering()) { ResetTypeStack(); return; }
         bool left = GISLol.Instance.MouseLeftClickingDown && GISLol.Instance.DragLock != 2;
         bool right = GISLol.Instance.MouseRightClickingDown && GISLol.Instance.DragLock != 1;
-
+        if (Conte.CanTypeForStackSize && !(left || right))
+        {
+            TypeStacking();
+        }
         if (Conte.CanDragDistributeItems)
         {
             if (GISLol.Instance.MouseLeftClicking && !left && GISLol.Instance.DragSlotsLeft.Count > 0 && !GISLol.Instance.DragSlotsLeft.Contains(this))
@@ -140,6 +142,76 @@ public class GISSlot : MonoBehaviour
         }
 
     }
+    public void ResetTypeStack()
+    {
+        typedstack = 0;
+        type_orig_slot = 0;
+        type_orig_hand = 0;
+        type_begun = false;
+    }
+    private int typedstack = 0;
+    private int type_orig_slot = 0;
+    private int type_orig_hand = 0;
+    private bool type_begun = false;
+    public void TypeStacking()
+    {
+        if (!type_begun && !GISLol.Instance.Mouse_Held_Item.IsEmpty() && !Held_Item.IsEmpty()) return;
+        if (!type_begun && GISLol.Instance.Mouse_Held_Item.IsEmpty() && Held_Item.IsEmpty()) return;
+        int pressed = InputManager.Instance.GetNumberKeyDown();
+        if (pressed != -1)
+        {
+            if (typedstack == 0 && pressed != 0)
+            {
+                type_begun = true;
+                if (Held_Item.IsEmpty())
+                {
+                    type_orig_hand = GISLol.Instance.Mouse_Held_Item.Amount;
+                }
+                else
+                {
+                    type_orig_slot = Held_Item.Amount;
+                }
+            }
+            if (typedstack < int.MaxValue / 10)
+            {
+                typedstack *= 10;
+                typedstack += pressed;
+            }
+            else
+            {
+                typedstack = int.MaxValue;
+            }
+            if (typedstack > 0)
+            {
+                int based = (type_orig_slot == 0 ? type_orig_hand : type_orig_slot);
+                int maxtransfer = System.Math.Min(typedstack, based);
+                int transfer = based - maxtransfer;
+                if (type_orig_slot == 0)
+                {
+                    GISLol.Instance.Mouse_Held_Item.Amount.SetValue(transfer);
+                    Held_Item = new GISItem(GISLol.Instance.Mouse_Held_Item);
+                    Held_Item.Amount.SetValue(maxtransfer);
+                }
+                else
+                {
+                    Held_Item.Amount.SetValue(transfer);
+                    GISLol.Instance.Mouse_Held_Item = new GISItem(Held_Item);
+                    GISLol.Instance.Mouse_Held_Item.Amount.SetValue(maxtransfer);
+                }
+                if (GISLol.Instance.Mouse_Held_Item.Amount == 0)
+                {
+                    GISLol.Instance.Mouse_Held_Item = new GISItem();
+                    ResetTypeStack();
+                }
+                if (Held_Item.Amount == 0)
+                {
+                    Held_Item = new GISItem();
+                    ResetTypeStack();
+                }
+            }
+        }
+    }
+
     public void DragLeft()
     {
         var g = GISLol.Instance;
