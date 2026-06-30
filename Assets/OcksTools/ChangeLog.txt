@@ -54,10 +54,14 @@
   - Added GetNumberKeyDown() to easily read numeric inputs 0-9 from both Alpha keys and/or Numpad keys
   - Slightly optimized checked input calls by shortcutting all checks if no keys are currently being pressed.
   - Standardized all IsKey methods to use CheckAvailability() instead of rewriting its functionality
-- Misc
-  - Big bug fixed in OXEventLayered<>, the name of events is actually used now lol
+- Big Ass Number Improvements
+  - Now inherits from a comparison interface and thusly has a new CompareTo() method
+  - Big bug fixed, the comparison operators like >= or < now properly handle negative number cases
+    - Now routing through CompareTo()
   - NumToRead and other misc code shouldn't break on different cultures anymore (forced en-US)
   - NumToRead scientific notation standardized to use "E" instead of "e"
+- Misc
+  - Big bug fixed in OXEventLayered<>, the name of events is actually used now lol
   - All system-specific assets/resources have been moved into their own section within OXResources
   - Console command "getrender" has a new subcommand, "language" to get the current language detected by the program
     - Since this is being forced to en-US for now, it should just return "en" (I think)

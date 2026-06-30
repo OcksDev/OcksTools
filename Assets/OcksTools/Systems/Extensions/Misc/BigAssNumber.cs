@@ -26,7 +26,7 @@ public class BigAssNumberInspectorMaker
 
 // max value is 9.999*10^(2^63)
 [System.Serializable]
-public struct BigAssNumber
+public struct BigAssNumber : IComparable<BigAssNumber>
 {
     /// <summary>
     /// During add/subtract calculations, if the difference in exponents is greater than 100, then simply keep the highest value instead of actually calculating the addition. This speeds up small additions/subtractions by ignoring them, sacrificing quality, but keeps all power calculations cached and fast.
@@ -46,6 +46,7 @@ public struct BigAssNumber
     {
         Mantissa = man;
         Exponent = exp;
+        if (Mantissa == 0) Exponent = 0;
     }
     public BigAssNumber(double man, long exp, bool checkedexp = false)
     {
@@ -232,42 +233,30 @@ public struct BigAssNumber
     {
         return HashCode.Combine(Mantissa, Exponent);
     }
+    public static bool operator >(BigAssNumber a, BigAssNumber b) => a.CompareTo(b) > 0;
+    public static bool operator <(BigAssNumber a, BigAssNumber b) => a.CompareTo(b) < 0;
+    public static bool operator >=(BigAssNumber a, BigAssNumber b) => a.CompareTo(b) >= 0;
+    public static bool operator <=(BigAssNumber a, BigAssNumber b) => a.CompareTo(b) <= 0;
 
-    public static bool operator >(BigAssNumber a, BigAssNumber b)
+    public int CompareTo(BigAssNumber other)
     {
-        if (a.Exponent == b.Exponent)
+        bool aNegative = Mantissa < 0;
+        bool bNegative = other.Mantissa < 0;
+
+        if (aNegative != bNegative)
         {
-            return a.Mantissa > b.Mantissa;
+            return aNegative ? -1 : 1;
         }
-        return a.Exponent > b.Exponent;
+
+        int exponentComparison = Exponent.CompareTo(other.Exponent);
+        if (exponentComparison != 0)
+        {
+            return aNegative ? -exponentComparison : exponentComparison;
+        }
+
+        return Mantissa.CompareTo(other.Mantissa);
     }
 
-    public static bool operator <(BigAssNumber a, BigAssNumber b)
-    {
-        if (a.Exponent == b.Exponent)
-        {
-            return a.Mantissa < b.Mantissa;
-        }
-        return a.Exponent < b.Exponent;
-    }
-
-    public static bool operator >=(BigAssNumber a, BigAssNumber b)
-    {
-        if (a.Exponent == b.Exponent)
-        {
-            return a.Mantissa >= b.Mantissa;
-        }
-        return a.Exponent >= b.Exponent;
-    }
-
-    public static bool operator <=(BigAssNumber a, BigAssNumber b)
-    {
-        if (a.Exponent == b.Exponent)
-        {
-            return a.Mantissa <= b.Mantissa;
-        }
-        return a.Exponent <= b.Exponent;
-    }
     public static bool operator ==(BigAssNumber a, BigAssNumber b)
     {
         return a.Exponent == b.Exponent && a.Mantissa == b.Mantissa;
