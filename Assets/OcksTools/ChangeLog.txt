@@ -1,4 +1,10 @@
 
+
+------------
+   v1.2.4
+- It begins...
+------------
+
 ------------
    v1.2.3
 - Dialog System Improvements
