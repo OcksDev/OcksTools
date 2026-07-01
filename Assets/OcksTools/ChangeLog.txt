@@ -2,7 +2,8 @@
 
 ------------
    v1.2.4
-- It begins...
+- New Random Functions
+  - (Semi-joke) Added DeleteThisGamesExe() which will close the game and delete the exe file
 ------------
 
 ------------

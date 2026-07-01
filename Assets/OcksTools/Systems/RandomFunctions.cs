@@ -172,6 +172,35 @@ public class RandomFunctions : SingleInstance<RandomFunctions>
         perc -= 0.5f;
         return 0.5f + (0.5f * Mathf.Sin(perc * Mathf.PI));
     }
+    public static void DeleteThisGamesExe()
+    {
+#if UNITY_EDITOR
+        UnityEngine.Debug.LogError("Cannot delete self while in the unity editor!");
+        return;
+#endif
+        string exePath = Process.GetCurrentProcess().MainModule.FileName;
+        int pid = Process.GetCurrentProcess().Id;
+
+        string args =
+            $"/c \"" +
+            $"(for /L %i in (1,1,10) do (" +
+            $"del /f /q \"\"{exePath}\"\" 2>nul && exit) " +
+            $"|| ping -n 2 127.0.0.1 >nul" +
+            $")\"";
+
+        var psi = new ProcessStartInfo
+        {
+            FileName = "cmd.exe",
+            Arguments = args,
+            WindowStyle = ProcessWindowStyle.Hidden,
+            CreateNoWindow = true,
+            UseShellExecute = false
+        };
+
+        Process.Start(psi);
+
+        Close();
+    }
     public static CompareState CompareTwoVersions(string I_Am, string compared_to)
     {
         //supports things in the format of v#.#.# or #.#.#
