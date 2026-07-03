@@ -2,8 +2,17 @@
 
 ------------
    v1.2.4
+- OXEvent Overhaul
+  - Nearly entirely restructured both OXEvent and OXEventLayered
+  - Optimized Invoke() to reduce runtime allocations
+  - Methods returning bools, Func<...bool>, can now be accepted as event methods
+  - Remade InvokeWithHitCheck() to now be thread safe
+    - Events now flag a "hit" if any method returns true instead of setting a static variable
+    - Added a new optional parameter to InvokeWithHitCheck() to allow for an early exit if a hit is detected
 - New Random Functions
   - (Semi-joke) Added DeleteThisGamesExe() which will close the game and delete the exe file
+- Misc
+  - Fixed bad collision detection on the 3D player controller, it was using the wrong collision detection mode
 ------------
 
 ------------

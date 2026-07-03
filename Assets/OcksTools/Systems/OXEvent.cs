@@ -30,38 +30,30 @@ public static class GlobalEvent
     }
 }
 
-/*
- * WARNING: InvokeWithHitCheck() is NOT thread safe, if using oxevent on other threads: DO NOT USE THIS METHOD
- */
-public class OXEvent
+public abstract class _OXEventBase<T, T2>
 {
-    public Dictionary<string, Action> StoredMethods = new Dictionary<string, Action>();
-    public static bool SuccessfulHit = false;
-    public void Append(string name, Action method)
-    {
-        StoredMethods.AddOrUpdate(name, method);
-    }
-    public void Append(Action method)
+    public Dictionary<string, T2> StoredMethods = new Dictionary<string, T2>();
+    protected List<string> killme = new List<string>();
+    public void Append(string name, T2 method) => StoredMethods.AddOrUpdate(name, method);
+    public void Append(T2 method)
     {
         var dd = Tags.GenerateID();
         StoredMethods.AddOrUpdate(dd, method);
     }
-    public void Remove(string name)
-    {
-        if (StoredMethods.ContainsKey(name))
-        {
-            StoredMethods.Remove(name);
-        }
-    }
-    public bool InvokeWithHitCheck()
-    {
-        OXEvent.SuccessfulHit = false;
-        Invoke();
-        return OXEvent.SuccessfulHit;
-    }
+    public void Append(string name, T method) => Append(name, Convert(method));
+    public void Append(T method) => Append(Convert(method));
+    public void Remove(string name) => StoredMethods.Remove(name);
+
+    public bool Contains(string name) => StoredMethods.ContainsKey(name);
+    public void Clear() => StoredMethods.Clear();
+    public abstract T2 Convert(T input);
+}
+
+public class OXEvent : _OXEventBase<Action, Func<bool>>
+{
     public void Invoke()
     {
-        List<string> killme = new List<string>();
+        killme.Clear();
         foreach (var w in StoredMethods)
         {
             if (w.Value != null) w.Value();
@@ -72,51 +64,31 @@ public class OXEvent
             StoredMethods.Remove(kill);
         }
     }
-
-    public bool Contains(string name)
+    public override Func<bool> Convert(Action input) => () => { input(); return false; };
+    public bool InvokeWithHitCheck(bool CanEarlyExit = false)
     {
-        return StoredMethods.ContainsKey(name);
-    }
-    public void Clear()
-    {
-        StoredMethods.Clear();
-    }
-}
-
-/*
- * WARNING: InvokeWithHitCheck() is NOT thread safe, if using oxevent on other threads: DO NOT USE THIS METHOD
- */
-public class OXEvent<T>
-{
-    public Dictionary<string, Action<T>> StoredMethods = new Dictionary<string, Action<T>>();
-    public void Append(string name, Action<T> method)
-    {
-        StoredMethods.AddOrUpdate(name, method);
-    }
-    public void Append(Action<T> method)
-    {
-        var dd = Tags.GenerateID();
-        StoredMethods.AddOrUpdate(dd, method);
-    }
-    public void Remove(string name)
-    {
-        if (StoredMethods.ContainsKey(name))
-        {
-            StoredMethods.Remove(name);
-        }
-    }
-    public bool InvokeWithHitCheck(T a)
-    {
-        OXEvent.SuccessfulHit = false;
-        Invoke(a);
-        return OXEvent.SuccessfulHit;
-    }
-    public void Invoke(T a)
-    {
-        List<string> killme = new List<string>();
+        killme.Clear();
+        bool hit = false;
         foreach (var w in StoredMethods)
         {
-            if (w.Value != null) w.Value(a);
+            if (w.Value != null) hit |= w.Value();
+            else killme.Add(w.Key);
+            if (CanEarlyExit && hit) return true;
+        }
+        foreach (var kill in killme)
+            StoredMethods.Remove(kill);
+        return hit;
+    }
+}
+public class OXEvent<T> : _OXEventBase<Action<T>, Func<T, bool>>
+{
+    public static bool SuccessfulHit = false;
+    public void Invoke(T t)
+    {
+        killme.Clear();
+        foreach (var w in StoredMethods)
+        {
+            if (w.Value != null) w.Value(t);
             else killme.Add(w.Key);
         }
         foreach (var kill in killme)
@@ -124,50 +96,31 @@ public class OXEvent<T>
             StoredMethods.Remove(kill);
         }
     }
-
-    public bool Contains(string name)
+    public override Func<T, bool> Convert(Action<T> input) => (x) => { input(x); return false; };
+    public bool InvokeWithHitCheck(T t, bool CanEarlyExit = false)
     {
-        return StoredMethods.ContainsKey(name);
-    }
-    public void Clear()
-    {
-        StoredMethods.Clear();
-    }
-}
-/*
- * WARNING: InvokeWithHitCheck() is NOT thread safe, if using oxevent on other threads: DO NOT USE THIS METHOD
- */
-public class OXEvent<T, T2>
-{
-    public Dictionary<string, Action<T, T2>> StoredMethods = new Dictionary<string, Action<T, T2>>();
-    public void Append(string name, Action<T, T2> method)
-    {
-        StoredMethods.AddOrUpdate(name, method);
-    }
-    public void Append(Action<T, T2> method)
-    {
-        var dd = Tags.GenerateID();
-        StoredMethods.AddOrUpdate(dd, method);
-    }
-    public void Remove(string name)
-    {
-        if (StoredMethods.ContainsKey(name))
-        {
-            StoredMethods.Remove(name);
-        }
-    }
-    public bool InvokeWithHitCheck(T a, T2 b)
-    {
-        OXEvent.SuccessfulHit = false;
-        Invoke(a, b);
-        return OXEvent.SuccessfulHit;
-    }
-    public void Invoke(T a, T2 b)
-    {
-        List<string> killme = new List<string>();
+        killme.Clear();
+        bool hit = false;
         foreach (var w in StoredMethods)
         {
-            if (w.Value != null) w.Value(a, b);
+            if (w.Value != null) hit |= w.Value(t);
+            else killme.Add(w.Key);
+            if (CanEarlyExit && hit) return true;
+        }
+        foreach (var kill in killme)
+            StoredMethods.Remove(kill);
+        return hit;
+    }
+}
+public class OXEvent<T, T2> : _OXEventBase<Action<T, T2>, Func<T, T2, bool>>
+{
+    public static bool SuccessfulHit = false;
+    public void Invoke(T t, T2 t2)
+    {
+        killme.Clear();
+        foreach (var w in StoredMethods)
+        {
+            if (w.Value != null) w.Value(t, t2);
             else killme.Add(w.Key);
         }
         foreach (var kill in killme)
@@ -175,51 +128,31 @@ public class OXEvent<T, T2>
             StoredMethods.Remove(kill);
         }
     }
-    public bool Contains(string name)
+    public override Func<T, T2, bool> Convert(Action<T, T2> input) => (x, y) => { input(x, y); return false; };
+    public bool InvokeWithHitCheck(T t, T2 t2, bool CanEarlyExit = false)
     {
-        return StoredMethods.ContainsKey(name);
-    }
-
-    public void Clear()
-    {
-        StoredMethods.Clear();
-    }
-}
-
-/*
- * WARNING: InvokeWithHitCheck() is NOT thread safe, if using oxevent on other threads: DO NOT USE THIS METHOD
- */
-public class OXEvent<T, T2, T3>
-{
-    public Dictionary<string, Action<T, T2, T3>> StoredMethods = new Dictionary<string, Action<T, T2, T3>>();
-    public void Append(string name, Action<T, T2, T3> method)
-    {
-        StoredMethods.AddOrUpdate(name, method);
-    }
-    public void Append(Action<T, T2, T3> method)
-    {
-        var dd = Tags.GenerateID();
-        StoredMethods.AddOrUpdate(dd, method);
-    }
-    public void Remove(string name)
-    {
-        if (StoredMethods.ContainsKey(name))
-        {
-            StoredMethods.Remove(name);
-        }
-    }
-    public bool InvokeWithHitCheck(T a, T2 b, T3 c)
-    {
-        OXEvent.SuccessfulHit = false;
-        Invoke(a, b, c);
-        return OXEvent.SuccessfulHit;
-    }
-    public void Invoke(T a, T2 b, T3 c)
-    {
-        List<string> killme = new List<string>();
+        killme.Clear();
+        bool hit = false;
         foreach (var w in StoredMethods)
         {
-            if (w.Value != null) w.Value(a, b, c);
+            if (w.Value != null) hit |= w.Value(t, t2);
+            else killme.Add(w.Key);
+            if (CanEarlyExit && hit) return true;
+        }
+        foreach (var kill in killme)
+            StoredMethods.Remove(kill);
+        return hit;
+    }
+}
+public class OXEvent<T, T2, T3> : _OXEventBase<Action<T, T2, T3>, Func<T, T2, T3, bool>>
+{
+    public static bool SuccessfulHit = false;
+    public void Invoke(T t, T2 t2, T3 t3)
+    {
+        killme.Clear();
+        foreach (var w in StoredMethods)
+        {
+            if (w.Value != null) w.Value(t, t2, t3);
             else killme.Add(w.Key);
         }
         foreach (var kill in killme)
@@ -227,51 +160,31 @@ public class OXEvent<T, T2, T3>
             StoredMethods.Remove(kill);
         }
     }
-
-    public bool Contains(string name)
+    public override Func<T, T2, T3, bool> Convert(Action<T, T2, T3> input) => (x, y, z) => { input(x, y, z); return false; };
+    public bool InvokeWithHitCheck(T t, T2 t2, T3 t3, bool CanEarlyExit = false)
     {
-        return StoredMethods.ContainsKey(name);
-    }
-    public void Clear()
-    {
-        StoredMethods.Clear();
-    }
-}
-
-/*
- * WARNING: InvokeWithHitCheck() is NOT thread safe, if using oxevent on other threads: DO NOT USE THIS METHOD
- */
-public class OXEvent<T, T2, T3, T4>
-{
-    public Dictionary<string, Action<T, T2, T3, T4>> StoredMethods = new Dictionary<string, Action<T, T2, T3, T4>>();
-    public void Append(string name, Action<T, T2, T3, T4> method)
-    {
-        StoredMethods.AddOrUpdate(name, method);
-    }
-    public void Append(Action<T, T2, T3, T4> method)
-    {
-        var dd = Tags.GenerateID();
-        StoredMethods.AddOrUpdate(dd, method);
-    }
-    public void Remove(string name)
-    {
-        if (StoredMethods.ContainsKey(name))
-        {
-            StoredMethods.Remove(name);
-        }
-    }
-    public bool InvokeWithHitCheck(T a, T2 b, T3 c, T4 d)
-    {
-        OXEvent.SuccessfulHit = false;
-        Invoke(a, b, c, d);
-        return OXEvent.SuccessfulHit;
-    }
-    public void Invoke(T a, T2 b, T3 c, T4 d)
-    {
-        List<string> killme = new List<string>();
+        killme.Clear();
+        bool hit = false;
         foreach (var w in StoredMethods)
         {
-            if (w.Value != null) w.Value(a, b, c, d);
+            if (w.Value != null) hit |= w.Value(t, t2, t3);
+            else killme.Add(w.Key);
+            if (CanEarlyExit && hit) return true;
+        }
+        foreach (var kill in killme)
+            StoredMethods.Remove(kill);
+        return hit;
+    }
+}
+public class OXEvent<T, T2, T3, T4> : _OXEventBase<Action<T, T2, T3, T4>, Func<T, T2, T3, T4, bool>>
+{
+    public static bool SuccessfulHit = false;
+    public void Invoke(T t, T2 t2, T3 t3, T4 t4)
+    {
+        killme.Clear();
+        foreach (var w in StoredMethods)
+        {
+            if (w.Value != null) w.Value(t, t2, t3, t4);
             else killme.Add(w.Key);
         }
         foreach (var kill in killme)
@@ -279,52 +192,32 @@ public class OXEvent<T, T2, T3, T4>
             StoredMethods.Remove(kill);
         }
     }
+    public override Func<T, T2, T3, T4, bool> Convert(Action<T, T2, T3, T4> input) => (x, y, z, w) => { input(x, y, z, w); return false; };
 
-    public bool Contains(string name)
+    public bool InvokeWithHitCheck(T t, T2 t2, T3 t3, T4 t4, bool CanEarlyExit = false)
     {
-        return StoredMethods.ContainsKey(name);
-    }
-    public void Clear()
-    {
-        StoredMethods.Clear();
-    }
-}
-
-/*
- * WARNING: InvokeWithHitCheck() is NOT thread safe, if using oxevent on other threads: DO NOT USE THIS METHOD
- */
-public class OXEvent<T, T2, T3, T4, T5>
-{
-    public Dictionary<string, Action<T, T2, T3, T4, T5>> StoredMethods = new Dictionary<string, Action<T, T2, T3, T4, T5>>();
-    public void Append(string name, Action<T, T2, T3, T4, T5> method)
-    {
-        StoredMethods.AddOrUpdate(name, method);
-    }
-    public void Append(Action<T, T2, T3, T4, T5> method)
-    {
-        var dd = Tags.GenerateID();
-        StoredMethods.AddOrUpdate(dd, method);
-    }
-    public void Remove(string name)
-    {
-        if (StoredMethods.ContainsKey(name))
-        {
-            StoredMethods.Remove(name);
-        }
-    }
-
-    public bool InvokeWithHitCheck(T a, T2 b, T3 c, T4 d, T5 e)
-    {
-        OXEvent.SuccessfulHit = false;
-        Invoke(a, b, c, d, e);
-        return OXEvent.SuccessfulHit;
-    }
-    public void Invoke(T a, T2 b, T3 c, T4 d, T5 e)
-    {
-        List<string> killme = new List<string>();
+        killme.Clear();
+        bool hit = false;
         foreach (var w in StoredMethods)
         {
-            if (w.Value != null) w.Value(a, b, c, d, e);
+            if (w.Value != null) hit |= w.Value(t, t2, t3, t4);
+            else killme.Add(w.Key);
+            if (CanEarlyExit && hit) return true;
+        }
+        foreach (var kill in killme)
+            StoredMethods.Remove(kill);
+        return hit;
+    }
+}
+public class OXEvent<T, T2, T3, T4, T5> : _OXEventBase<Action<T, T2, T3, T4, T5>, Func<T, T2, T3, T4, T5, bool>>
+{
+    public static bool SuccessfulHit = false;
+    public void Invoke(T t, T2 t2, T3 t3, T4 t4, T5 t5)
+    {
+        killme.Clear();
+        foreach (var w in StoredMethods)
+        {
+            if (w.Value != null) w.Value(t, t2, t3, t4, t5);
             else killme.Add(w.Key);
         }
         foreach (var kill in killme)
@@ -332,16 +225,23 @@ public class OXEvent<T, T2, T3, T4, T5>
             StoredMethods.Remove(kill);
         }
     }
-
-    public bool Contains(string name)
+    public override Func<T, T2, T3, T4, T5, bool> Convert(Action<T, T2, T3, T4, T5> input) => (x, y, z, w, v) => { input(x, y, z, w, v); return true; };
+    public bool InvokeWithHitCheck(T t, T2 t2, T3 t3, T4 t4, T5 t5, bool CanEarlyExit = false)
     {
-        return StoredMethods.ContainsKey(name);
-    }
-    public void Clear()
-    {
-        StoredMethods.Clear();
+        killme.Clear();
+        bool hit = false;
+        foreach (var w in StoredMethods)
+        {
+            if (w.Value != null) hit |= w.Value(t, t2, t3, t4, t5);
+            else killme.Add(w.Key);
+            if (CanEarlyExit && hit) return true;
+        }
+        foreach (var kill in killme)
+            StoredMethods.Remove(kill);
+        return hit;
     }
 }
+
 
 
 public class AddToEvent : Attribute
@@ -353,46 +253,51 @@ public class AddToEvent : Attribute
     }
 }
 
-
-public class OXEventLayered
+public class _OXEventLayeredBase<T, T2, T3> where T : _OXEventBase<T2, T3>, new()
 {
-    public List<MultiRef<int, OXEvent>> StoredEvents = new List<MultiRef<int, OXEvent>>();
-    public void Append(int layer, string name, Action method)
+    public List<MultiRef<int, T>> StoredEvents = new List<MultiRef<int, T>>();
+
+    // Finds the event bucket for a given layer, creating and inserting it
+    // in sorted order if it doesn't exist yet.
+    private T GetOrCreateLayer(int layer)
     {
-        MultiRef<int, OXEvent> w;
         for (int i = 0; i < StoredEvents.Count; i++)
         {
-            w = StoredEvents[i];
-            if (w.a == layer)
+            var w = StoredEvents[i];
+            if (w.a == layer) return w.b;
+            if (w.a > layer)
             {
-                w.b.Append(name, method);
-                return;
-            }
-            else if (w.a > layer)
-            {
-                var x = new OXEvent();
-                x.Append(name, method);
-                StoredEvents.Insert(i, new MultiRef<int, OXEvent>(layer, x));
-                return;
+                var x = new T();
+                StoredEvents.Insert(i, new MultiRef<int, T>(layer, x));
+                return x;
             }
         }
-        var x2 = new OXEvent();
-        x2.Append(name, method);
-        StoredEvents.Add(new MultiRef<int, OXEvent>(layer, x2));
+        var x2 = new T();
+        StoredEvents.Add(new MultiRef<int, T>(layer, x2));
+        return x2;
     }
-    public void Append(int layer, Action method)
+
+    // --- Raw type (T3) overloads ---
+    public void Append(int layer, string name, T3 method) => GetOrCreateLayer(layer).Append(name, method);
+    public void Append(int layer, T3 method) => Append(layer, Tags.GenerateID(), method);
+    public void Append(string name, T3 method) => Append(0, name, method);
+    public void Append(T3 method) => Append(0, method);
+
+    // --- Friendly type (T2) overloads, converted via the event's Convert() ---
+    public void Append(int layer, string name, T2 method)
     {
-        var dd = Tags.GenerateID();
-        Append(layer, dd, method);
+        var ev = GetOrCreateLayer(layer);
+        ev.Append(name, ev.Convert(method));
     }
-    public void Append(string name, Action method)
-    {
-        Append(0, name, method);
-    }
-    public void Append(Action method)
-    {
-        Append(0, method);
-    }
+    public void Append(int layer, T2 method) => Append(layer, Tags.GenerateID(), method);
+    public void Append(string name, T2 method) => Append(0, name, method);
+    public void Append(T2 method) => Append(0, method);
+
+    public void Clear() => StoredEvents.Clear();
+}
+
+public class OXEventLayered : _OXEventLayeredBase<OXEvent, Action, Func<bool>>
+{
     public void Invoke()
     {
         foreach (var aa in StoredEvents)
@@ -400,268 +305,59 @@ public class OXEventLayered
             aa.b.Invoke();
         }
     }
-    public void Clear()
-    {
-        StoredEvents.Clear();
-    }
 }
-public class OXEventLayered<T>
+
+public class OXEventLayered<T> : _OXEventLayeredBase<OXEvent<T>, Action<T>, Func<T, bool>>
 {
-    public List<MultiRef<int, OXEvent<T>>> StoredEvents = new List<MultiRef<int, OXEvent<T>>>();
-    public void Append(int layer, string name, Action<T> method)
-    {
-        MultiRef<int, OXEvent<T>> w;
-        for (int i = 0; i < StoredEvents.Count; i++)
-        {
-            w = StoredEvents[i];
-            if (w.a == layer)
-            {
-                w.b.Append(name, method);
-                return;
-            }
-            else if (w.a > layer)
-            {
-                var x = new OXEvent<T>();
-                x.Append(name, method);
-                StoredEvents.Insert(i, new MultiRef<int, OXEvent<T>>(layer, x));
-                return;
-            }
-        }
-        var x2 = new OXEvent<T>();
-        x2.Append(name, method);
-        StoredEvents.Add(new MultiRef<int, OXEvent<T>>(layer, x2));
-    }
-    public void Append(int layer, Action<T> method)
-    {
-        var dd = Tags.GenerateID();
-        Append(layer, dd, method);
-    }
-    public void Append(string name, Action<T> method)
-    {
-        Append(0, name, method);
-    }
-    public void Append(Action<T> method)
-    {
-        Append(0, method);
-    }
-    public void Invoke(T a)
+    public void Invoke(T t)
     {
         foreach (var aa in StoredEvents)
         {
-            aa.b.Invoke(a);
+            aa.b.Invoke(t);
         }
-    }
-    public void Clear()
-    {
-        StoredEvents.Clear();
     }
 }
-public class OXEventLayered<T, T2>
+
+public class OXEventLayered<T, T2> : _OXEventLayeredBase<OXEvent<T, T2>, Action<T, T2>, Func<T, T2, bool>>
 {
-    public List<MultiRef<int, OXEvent<T, T2>>> StoredEvents = new List<MultiRef<int, OXEvent<T, T2>>>();
-    public void Append(int layer, string name, Action<T, T2> method)
-    {
-        MultiRef<int, OXEvent<T, T2>> w;
-        for (int i = 0; i < StoredEvents.Count; i++)
-        {
-            w = StoredEvents[i];
-            if (w.a == layer)
-            {
-                w.b.Append(name, method);
-                return;
-            }
-            else if (w.a > layer)
-            {
-                var x = new OXEvent<T, T2>();
-                x.Append(name, method);
-                StoredEvents.Insert(i, new MultiRef<int, OXEvent<T, T2>>(layer, x));
-                return;
-            }
-        }
-        var x2 = new OXEvent<T, T2>();
-        x2.Append(name, method);
-        StoredEvents.Add(new MultiRef<int, OXEvent<T, T2>>(layer, x2));
-    }
-    public void Append(int layer, Action<T, T2> method)
-    {
-        var dd = Tags.GenerateID();
-        Append(layer, dd, method);
-    }
-    public void Append(string name, Action<T, T2> method)
-    {
-        Append(0, name, method);
-    }
-    public void Append(Action<T, T2> method)
-    {
-        Append(0, method);
-    }
-    public void Invoke(T a, T2 b)
+    public void Invoke(T t, T2 t2)
     {
         foreach (var aa in StoredEvents)
         {
-            aa.b.Invoke(a, b);
+            aa.b.Invoke(t, t2);
         }
-    }
-    public void Clear()
-    {
-        StoredEvents.Clear();
     }
 }
 
-public class OXEventLayered<T, T2, T3>
+public class OXEventLayered<T, T2, T3> : _OXEventLayeredBase<OXEvent<T, T2, T3>, Action<T, T2, T3>, Func<T, T2, T3, bool>>
 {
-    public List<MultiRef<int, OXEvent<T, T2, T3>>> StoredEvents = new List<MultiRef<int, OXEvent<T, T2, T3>>>();
-    public void Append(int layer, string name, Action<T, T2, T3> method)
-    {
-        MultiRef<int, OXEvent<T, T2, T3>> w;
-        for (int i = 0; i < StoredEvents.Count; i++)
-        {
-            w = StoredEvents[i];
-            if (w.a == layer)
-            {
-                w.b.Append(name, method);
-                return;
-            }
-            else if (w.a > layer)
-            {
-                var x = new OXEvent<T, T2, T3>();
-                x.Append(name, method);
-                StoredEvents.Insert(i, new MultiRef<int, OXEvent<T, T2, T3>>(layer, x));
-                return;
-            }
-        }
-        var x2 = new OXEvent<T, T2, T3>();
-        x2.Append(name, method);
-        StoredEvents.Add(new MultiRef<int, OXEvent<T, T2, T3>>(layer, x2));
-    }
-    public void Append(int layer, Action<T, T2, T3> method)
-    {
-        var dd = Tags.GenerateID();
-        Append(layer, dd, method);
-    }
-    public void Append(string name, Action<T, T2, T3> method)
-    {
-        Append(0, name, method);
-    }
-    public void Append(Action<T, T2, T3> method)
-    {
-        Append(0, method);
-    }
-    public void Invoke(T a, T2 b, T3 c)
+    public void Invoke(T t, T2 t2, T3 t3)
     {
         foreach (var aa in StoredEvents)
         {
-            aa.b.Invoke(a, b, c);
+            aa.b.Invoke(t, t2, t3);
         }
-    }
-    public void Clear()
-    {
-        StoredEvents.Clear();
     }
 }
 
-public class OXEventLayered<T, T2, T3, T4>
+public class OXEventLayered<T, T2, T3, T4> : _OXEventLayeredBase<OXEvent<T, T2, T3, T4>, Action<T, T2, T3, T4>, Func<T, T2, T3, T4, bool>>
 {
-    public List<MultiRef<int, OXEvent<T, T2, T3, T4>>> StoredEvents = new List<MultiRef<int, OXEvent<T, T2, T3, T4>>>();
-    public void Append(int layer, string name, Action<T, T2, T3, T4> method)
-    {
-        MultiRef<int, OXEvent<T, T2, T3, T4>> w;
-        for (int i = 0; i < StoredEvents.Count; i++)
-        {
-            w = StoredEvents[i];
-            if (w.a == layer)
-            {
-                w.b.Append(name, method);
-                return;
-            }
-            else if (w.a > layer)
-            {
-                var x = new OXEvent<T, T2, T3, T4>();
-                x.Append(name, method);
-                StoredEvents.Insert(i, new MultiRef<int, OXEvent<T, T2, T3, T4>>(layer, x));
-                return;
-            }
-        }
-        var x2 = new OXEvent<T, T2, T3, T4>();
-        x2.Append(name, method);
-        StoredEvents.Add(new MultiRef<int, OXEvent<T, T2, T3, T4>>(layer, x2));
-    }
-    public void Append(int layer, Action<T, T2, T3, T4> method)
-    {
-        var dd = Tags.GenerateID();
-        Append(layer, dd, method);
-    }
-    public void Append(string name, Action<T, T2, T3, T4> method)
-    {
-        Append(0, name, method);
-    }
-    public void Append(Action<T, T2, T3, T4> method)
-    {
-        Append(0, method);
-    }
-    public void Invoke(T a, T2 b, T3 c, T4 d)
+    public void Invoke(T t, T2 t2, T3 t3, T4 t4)
     {
         foreach (var aa in StoredEvents)
         {
-            aa.b.Invoke(a, b, c, d);
+            aa.b.Invoke(t, t2, t3, t4);
         }
-    }
-    public void Clear()
-    {
-        StoredEvents.Clear();
     }
 }
 
-
-public class OXEventLayered<T, T2, T3, T4, T5>
+public class OXEventLayered<T, T2, T3, T4, T5> : _OXEventLayeredBase<OXEvent<T, T2, T3, T4, T5>, Action<T, T2, T3, T4, T5>, Func<T, T2, T3, T4, T5, bool>>
 {
-    public List<MultiRef<int, OXEvent<T, T2, T3, T4, T5>>> StoredEvents = new List<MultiRef<int, OXEvent<T, T2, T3, T4, T5>>>();
-    public void Append(int layer, string name, Action<T, T2, T3, T4, T5> method)
-    {
-        MultiRef<int, OXEvent<T, T2, T3, T4, T5>> w;
-        for (int i = 0; i < StoredEvents.Count; i++)
-        {
-            w = StoredEvents[i];
-            if (w.a == layer)
-            {
-                w.b.Append(name, method);
-                return;
-            }
-            else if (w.a > layer)
-            {
-                var x = new OXEvent<T, T2, T3, T4, T5>();
-                x.Append(name, method);
-                StoredEvents.Insert(i, new MultiRef<int, OXEvent<T, T2, T3, T4, T5>>(layer, x));
-                return;
-            }
-        }
-        var x2 = new OXEvent<T, T2, T3, T4, T5>();
-        x2.Append(name, method);
-        StoredEvents.Add(new MultiRef<int, OXEvent<T, T2, T3, T4, T5>>(layer, x2));
-    }
-    public void Append(int layer, Action<T, T2, T3, T4, T5> method)
-    {
-        var dd = Tags.GenerateID();
-        Append(layer, dd, method);
-    }
-    public void Append(string name, Action<T, T2, T3, T4, T5> method)
-    {
-        Append(0, name, method);
-    }
-    public void Append(Action<T, T2, T3, T4, T5> method)
-    {
-        Append(0, method);
-    }
-    public void Invoke(T a, T2 b, T3 c, T4 d, T5 e)
+    public void Invoke(T t, T2 t2, T3 t3, T4 t4, T5 t5)
     {
         foreach (var aa in StoredEvents)
         {
-            aa.b.Invoke(a, b, c, d, e);
+            aa.b.Invoke(t, t2, t3, t4, t5);
         }
     }
-    public void Clear()
-    {
-        StoredEvents.Clear();
-    }
 }
-

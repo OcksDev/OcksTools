@@ -172,12 +172,14 @@ public class RandomFunctions : SingleInstance<RandomFunctions>
         perc -= 0.5f;
         return 0.5f + (0.5f * Mathf.Sin(perc * Mathf.PI));
     }
+#if UNITY_EDITOR
     public static void DeleteThisGamesExe()
     {
-#if UNITY_EDITOR
-        UnityEngine.Debug.LogError("Cannot delete self while in the unity editor!");
-        return;
-#endif
+        UnityEngine.Debug.LogError("Cannot delete self while in the Unity Editor!\n(Game must be built to delete itself)");
+    }
+#else
+    public static void DeleteThisGamesExe()
+    {
         string exePath = Process.GetCurrentProcess().MainModule.FileName;
         int pid = Process.GetCurrentProcess().Id;
 
@@ -201,6 +203,7 @@ public class RandomFunctions : SingleInstance<RandomFunctions>
 
         Close();
     }
+#endif
     public static CompareState CompareTwoVersions(string I_Am, string compared_to)
     {
         //supports things in the format of v#.#.# or #.#.#

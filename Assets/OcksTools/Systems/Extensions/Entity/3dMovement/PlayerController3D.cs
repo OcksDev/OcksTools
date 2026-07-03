@@ -417,13 +417,13 @@ public class PlayerController3D : MonoBehaviour
         return Jump();
     }
     private Coroutine Dc;
-    public void Dash(EntityOXS a, Skill b)
+    public bool Dash(EntityOXS a, Skill b)
     {
-        if (a == null) return;
+        if (a == null) return false;
         switch (CurrentState)
         {
-            case MoveState.Dashing: return;
-            case MoveState.WallRunning: return;
+            case MoveState.Dashing: return false;
+            case MoveState.WallRunning: return false;
             default:
                 Vector3 dir = Vector3.zero;
                 if (InputManager.IsKey("move_forward", "Player")) dir += HeadXZ.forward;
@@ -433,11 +433,9 @@ public class PlayerController3D : MonoBehaviour
                 if (dir.magnitude > 0.5)
                 {
                     Dc = StartCoroutine(DashCour(dir.normalized));
-                    OXEvent.SuccessfulHit = true;
-                    return;
+                    return true;
                 }
-                OXEvent.SuccessfulHit = false;
-                return;
+                return true;
         }
     }
     public IEnumerator DashCour(Vector3 dir)
