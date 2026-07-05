@@ -29,7 +29,7 @@ public class DisplayFromLFSGroup : MonoBehaviour
     {
         foreach (var a in nerds)
         {
-            a.text.text = LanguageFileSystem.Instance.GetString(a.Namespace, a.Key);
+            a.text.text = LanguageFileSystem.Instance.GetStringOrFromAny(a.Namespace, a.Key);
         }
     }
 }

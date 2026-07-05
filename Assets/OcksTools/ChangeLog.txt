@@ -13,6 +13,11 @@
   - (Semi-joke) Added DeleteThisGamesExe() which will close the game and delete the exe file
 - Misc
   - Fixed bad collision detection on the 3D player controller, it was using the wrong collision detection mode
+  - Split LanguageFileSystem.GetString() into GetString() and GetStringAny(), this makes intent more clear
+    - Marginally optimized GetStringAny()
+    - Old functionality preserved with new GetStringOrFromAny()
+  - Changed the interfacing for loading in files from disc, now is more streamlined and clear.
+  - Removed FileSystem.ConvertWindowsAppDataToLinux(), I realized it was redundant
 ------------
 
 ------------

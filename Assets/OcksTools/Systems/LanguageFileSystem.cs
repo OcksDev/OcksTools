@@ -61,22 +61,28 @@ public class LanguageFileSystem : SingleInstance<LanguageFileSystem>
 
     public string GetString(string namespac, string key2)
     {
-        if (namespac == "unknown" || namespac == "")
+        return Data[namespac][key2];
+    }
+    public string GetStringAny(string key2)
+    {
+        foreach (var f in Data)
         {
-            foreach (var f in Data)
-            {
-                if (f.Value.ContainsKey(key2)) return f.Value[key2];
-            }
+            if (f.Value.TryGetValue(key2, out var value)) return value;
         }
+        throw new Exception($"Key not found: {key2}");
+    }
+    public string GetStringOrFromAny(string namespac, string key2)
+    {
+        if (namespac == "" || namespac == "unknown") return GetStringAny(key2);
         return Data[namespac][key2];
     }
     public string GetString(OXLanguageFileIndex index, string key2)
     {
         if (index.DontParseDict)
         {
-            return Data[index.FileName][""];
+            return GetString(index.FileName, "");
         }
-        return Data[index.FileName][key2];
+        return GetString(index.FileName, key2);
     }
     public void SetString(string namespac, string key2, string str)
     {

@@ -5,6 +5,6 @@ public class TextFromLFS : TextDisplay
     public string ParentName = "";
     public override string GetDisplayString()
     {
-        return LanguageFileSystem.Instance.GetString(ParentName, type);
+        return LanguageFileSystem.Instance.GetStringOrFromAny(ParentName, type);
     }
 }

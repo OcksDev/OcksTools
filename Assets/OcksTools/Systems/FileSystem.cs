@@ -3,7 +3,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -28,7 +27,7 @@ public class FileSystem : SingleInstance<FileSystem>
 
     private string GameName = "?";
     [ReadOnly]
-    public string DirectoryLol = "";
+    public string WorkingDirectory = "";
     [ReadOnly]
     public string OcksDirectry = "";
     [ReadOnly]
@@ -67,7 +66,7 @@ public class FileSystem : SingleInstance<FileSystem>
     }
     public void AssembleFilePaths()
     {
-        DirectoryLol = Directory.GetCurrentDirectory();
+        WorkingDirectory = Directory.GetCurrentDirectory();
         OcksDirectry = $"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\\Ocks";
         GameDirectory = OcksDirectry + "\\" + GameFolderName;
         UniversalDirectory = OcksDirectry + "\\Universal";
@@ -126,90 +125,73 @@ public class FileSystem : SingleInstance<FileSystem>
     {
         Directory.Delete(FolderPath);
     }
-    public static string ConvertWindowsAppDataToLinux(string windowsPath)
+    public DownloadDataHandler<Texture> LoadTexture(string filelocation)
     {
-        if (string.IsNullOrWhiteSpace(windowsPath))
-            return windowsPath;
-
-        windowsPath = windowsPath.Replace('/', '\\');
-
-        var match = Regex.Match(
-            windowsPath,
-            @"^C:\\Users\\[^\\]+\\AppData\\Roaming\\(.+)$",
-            RegexOptions.IgnoreCase);
-
-        if (!match.Success)
-            throw new ArgumentException("Invalid Windows AppData Roaming path format.");
-
-        string remainingPath = match.Groups[1].Value;
-
-        string linuxUser = Environment.UserName;
-
-        string linuxBasePath = $"/home/{linuxUser}/.local/share";
-
-        string linuxPath = Path.Combine(linuxBasePath, remainingPath)
-            .Replace('\\', '/');
-
-        return linuxPath;
-    }
-
-    public DownloadDataHandler DownloadFile(int type, string filelocation)
-    {
-        var DDH = new DownloadDataHandler();
-        switch (type)
-        {
-            default:
-            case 0:
-                //image file
-                StartCoroutine(GetImage(DDH, filelocation));
-                break;
-            case 1:
-                //audio file
-                StartCoroutine(GetAudioClip(DDH, filelocation));
-                break;
-
-        }
+        var DDH = new DownloadDataHandler<Texture>();
+        StartCoroutine(GetImage(DDH, filelocation));
         return DDH;
     }
 
-    private IEnumerator GetAudioClip(DownloadDataHandler DDH, string fileName)
+    public DownloadDataHandler<AudioClip> LoadAudio(string filelocation)
+    {
+        var DDH = new DownloadDataHandler<AudioClip>();
+        StartCoroutine(GetAudioClip(DDH, filelocation));
+        return DDH;
+    }
+
+    private IEnumerator GetAudioClip(DownloadDataHandler<AudioClip> DDH, string fileName)
     {
         DDH.ErrorLol = false;
         UnityWebRequest webRequest = UnityWebRequestMultimedia.GetAudioClip(
             fileName, AudioType.MPEG);
         yield return webRequest.SendWebRequest();
-        try
+        if (webRequest.result != UnityWebRequest.Result.Success)
         {
-            AudioClip clip = DownloadHandlerAudioClip.GetContent(webRequest);
-            clip.name = fileName;
-            DDH.Clip = clip;
-        }
-        catch
-        {
+            Debug.LogError($"Download failed: {webRequest.error}");
             DDH.ErrorLol = true;
         }
+        else
+            try
+            {
+                AudioClip clip = DownloadHandlerAudioClip.GetContent(webRequest);
+                clip.name = fileName;
+                DDH.FileContent = clip;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Error occurred while processing audio file: {e.Message}");
+                DDH.ErrorLol = true;
+            }
         DDH.CompletedDownload.SetValue(true);
+        webRequest.Dispose();
     }
 
-    private IEnumerator GetImage(DownloadDataHandler DDH, string fileName)
+    private IEnumerator GetImage(DownloadDataHandler<Texture> DDH, string fileName)
     {
         DDH.ErrorLol = false;
         UnityWebRequest webRequest = UnityWebRequestTexture.GetTexture(
             fileName);
 
         yield return webRequest.SendWebRequest();
-        try
+        if (webRequest.result != UnityWebRequest.Result.Success)
         {
-            Texture sex = DownloadHandlerTexture.GetContent(webRequest);
-            sex.name = fileName;
-            DDH.Texture = sex;
-            DDH.Sprite = Converter.Texture2DToSprite((Texture2D)sex);
-        }
-        catch
-        {
+            Debug.LogError($"Download failed: {webRequest.error}");
             DDH.ErrorLol = true;
         }
+        else
+            try
+            {
+                Texture sex = DownloadHandlerTexture.GetContent(webRequest);
+                sex.name = fileName;
+                DDH.FileContent = sex;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Error occurred while processing texture file: {e.Message}");
+                DDH.ErrorLol = true;
+            }
         DDH.CompletedDownload.SetValue(true);
+        webRequest.Dispose();
     }
 
     public static void WEE(string a)
@@ -219,12 +201,13 @@ public class FileSystem : SingleInstance<FileSystem>
 
 }
 
-
-public class DownloadDataHandler
+public class DownloadDataHandler<T>
 {
     public bool ErrorLol = false;
     public Reactable<bool> CompletedDownload = new Reactable<bool>(false);
-    public Texture Texture;
-    public Sprite Sprite;
-    public AudioClip Clip;
+    public T FileContent;
+    public IEnumerator WaitForDownload()
+    {
+        yield return new WaitUntil(() => CompletedDownload.GetValue());
+    }
 }

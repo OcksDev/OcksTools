@@ -428,7 +428,7 @@ public class ConsoleCommands : MonoBehaviour
     {
         if (r.com[2] != "")
         {
-            Console.Log($"{SaveSystem.ActiveProf.GetString(r.com_caps[2], LanguageFileSystem.Instance.GetString("Console", "Error_NoData"))}");
+            Console.Log($"{SaveSystem.ActiveProf.GetString(r.com_caps[2], LanguageFileSystem.Instance.GetStringOrFromAny("Console", "Error_NoData"))}");
         }
         else
         {
@@ -538,7 +538,7 @@ public class ConsoleCommands : MonoBehaviour
         {
             if (c.ParentLanguage != "")
             {
-                Console.Log(LanguageFileSystem.Instance.GetString(c.ParentLanguage, c.LanguageIndex));
+                Console.Log(LanguageFileSystem.Instance.GetStringOrFromAny(c.ParentLanguage, c.LanguageIndex));
             }
             else
             {
