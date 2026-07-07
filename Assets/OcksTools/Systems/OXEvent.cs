@@ -40,7 +40,9 @@ public abstract class _OXEventBase<T, T2>
         var dd = Tags.GenerateID();
         StoredMethods.AddOrUpdate(dd, method);
     }
+    [UnityEngine.HideInCallstack]
     public void Append(string name, T method) => Append(name, Convert(method));
+    [UnityEngine.HideInCallstack]
     public void Append(T method) => Append(Convert(method));
     public void Remove(string name) => StoredMethods.Remove(name);
 

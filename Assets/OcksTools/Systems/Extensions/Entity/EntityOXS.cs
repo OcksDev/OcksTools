@@ -21,6 +21,7 @@ public class EntityOXS
     private EntityType KillerType = EntityType.World;
     public void Hit(DamageProfile hit)
     {
+        if (hit == null) throw new System.Exception($"Tried to Hit {Type} but 'null' Damage Profile was provided.");
         OnHitEvent.Append(500, "c", (x, y) => hit.CalcAmount());
         OnHitEvent.Invoke(this, hit);
         var dmg = hit.StoredDamage;
@@ -41,6 +42,7 @@ public class EntityOXS
 
     public void Heal(DamageProfile amount)
     {
+        if (amount == null) throw new System.Exception($"Tried to Heal {Type} but 'null' Damage Profile was provided.");
         var oldh = Health;
         var heal = amount.CalcAmount();
         Health = System.Math.Clamp(Health + heal, 0, Max_Health);
