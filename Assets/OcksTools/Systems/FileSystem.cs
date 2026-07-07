@@ -80,7 +80,6 @@ public class FileSystem : SingleInstance<FileSystem>
     }
     public void WriteFile(string FileName, string data, bool CanOverride)
     {
-        //string fullpath = //Path.Combine(DirectoryLol, FileName);
         bool e = File.Exists(FileName);
         if (CanOverride || !e)
         {
@@ -92,17 +91,14 @@ public class FileSystem : SingleInstance<FileSystem>
     }
     public string ReadFile(string FileName)
     {
-        //string fullpath = Path.Combine(DirectoryLol, FileName);
         return File.ReadAllText(FileName);
     }
     public void AppendFile(string FileName, string data)
     {
-        //string fullpath = Path.Combine(DirectoryLol, FileName);
         File.AppendAllText(FileName, data);
     }
     public void CreateFolder(string FolderName)
     {
-        //string fullpath = Path.Combine(DirectoryLol, FolderName);
         Directory.CreateDirectory(FolderName);
     }
     public string[] ReadFilePathsInFolder(string FolderPath)
