@@ -22,6 +22,7 @@ public class ModdableValue<T>
     {
         ProcessedValue = BaseValue;
         ActionsCompile.Invoke(this);
+        GetValue();
         return this;
     }
     public T GetValue()
