@@ -20,6 +20,10 @@
   - Reorganized the Damage Profile constructors to be more clear
   - Moved source object setting in Damage Profiles into its own method so it can be used seperately
   - Removed unused OnHealPostCalc event
+- Screenshot Improvements
+  - Added field to override output file path
+  - Added field to force common transparency settings
+  - Added editor-only functionality to load in screenshoted files as sprites, useful for pre-rendering stuff
 - New Random Functions
   - (Semi-joke) Added DeleteThisGamesExe() which will close the game and delete the exe file
 - New DecayingList class, for managing items that need to expire over time
