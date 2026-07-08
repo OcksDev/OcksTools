@@ -9,10 +9,23 @@
   - Remade InvokeWithHitCheck() to now be thread safe
     - Events now flag a "hit" if any method returns true instead of setting a static variable
     - Added a new optional parameter to InvokeWithHitCheck() to allow for an early exit if a hit is detected
+- Entity Improvements
+  - Damage Profile now has OnProcHit and OnProcKill events, so it can easily store its own procs
+  - New HasLifeRemaining boolean on EntityOXS to easily check for if an entity should be dead or not
+  - Heal() changed to match the new layered event style of Hit()
+  - Added new simple constructor for Damage Profile with just a single number as an input
+  - Added helper method on DamageProfile to set the source position
+  - CanOverhealIntoShield toggle added, now the functionality is off by default
+  - Fixed bug where losing shield wouldn't check for death if it was exactly 0
+  - Reorganized the Damage Profile constructors to be more clear
+  - Moved source object setting in Damage Profiles into its own method so it can be used seperately
+  - Removed unused OnHealPostCalc event
 - New Random Functions
   - (Semi-joke) Added DeleteThisGamesExe() which will close the game and delete the exe file
 - New DecayingList class, for managing items that need to expire over time
   - New DecayingDictionary, which is the same shit but with a dictionary
+- New OXTransform allows for easy storage and usage of modifications to transforms
+  - Varients with/without scale parameter
 - Misc
   - Created new varient of MultiRef to be a class instead of a struct, named it MultiRefClass
   - Changed the interfacing for loading in files from disc, now is more streamlined and clear.

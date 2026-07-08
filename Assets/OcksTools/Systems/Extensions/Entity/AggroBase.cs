@@ -54,7 +54,7 @@ public abstract class MostDamageAggro : AggroBase
             try
             {
                 if (!agros.ContainsKey(pcheck)) agros.Add(pcheck, 0);
-                agros[pcheck] += y.StoredDamage;
+                agros[pcheck] += y.StoredValue;
                 if (agros[CurrentTarget] < agros[pcheck])
                 {
                     SetCurrentTarget(pcheck);

@@ -11,53 +11,61 @@ public class EntityOXS
     public double Max_Health = 100;
     public double Shield = 0;
     public double Max_Shield = 0;
-    public OXEventLayered<EntityOXS, DamageProfile> OnHitEvent = new OXEventLayered<EntityOXS, DamageProfile>();
-    public OXEventLayered<EntityOXS, DamageProfile> OnHealEvent = new OXEventLayered<EntityOXS, DamageProfile>();
-    public OXEventLayered<EntityOXS, DamageProfile> OnHealEventPostCalc = new OXEventLayered<EntityOXS, DamageProfile>();
-    public OXEventLayered<EntityOXS, MultiRef<EntityObject, EntityType>> OnKillEvent = new OXEventLayered<EntityOXS, MultiRef<EntityObject, EntityType>>();
-    public OXEventLayered<EntityOXS, EffectProfile> OnEffectGain = new OXEventLayered<EntityOXS, EffectProfile>();
+    public bool CanOverhealIntoShield = false;
+    public OXEventLayered<EntityOXS, DamageProfile> OnHitEvent = new();
+    public OXEventLayered<EntityOXS, DamageProfile> OnHealEvent = new();
+    public OXEventLayered<EntityOXS, MultiRef<EntityObject, EntityType>> OnKillEvent = new();
+    public OXEventLayered<EntityOXS, EffectProfile> OnEffectGain = new();
     public bool IsDead = false;
     private EntityObject KillerObject = null;
     private EntityType KillerType = EntityType.World;
+
+    public bool HasLifeRemaining => (Health > 0 || Shield > 0) && !IsDead;
+
+
     public void Hit(DamageProfile hit)
     {
         if (hit == null) throw new System.Exception($"Tried to Hit {Type} but 'null' Damage Profile was provided.");
         OnHitEvent.Append(500, "c", (x, y) => hit.CalcAmount());
         OnHitEvent.Invoke(this, hit);
-        var dmg = hit.StoredDamage;
+        hit.OnProcHit.Invoke(this, hit);
+        var dmg = hit.StoredValue;
         KillerObject = hit.SourceObject;
         KillerType = hit.SourceType;
 
         Shield -= dmg;
-        if (Shield < 0)
+        if (Shield <= 0)
         {
             Health += Shield;
-            if (Health <= 0)
+            if (!HasLifeRemaining)
             {
+                hit.OnProcKill.Invoke(this, hit);
                 Kill();
             }
         }
         ClampHealth();
     }
 
-    public void Heal(DamageProfile amount)
+    public void Heal(DamageProfile hit)
     {
-        if (amount == null) throw new System.Exception($"Tried to Heal {Type} but 'null' Damage Profile was provided.");
+        if (hit == null) throw new System.Exception($"Tried to Heal {Type} but 'null' Damage Profile was provided.");
         var oldh = Health;
-        var heal = amount.CalcAmount();
+
+        OnHealEvent.Append(500, "c", (x, y) => hit.CalcAmount());
+        OnHealEvent.Invoke(this, hit);
+        hit.OnProcHit.Invoke(this, hit);
+        var heal = hit.StoredValue;
+
         Health = System.Math.Clamp(Health + heal, 0, Max_Health);
-        var leftovers = heal - (Health - oldh);
-        var olds = Shield;
-        Shield = System.Math.Clamp(Shield + leftovers, 0, Max_Shield);
-        var leftovers_unable = leftovers - (Shield - olds);
-
-        // Amount Healed: heal - leftovers_unable
-
-        if (Health != oldh || Shield != olds)
+        if (CanOverhealIntoShield)
         {
-            //runs if heal was successful
-            OnHealEvent.Invoke(this, amount);
+            var leftovers = heal - (Health - oldh);
+            var olds = Shield;
+            Shield = System.Math.Clamp(Shield + leftovers, 0, Max_Shield);
+            var leftovers_unable = leftovers - (Shield - olds); // extra health that there wasn't enough space for
         }
+
+
         ClampHealth(); // this shouldn't do anything, but still
     }
 
@@ -98,21 +106,26 @@ public class DamageProfile
     public DamageType HowItWasDealt = DamageType.Unknown;
     public DamageType WhatItWas = DamageType.Unknown;
     public HashSet<string> Procs = new HashSet<string>();
-    public OXEventLayered<DamageProfile> CalcEvent = new OXEventLayered<DamageProfile>();
+    public OXEventLayered<DamageProfile> CalcEvent = new();
+    public OXEventLayered<EntityOXS, DamageProfile> OnProcHit = new();
+    public OXEventLayered<EntityOXS, DamageProfile> OnProcKill = new();
     public Vector3? SourceLocation = null;
     public CriticalChance Crit = new(0);
-    public DamageProfile(EntityObject src_orbject, EntityType src_type, DamageType How, DamageType What, double TheValue)
+    public DamageProfile(double TheValue, DamageType How, DamageType What, EntityObject src_orbject, EntityType src_type)
     {
-        SourceObject = src_orbject;
-        SourceType = src_type;
+        HowItWasDealt = How;
+        WhatItWas = What;
+        Value = TheValue;
+        SetSource(src_orbject, src_type);
+    }
+    public DamageProfile(double TheValue, DamageType How, DamageType What)
+    {
         HowItWasDealt = How;
         WhatItWas = What;
         Value = TheValue;
     }
-    public DamageProfile(DamageType How, DamageType What, double TheValue)
+    public DamageProfile(double TheValue)
     {
-        HowItWasDealt = How;
-        WhatItWas = What;
         Value = TheValue;
     }
     public DamageProfile(DamageProfile pp)
@@ -122,23 +135,25 @@ public class DamageProfile
         HowItWasDealt = pp.HowItWasDealt;
         WhatItWas = pp.WhatItWas;
         CalcEvent = pp.CalcEvent;
+        OnProcKill = pp.OnProcKill;
+        OnProcHit = pp.OnProcHit;
         Value = pp.Value;
         Procs = new HashSet<string>(pp.Procs);
         SourceLocation = pp.SourceLocation;
         Crit = new(pp.Crit);
     }
-    public double StoredDamage = -1;
+    public double StoredValue = -1;
     public double CalcAmount()
     {
         var x = Value;
         CalcEvent.Invoke(this);
-        StoredDamage = Value;
+        StoredValue = Value;
         Value = x;
 
-        StoredDamage *= Crit.GetDegree() + 1;
+        StoredValue *= Crit.GetDegree() + 1;
 
 
-        return StoredDamage;
+        return StoredValue;
     }
     public enum DamageType // add more as needed
     {
@@ -158,5 +173,16 @@ public class DamageProfile
         Light = 13,
         Healing = 14,
     }
-
+    public DamageProfile SetSource(EntityObject src_orbject, EntityType src_type)
+    {
+        SourceObject = src_orbject;
+        if (src_orbject != null) SourceLocation = src_orbject.transform.position;
+        SourceType = src_type;
+        return this;
+    }
+    public DamageProfile SetPosition(Vector3? position)
+    {
+        SourceLocation = position;
+        return this;
+    }
 }
