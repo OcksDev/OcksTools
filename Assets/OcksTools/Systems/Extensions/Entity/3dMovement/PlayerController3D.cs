@@ -571,6 +571,7 @@ public class PlayerController3D : MonoBehaviour
         AirAccelerate = 1 << 5,
         //Sprint = 1 << 6,
         //GrapplingHook = 1 << 7,
+        //GroundPound = 1 << 8,
     }
     public enum MoveState
     {
