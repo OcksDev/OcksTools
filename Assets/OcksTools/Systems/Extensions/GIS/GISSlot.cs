@@ -80,9 +80,21 @@ public class GISSlot : MonoBehaviour
         if (!IsHovering()) { ResetTypeStack(); return; }
         bool left = GISLol.Instance.MouseLeftClickingDown && GISLol.Instance.DragLock != 2;
         bool right = GISLol.Instance.MouseRightClickingDown && GISLol.Instance.DragLock != 1;
-        if (Conte.CanTypeForStackSize && !(left || right))
+        if (!(left || right))
         {
-            TypeStacking();
+            bool contin = false;
+            if (Conte.CanTypeForMove)
+            {
+                bool ctrl2 = InputManager.IsKey("item_mod");
+                if ((Conte.CanTypeForStackSize && ctrl2) || !Conte.CanTypeForStackSize)
+                {
+                    contin = TypeMove();
+                }
+            }
+            if (Conte.CanTypeForStackSize && !contin)
+            {
+                TypeStacking();
+            }
         }
         if (Conte.CanDragDistributeItems)
         {
@@ -99,6 +111,7 @@ public class GISSlot : MonoBehaviour
         bool shift = InputManager.IsKey("item_alt");
         bool ctrl = InputManager.IsKey("item_mod");
         bool alt = InputManager.IsKey("item_change");
+        ResetTypeStack();
         switch (Name)
         {
             default:
@@ -212,7 +225,33 @@ public class GISSlot : MonoBehaviour
             }
         }
     }
+    public bool TypeMove()
+    {
+        int pressed = InputManager.Instance.GetNumberKeyDown();
+        if (pressed != -1)
+        {
+            if (pressed == 0) pressed = 10;
 
+            var kvps = GetCtrlConts();
+            kvps.Reverse();
+            int i = 0;
+            if (kvps[i].Value == Conte)
+            {
+                i++;
+                if (kvps.Count <= 1) return true;
+            }
+            var c = kvps[i].Value;
+            if (pressed >= c.slots.Count) return true;
+            pressed--;
+            var h = c.slots[pressed].Held_Item;
+            c.slots[pressed].Held_Item = Held_Item;
+            Held_Item = h;
+            c.slots[pressed].OnInteract();
+            OnInteract();
+            return true;
+        }
+        return false;
+    }
     public void DragLeft()
     {
         var g = GISLol.Instance;
@@ -327,10 +366,7 @@ public class GISSlot : MonoBehaviour
 
     public void CtrlClick(bool left)
     {
-        var g = GISLol.Instance;
-
-        var kvps = g.All_Containers.ToList().Clean();
-        kvps.Sort((x, y) => x.Value.CtrlClickPriority.CompareTo(y.Value.CtrlClickPriority));
+        var kvps = GetCtrlConts();
         if (left) kvps.Reverse();
 
         foreach (var nerd in kvps)
@@ -346,6 +382,13 @@ public class GISSlot : MonoBehaviour
         }
     }
 
+    public List<KeyValuePair<string, GISContainer>> GetCtrlConts()
+    {
+        var g = GISLol.Instance;
+        var kvps = g.All_Containers.ToList().Clean();
+        kvps.Sort((x, y) => x.Value.CtrlClickPriority.CompareTo(y.Value.CtrlClickPriority));
+        return kvps;
+    }
 
     public void ShiftClick(bool left)
     {
@@ -409,7 +452,6 @@ public class GISSlot : MonoBehaviour
 
     public void LeftClick(bool alt)
     {
-
         var g = GISLol.Instance;
         Held_Item.AddConnection(Conte);
         SaveItemContainerData();
@@ -421,7 +463,8 @@ public class GISSlot : MonoBehaviour
         {
             var d = g.Mouse_Held_Item.Name;
             var K = g.ItemDict[d].MaxAmount;
-            if (g.Mouse_Held_Item.IsEmpty())
+            if (type_begun) { }
+            else if (g.Mouse_Held_Item.IsEmpty())
             {
                 DoubleClickTimer = -69f;
             }

@@ -29,10 +29,14 @@
   - Added editor-only functionality to load in screenshoted files as sprites, useful for pre-rendering stuff
 - New Random Functions
   - (Semi-joke) Added DeleteThisGamesExe() which will close the game and delete the exe file
+- GIS Improvements
+  - Added Ctrl+Number, "Type For Move", which lets you type a number slot to swap the currently hovered item with
+  - Sorting containers now falls back to the non-prefered sorting type to try to deal with equivalency 
+  - Fixed bug in Type Stacking where extra inputs during type would break it
 - Misc
   - Created new varient of MultiRef to be a class instead of a struct, named it MultiRefClass
   - Changed the interfacing for loading in files from disc, now is more streamlined and clear.
-  - Fixed bad collision detection on the 3D player controller, it was using the wrong collision detection mode lmao
+  - Fixed collision detection on the 3D player controller, it was using the wrong collision detection mode lmao
   - Split LanguageFileSystem.GetString() into GetString() and GetStringAny(), this makes intent more clear
     - Marginally optimized GetStringAny()
     - Old esoteric functionality preserved with new GetStringOrFromAny()

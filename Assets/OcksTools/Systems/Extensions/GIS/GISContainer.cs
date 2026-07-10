@@ -23,6 +23,8 @@ public class GISContainer : MonoBehaviour
     public bool CanSortItems = true;
     [HideIf("IsAbstract")]
     public bool CanTypeForStackSize = true;
+    [HideIf("IsAbstract")]
+    public bool CanTypeForMove = true;
     public int CtrlClickPriority = 0;
     [HideIf("IsAbstract")]
     public bool AutomaticallyAddChildren = true;
@@ -549,7 +551,7 @@ public class GISContainer : MonoBehaviour
         return -1;
     }
     private static SortingMethod _m;
-    public void Sort(SortingMethod m, bool reversed)
+    public void Sort(SortingMethod prefered_sort, bool reversed)
     {
         List<GISSlot> interacts = new();
         List<GISItem> items = new();
@@ -561,7 +563,7 @@ public class GISContainer : MonoBehaviour
             slot.Held_Item = new GISItem();
         }
 
-        _m = m;
+        _m = prefered_sort;
         items.Sort(CompareGISSlots);
 
         for (int i = 0; i < slots.Count; i++)
@@ -578,11 +580,21 @@ public class GISContainer : MonoBehaviour
     }
     public static int CompareGISSlots(GISItem a, GISItem b)
     {
+        int i = 0;
         switch (_m)
         {
-            case SortingMethod.Alphabetical: return a.Name.CompareTo(b.Name);
-            case SortingMethod.Amount: return a.Amount.GetValue().CompareTo(b.Amount.GetValue());
-            default: return 0;
+            case SortingMethod.Alphabetical:
+                i = a.Name.CompareTo(b.Name);
+                if (i != 0) return i;
+                goto amnt;
+            case SortingMethod.Amount:
+                i = a.Amount.GetValue().CompareTo(b.Amount.GetValue());
+                if (i != 0) return i;
+                goto alph;
+            default:
+                return 0;
+            alph: return a.Name.CompareTo(b.Name);
+            amnt: return a.Amount.GetValue().CompareTo(b.Amount.GetValue());
         }
     }
 
