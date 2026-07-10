@@ -450,6 +450,7 @@ MonoBehaviour:
   CanDoubleClickItems: 1
   CanSortItems: 1
   CanTypeForStackSize: 1
+  CanTypeForMove: 1
   CtrlClickPriority: -1
   AutomaticallyAddChildren: 1
   GenerateRandomItems: 0
@@ -1276,6 +1277,7 @@ MonoBehaviour:
   CanDoubleClickItems: 1
   CanSortItems: 1
   CanTypeForStackSize: 1
+  CanTypeForMove: 1
   CtrlClickPriority: 0
   AutomaticallyAddChildren: 1
   GenerateRandomItems: 1
@@ -3053,6 +3055,7 @@ MonoBehaviour:
   CanDoubleClickItems: 1
   CanSortItems: 1
   CanTypeForStackSize: 1
+  CanTypeForMove: 1
   CtrlClickPriority: 0
   AutomaticallyAddChildren: 1
   GenerateRandomItems: 0
@@ -3831,6 +3834,7 @@ MonoBehaviour:
   CanDoubleClickItems: 1
   CanSortItems: 1
   CanTypeForStackSize: 1
+  CanTypeForMove: 1
   CtrlClickPriority: -1
   AutomaticallyAddChildren: 1
   GenerateRandomItems: 0
