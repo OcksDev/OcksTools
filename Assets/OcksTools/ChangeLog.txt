@@ -36,7 +36,7 @@
   - (Semi-joke) Added DeleteThisGamesExe() which will close the game and delete the exe file
 - Misc
   - Reactable now uses a compressed inspector to look nicer
-  - AutoCompressFieldWithNameAttribute now actually uses the right type lol
+  - AutoCompressFieldWithName now actually uses the right type lol
   - Created new varient of MultiRef to be a class instead of a struct, named it MultiRefClass
   - Changed the interfacing for loading in files from disc, now is more streamlined and clear.
   - Fixed collision detection on the 3D player controller, it was using the wrong collision detection mode lmao
@@ -45,6 +45,7 @@
     - Old esoteric functionality preserved with new GetStringOrFromAny()
   - Fixed slight bug in ModdableValue where if accessing the value directly using .Value instead of .GetValue(), it wouldn't have properly gotten the value until .GetValue() had been run.
   - Added more clear error handling for a null input into EntityOXS.Hit() or .Heal()
+  - Moved some old and bad stuff from Misc into zTests
   - Renamed the containing file for ResettableValue to actually match the class name
   - Removed FileSystem.ConvertWindowsAppDataToLinux(), I realized it was redundant
 ------------
