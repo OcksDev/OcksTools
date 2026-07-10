@@ -172,7 +172,9 @@ public class GISItem
 
     public string Name;
     public Reactable<int> Amount;
+    [HideInInspector]
     public GISContainer Container;
+    [HideInInspector]
     public List<GISContainer> Interacted_Containers = new List<GISContainer>();
     public ComponentHolder Components = new ComponentHolder();
     public GISItem()

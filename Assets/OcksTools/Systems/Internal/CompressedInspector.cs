@@ -21,7 +21,7 @@ public class AutoCompressDrawer : AutoCompressedInspector
 {
 }
 [CustomPropertyDrawer(typeof(AutoCompressFieldWithNameAttribute))]
-public class AutoCompressWithNameDrawer : AutoCompressedInspector
+public class AutoCompressWithNameDrawer : AutoCompressedInspectorWithName
 {
 }
 

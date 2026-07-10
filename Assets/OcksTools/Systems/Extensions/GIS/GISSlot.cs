@@ -5,10 +5,11 @@ using UnityEngine;
 public class GISSlot : MonoBehaviour
 {
     public string Name = "";
+    public string InteractFilter = "";
+    [AutoCompressFieldWithName]
     public GISItem Held_Item;
     public GISDisplay Displayer;
     public GISContainer Conte;
-    public string InteractFilter = "";
     private float DoubleClickTimer = -69f;
     private RectTransform erect;
     public OXEvent<GISSlot> OnInteractEvent = new OXEvent<GISSlot>();

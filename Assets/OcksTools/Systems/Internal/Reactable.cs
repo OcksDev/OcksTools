@@ -1,4 +1,5 @@
 using System;
+using UnityEditor;
 using UnityEngine;
 
 [System.Serializable]
@@ -40,3 +41,10 @@ public class Reactable<T>
     }
     public static implicit operator T(Reactable<T> r) => r.GetValue();
 }
+
+#if UNITY_EDITOR
+[CustomPropertyDrawer(typeof(Reactable<>), true)]
+public class FuckassReactableDrawer : AutoCompressedInspectorWithName
+{
+}
+#endif

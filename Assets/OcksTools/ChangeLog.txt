@@ -19,6 +19,11 @@
   - Reorganized the Damage Profile constructors to be more clear
   - Moved source object setting in Damage Profiles into its own method so it can be used seperately
   - Removed unused OnHealPostCalc event
+- GIS Improvements
+  - Added Ctrl+Number, "Type For Move", which lets you type a number slot to swap the currently hovered item with
+  - Improved inspector readouts of GISItem and GISSlot
+  - Sorting containers now falls back to the non-prefered sorting type to try to deal with equivalency 
+  - Fixed bug in Type Stacking where extra inputs during type would break it
 - New DecayingList class, for managing items that need to expire over time
   - New DecayingDictionary, which is the same shit but with a dictionary
 - New OXTransform allows for easy storage and usage of modifications to transforms
@@ -29,11 +34,9 @@
   - Added editor-only functionality to load in screenshoted files as sprites, useful for pre-rendering stuff
 - New Random Functions
   - (Semi-joke) Added DeleteThisGamesExe() which will close the game and delete the exe file
-- GIS Improvements
-  - Added Ctrl+Number, "Type For Move", which lets you type a number slot to swap the currently hovered item with
-  - Sorting containers now falls back to the non-prefered sorting type to try to deal with equivalency 
-  - Fixed bug in Type Stacking where extra inputs during type would break it
 - Misc
+  - Reactable now uses a compressed inspector to look nicer
+  - AutoCompressFieldWithNameAttribute now actually uses the right type lol
   - Created new varient of MultiRef to be a class instead of a struct, named it MultiRefClass
   - Changed the interfacing for loading in files from disc, now is more streamlined and clear.
   - Fixed collision detection on the 3D player controller, it was using the wrong collision detection mode lmao
