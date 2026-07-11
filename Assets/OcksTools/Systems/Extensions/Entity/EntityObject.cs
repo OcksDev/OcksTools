@@ -5,6 +5,7 @@ public class EntityObject : MonoBehaviour
 {
     [AutoCompressField]
     public EntityOXS Entity;
+    public SpawnData SpawnData;
     public void Awake()
     {
         Entity.SetSelf(this);
@@ -19,6 +20,13 @@ public class EntityObject : MonoBehaviour
 
     public void KillSelf(EntityOXS a, MultiRef<EntityObject, EntityType> b)
     {
-        Destroy(gameObject);
+        if (SpawnData != null)
+        {
+            SpawnSystem.Kill(SpawnData);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 }

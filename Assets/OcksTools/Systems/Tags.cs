@@ -65,6 +65,11 @@ public class Tags : SingleInstance<Tags>
         {
             gm = (GameObject)AllTags["Exist"][key];
         }
+        ClearAllOf(key, gm);
+    }
+
+    public static void ClearAllOf(string key, GameObject gm)
+    {
         foreach (var a in AllTags)
         {
             if (AllTags[a.Key].ContainsKey(key)) AllTags[a.Key].Remove(key);

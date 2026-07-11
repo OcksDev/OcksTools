@@ -17,8 +17,16 @@
   - CanOverhealIntoShield toggle added, now the functionality is off by default
   - Fixed bug where losing shield wouldn't check for death if it was exactly 0
   - Reorganized the Damage Profile constructors to be more clear
+  - Added a SpawnData optional reference in Entity Object to allow for more optimized data clearing, should the need arise
   - Moved source object setting in Damage Profiles into its own method so it can be used seperately
   - Removed unused OnHealPostCalc event
+- Spawn System / Tags Improvements
+  - Added a component to automatic cleanup IDs on destroyed objects
+    - This can also be opted-in for use in the SpawnSystem
+  - Added a varient to Tags.ClearAllOf() which takes in both the key and gameobject to speed it up
+  - Added a varient to SpawnSystem.Kill() which takes in a SpawnData reference to speed it up
+  - Optimized space for DontTag() paramater saving, it now actually removes space on enable
+  - Added optional boolean input to disable "DontSaveTag" using the same interfacing method
 - GIS Improvements
   - Added Ctrl+Number, "Type For Move", which lets you type a number slot to swap the currently hovered item with
   - Improved inspector readouts of GISItem and GISSlot
@@ -32,9 +40,8 @@
   - Added field to override output file path
   - Added field to force common transparency settings
   - Added editor-only functionality to load in screenshoted files as sprites, useful for pre-rendering stuff
-- New Random Functions
-  - (Semi-joke) Added DeleteThisGamesExe() which will close the game and delete the exe file
 - Misc
+  - (Semi-joke) Added DeleteThisGamesExe() which will close the game and delete the exe file
   - Reactable now uses a compressed inspector to look nicer
   - AutoCompressFieldWithName now actually uses the right type lol
   - Created new varient of MultiRef to be a class instead of a struct, named it MultiRefClass

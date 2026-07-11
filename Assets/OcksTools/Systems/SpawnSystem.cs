@@ -67,12 +67,21 @@ public class SpawnSystem : SingleInstance<SpawnSystem>
                 }
                 break;
         }
+        if (sp._autoclean && !sp._donttag)
+        {
+            sp.GameObject.AddComponent<AutomaticIDCleanup>().SD = sp;
+        }
         return a;
     }
     public static void Kill(GameObject nerd)
     {
         Tags.ClearAllOf(Tags.GetIDOf(nerd));
         Destroy(nerd);
+    }
+    public static void Kill(SpawnData data)
+    {
+        Tags.ClearAllOf(data._IDValue, data.GameObject);
+        Destroy(data.GameObject);
     }
     public static SpawnData GetSpawnData(GameObject nerd)
     {
@@ -93,9 +102,10 @@ public class SpawnData
     public string _parentrefid = "";
     public int _share = 0;
     public bool _donttag = false;
+    public bool _autoclean = false;
     public bool _dospawn = true;
     public string _spawnfunc = "";
-    public Dictionary<string, string> _data = new Dictionary<string, string>();
+    public Dictionary<string, string> _data;
     public SpawnData(string nerd)
     {
         this.nerd = nerd;
@@ -155,9 +165,14 @@ public class SpawnData
         GameObject = a;
         return this;
     }
-    public SpawnData DontSaveTag()
+    public SpawnData DontSaveTag(bool a = true)
     {
-        _donttag = true;
+        _donttag = a;
+        return this;
+    }
+    public SpawnData AutomaticCleanup(bool a = true)
+    {
+        _autoclean = a;
         return this;
     }
     public SpawnData Data(Dictionary<string, string> d)
@@ -190,7 +205,8 @@ public class SpawnData
         if (_scale != default) da.Add("scl", _scale.ToString());
         if (_rot != Quaternion.identity) da.Add("rot", _rot.ToString());
         if (_spawnfunc != "") da.Add("sf", _spawnfunc);
-        if (_donttag) da.Add("dt", "!");
+        if (_donttag) da.Remove("ID");
+        else if (_autoclean) da.Add("ac", "");
         if (_parent != null)
         {
             if (_parentrefid == "")
@@ -203,7 +219,7 @@ public class SpawnData
                 da.Add("par_id", _parentrefid);
             }
         }
-        if (_data.Count > 0) da.Add("dat", Converter.EscapedDictionaryToString(_data, "!", "?"));
+        if (_data != null && _data.Count > 0) da.Add("dat", Converter.EscapedDictionaryToString(_data, "!", "?"));
 
         // deliberately not saving share
 
@@ -214,16 +230,16 @@ public class SpawnData
     {
         Dictionary<string, string> da = Converter.EscapedStringToDictionary(a, ":", ";");
         nerd = da["nerd"];
-        _IDValue = da["ID"];
+        _IDValue = da.GetValueOrDefault("ID", "");
+        _donttag = da.ContainsKey("ID");
+        _autoclean = da.ContainsKey("ac");
         if (da.ContainsKey("pos")) _pos = Converter.StringToVector3(da["pos"]);
         if (da.ContainsKey("scl")) _scale = Converter.StringToVector3(da["scl"]);
         if (da.ContainsKey("rot")) _rot = Converter.StringToQuaternion(da["rot"]);
         if (da.ContainsKey("dat")) _data = Converter.EscapedStringToDictionary(da["dat"], "!", "?");
-        if (da.ContainsKey("dt")) _donttag = true;
         if (da.ContainsKey("sf")) _spawnfunc = da["sf"];
         if (da.ContainsKey("par"))
         {
-
             if (!da.ContainsKey("par_id"))
             {
                 _parent = Tags.GetFromTag<GameObject>(da["par"]).transform;
