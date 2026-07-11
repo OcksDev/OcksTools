@@ -295,7 +295,10 @@ public class GISSlot : MonoBehaviour
             if (slot.Held_Item.Amount == 0)
             {
                 if (slot.StoredAmount == 0) slot.Held_Item = new GISItem();
-                else slot.Held_Item.Amount.SetValue(slot.StoredAmount);
+                else
+                {
+                    slot.Held_Item.Amount.SetValue(slot.StoredAmount);
+                }
             }
         }
 
@@ -305,8 +308,10 @@ public class GISSlot : MonoBehaviour
         }
         foreach (var a in g.DragSlotsLeft)
         {
+            a.Held_Item.AnimOverride = 3;
             a.OnInteract();
         }
+        Held_Item.AnimOverride = 1;
     }
     public void DragRight()
     {
@@ -557,6 +562,7 @@ public class GISSlot : MonoBehaviour
                 if (Conte.slots[i].Held_Item.Amount <= 0)
                 {
                     Conte.slots[i].Held_Item = new GISItem();
+                    Conte.slots[i].Held_Item.AnimOverride = 2;
                 }
             }
             g.Mouse_Held_Item.AddConnection(Conte);

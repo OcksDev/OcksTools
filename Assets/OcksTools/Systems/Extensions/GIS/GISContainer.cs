@@ -93,6 +93,7 @@ public class GISContainer : MonoBehaviour
                 s.Held_Item = new GISItem(GISLol.Instance.Items.RandomElement().Name);
                 s.Held_Item.Amount = new(69);
                 s.Held_Item.Container = this;
+                s.Held_Item.AnimOverride = 1;
                 if (s.Held_Item.Name == "Empty")
                 {
                     s.Held_Item.Amount = new(0);
@@ -156,6 +157,7 @@ public class GISContainer : MonoBehaviour
                 var pp = new GISSlot();
                 pp._SetConte(this);
                 pp.Held_Item = new GISItem(h);
+                pp.Held_Item.AnimOverride = 1;
                 slots.Add(pp);
             }
         }
@@ -164,6 +166,7 @@ public class GISContainer : MonoBehaviour
             foreach (var h in saved_items)
             {
                 slots[i].Held_Item = new GISItem(h);
+                slots[i].Held_Item.AnimOverride = 1;
                 slots[i].ResetTypeStack();
                 i++;
             }
@@ -226,10 +229,10 @@ public class GISContainer : MonoBehaviour
                 foreach (var ghj in gg)
                 {
                     ghj.Container = this;
-
+                    ghj.AnimOverride = 1;
                     if (IsAbstract)
                     {
-                        AbstractAdd(ghj);
+                        AbstractAdd(ghj, true);
                     }
                     else
                     {
@@ -382,7 +385,7 @@ public class GISContainer : MonoBehaviour
         return found;
     }
     //any method prefixed with "Abstract" should only be used if the container is abstract.
-    public void AbstractAdd(GISItem item)
+    public void AbstractAdd(GISItem item, bool ignore_anim = false)
     {
         var remained = Add(item);
         if (remained != null)
@@ -390,6 +393,7 @@ public class GISContainer : MonoBehaviour
             var pp = new GISSlot();
             pp._SetConte(this);
             pp.Held_Item = remained;
+            pp.Held_Item.AnimOverride = (byte)(ignore_anim ? 1 : 0);
             slots.Add(pp);
         }
         OnContentsChanged.Invoke();
@@ -517,6 +521,7 @@ public class GISContainer : MonoBehaviour
             var h2 = h.GetComponent<GISSlot>();
             h2._SetConte(this);
             h2.Held_Item = new GISItem();
+            h2.Held_Item.AnimOverride = 1;
             slots.Add(h2);
         }
     }

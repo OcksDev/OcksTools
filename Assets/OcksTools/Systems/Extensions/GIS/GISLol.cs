@@ -177,6 +177,8 @@ public class GISItem
     [HideInInspector]
     public List<GISContainer> Interacted_Containers = new List<GISContainer>();
     public ComponentHolder Components = new ComponentHolder();
+    [HideInInspector]
+    public byte AnimOverride = 0;
     public GISItem()
     {
         setdefaultvals();
@@ -195,6 +197,7 @@ public class GISItem
         Container = sexnut.Container;
         Components = new ComponentHolder(sexnut.Components);
         Interacted_Containers = new(sexnut.Interacted_Containers);
+        AnimOverride = sexnut.AnimOverride;
     }
     public bool IsEmpty()
     {
@@ -224,6 +227,15 @@ public class GISItem
          */
         if (IsEmpty() || sexnut.IsEmpty()) return false;
 
+        return CompareDirect(sexnut, usebase);
+    }
+
+    public bool CompareDirect(GISItem sexnut, bool usebase = false)
+    {
+        /* returns:
+         * false - not the same
+         * true - are the same
+         */
         bool comp = Name == sexnut.Name;
 
         if (!usebase && comp)

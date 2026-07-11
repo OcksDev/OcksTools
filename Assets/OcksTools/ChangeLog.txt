@@ -30,8 +30,12 @@
 - GIS Improvements
   - Added Ctrl+Number, "Type For Move", which lets you type a number slot to swap the currently hovered item with
   - Improved inspector readouts of GISItem and GISSlot
+  - Interacting GISDisplay now has animations that play when the held item changes
+    - Varient animation for double click removing items
+    - Force update now actually does something, it ignores/interrupts animation and instantly updates the display
   - Sorting containers now falls back to the non-prefered sorting type to try to deal with equivalency 
   - Fixed bug in Type Stacking where extra inputs during type would break it
+  - GISDisplay now actually stops updating every fixed update
 - New DecayingList class, for managing items that need to expire over time
   - New DecayingDictionary, which is the same shit but with a dictionary
 - New OXTransform allows for easy storage and usage of modifications to transforms
@@ -53,6 +57,7 @@
   - Fixed slight bug in ModdableValue where if accessing the value directly using .Value instead of .GetValue(), it wouldn't have properly gotten the value until .GetValue() had been run.
   - Added more clear error handling for a null input into EntityOXS.Hit() or .Heal()
   - Moved some old and bad stuff from Misc into zTests
+  - Renamed the containing file for OXDefaultAnimations to actually match the class name
   - Renamed the containing file for ResettableValue to actually match the class name
   - Removed FileSystem.ConvertWindowsAppDataToLinux(), I realized it was redundant
 ------------
