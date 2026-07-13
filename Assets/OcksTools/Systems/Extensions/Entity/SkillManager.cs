@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using static EntityOXS;
 
 public class SkillManager : SingleInstance<SkillManager>
 {
@@ -37,7 +36,7 @@ public static class ExtensionForEntityOXSForSkills
         }
     }
 
-    public static void CleanUpSkills(EntityOXS nerd, MultiRef<EntityObject, EntityType> b)
+    public static void CleanUpSkills(EntityOXS nerd, EntityObject b)
     {
         if (SkillsTicking.ContainsKey(nerd))
         {

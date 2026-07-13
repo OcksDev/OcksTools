@@ -1,11 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
-using static EntityOXS;
 
 [System.Serializable]
 public class EntityOXS
 {
-    public EntityObject Self;
     public EntityType Type = EntityType.Enemy;
     public double Health = 100;
     public double Max_Health = 100;
@@ -14,11 +12,14 @@ public class EntityOXS
     public bool CanOverhealIntoShield = false;
     public OXEventLayered<EntityOXS, DamageProfile> OnHitEvent = new();
     public OXEventLayered<EntityOXS, DamageProfile> OnHealEvent = new();
-    public OXEventLayered<EntityOXS, MultiRef<EntityObject, EntityType>> OnKillEvent = new();
+    public OXEventLayered<EntityOXS, EntityObject> OnKillEvent = new();
     public OXEventLayered<EntityOXS, EffectProfile> OnEffectGain = new();
+    [HideInInspector]
     public bool IsDead = false;
     private EntityObject KillerObject = null;
-    private EntityType KillerType = EntityType.World;
+    public EntityObject Self;
+    public bool IsEnemy => Type == EntityType.Enemy;
+    public bool IsPlayer => Type == EntityType.Player;
 
     public bool HasLifeRemaining => (Health > 0 || Shield > 0) && !IsDead;
 
@@ -31,7 +32,6 @@ public class EntityOXS
         hit.OnProcHit.Invoke(this, hit);
         var dmg = hit.StoredValue;
         KillerObject = hit.SourceObject;
-        KillerType = hit.SourceType;
 
         Shield -= dmg;
         if (Shield <= 0)
@@ -73,8 +73,7 @@ public class EntityOXS
     {
         if (IsDead) return;
         IsDead = true;
-        var mf = new MultiRef<EntityObject, EntityType>(KillerObject, KillerType);
-        OnKillEvent.Invoke(this, mf);
+        OnKillEvent.Invoke(this, KillerObject);
     }
 
     public enum EntityType
@@ -89,11 +88,20 @@ public class EntityOXS
         Self = self;
         return this;
     }
-
     public void ClampHealth()
     {
         Health = System.Math.Clamp(Health, 0, Max_Health);
         Shield = System.Math.Clamp(Shield, 0, Max_Shield);
+    }
+    public void SetHealths(double x)
+    {
+        Max_Health = x;
+        Health = x;
+    }
+    public void SetShields(double x)
+    {
+        Max_Shield = x;
+        Shield = x;
     }
 }
 
@@ -102,7 +110,6 @@ public class DamageProfile
 {
     public double Value;
     public EntityObject SourceObject = null;
-    public EntityType SourceType = EntityType.World;
     public DamageType HowItWasDealt = DamageType.Unknown;
     public DamageType WhatItWas = DamageType.Unknown;
     public HashSet<string> Procs = new HashSet<string>();
@@ -111,12 +118,12 @@ public class DamageProfile
     public OXEventLayered<EntityOXS, DamageProfile> OnProcKill = new();
     public Vector3? SourceLocation = null;
     public CriticalChance Crit = new(0);
-    public DamageProfile(double TheValue, DamageType How, DamageType What, EntityObject src_orbject, EntityType src_type)
+    public DamageProfile(double TheValue, DamageType How, DamageType What, EntityObject src_orbject)
     {
         HowItWasDealt = How;
         WhatItWas = What;
         Value = TheValue;
-        SetSource(src_orbject, src_type);
+        SetSource(src_orbject);
     }
     public DamageProfile(double TheValue, DamageType How, DamageType What)
     {
@@ -131,7 +138,6 @@ public class DamageProfile
     public DamageProfile(DamageProfile pp)
     {
         SourceObject = pp.SourceObject;
-        SourceType = pp.SourceType;
         HowItWasDealt = pp.HowItWasDealt;
         WhatItWas = pp.WhatItWas;
         CalcEvent = pp.CalcEvent;
@@ -173,11 +179,10 @@ public class DamageProfile
         Light = 13,
         Healing = 14,
     }
-    public DamageProfile SetSource(EntityObject src_orbject, EntityType src_type)
+    public DamageProfile SetSource(EntityObject src_orbject)
     {
         SourceObject = src_orbject;
         if (src_orbject != null) SourceLocation = src_orbject.transform.position;
-        SourceType = src_type;
         return this;
     }
     public DamageProfile SetPosition(Vector3? position)

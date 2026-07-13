@@ -32,7 +32,7 @@ public abstract class AggroBase
     public virtual void Fallback() => SetCurrentTarget(FallbackTargets.Last());
     public virtual bool FallbackCondition() => FallbackTargets.Count > 0;
     protected bool CheckTarget(EntityObject a) => a != null && !a.Entity.IsDead;
-    public virtual bool CheckValidTargetCondition(DamageProfile y) => y.SourceObject != null && y.SourceType != Self.Entity.Type;
+    public virtual bool CheckValidTargetCondition(DamageProfile y) => y.SourceObject != null && y.SourceObject.Entity.Type != Self.Entity.Type;
 }
 
 public abstract class MostDamageAggro : AggroBase

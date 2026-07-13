@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using static EntityOXS;
 
 public class EffectManager : SingleInstance<EffectManager>
 {
@@ -32,7 +31,7 @@ public static class ExtensionForEntityOXSForEffects
         }
     }
 
-    public static void CleanUpEffects(EntityOXS nerd, MultiRef<EntityObject, EntityType> b)
+    public static void CleanUpEffects(EntityOXS nerd, EntityObject b)
     {
         if (EffectsTicking.ContainsKey(nerd))
         {

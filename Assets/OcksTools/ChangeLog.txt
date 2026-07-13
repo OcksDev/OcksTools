@@ -14,14 +14,20 @@
   - Heal() changed to match the new layered event style of Hit()
   - Added new simple constructor for Damage Profile with just a single number as an input
   - Added helper method on DamageProfile to set the source position
+  - New GlobalEntity singleton script, allows you to easily define a "world" entity for damage reference purposes
+    - Slightly refactored EntityObject code into new Initialization functions
   - CanOverhealIntoShield toggle added, now the functionality is off by default
   - Fixed bug where losing shield wouldn't check for death if it was exactly 0
   - Reorganized the Damage Profile constructors to be more clear
   - Added a SpawnData optional reference in Entity Object to allow for more optimized data clearing, should the need arise
   - Moved source object setting in Damage Profiles into its own method so it can be used seperately
+  - Flattened all killer source type references down to just the EntityObject reference itself
+    - The extra data was basically redundant
+  - Added SetHealths() and SetShields() on EntityOXS, just makes it slightly easier to set those values
   - Removed unused OnHealPostCalc event
 - Spawn System / Tags Improvements
   - Added a component to automatic cleanup IDs on destroyed objects
+    - Spawn Initial now has an opt-out for usage
     - This can also be opted-in for use in the SpawnSystem
   - Added a varient to Tags.ClearAllOf() which takes in both the key and gameobject to speed it up
   - Added a varient to SpawnSystem.Kill() which takes in a SpawnData reference to speed it up

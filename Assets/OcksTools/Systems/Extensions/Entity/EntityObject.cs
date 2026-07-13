@@ -1,5 +1,4 @@
 using UnityEngine;
-using static EntityOXS;
 
 public class EntityObject : MonoBehaviour
 {
@@ -8,17 +7,25 @@ public class EntityObject : MonoBehaviour
     public SpawnData SpawnData;
     public void Awake()
     {
+        if (Entity != null) InitializeGameobjectSpecific();
+    }
+    public void Initialize()
+    {
         Entity.SetSelf(this);
+    }
+    public void InitializeGameobjectSpecific()
+    {
+        Initialize();
         if (Entity.IsDead)
         {
-            KillSelf(Entity, new MultiRef<EntityObject, EntityType>(null, EntityType.World));
+            KillSelf(Entity, null);
             return;
         }
         Entity.ClampHealth();
         Entity.OnKillEvent.Append(99999, "KillSelf", KillSelf);
     }
 
-    public void KillSelf(EntityOXS a, MultiRef<EntityObject, EntityType> b)
+    public void KillSelf(EntityOXS a, EntityObject b)
     {
         if (SpawnData != null)
         {
