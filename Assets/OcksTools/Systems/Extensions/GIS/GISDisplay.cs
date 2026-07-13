@@ -63,7 +63,6 @@ public class GISDisplay : MonoBehaviour
 
     public void PlayAnimation(byte a)
     {
-        if (GISLol.Instance.DragSlotsLeft.Count > 0) Debug.Log("Anim attempt " + a);
         if (a == 1 || a == 3)
         {
             item.GetValue().AnimOverride = (byte)(a == 1 ? 0 : 1);
@@ -76,7 +75,6 @@ public class GISDisplay : MonoBehaviour
                 anim = StartCoroutine(GISInteract(displays.ToList()));
                 break;
             case 2:
-                Debug.Log("Empty");
                 anim = StartCoroutine(GISInteractToEmpty(displays.ToList(), this));
                 break;
         }

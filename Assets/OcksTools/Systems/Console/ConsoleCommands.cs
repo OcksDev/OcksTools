@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -195,6 +196,38 @@ public class ConsoleCommands : MonoBehaviour
     {
         Console.Log(r.com_caps[2]);
         Console.Log(Tags.GetFromTag<GameObject>(r.com_caps[2]).ToString());
+    }
+    public static void Test_meetup()
+    {
+        var meet = new MeetUp<int, int>((x, y) => $"({x}/{y})".Log());
+        meet.AddT1("Hello", 5);
+        meet.AddT2("There", 10);
+        meet.AddT2("Hello", 69);
+        meet.AddT1("There", 420);
+        var meet2 = new MeetUpWithDecay<int, int>((x, y) => $"({x}/{y})".Log());
+        meet2.AddT1("Hello", 5);
+        meet2.AddT2("There", 10);
+        meet2.AddT2("Hello", 69);
+        meet2.AddT1("There", 420);
+        meet2.AddT1("Hello", 5, 1);
+        meet2.AddT2("Hello", 69, 1);
+        meet2.AddT1("Hello", 1, 1);
+        ConsoleLol.Instance.StartCoroutine(WaitForTime(meet2));
+    }
+
+    public static IEnumerator WaitForTime(MeetUpWithDecay<int, int> m)
+    {
+        float x = 0;
+        m.Contains("Hello").Log();
+        while (x < 1.5f)
+        {
+            x += Time.deltaTime;
+            m.Tick(Time.deltaTime);
+            yield return null;
+        }
+        m.Contains("Hello").Log();
+        m.AddT1("Hello", 2, 1);
+        m.AddT2("Hello", 2, 1);
     }
 
     public static void Test_listall()

@@ -38,6 +38,9 @@
   - GISDisplay now actually stops updating every fixed update
 - New DecayingList class, for managing items that need to expire over time
   - New DecayingDictionary, which is the same shit but with a dictionary
+- New MeetUp class which allows you to execute code once two differently typed entries of the same name have been added, regardless of order
+  - New MeetUpWithDecay varient which also allows you to set a maximum time for an entry to wait for a partner before removing itself
+  - Included varients for both with only have 2 generic parameters instead of 3, making the assumption that you will use string keys.
 - New OXTransform allows for easy storage and usage of modifications to transforms
   - Varients with/without scale parameter
 - Screenshot Improvements
@@ -60,6 +63,7 @@
   - Renamed the containing file for OXDefaultAnimations to actually match the class name
   - Renamed the containing file for ResettableValue to actually match the class name
   - Removed FileSystem.ConvertWindowsAppDataToLinux(), I realized it was redundant
+  - Removed OXFile obscuring, it was broken and parser dependant, will return at some point better
 ------------
 
 ------------

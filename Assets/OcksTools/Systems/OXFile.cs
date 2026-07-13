@@ -23,7 +23,6 @@ public class OXFile
 {
     //touch away
     public const short ParserVersion = 1;
-    public static bool DoObsure = false;
     //no touchy
     public int FileVersion = 1;
     public OXFileData Data = new OXFileData(OXFileData.OXFileType.OXFileData);
@@ -53,9 +52,7 @@ public class OXFile
         index += 4;
         Data = new OXFileData(OXFileData.OXFileType.OXFileData);
         Data.pVersion = FileVersion;
-        var ccd = WankFuckYou(cd, index, cd.Length - index);
-        SmallObscure(ccd, 6969420);
-        Data.DataRaw = ccd;
+        Data.DataRaw = WankFuckYou(cd, index, cd.Length - index);
         Data.DataOXFiles = Data.Get_OXFileData(GetFileData());
 
         return true;
@@ -68,7 +65,6 @@ public class OXFile
         if (CanOverride || !e)
         {
             var wank = Data.BytesOfData(GetFileData(), 0);
-            SmallObscure(wank, 6969420);
             List<byte> bytes = new List<byte>();
             SetVersionIntoFlag();
             var ver = BitConverter.GetBytes(Flags);
@@ -78,28 +74,6 @@ public class OXFile
             File.WriteAllBytes(FileName, wank.ToArray());
         }
 
-    }
-    public void SmallObscure(List<byte> thing, int seed)
-    {
-        if (!DoObsure) return;
-        var rand = new System.Random(seed + thing.Count);
-        for (int i = 0; i < thing.Count; i++)
-        {
-            var w = ((byte)rand.Next(0, 256));
-            w ^= 85;
-            thing[i] ^= w;
-        }
-    }
-    public void SmallObscure(byte[] thing, int seed)
-    {
-        if (!DoObsure) return;
-        var rand = new System.Random(seed + thing.Length);
-        for (int i = 0; i < thing.Length; i++)
-        {
-            var w = ((byte)rand.Next(0, 256));
-            w ^= 85;
-            thing[i] ^= w;
-        }
     }
     private byte[] WankFuckYou(byte[] array, int offset, int length)
     {
