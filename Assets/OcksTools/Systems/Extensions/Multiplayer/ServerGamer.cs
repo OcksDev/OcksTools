@@ -32,44 +32,18 @@ public static class Server
 
     public static Dictionary<FixedString64Bytes, IDSync_Client> AllClients = new();
     public static Dictionary<ulong, IDSync_Client> BADAllClients = new();
-    public static Dictionary<ulong, IDSync_Object> BADAllObjects = new();
-    public static Dictionary<ulong, FixedString64Bytes> BADAllObjectIds = new();
+
+    public static MeetUp<ulong, IDSync_Object, FixedString64Bytes> ObjectIDSync = new(ObjectIDFunction);
+
     public static OXEvent<OXNetworkRpcData, FixedString64Bytes, string> MessageEvent = new();
     public static OXEvent<FixedString64Bytes> ClientIDSynced = new();
 
-    public static void AddObject(IDSync_Object o)
+    public static void ObjectIDFunction(IDSync_Object o, FixedString64Bytes ID)
     {
-        var x = o.NetworkObjectId;
-        Console.Log($"Stored Object: {o.gameObject.name}");
-        if (BADAllObjectIds.ContainsKey(x))
-        {
-            SpawnSystem.Spawn(new SpawnData("").ID(BADAllObjectIds[x].ToString()).DontSpawn(o.gameObject));
-            Console.Log($"Hit: {BADAllObjectIds[x].ToString()}");
-            o.MyID = BADAllObjectIds[x].ToString();
-            BADAllObjectIds.Remove(x);
-        }
-        else
-        {
-            BADAllObjects.Add(x, o);
-        }
+        SpawnSystem.Spawn(new SpawnData("").ID(ID.ToString()).DontSpawn(o.gameObject));
+        o.MyID = ID;
+        Console.Log($"Hit: {ID}");
     }
-
-    public static void AddObjectID(ulong x, FixedString64Bytes o)
-    {
-        Console.Log($"Stored: {x} -> {o}");
-        if (BADAllObjects.ContainsKey(x))
-        {
-            SpawnSystem.Spawn(new SpawnData("").ID(o.ToString()).DontSpawn(BADAllObjects[x].gameObject));
-            Console.Log($"Hit: {o}");
-            BADAllObjects[x].MyID = o;
-            BADAllObjects.Remove(x);
-        }
-        else
-        {
-            BADAllObjectIds.Add(x, o);
-        }
-    }
-
 
     public static void SpawnObect(SpawnData s)
     {
@@ -302,7 +276,8 @@ public class ServerGamer : NetworkBehaviour
     {
         if (id.ClientID == ClientID) return;
 
-        Server.AddObjectID(i, tag);
+        Server.ObjectIDSync.AddT2(i, tag);
+        Console.Log($"Stored: {i} -> {tag}");
     }
 
 

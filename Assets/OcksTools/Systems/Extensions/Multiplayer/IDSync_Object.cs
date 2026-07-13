@@ -15,7 +15,8 @@ public class IDSync_Object : NetworkBehaviour
         }
         else
         {
-            Server.AddObject(this);
+            Server.ObjectIDSync.AddT1(NetworkObjectId, this);
+            Console.Log($"Stored: {NetworkObjectId}");
         }
     }
 }
