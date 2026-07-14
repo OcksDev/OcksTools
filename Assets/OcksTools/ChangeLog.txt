@@ -58,8 +58,12 @@
   - (Semi-joke) Added DeleteThisGamesExe() which will close the game and delete the exe file
   - Reactable now uses a compressed inspector to look nicer
   - AutoCompressFieldWithName now actually uses the right type lol
+  - Created new varient of ShuffleList() which allows you to reuse a random, namely to allow for seeded shuffling
+  - Created new varients of RandomElement() which allows you to reuse a random, namely to allow for seeded selection
+    - Also some slightly nicer error handling
   - Created new varient of MultiRef to be a class instead of a struct, named it MultiRefClass
   - Changed the interfacing for loading in files from disc, now is more streamlined and clear.
+  - Cardcore functions standardized to better use normal behaviors
   - Fixed collision detection on the 3D player controller, it was using the wrong collision detection mode lmao
   - Split LanguageFileSystem.GetString() into GetString() and GetStringAny(), this makes intent more clear
     - Marginally optimized GetStringAny()

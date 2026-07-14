@@ -7,6 +7,7 @@ public class MeetUp<TKey, TVal1, TVal2>
     public Dictionary<TKey, TVal1> Val1s = new();
     public Dictionary<TKey, TVal2> Val2s = new();
     public Action<TVal1, TVal2> Combiner;
+    public virtual int Count => Val1s.Count + Val2s.Count;
     public MeetUp(Action<TVal1, TVal2> c)
     {
         Combiner = c;
@@ -73,6 +74,7 @@ public class MeetUpWithDecay<TKey, TVal1, TVal2> : MeetUp<TKey, TVal1, TVal2>
         Val2sDecay.Clear();
         base.Clear();
     }
+    public override int Count => Val1sDecay.Count + Val2sDecay.Count + base.Count;
     public override void AddT1(TKey key, TVal1 v) => AddT1(key, v, -1);
     public override void AddT2(TKey key, TVal2 v) => AddT2(key, v, -1);
     public void AddT1(TKey key, TVal1 v, float t)

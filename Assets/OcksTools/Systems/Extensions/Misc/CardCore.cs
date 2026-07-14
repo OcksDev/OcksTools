@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEngine;
 
 public class Card
 {
@@ -70,6 +69,7 @@ public class Hand
 public struct CardCollection
 {
     public List<Card> Cards;
+    public int Count => Cards.Count;
 
     public CardCollection(int x)
     {
@@ -97,11 +97,11 @@ public struct CardCollection
     }
     public Card PeekTop()
     {
-        return Cards[Cards.Count - 1];
+        return Cards[^1];
     }
     public Card DrawTop()
     {
-        var d = Cards[Cards.Count - 1];
+        var d = Cards[^1];
         Cards.Remove(d);
         return d;
     }
@@ -112,18 +112,15 @@ public struct CardCollection
 
     public CardCollection Shuffle()
     {
-        List<Card> list = new List<Card>();
-        while (Cards.Count > 0)
-        {
-            var x = Random.Range(0, Cards.Count);
-            list.Add(Cards[x]);
-            Cards.RemoveAt(x);
-        }
-        Cards = list;
+        Cards = Cards.ShuffleList();
         return this;
     }
     public void Clear()
     {
         Cards.Clear();
+    }
+    public void Remove(Card c)
+    {
+        Cards.Remove(c);
     }
 }

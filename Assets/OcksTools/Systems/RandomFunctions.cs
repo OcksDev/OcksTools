@@ -396,10 +396,7 @@ public class RandomFunctions : SingleInstance<RandomFunctions>
     }
 #endif
 
-    public static void Swap<T>(ref T a, ref T b)
-    {
-        var te = a; a = b; b = te;
-    }
+    public static void Swap<T>(ref T a, ref T b) => (a, b) = (b, a);
 
     //Why do you not specify the file type in the string path? 
     public static T LoadResourceByPathRuntime<T>(string assetPath) where T : ScriptableObject
@@ -767,7 +764,17 @@ public static class OXFunctions
 
     public static List<T> ShuffleList<T>(this List<T> ti)
     {
-        System.Random rng = new System.Random();
+        int n = ti.Count;
+        while (n > 1)
+        {
+            int k = UnityEngine.Random.Range(0, n--);
+            (ti[k], ti[n]) = (ti[n], ti[k]);
+        }
+        return ti;
+    }
+
+    public static List<T> ShuffleList<T>(this List<T> ti, System.Random rng)
+    {
         int n = ti.Count;
         while (n > 1)
         {
@@ -788,11 +795,13 @@ public static class OXFunctions
 
     public static T RandomElement<T>(this List<T> ti)
     {
+        if (ti.Count == 0) throw new Exception("Trying to get a random element from an empty dataset");
         return ti[UnityEngine.Random.Range(0, ti.Count)];
     }
 
     public static T RandomElement<T>(this T[] ti)
     {
+        if (ti.Length == 0) throw new Exception("Trying to get a random element from an empty dataset");
         return ti[UnityEngine.Random.Range(0, ti.Length)];
     }
 
@@ -803,6 +812,27 @@ public static class OXFunctions
     public static T RandomElement<T>(this HashSet<T> ti)
     {
         return ti.ToList().RandomElement();
+    }
+
+    public static T RandomElement<T>(this List<T> ti, System.Random rng)
+    {
+        if (ti.Count == 0) throw new Exception("Trying to get a random element from an empty dataset");
+        return ti[rng.Next(0, ti.Count)];
+    }
+
+    public static T RandomElement<T>(this T[] ti, System.Random rng)
+    {
+        if (ti.Length == 0) throw new Exception("Trying to get a random element from an empty dataset");
+        return ti[rng.Next(0, ti.Length)];
+    }
+
+    public static KeyValuePair<T, T2> RandomElement<T, T2>(this Dictionary<T, T2> ti, System.Random rng)
+    {
+        return ti.ToList().RandomElement(rng);
+    }
+    public static T RandomElement<T>(this HashSet<T> ti, System.Random rng)
+    {
+        return ti.ToList().RandomElement(rng);
     }
 
     public static Vector3 AllignZ(this Vector3 v, float z)
