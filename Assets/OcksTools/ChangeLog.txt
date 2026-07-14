@@ -1,5 +1,10 @@
 
 ------------
+   v1.2.5
+- It begins...
+------------
+
+------------
    v1.2.4
 - OXEvent Overhaul
   - Nearly entirely restructured both OXEvent and OXEventLayered
