@@ -1,7 +1,11 @@
 
 ------------
    v1.2.5
-- It begins...
+- New Random Functions
+  - Added Extension methods Lerp() and LerpT() for the following datatypes:
+    - Float, Vector2, Vector3, Quaterion, OXTransform, OXTransformWithScale
+    - Slerp and SlerpT for rotation as well
+    - the LerpT and SlerpT automatically apply .TimeStableLerp() to the percent, making it extra convient
 ------------
 
 ------------

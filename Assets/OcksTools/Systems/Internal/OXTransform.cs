@@ -102,4 +102,53 @@ public static class _ApplyTransforms
         t.ModRotationOX(ox);
         t.ModScaleOX(ox);
     }
+
+    public static void Lerp(this Transform val, OXTransform target, float perc)
+    {
+        val.position = val.position.Lerp(target.Position, perc);
+        val.rotation = val.rotation.Slerp(target.Rotation, perc);
+    }
+    public static void LerpT(this Transform val, OXTransform target, float perc)
+    {
+        val.position = val.position.LerpT(target.Position, perc);
+        val.rotation = val.rotation.SlerpT(target.Rotation, perc);
+    }
+
+    public static void Lerp(this Transform val, OXTransformWithScale target, float perc)
+    {
+        val.position = val.position.Lerp(target.Position, perc);
+        val.rotation = val.rotation.Slerp(target.Rotation, perc);
+        val.localScale = val.localScale.Lerp(target.Scale, perc);
+    }
+    public static void LerpT(this Transform val, OXTransformWithScale target, float perc)
+    {
+        val.position = val.position.LerpT(target.Position, perc);
+        val.rotation = val.rotation.SlerpT(target.Rotation, perc);
+        val.localScale = val.localScale.LerpT(target.Scale, perc);
+    }
+
+    public static void Lerp(this OXTransform target, Transform val, float perc)
+    {
+        val.position = val.position.Lerp(target.Position, perc);
+        val.rotation = val.rotation.Slerp(target.Rotation, perc);
+    }
+    public static void LerpT(this OXTransform target, Transform val, float perc)
+    {
+        val.position = val.position.LerpT(target.Position, perc);
+        val.rotation = val.rotation.SlerpT(target.Rotation, perc);
+    }
+
+    public static void Lerp(this OXTransformWithScale target, Transform val, float perc)
+    {
+        val.position = val.position.Lerp(target.Position, perc);
+        val.rotation = val.rotation.Slerp(target.Rotation, perc);
+        val.localScale = val.localScale.Lerp(target.Scale, perc);
+    }
+    public static void LerpT(this OXTransformWithScale target, Transform val, float perc)
+    {
+        val.position = val.position.LerpT(target.Position, perc);
+        val.rotation = val.rotation.SlerpT(target.Rotation, perc);
+        val.localScale = val.localScale.LerpT(target.Scale, perc);
+    }
+
 }
