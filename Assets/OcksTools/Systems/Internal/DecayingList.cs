@@ -2,7 +2,7 @@ using System.Collections.Generic;
 public class DecayingList<T>
 {
     public List<MultiRefClass<T, float>> Items = new List<MultiRefClass<T, float>>();
-
+    public OXEvent<T> OnRemove = new();
     public int Count => Items.Count;
     public void Add(T item, float stayDuration) =>
         Items.Add(new MultiRefClass<T, float>(item, stayDuration));
@@ -23,6 +23,7 @@ public class DecayingList<T>
         if (index < 0)
             return false;
 
+        OnRemove.Invoke(Items[index].a);
         Items.RemoveAt(index);
         return true;
     }
@@ -36,6 +37,7 @@ public class DecayingList<T>
             Items[i].b -= dt;
             if (Items[i].b <= 0f)
             {
+                OnRemove.Invoke(Items[i].a);
                 Items.RemoveAt(i);
             }
         }

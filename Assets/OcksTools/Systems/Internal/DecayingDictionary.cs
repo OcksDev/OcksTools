@@ -4,6 +4,7 @@ using System.Linq;
 public class DecayingDictionary<T, T2>
 {
     public Dictionary<T, MultiRefClass<T2, float>> Items = new Dictionary<T, MultiRefClass<T2, float>>();
+    public OXEvent<T, T2> OnRemove = new();
 
     public int Count => Items.Count;
 
@@ -23,7 +24,12 @@ public class DecayingDictionary<T, T2>
         return false;
     }
 
-    public bool Remove(T key) => Items.Remove(key);
+    public bool Remove(T key)
+    {
+        if (!Items.ContainsKey(key)) return false;
+        OnRemove.Invoke(key, Items[key].a);
+        return Items.Remove(key);
+    }
 
     public void Clear() => Items.Clear();
 
@@ -50,6 +56,9 @@ public class DecayingDictionary<T, T2>
         }
 
         foreach (var key in keysToRemove)
+        {
+            OnRemove.Invoke(key, Items[key].a);
             Items.Remove(key);
+        }
     }
 }

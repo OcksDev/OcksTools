@@ -6,6 +6,8 @@
     - Float, Vector2, Vector3, Quaterion, OXTransform, OXTransformWithScale
     - Slerp and SlerpT for rotation as well
     - the LerpT and SlerpT automatically apply .TimeStableLerp() to the percent, making it extra convient
+- Misc 
+  - Added OnRemove event for DecayingList and DecayingDictionary
 ------------
 
 ------------
