@@ -59,7 +59,17 @@ public class GISDisplay : MonoBehaviour
     }
     private Coroutine anim;
 
-    public void StopAnimation() { if (anim != null) StopCoroutine(anim); }
+    public void StopAnimation()
+    {
+        if (anim != null)
+        {
+            StopCoroutine(anim);
+            foreach (var a in displays.ToList())
+            {
+                a.transform.localScale = Vector3.one;
+            }
+        }
+    }
 
     public void PlayAnimation(byte a)
     {
@@ -77,6 +87,8 @@ public class GISDisplay : MonoBehaviour
             case 2:
                 anim = StartCoroutine(GISInteractToEmpty(displays.ToList(), this));
                 break;
+            case 1:
+                return;
         }
         item.GetValue().AnimOverride = 0;
     }

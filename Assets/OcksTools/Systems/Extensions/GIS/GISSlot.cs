@@ -16,6 +16,9 @@ public class GISSlot : MonoBehaviour
     public OXEvent<GISSlot> OnFilterCheck = new OXEvent<GISSlot>();
     [HideInInspector]
     public int StoredAmount;
+
+    public const float DoubleClickDuration = 0.2f;
+
     public void Awake()
     {
         if (Held_Item == null)
@@ -369,23 +372,47 @@ public class GISSlot : MonoBehaviour
         return rem;
     }
 
+    private GISItem oldhold = null;
 
     public void CtrlClick(bool left)
     {
         var kvps = GetCtrlConts();
         if (left) kvps.Reverse();
 
-        foreach (var nerd in kvps)
+        if (DoubleClickTimer < 0 || !Conte.CanDoubleClickItems)
         {
-            if (nerd.Value == Conte) continue;
-            if (nerd.Value.IsAbstract) continue;
-            var overflow = nerd.Value.Add(Held_Item);
-            Held_Item = overflow != null ? overflow : new GISItem();
-            nerd.Value.SaveTempContents();
-            Conte.SaveTempContents();
-            OnInteract();
-            if (overflow == null) return;
+            if (Conte.CanDoubleClickItems)
+            {
+                DoubleClickTimer = DoubleClickDuration;
+                oldhold = Held_Item;
+            }
+            foreach (var nerd in kvps)
+            {
+                if (nerd.Value == Conte) continue;
+                if (nerd.Value.IsAbstract) continue;
+                var overflow = nerd.Value.Add(Held_Item);
+                Held_Item = overflow != null ? overflow : new GISItem();
+                nerd.Value.SaveTempContents();
+                Conte.SaveTempContents();
+                OnInteract();
+                if (overflow == null) return;
+            }
         }
+        else
+        {
+            //double click code
+            DoubleClickTimer = -1;
+            foreach (var slot in Conte.slots)
+            {
+                if (oldhold.Compare(slot.Held_Item))
+                {
+                    slot.CtrlClick(left);
+                }
+            }
+            oldhold = null;
+        }
+
+
     }
 
     public List<KeyValuePair<string, GISContainer>> GetCtrlConts()
@@ -396,12 +423,26 @@ public class GISSlot : MonoBehaviour
         return kvps;
     }
 
-    public void ShiftClick(bool left)
+    public void ShiftClick(bool left, bool candoubleclick = true)
     {
         var g = GISLol.Instance;
         Held_Item.AddConnection(Conte);
         SaveItemContainerData();
         var a = new GISItem(Held_Item);
+        if (candoubleclick)
+        {
+            if (Conte.CanDoubleClickItems && DoubleClickTimer < 0)
+            {
+                oldhold = Held_Item;
+                DoubleClickTimer = DoubleClickDuration;
+            }
+            else if (Conte.CanDoubleClickItems)
+            {
+                DoubleClickTimer = -420;
+                MassShiftClick(left, true, false);
+                return;
+            }
+        }
         Held_Item = new GISItem();
         int i = left ? 0 : Conte.slots.Count - 1;
         bool found = false;
@@ -443,15 +484,16 @@ public class GISSlot : MonoBehaviour
         OnInteract();
     }
 
-    public void MassShiftClick(bool wasleft, bool requiresame)
+    public void MassShiftClick(bool wasleft, bool requiresame, bool setold = true)
     {
+        if (setold) oldhold = Held_Item;
         for (int i = 0; i < Conte.slots.Count; i++)
         {
             int j = i;
             if (!wasleft) j = (Conte.slots.Count - 1) - i;
             if (Conte.slots[j].Held_Item.IsEmpty()) continue;
-            if (requiresame && !Held_Item.Compare(Conte.slots[j].Held_Item)) continue;
-            Conte.slots[j].ShiftClick(wasleft);
+            if (requiresame && !oldhold.Compare(Conte.slots[j].Held_Item)) continue;
+            Conte.slots[j].ShiftClick(wasleft, setold);
         }
     }
 
@@ -486,7 +528,7 @@ public class GISSlot : MonoBehaviour
 
         if (DoubleClickTimer < 0)
         {
-            if (Conte.CanDoubleClickItems) DoubleClickTimer = 0.2f;
+            if (Conte.CanDoubleClickItems) DoubleClickTimer = DoubleClickDuration;
             var a = g.Mouse_Held_Item;
 
             if (Held_Item.Compare(a))

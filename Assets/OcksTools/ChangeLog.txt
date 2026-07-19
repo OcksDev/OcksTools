@@ -6,6 +6,12 @@
     - Float, Vector2, Vector3, Quaterion, OXTransform, OXTransformWithScale
     - Slerp and SlerpT for rotation as well
     - the LerpT and SlerpT automatically apply .TimeStableLerp() to the percent, making it extra convient
+- GIS Improvements
+  - Added new Mass Ctrl Click functionality, an inherit behavior unlocked if Double Clicking and Ctrl Clicking are both enabled.
+    - Works like in minecraft, applying the operation to all item of the same type.
+  - Extended Mass Shift Click functionality, an inherit behavior unlocked if Double Clicking and Shift Clicking are both enabled.
+    - Same deal, applying the operation to all item of the same type.
+  - Fixed display bug with left-dagging items too fast after double-clicking
 - Misc 
   - Added OnRemove event for DecayingList and DecayingDictionary
 ------------

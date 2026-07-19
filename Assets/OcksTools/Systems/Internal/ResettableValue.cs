@@ -26,3 +26,26 @@ public class ResettableValue<T>
         return Initial.ToString() + ":" + Current.ToString();
     }
 }
+
+public static class _ResetValExtensions
+{
+    public static float Percent(this ResettableValue<float> nerd)
+    {
+        return nerd.Current / nerd.Initial;
+    }
+
+    public static double Percent(this ResettableValue<double> nerd)
+    {
+        return nerd.Current / nerd.Initial;
+    }
+
+    public static float Percent(this ResettableValue<int> nerd)
+    {
+        return ((float)nerd.Current) / nerd.Initial;
+    }
+
+    public static double Percent(this ResettableValue<long> nerd)
+    {
+        return ((double)nerd.Current) / nerd.Initial;
+    }
+}

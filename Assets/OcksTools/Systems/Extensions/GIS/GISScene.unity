@@ -447,6 +447,7 @@ MonoBehaviour:
   CanShiftClickItems: 1
   CanMassShiftClickItems: 1
   CanCtrlClickItems: 1
+  CanMassCtrlClickItems: 1
   CanDoubleClickItems: 1
   CanSortItems: 1
   CanTypeForStackSize: 1
@@ -1274,6 +1275,7 @@ MonoBehaviour:
   CanShiftClickItems: 1
   CanMassShiftClickItems: 1
   CanCtrlClickItems: 1
+  CanMassCtrlClickItems: 1
   CanDoubleClickItems: 1
   CanSortItems: 1
   CanTypeForStackSize: 1
@@ -3052,6 +3054,7 @@ MonoBehaviour:
   CanShiftClickItems: 1
   CanMassShiftClickItems: 1
   CanCtrlClickItems: 1
+  CanMassCtrlClickItems: 1
   CanDoubleClickItems: 1
   CanSortItems: 1
   CanTypeForStackSize: 1
@@ -3831,6 +3834,7 @@ MonoBehaviour:
   CanShiftClickItems: 1
   CanMassShiftClickItems: 1
   CanCtrlClickItems: 1
+  CanMassCtrlClickItems: 1
   CanDoubleClickItems: 1
   CanSortItems: 1
   CanTypeForStackSize: 1

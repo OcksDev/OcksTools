@@ -940,39 +940,6 @@ public static class OXFunctions
     }
     private const byte k_MaxByteForOverexposedColor = 191; //internal Unity const
 
-    public static float Percent(this ResettableValue<float> nerd)
-    {
-        return nerd.Current / nerd.Initial;
-    }
 
-    public static double Percent(this ResettableValue<double> nerd)
-    {
-        return nerd.Current / nerd.Initial;
-    }
-
-    public static float Percent(this ResettableValue<int> nerd)
-    {
-        return ((float)nerd.Current) / nerd.Initial;
-    }
-
-    public static double Percent(this ResettableValue<long> nerd)
-    {
-        return ((double)nerd.Current) / nerd.Initial;
-    }
-
-    public static float Lerp(this float val, float target, float perc) => Mathf.Lerp(val, target, perc);
-    public static float LerpT(this float val, float target, float perc) => Mathf.Lerp(val, target, perc.TimeStableLerp());
-
-    public static Vector2 Lerp(this Vector2 val, Vector2 target, float perc) => Vector2.Lerp(val, target, perc);
-    public static Vector2 LerpT(this Vector2 val, Vector2 target, float perc) => Vector2.Lerp(val, target, perc.TimeStableLerp());
-
-    public static Vector3 Lerp(this Vector3 val, Vector3 target, float perc) => Vector3.Lerp(val, target, perc);
-    public static Vector3 LerpT(this Vector3 val, Vector3 target, float perc) => Vector3.Lerp(val, target, perc.TimeStableLerp());
-
-    public static Quaternion Lerp(this Quaternion val, Quaternion target, float perc) => Quaternion.Lerp(val, target, perc);
-    public static Quaternion LerpT(this Quaternion val, Quaternion target, float perc) => Quaternion.Lerp(val, target, perc.TimeStableLerp());
-
-    public static Quaternion Slerp(this Quaternion val, Quaternion target, float perc) => Quaternion.Slerp(val, target, perc);
-    public static Quaternion SlerpT(this Quaternion val, Quaternion target, float perc) => Quaternion.Slerp(val, target, perc.TimeStableLerp());
 
 }
