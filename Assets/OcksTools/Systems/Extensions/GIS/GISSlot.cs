@@ -374,12 +374,12 @@ public class GISSlot : MonoBehaviour
 
     private GISItem oldhold = null;
 
-    public void CtrlClick(bool left)
+    public void CtrlClick(bool left, bool allowdouble = true)
     {
         var kvps = GetCtrlConts();
         if (left) kvps.Reverse();
 
-        if (DoubleClickTimer < 0 || !Conte.CanDoubleClickItems)
+        if (DoubleClickTimer < 0 || !Conte.CanDoubleClickItems || !allowdouble)
         {
             if (Conte.CanDoubleClickItems)
             {
@@ -406,7 +406,7 @@ public class GISSlot : MonoBehaviour
             {
                 if (oldhold.Compare(slot.Held_Item))
                 {
-                    slot.CtrlClick(left);
+                    slot.CtrlClick(left, false);
                 }
             }
             oldhold = null;
@@ -486,14 +486,33 @@ public class GISSlot : MonoBehaviour
 
     public void MassShiftClick(bool wasleft, bool requiresame, bool setold = true)
     {
-        if (setold) oldhold = Held_Item;
+        if (setold)
+        {
+            oldhold = Held_Item;
+            if (!requiresame && Conte.CanCtrlClickItems)
+            {
+                if (Conte.CanDoubleClickItems && DoubleClickTimer < 0) DoubleClickTimer = DoubleClickDuration;
+                else if (Conte.CanDoubleClickItems)
+                {
+                    DoubleClickTimer = -69;
+                    for (int i = 0; i < Conte.slots.Count; i++)
+                    {
+                        int j = i;
+                        if (wasleft) j = (Conte.slots.Count - 1) - i;
+                        if (Conte.slots[j].Held_Item.IsEmpty()) continue;
+                        Conte.slots[j].CtrlClick(wasleft, false);
+                    }
+                    return;
+                }
+            }
+        }
         for (int i = 0; i < Conte.slots.Count; i++)
         {
             int j = i;
             if (!wasleft) j = (Conte.slots.Count - 1) - i;
             if (Conte.slots[j].Held_Item.IsEmpty()) continue;
             if (requiresame && !oldhold.Compare(Conte.slots[j].Held_Item)) continue;
-            Conte.slots[j].ShiftClick(wasleft, setold);
+            Conte.slots[j].ShiftClick(wasleft, setold && requiresame);
         }
     }
 
