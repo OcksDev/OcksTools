@@ -6,6 +6,8 @@
   - Implements IOXFile_SaveLoadable
   - Old saved random classes have been moved to UnstableOrUnfinished
   - RandomFunctions.ShuffleList and RandomElement now support taking an OXRandom class
+  - Weighted Averages now uses OXRandom
+  - Room Generator now uses OXRandom
 - GIS Improvements
   - Added new Mass Ctrl Click Same functionality, an inherit behavior unlocked if Double Clicking and Ctrl Clicking are both enabled.
     - Works like in minecraft, applying the operation to all items of the same type.

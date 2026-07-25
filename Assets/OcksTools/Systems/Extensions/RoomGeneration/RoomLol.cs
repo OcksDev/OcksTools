@@ -62,16 +62,24 @@ public class RoomLol : MonoBehaviour
     public int runs = 0;
     public int cycles = 0;
 
-    public CoolRoom CalcRoomLayout(int density)
+    public CoolRoom CalcRoomLayout(int density, OXRandom rnd)
     {
         PopulateRooms();
         int sz = RoomColliders.GetLength(0) / 2;
-        return GenerateFromRooms(density, RoomColliders, RoomDirecton.None, new Vector2(sz, sz));
+        return GenerateFromRooms(density, RoomColliders, RoomDirecton.None, new Vector2(sz, sz), rnd);
+    }
+    public CoolRoom CalcRoomLayout(int density)
+    {
+        return CalcRoomLayout(density, null);
     }
 
+    public CoolRoom CalcRoomLayout(OXRandom rnd)
+    {
+        return CalcRoomLayout(RoomDensity, rnd);
+    }
     public CoolRoom CalcRoomLayout()
     {
-        return CalcRoomLayout(RoomDensity);
+        return CalcRoomLayout(RoomDensity, null);
     }
 
 
@@ -129,7 +137,7 @@ public class RoomLol : MonoBehaviour
             if (room.BottomDoors.Count > 0 && room.IsEndpoint) EndDownRooms.Add(room);
         }
     }
-    public CoolRoom GenerateFromRooms(int lvl, int[,] roomcol, RoomDirecton SearchDirection, Vector2 pos)
+    public CoolRoom GenerateFromRooms(int lvl, int[,] roomcol, RoomDirecton SearchDirection, Vector2 pos, OXRandom rnd = null)
     {
         CoolRoom ret = new CoolRoom();
 
@@ -174,7 +182,7 @@ public class RoomLol : MonoBehaviour
         //Debug.Log("Fuck dawg " + lvl + ", " + dir);
         while (available_rooms.Count > 0)
         {
-            var randy = new System.Random();
+            var randy = rnd != null ? rnd : new OXRandom();
             int index = randy.Next(0, available_rooms.Count);
             Room rom = available_rooms[index];
             Func<RoomDirecton, int> getamnt = (x) =>
@@ -271,7 +279,7 @@ public class RoomLol : MonoBehaviour
                         for (int i = 0; i < rom.TopDoors.Count && good; i++)
                         {
                             if (SearchDirection == RoomDirecton.Bottom && i == doorindexlol) continue;
-                            var a = GenerateFromRooms(lvl - 1, roomcol, RoomDirecton.Top, pos2 + rom.TopDoors[i]);
+                            var a = GenerateFromRooms(lvl - 1, roomcol, RoomDirecton.Top, pos2 + rom.TopDoors[i], randy);
                             if (a.room != null && a.WasChill)
                             {
                                 ret.comlpetedRooms.Add(a);
@@ -284,7 +292,7 @@ public class RoomLol : MonoBehaviour
                         for (int i = 0; i < rom.BottomDoors.Count && good; i++)
                         {
                             if (SearchDirection == RoomDirecton.Top && i == doorindexlol) continue;
-                            var a = GenerateFromRooms(lvl - 1, roomcol, RoomDirecton.Bottom, pos2 + rom.BottomDoors[i]);
+                            var a = GenerateFromRooms(lvl - 1, roomcol, RoomDirecton.Bottom, pos2 + rom.BottomDoors[i], randy);
                             if (a.room != null && a.WasChill)
                             {
                                 ret.comlpetedRooms.Add(a);
@@ -298,7 +306,7 @@ public class RoomLol : MonoBehaviour
                         for (int i = 0; i < rom.LeftDoors.Count && good; i++)
                         {
                             if (SearchDirection == RoomDirecton.Right && i == doorindexlol) continue;
-                            var a = GenerateFromRooms(lvl - 1, roomcol, RoomDirecton.Left, pos2 + rom.LeftDoors[i]);
+                            var a = GenerateFromRooms(lvl - 1, roomcol, RoomDirecton.Left, pos2 + rom.LeftDoors[i], randy);
                             if (a.room != null && a.WasChill)
                             {
                                 ret.comlpetedRooms.Add(a);
@@ -311,7 +319,7 @@ public class RoomLol : MonoBehaviour
                         for (int i = 0; i < rom.RightDoors.Count && good; i++)
                         {
                             if (SearchDirection == RoomDirecton.Left && i == doorindexlol) continue;
-                            var a = GenerateFromRooms(lvl - 1, roomcol, RoomDirecton.Right, pos2 + rom.RightDoors[i]);
+                            var a = GenerateFromRooms(lvl - 1, roomcol, RoomDirecton.Right, pos2 + rom.RightDoors[i], randy);
                             if (a.room != null && a.WasChill)
                             {
                                 ret.comlpetedRooms.Add(a);
