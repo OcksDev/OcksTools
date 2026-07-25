@@ -784,6 +784,17 @@ public static class OXFunctions
         return ti;
     }
 
+    public static List<T> ShuffleList<T>(this List<T> ti, OXRandom rng)
+    {
+        int n = ti.Count;
+        while (n > 1)
+        {
+            int k = rng.Next(n--);
+            (ti[k], ti[n]) = (ti[n], ti[k]);
+        }
+        return ti;
+    }
+
     public static List<T> SetMinCount<T>(this List<T> ti, int desired)
     {
         while (ti.Count < desired)
@@ -831,6 +842,26 @@ public static class OXFunctions
         return ti.ToList().RandomElement(rng);
     }
     public static T RandomElement<T>(this HashSet<T> ti, System.Random rng)
+    {
+        return ti.ToList().RandomElement(rng);
+    }
+    public static T RandomElement<T>(this List<T> ti, OXRandom rng)
+    {
+        if (ti.Count == 0) throw new Exception("Trying to get a random element from an empty dataset");
+        return ti[rng.Next(0, ti.Count)];
+    }
+
+    public static T RandomElement<T>(this T[] ti, OXRandom rng)
+    {
+        if (ti.Length == 0) throw new Exception("Trying to get a random element from an empty dataset");
+        return ti[rng.Next(0, ti.Length)];
+    }
+
+    public static KeyValuePair<T, T2> RandomElement<T, T2>(this Dictionary<T, T2> ti, OXRandom rng)
+    {
+        return ti.ToList().RandomElement(rng);
+    }
+    public static T RandomElement<T>(this HashSet<T> ti, OXRandom rng)
     {
         return ti.ToList().RandomElement(rng);
     }

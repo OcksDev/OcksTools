@@ -1,11 +1,11 @@
 
 ------------
    v1.2.5
-- New Random Functions
-  - Added Extension methods Lerp() and LerpT() for the following datatypes:
-    - Float, Vector2, Vector3, Quaterion, OXTransform, OXTransformWithScale
-    - Slerp and SlerpT for rotation as well
-    - the LerpT and SlerpT automatically apply .TimeStableLerp() to the percent, making it extra convient
+- New OXRandom class (implementation of xoshiro256**)
+  - Fully serializable (unlike System.Random and UnityEngine.Random)
+  - Implements IOXFile_SaveLoadable
+  - Old saved random classes have been moved to UnstableOrUnfinished
+  - RandomFunctions.ShuffleList and RandomElement now support taking an OXRandom class
 - GIS Improvements
   - Added new Mass Ctrl Click Same functionality, an inherit behavior unlocked if Double Clicking and Ctrl Clicking are both enabled.
     - Works like in minecraft, applying the operation to all items of the same type.
@@ -14,6 +14,13 @@
   - Extended Mass Shift Click functionality, an inherit behavior unlocked if Double Clicking and Shift Clicking are both enabled.
     - Same deal, applying the operation to all items of the same type.
   - Fixed display bug with left-dagging items too fast after double-clicking
+- New Random Functions
+  - Added Extension methods Lerp() and LerpT() for the following datatypes:
+    - Float, Vector2, Vector3, Quaterion, OXTransform, OXTransformWithScale
+    - Slerp and SlerpT for rotation as well
+    - the LerpT and SlerpT automatically apply .TimeStableLerp() to the percent, making it extra convient
+  - Added BoolToString and StringToBool conversions
+  - Added StringToArray conversion
 - Misc 
   - Added OnRemove event for DecayingList and DecayingDictionary
 ------------

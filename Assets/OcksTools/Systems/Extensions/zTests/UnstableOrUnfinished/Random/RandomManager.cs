@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-public class OXRand : SingleInstance<OXRand>
+public class RandomManager : SingleInstance<RandomManager>
 {
     public List<SpecialRands> SpecialRandoms = new List<SpecialRands>();
     public override void Awake2()

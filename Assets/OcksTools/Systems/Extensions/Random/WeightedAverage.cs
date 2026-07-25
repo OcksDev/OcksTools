@@ -7,7 +7,7 @@ public class WeightedAverageHandler
         float get = 0;
         if (seed != null)
         {
-            get = (float)(new System.Random(seed.Value).NextDouble());
+            get = (float)(new OXRandom(seed.Value).NextDouble());
         }
         else
         {

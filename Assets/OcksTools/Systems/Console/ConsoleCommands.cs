@@ -197,6 +197,35 @@ public class ConsoleCommands : MonoBehaviour
         Console.Log(r.com_caps[2]);
         Console.Log(Tags.GetFromTag<GameObject>(r.com_caps[2]).ToString());
     }
+    public static void Test_oxrand()
+    {
+        var a = new OXRandom();
+        string state = a.ToString();
+        Console.Log(state);
+
+        Console.Log(a.Next());
+        Console.Log(a.Next());
+        Console.Log(a.Next());
+
+        a.FromString(state);
+
+        Console.Log(a.Next());
+        Console.Log(a.Next());
+        Console.Log(a.Next());
+
+        Console.Log("---");
+        Console.Log(a.Next(10));
+        Console.Log(a.Next(10));
+        Console.Log(a.Next(10));
+        Console.Log("---");
+        Console.Log(a.Next(5, 10));
+        Console.Log(a.Next(5, 10));
+        Console.Log(a.Next(5, 10));
+        Console.Log("---");
+        Console.Log(a.NextDouble());
+        Console.Log(a.NextDouble());
+        Console.Log(a.NextDouble());
+    }
     public static void Test_meetup()
     {
         var meet = new MeetUp<int, int>((x, y) => $"({x}/{y})".Log());

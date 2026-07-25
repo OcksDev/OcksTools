@@ -139,6 +139,14 @@ public static class Converter
     {
         return a == 1;
     }
+    public static string BoolToString(this bool a)
+    {
+        return a ? "1" : "0";
+    }
+    public static bool StringToBool(this string a)
+    {
+        return a == "1";
+    }
 
     public static string ListToString<A>(this List<A> eee, string split = ", ")
     {
@@ -149,6 +157,13 @@ public static class Converter
     {
         var d = eee.Split(split).ToList();
         if (d.Count == 1 && d[0] == "") return new List<string>();
+        return d;
+    }
+
+    public static string[] StringToArray(this string eee, string split = ", ")
+    {
+        var d = eee.Split(split);
+        if (d.Length == 1 && d[0] == "") return new string[0];
         return d;
     }
     public static Dictionary<C, D> ABToCD<A, B, C, D>(this Dictionary<A, B> eee, Func<A, C> convertAC, Func<B, D> convertBD)
