@@ -39,10 +39,11 @@ public class Achievement : SingleInstance<Achievement>
     public static void Revoke(string name)
     {
         if (AchievementDict.ContainsKey(name)) AchievementDict.Remove(name);
+        if (AchievementDontSaveDict.ContainsKey(name)) AchievementDontSaveDict.Remove(name);
     }
     public static void Define(string name, bool saved = true)
     {
-        if (AchievementDict.ContainsKey(name))
+        if (AchievementDict.ContainsKey(name) || AchievementDontSaveDict.ContainsKey(name))
         {
             return;
         }

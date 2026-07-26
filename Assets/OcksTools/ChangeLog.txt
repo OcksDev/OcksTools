@@ -25,6 +25,8 @@
   - Added StringToArray conversion
 - Misc 
   - Added OnRemove event for DecayingList and DecayingDictionary
+  - Achievement Revoke fixed to be able to remove non-saved markers
+    - Define now also properly checks against the unsaved achievements 
 ------------
 
 ------------

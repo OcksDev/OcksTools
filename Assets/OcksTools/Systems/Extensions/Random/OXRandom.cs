@@ -38,8 +38,11 @@ public class OXRandom : IOXFile_SaveLoadable<OXRandom>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
     public ulong Next(ulong max)
     {
-        if (max == 0)
-            throw new ArgumentOutOfRangeException(nameof(max), "max must be greater than 0.");
+        if (max <= 0)
+        {
+            if (max == 0) return 0;
+            throw new ArgumentOutOfRangeException(nameof(max), "max must 0 or greater");
+        }
 
         // Rejection sampling to avoid modulo bias.
         ulong limit = ulong.MaxValue - (ulong.MaxValue % max);
@@ -58,7 +61,10 @@ public class OXRandom : IOXFile_SaveLoadable<OXRandom>
     public ulong Next(ulong min, ulong max)
     {
         if (min >= max)
-            throw new ArgumentOutOfRangeException(nameof(max), "max must be greater than min.");
+        {
+            if (min == max) return min;
+            throw new ArgumentOutOfRangeException(nameof(max), "max must be greater than or equal to min.");
+        }
 
         return min + Next(max - min);
     }
@@ -67,7 +73,11 @@ public class OXRandom : IOXFile_SaveLoadable<OXRandom>
     public int Next(int max)
     {
         if (max <= 0)
-            throw new ArgumentOutOfRangeException(nameof(max), "max must be greater than 0.");
+        {
+            if (max == 0) return 0;
+            throw new ArgumentOutOfRangeException(nameof(max), "max must 0 or greater");
+        }
+
 
         return (int)Next((ulong)max);
     }
@@ -77,7 +87,11 @@ public class OXRandom : IOXFile_SaveLoadable<OXRandom>
     public int Next(int min, int max)
     {
         if (min >= max)
-            throw new ArgumentOutOfRangeException(nameof(max), "max must be greater than min.");
+        {
+            if (min == max) return min;
+            throw new ArgumentOutOfRangeException(nameof(max), "max must be greater than or equal to min.");
+        }
+
 
         return min + Next(max - min);
     }
@@ -85,6 +99,11 @@ public class OXRandom : IOXFile_SaveLoadable<OXRandom>
     public double NextDouble()
     {
         return (xoshiro256p(_state) >> 11) * (1.0 / (1UL << 53));
+    }
+    /// <returns>[0.0, 1.0)</returns>
+    public float NextFloat()
+    {
+        return (float)NextDouble();
     }
     /// <summary>
     /// Fills given byte[] with random data
