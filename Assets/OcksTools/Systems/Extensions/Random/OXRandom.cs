@@ -105,6 +105,45 @@ public class OXRandom : IOXFile_SaveLoadable<OXRandom>
     {
         return (float)NextDouble();
     }
+
+    /// <returns>(x,y) where axis range from -1 to 1</returns>
+    public (double x, double y) NextInSquare()
+    {
+        return (NextDouble() * 2 - 1, NextDouble() * 2 - 1);
+    }
+
+    /// <returns>(x,y,z) where axis range from -1 to 1</returns>
+    public (double x, double y, double z) NextInCube()
+    {
+        return (NextDouble() * 2 - 1, NextDouble() * 2 - 1, NextDouble() * 2 - 1);
+    }
+
+    /// <returns>(x,y) where axis range from -1 to 1</returns>
+    public (double x, double y) NextInCircle()
+    {
+        double angle = NextDouble() * (Math.PI * 2.0);
+        double radius = Math.Sqrt(NextDouble());
+
+        return (
+            Math.Cos(angle) * radius,
+            Math.Sin(angle) * radius
+        );
+    }
+    /// <returns>(x,y,z) where axis range from -1 to 1</returns>
+    public (double x, double y, double z) NextInSphere()
+    {
+        double z = NextDouble() * 2.0 - 1.0;
+        double theta = NextDouble() * (Math.PI * 2.0);
+        double radius = Math.Cbrt(NextDouble());
+
+        double xy = Math.Sqrt(1.0 - z * z);
+
+        return (
+            radius * xy * Math.Cos(theta),
+            radius * xy * Math.Sin(theta),
+            radius * z
+        );
+    }
     /// <summary>
     /// Fills given byte[] with random data
     /// </summary>

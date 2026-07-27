@@ -1,8 +1,11 @@
 
 ------------
    v1.2.5
-- New OXRandom class (implementation of xoshiro256**)
-  - Fully serializable (unlike System.Random and UnityEngine.Random)
+- New OXRandom class
+  - Fully seedable and serializable (unlike System.Random and UnityEngine.Random)
+  - Provides more functionality than base System.Random like being able to get random points in unit circles, spheres, squares, or cubes
+    - And unlike unity's default versions of these, oxrandom can be seeded!
+    - Both normal c# versions, using tuples, and unity versions, using Vector2s and Vector3s, exist for these sampling functions
   - Implements IOXFile_SaveLoadable
   - Old saved random classes have been moved to UnstableOrUnfinished
   - RandomFunctions.ShuffleList and RandomElement now support taking an OXRandom class
