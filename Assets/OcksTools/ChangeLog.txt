@@ -35,6 +35,7 @@
   - Added StringToArray conversion
 - Misc 
   - Entity Skills and Effects update methods now pass a reference to their owner EntityOXS
+  - Added OnSkillUse event for EntityOXS
   - Added OnRemove event for DecayingList and DecayingDictionary
   - Achievement Revoke fixed to be able to remove non-saved markers
     - Define now also properly checks against the unsaved achievements 

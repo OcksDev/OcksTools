@@ -74,6 +74,7 @@ public class Skill : Containable
             TakeStacks(data.StacksPerUse);
             InterUseCooldown = GetMaxInterUseCooldown();
             Duration = GetMaxDuration();
+            ox.OnSkillUse.Invoke(ox, this);
         }
         return b;
     }

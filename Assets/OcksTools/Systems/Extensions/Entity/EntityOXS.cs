@@ -14,6 +14,7 @@ public class EntityOXS
     public OXEventLayered<EntityOXS, DamageProfile> OnHealEvent = new();
     public OXEventLayered<EntityOXS, EntityObject> OnKillEvent = new();
     public OXEventLayered<EntityOXS, EffectProfile> OnEffectGain = new();
+    public OXEventLayered<EntityOXS, Skill> OnSkillUse = new();
     [HideInInspector]
     public bool IsDead = false;
     private EntityObject KillerObject = null;
