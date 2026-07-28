@@ -12,6 +12,11 @@
   - Weighted Averages now uses OXRandom
   - Room Generator now uses OXRandom
 - GIS Improvements
+  - Containers now are either "Complex" or "Simple"
+    - Abstract Containers completely seperated and reworked from base containers
+      - Optimized Simple Containers by way of not having the extra un-needed functionality of slots
+      - Renamed to Simple Containers
+    - Containers (with item slots and such) renamed to Complex Containers
   - Added new Mass Ctrl Click Same functionality, an inherit behavior unlocked if Double Clicking and Ctrl Clicking are both enabled.
     - Works like in minecraft, applying the operation to all items of the same type.
   - Added new Mass Ctrl Click All functionality, an inherit behavior unlocked if Double Clicking, Ctrl Clicking, and Mass Shift Clicking are all enabled.
@@ -19,6 +24,8 @@
   - Extended Mass Shift Click functionality, an inherit behavior unlocked if Double Clicking and Shift Clicking are both enabled.
     - Same deal, applying the operation to all items of the same type.
   - Fixed display bug with left-dagging items too fast after double-clicking
+  - Removed ReturnItem() since it was redundant (use Add or AbstractAdd instead)
+  - Debug console no longer yells are you for using "new" to make a monobehavior (at least the instances referencing the GIS)
 - New Random Functions
   - Added Extension methods Lerp() and LerpT() for the following datatypes:
     - Float, Vector2, Vector3, Quaterion, OXTransform, OXTransformWithScale
