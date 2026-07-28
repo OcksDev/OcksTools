@@ -3,12 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GISContainer : MonoBehaviour
+public abstract class GISContainer : MonoBehaviour
 {
     public string Name = "RandomThingIDK";
     public bool SaveLoadData = true;
-    [Tooltip("Uses the GISItems however doesn't use slots")]
-    public bool IsAbstract = false;
+    [HideInInspector]
+    public virtual bool IsAbstract => false;
     [HideIf("IsAbstract")]
     public bool CanDragDistributeItems = true;
     [HideIf("IsAbstract")]
@@ -26,16 +26,6 @@ public class GISContainer : MonoBehaviour
     [HideIf("IsAbstract")]
     public bool CanTypeForMove = true;
     public int CtrlClickPriority = 0;
-    [HideIf("IsAbstract")]
-    public bool AutomaticallyAddChildren = true;
-    public bool GenerateRandomItems = false;
-    [HideIf("IsAbstract")]
-    public bool GenerateSlotObjects = true;
-    [HideIf("IsAbstract")]
-    [ShowIf("GenerateSlotObjects")]
-    public int GenerateXSlots = 20;
-    [HideIf("IsAbstract")]
-    public GameObject SlotPrefab;
     public List<GISSlot> slots = new List<GISSlot>();
     [HideInInspector]
     public List<GISSlot> extraslots = new List<GISSlot>();
@@ -49,35 +39,15 @@ public class GISContainer : MonoBehaviour
     public List<GISItem> saved_items = new List<GISItem>();
     public OXEvent OnContentsChanged = new();
     // Start is called before the first frame update
+
+    public abstract void StartCode();
+    public virtual bool CanRandomGen => false;
+    public virtual void RunRandomGen() { }
+
     private void Start()
     {
-        var myass = GetComponentsInChildren<GISSlot>();
         GISLol.Instance.All_Containers.Add(Name, this);
-        if (!IsAbstract)
-        {
-            if (GenerateSlotObjects)
-            {
-                if (AutomaticallyAddChildren)
-                    foreach (var pp in myass)
-                    {
-                        Destroy(pp.gameObject);
-                    }
-
-                GenerateSlots(GenerateXSlots);
-            }
-            else if (AutomaticallyAddChildren)
-            {
-                foreach (var pp in myass)
-                {
-                    pp._SetConte(this);
-                    if (!slots.Contains(pp)) slots.Add(pp);
-                }
-            }
-        }
-        else
-        {
-            slots.Clear();
-        }
+        StartCode();
 
 
 
@@ -85,21 +55,9 @@ public class GISContainer : MonoBehaviour
         {
             StartCoroutine(WaitForSaveSystem());
         }
-        else if (GenerateRandomItems)
+        else if (CanRandomGen)
         {
-            //this is some debug shit for creating a bunch of randomly generated new containers.
-            foreach (var s in slots)
-            {
-                s.Held_Item = new GISItem(GISLol.Instance.Items.RandomElement().Name);
-                s.Held_Item.Amount = new(69);
-                s.Held_Item.Container = this;
-                s.Held_Item.AnimOverride = 1;
-                if (s.Held_Item.Name == "Empty")
-                {
-                    s.Held_Item.Amount = new(0);
-                }
-            }
-            SaveTempContents();
+            RunRandomGen();
         }
         else
         {
@@ -512,24 +470,6 @@ public class GISContainer : MonoBehaviour
             }
         }
         OnContentsChanged.Invoke();
-    }
-    public void GenerateSlots(int amount)
-    {
-        for (int i = 0; i < amount; i++)
-        {
-            var h = Instantiate(SlotPrefab, transform.position, transform.rotation, transform);
-            var h2 = h.GetComponent<GISSlot>();
-            h2._SetConte(this);
-            h2.Held_Item = new GISItem();
-            h2.Held_Item.AnimOverride = 1;
-            slots.Add(h2);
-        }
-    }
-    public void RegenerateAndLoadSlots(int amount)
-    {
-        ClearSlotObjects();
-        GenerateSlots(amount);
-        LoadContents(SaveSystem.ActiveProf);
     }
 
     public int IndexOf(GISItem item, bool truecompare = false)

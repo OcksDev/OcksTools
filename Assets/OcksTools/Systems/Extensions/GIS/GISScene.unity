@@ -442,12 +442,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: I3
   SaveLoadData: 0
-  IsAbstract: 0
   CanDragDistributeItems: 1
   CanShiftClickItems: 1
   CanMassShiftClickItems: 1
   CanCtrlClickItems: 1
-  CanMassCtrlClickItems: 1
   CanDoubleClickItems: 1
   CanSortItems: 1
   CanTypeForStackSize: 1
@@ -1270,12 +1268,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Inventory2
   SaveLoadData: 0
-  IsAbstract: 0
   CanDragDistributeItems: 1
   CanShiftClickItems: 1
   CanMassShiftClickItems: 1
   CanCtrlClickItems: 1
-  CanMassCtrlClickItems: 1
   CanDoubleClickItems: 1
   CanSortItems: 1
   CanTypeForStackSize: 1
@@ -1772,7 +1768,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4007473491773129349, guid: 32aa07c1d97c2ed4cac286e0d66c9ab0, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -35.649994
+      value: -35.650024
       objectReference: {fileID: 0}
     - target: {fileID: 4049151182853182029, guid: 32aa07c1d97c2ed4cac286e0d66c9ab0, type: 3}
       propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
@@ -2355,7 +2351,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ItemToFind: Shield
-  Container: {fileID: 1800330448}
+  Container: {fileID: 0}
 --- !u!114 &1531936150
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2944,8 +2940,8 @@ GameObject:
   - component: {fileID: 1800330444}
   - component: {fileID: 1800330447}
   - component: {fileID: 1800330446}
-  - component: {fileID: 1800330448}
   - component: {fileID: 1800330445}
+  - component: {fileID: 1800330448}
   m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
@@ -3044,17 +3040,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1800330443}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 944588398123e154a94258d79b9640b1, type: 3}
+  m_Script: {fileID: 11500000, guid: 0b84d0db62dc21645b1b8da507e5c597, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::GISContainerComplex
   Name: Inventory
   SaveLoadData: 1
-  IsAbstract: 0
   CanDragDistributeItems: 1
   CanShiftClickItems: 1
   CanMassShiftClickItems: 1
   CanCtrlClickItems: 1
-  CanMassCtrlClickItems: 1
   CanDoubleClickItems: 1
   CanSortItems: 1
   CanTypeForStackSize: 1
@@ -3063,8 +3057,8 @@ MonoBehaviour:
   AutomaticallyAddChildren: 1
   GenerateRandomItems: 0
   GenerateSlotObjects: 1
-  GenerateXSlots: 28
-  SlotPrefab: {fileID: 4798491299756345537, guid: 283bb50cdbd4db74bbeedb431bd2ab0f, type: 3}
+  GenerateXSlots: 20
+  SlotPrefab: {fileID: 0}
   slots: []
   extraslots: []
   LoadedData: 0
@@ -3829,12 +3823,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: AbstractThingy
   SaveLoadData: 1
-  IsAbstract: 1
   CanDragDistributeItems: 1
   CanShiftClickItems: 1
   CanMassShiftClickItems: 1
   CanCtrlClickItems: 1
-  CanMassCtrlClickItems: 1
   CanDoubleClickItems: 1
   CanSortItems: 1
   CanTypeForStackSize: 1
