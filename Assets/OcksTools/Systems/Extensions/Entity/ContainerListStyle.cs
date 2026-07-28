@@ -74,7 +74,7 @@ public abstract class ContainerListStyle<T> where T : Containable
         CheckExistence();
     }
     public abstract void CheckExistence();
-    public abstract void UpdateContainer(float time);
+    public abstract void UpdateContainer(EntityOXS e, float time);
     public abstract void Add(T eff);
 }
 [System.Serializable]

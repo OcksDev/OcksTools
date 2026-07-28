@@ -34,7 +34,7 @@ public class Skill : Containable
 
     public void SetDataRef(SkillData data) { this.data = data; }
     public void SetDataRefFromManager() { this.data = SkillManager.Instance.AllSkills[Name]; }
-    public void Update(float x)
+    public void Update(EntityOXS e, float x)
     {
         Duration = Mathf.Max(Duration - x, 0);
         if (Duration == 0 || data.AllowActivationWhileActive) InterUseCooldown = Mathf.Max(InterUseCooldown - x, 0);

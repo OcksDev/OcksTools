@@ -12,7 +12,7 @@ public class SkillManager : SingleInstance<SkillManager>
     {
         foreach (var entity in ExtensionForEntityOXSForSkills.SkillsTicking)
         {
-            entity.Value.UpdateContainer(Time.deltaTime);
+            entity.Value.UpdateContainer(entity.Key, Time.deltaTime);
         }
     }
 }
@@ -57,11 +57,11 @@ public class SkillContainer : ContainerListStyle<Skill>
         entity = e;
         List = new List<Skill>();
     }
-    public override void UpdateContainer(float time)
+    public override void UpdateContainer(EntityOXS e, float time)
     {
         for (int i = List.Count - 1; i >= 0; i--)
         {
-            List[i].Update(time);
+            List[i].Update(e, time);
         }
     }
 

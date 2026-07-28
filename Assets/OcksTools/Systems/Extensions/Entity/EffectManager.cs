@@ -7,7 +7,7 @@ public class EffectManager : SingleInstance<EffectManager>
     {
         foreach (var entity in ExtensionForEntityOXSForEffects.EffectsTicking)
         {
-            entity.Value.UpdateContainer(Time.deltaTime);
+            entity.Value.UpdateContainer(entity.Key, Time.deltaTime);
         }
     }
 }
@@ -48,7 +48,7 @@ public class EffectContainer : ContainerListStyle<EffectProfile>
         entity = e;
         List = new List<EffectProfile>();
     }
-    public override void UpdateContainer(float time)
+    public override void UpdateContainer(EntityOXS e, float time)
     {
         for (int i = List.Count - 1; i >= 0; i--)
         {
