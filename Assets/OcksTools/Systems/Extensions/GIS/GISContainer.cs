@@ -1,4 +1,3 @@
-using NaughtyAttributes;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,35 +8,15 @@ public abstract class GISContainer : MonoBehaviour
     public bool SaveLoadData = true;
     [HideInInspector]
     public virtual bool IsAbstract => false;
-    [HideIf("IsAbstract")]
-    public bool CanDragDistributeItems = true;
-    [HideIf("IsAbstract")]
-    public bool CanShiftClickItems = true;
-    [HideIf("IsAbstract")]
-    public bool CanMassShiftClickItems = true;
-    [HideIf("IsAbstract")]
-    public bool CanCtrlClickItems = true;
-    [HideIf("IsAbstract")]
-    public bool CanDoubleClickItems = true;
-    [HideIf("IsAbstract")]
-    public bool CanSortItems = true;
-    [HideIf("IsAbstract")]
-    public bool CanTypeForStackSize = true;
-    [HideIf("IsAbstract")]
-    public bool CanTypeForMove = true;
-    public int CtrlClickPriority = 0;
-    public List<GISSlot> slots = new List<GISSlot>();
-    [HideInInspector]
-    public List<GISSlot> extraslots = new List<GISSlot>();
     [HideInInspector]
     public bool LoadedData = false;
     private void OnDestroy()
     {
         GISLol.Instance.All_Containers.Remove(Name);
+        if (!IsAbstract) GISLol.Instance.All_ComplexContainers.Remove(Name);
     }
     [HideInInspector]
     public List<GISItem> saved_items = new List<GISItem>();
-    public OXEvent OnContentsChanged = new();
     // Start is called before the first frame update
 
     public abstract void StartCode();
@@ -48,8 +27,6 @@ public abstract class GISContainer : MonoBehaviour
     {
         GISLol.Instance.All_Containers.Add(Name, this);
         StartCode();
-
-
 
         if (SaveLoadData)
         {
@@ -70,93 +47,13 @@ public abstract class GISContainer : MonoBehaviour
         LoadContents(SaveSystem.ActiveProf);
         LoadedData = true;
     }
-    public void Update()
-    {
-        if (IsAbstract)
-        {
-            foreach (var s in extraslots)
-            {
-                s.UpdateCall();
-            }
-            return;
-        }
-        foreach (var s in slots)
-        {
-            s.UpdateCall();
-        }
-        foreach (var s in extraslots)
-        {
-            s.UpdateCall();
-        }
-    }
+    public abstract void UpdateCode();
+    public void Update() => UpdateCode();
 
+    public abstract bool SaveTempContents();
+    public abstract void LoadTempContents();
 
-    public bool SaveTempContents()
-    {
-        if (GISLol.Instance.Mouse_Held_Item.Name == "Empty")
-        {
-            saved_items.Clear();
-            foreach (var h in slots)
-            {
-                saved_items.Add(new GISItem(h.Held_Item));
-            }
-            return true;
-        }
-        return false;
-    }
-    public void LoadTempContents()
-    {
-        int i = 0;
-        if (IsAbstract)
-        {
-            slots.Clear();
-            foreach (var h in saved_items)
-            {
-                var pp = new GISSlot();
-                pp._SetConte(this);
-                pp.Held_Item = new GISItem(h);
-                pp.Held_Item.AnimOverride = 1;
-                slots.Add(pp);
-            }
-        }
-        else
-        {
-            foreach (var h in saved_items)
-            {
-                slots[i].Held_Item = new GISItem(h);
-                slots[i].Held_Item.AnimOverride = 1;
-                slots[i].ResetTypeStack();
-                i++;
-            }
-        }
-        OnContentsChanged.Invoke();
-        if (GISLol.Instance.Mouse_Held_Item.Container == this) GISLol.Instance.Mouse_Held_Item = new GISItem();
-    }
-    public int FindEmptySlot()
-    {
-        int i = -1;
-        int k = 0;
-        foreach (var j in slots)
-        {
-            if (j.Held_Item.Name == "Empty")
-            {
-                i = k;
-                break;
-            }
-            k++;
-        }
-
-        return i;
-    }
-
-    public void SaveContents(SaveProfile dict)
-    {
-        if (SaveLoadData)
-        {
-            GISLol.Instance.LoadTempForAll();
-            dict.SetList(GetName(), slots.AToB((x) => x.Held_Item));
-        }
-    }
+    public abstract void SaveContents(SaveProfile dict);
 
     public string GetName()
     {
@@ -170,360 +67,31 @@ public abstract class GISContainer : MonoBehaviour
             SaveSystem.SaveAllData.Append($"{GetName()}_save", SaveContents);
         }
     }
-    public void LoadContents(SaveProfile dict)
-    {
-        if (SaveLoadData)
-        {
-            if (IsAbstract)
-            {
-                slots.Clear();
-            }
-            List<string> a = new List<string>();
-            List<string> b = new List<string>();
-            var gg = dict.GetList(GetName(), new List<GISItem>());
-            if (gg.Count > 0)
-            {
-                int i = 0;
-                foreach (var ghj in gg)
-                {
-                    ghj.Container = this;
-                    ghj.AnimOverride = 1;
-                    if (IsAbstract)
-                    {
-                        AbstractAdd(ghj, true);
-                    }
-                    else
-                    {
-                        slots[i].Held_Item = ghj;
-                    }
-                    i++;
-                    if (!IsAbstract && i >= slots.Count) break;
-                }
+    public abstract void LoadContents(SaveProfile dict);
 
-            }
-            SaveTempContents();
-            OnContentsChanged.Invoke();
-        }
-    }
+    public abstract int AmountOf(GISItem item, bool usebase = false);
+    public abstract int AmountOf(string name);
 
-    public int AmountOf(GISItem item, bool usebase = false)
-    {
-        int amnt = 0;
+    public abstract int TotalAmountOfItems();
 
-        foreach (var st in slots)
-        {
-            if (st.Held_Item.Compare(item, usebase))
-            {
-                amnt += st.Held_Item.Amount;
-            }
-        }
+    public abstract GISItem Add(GISItem item);
 
-        return amnt;
-    }
+    public virtual void AbstractAdd(GISItem item, bool ignore_anim = false) { }
 
-    public int AmountOf(string name)
-    {
-        int amnt = 0;
+    public abstract void Clear();
+    public abstract void Clear(GISItem diedie, bool usebase = true);
 
-        foreach (var st in slots)
-        {
-            if (st.Held_Item.Name == name)
-            {
-                amnt += st.Held_Item.Amount;
-            }
-        }
+    public abstract void Remove(GISItem diedie, int amount, bool usebase = true);
 
-        return amnt;
-    }
+    public abstract void Remove(string name, int amount);
+    public abstract void Clear(string name);
 
-    public int TotalAmountOfItems()
-    {
-        int total = 0;
-        foreach (var t in slots)
-        {
-            if (t.Held_Item != null && t.Held_Item.Name != "Empty")
-            {
-                total += t.Held_Item.Amount;
-            }
-        }
-        return total;
-    }
+    public abstract int IndexOf(GISItem item, bool truecompare = false);
 
-    public GISItem Add(GISItem item)
-    {
-        foreach (var st in slots)
-        {
-            var i = st.Held_Item;
-            if (i.IsEmpty())
-            {
-                st.Held_Item = item;
-                return null;
-            }
-            if (i.Compare(item))
-            {
-                int max = GISLol.Instance.ItemDict[item.Name].MaxAmount;
-                if (max > 0)
-                {
-                    int ideal = i.Amount + item.Amount;
-                    if (ideal > max)
-                    {
-                        int overflow = ideal - max;
-                        i.Amount.SetValue(max);
-                        item.Amount.SetValue(overflow);
-                        continue;
-                    }
-                    else
-                    {
-                        i.Amount.SetValue(ideal);
-                        return null;
-                    }
-                }
-                else
-                {
-                    i.Amount.SetValue(i.Amount + item.Amount);
-                    return null;
-                }
-            }
-        }
-        if (item.Amount > 0)
-        {
-            return item;
-        }
-
-        return null;
-    }
-
-    public bool ReturnItem(GISItem Held_Item)
-    {
-        bool left = true;
-        var a = new GISItem(Held_Item);
-        int i = left ? 0 : slots.Count - 1;
-        bool found = false;
-        foreach (var item in slots)
-        {
-            var x = slots[i].Held_Item;
-            if (x.Compare(a))
-            {
-                int max = GISLol.Instance.ItemDict[a.Name].MaxAmount;
-                int t = x.Amount + a.Amount;
-                if (max <= 0)
-                {
-                    x.Amount.SetValue(t);
-                    found = true;
-                    break;
-                }
-                else
-                {
-                    int z = Mathf.Clamp(t, 0, max);
-                    x.Amount.SetValue(z);
-                    a.Amount.SetValue(t - z);
-                    if (a.Amount == 0)
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-            }
-            else if (x.Name == "Empty")
-            {
-                found = true;
-                slots[i].Held_Item = a;
-                break;
-            }
-            if (!found)
-            {
-                i += left ? 1 : -1;
-            }
-        }
-        if (found)
-        {
-            slots[i].Held_Item.AddConnection(this);
-            slots[i].Held_Item.Solidify();
-        }
-        return found;
-    }
-    //any method prefixed with "Abstract" should only be used if the container is abstract.
-    public void AbstractAdd(GISItem item, bool ignore_anim = false)
-    {
-        var remained = Add(item);
-        if (remained != null)
-        {
-            var pp = new GISSlot();
-            pp._SetConte(this);
-            pp.Held_Item = remained;
-            pp.Held_Item.AnimOverride = (byte)(ignore_anim ? 1 : 0);
-            slots.Add(pp);
-        }
-        OnContentsChanged.Invoke();
-    }
-
-    public void AbstractCollapseEmpty()
-    {
-        for (int i = 0; i < slots.Count; i++)
-        {
-            if (slots[i].Held_Item.IsEmpty())
-            {
-                slots.RemoveAt(i);
-                i--;
-            }
-        }
-        OnContentsChanged.Invoke();
-    }
-
-
-    public void ClearSlotObjects()
-    {
-        foreach (var ns in slots)
-        {
-            if (ns != null && ns.gameObject != null)
-                Destroy(ns.gameObject);
-        }
-        slots.Clear();
-    }
-    public void Clear()
-    {
-        foreach (var ns in slots)
-        {
-            ns.Held_Item = new GISItem();
-            ns.OnInteract();
-        }
-        if (IsAbstract) AbstractCollapseEmpty();
-    }
-    public void Clear(GISItem diedie, bool usebase = true)
-    {
-        foreach (var ns in slots)
-        {
-            if (ns.Held_Item.Compare(diedie, usebase))
-            {
-                ns.Held_Item = new GISItem();
-                ns.OnInteract();
-            }
-        }
-        if (IsAbstract) AbstractCollapseEmpty();
-    }
-
-    public void Remove(GISItem diedie, int amount, bool usebase = true)
-    {
-        int im = amount;
-        for (int i = 0; i < slots.Count; i++)
-        {
-            var it = slots[i].Held_Item;
-            if (it.IsEmpty()) continue;
-            if (!it.Compare(diedie, usebase)) continue;
-            if (it.Amount > amount)
-            {
-                it.Amount.SetValue(it.Amount - amount);
-                slots[i].OnInteract();
-                return;
-            }
-            else
-            {
-                amount -= it.Amount;
-                slots[i].Held_Item = new GISItem();
-                slots[i].OnInteract();
-            }
-            if (amount <= 0) return;
-        }
-        if (amount > 0)
-        {
-            $"Attemped removing {im}, had {amount} remaining".DLogError();
-        }
-        if (IsAbstract) AbstractCollapseEmpty();
-    }
-
-    public void Remove(string name, int amount)
-    {
-        int im = amount;
-        for (int i = 0; i < slots.Count; i++)
-        {
-            var it = slots[i].Held_Item;
-            if (it.IsEmpty()) continue;
-            if (it.Name != name) continue;
-            if (it.Amount > amount)
-            {
-                it.Amount.SetValue(it.Amount - amount);
-                slots[i].OnInteract();
-                return;
-            }
-            else
-            {
-                amount -= it.Amount;
-                slots[i].Held_Item = new GISItem();
-                slots[i].OnInteract();
-            }
-            if (amount <= 0) return;
-        }
-        if (amount > 0)
-        {
-            $"Attemped removing {im}, had {amount} remaining".DLogError();
-        }
-        if (IsAbstract) AbstractCollapseEmpty();
-    }
-    public void Clear(string name)
-    {
-        foreach (var ns in slots)
-        {
-            if (ns.Held_Item.Name == name)
-            {
-                ns.Held_Item = new GISItem();
-                ns.OnInteract();
-            }
-        }
-        OnContentsChanged.Invoke();
-    }
-
-    public int IndexOf(GISItem item, bool truecompare = false)
-    {
-        for (int i = 0; i < slots.Count; i++)
-        {
-            if (truecompare ? item.Compare(slots[i].Held_Item) : slots[i].Held_Item == item)
-            {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    public int IndexOf(string name)
-    {
-        for (int i = 0; i < slots.Count; i++)
-        {
-            if (slots[i].Held_Item.Name == name)
-            {
-                return i;
-            }
-        }
-        return -1;
-    }
-    private static SortingMethod _m;
-    public void Sort(SortingMethod prefered_sort, bool reversed)
-    {
-        List<GISSlot> interacts = new();
-        List<GISItem> items = new();
-        foreach (GISSlot slot in slots)
-        {
-            if (!slot.Held_Item.IsEmpty())
-                interacts.Add(slot);
-            items.Add(slot.Held_Item);
-            slot.Held_Item = new GISItem();
-        }
-
-        _m = prefered_sort;
-        items.Sort(CompareGISSlots);
-
-        for (int i = 0; i < slots.Count; i++)
-        {
-            int j = i;
-            if (!reversed) j = (slots.Count - 1) - i;
-            slots[j].Held_Item = items[i];
-            interacts.AddIfUnique(slots[j]);
-        }
-        foreach (GISSlot slot in interacts)
-        {
-            slot.OnInteract();
-        }
-    }
-    public static int CompareGISSlots(GISItem a, GISItem b)
+    public abstract int IndexOf(string name);
+    protected static SortingMethod _m;
+    public abstract void Sort(SortingMethod prefered_sort, bool reversed);
+    public static int CompareGISItems(GISItem a, GISItem b)
     {
         int i = 0;
         switch (_m)

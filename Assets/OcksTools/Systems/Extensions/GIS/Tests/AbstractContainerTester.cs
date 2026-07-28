@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AbstractContainerTester : MonoBehaviour
 {
-    private GISContainer pp;
+    private GISContainerSimple pp;
     private void Start()
     {
         StartCoroutine(sex());
@@ -13,9 +13,9 @@ public class AbstractContainerTester : MonoBehaviour
     {
         yield return new WaitUntil(() => { return SaveSystem.Instance.LoadedData; });
         yield return new WaitForFixedUpdate();
-        pp = GetComponent<GISContainer>();
+        pp = GetComponent<GISContainerSimple>();
         var g = GISLol.Instance;
-        if (pp.slots.Count < 1)
+        if (pp.items.Count < 1)
         {
             var x = new GISItem(g.Items[1].Name);
             x.Amount.SetValue(69);
@@ -28,9 +28,9 @@ public class AbstractContainerTester : MonoBehaviour
             pp.AbstractAdd(x);
         }
         string e = "";
-        foreach (var s in pp.slots)
+        foreach (var s in pp.items)
         {
-            e += GISLol.Instance.ItemDict[s.Held_Item.Name].Name + ": " + s.Held_Item.Amount + Environment.NewLine;
+            e += GISLol.Instance.ItemDict[s.Name].Name + ": " + s.Amount + Environment.NewLine;
         }
     }
 

@@ -9,7 +9,7 @@ public class GISSlot : MonoBehaviour
     [AutoCompressFieldWithName]
     public GISItem Held_Item;
     public GISDisplay Displayer;
-    public GISContainer Conte;
+    public GISContainerComplex Conte;
     private float DoubleClickTimer = -69f;
     private RectTransform erect;
     public OXEvent<GISSlot> OnInteractEvent = new OXEvent<GISSlot>();
@@ -29,15 +29,6 @@ public class GISSlot : MonoBehaviour
     private void Start()
     {
         erect = GetComponent<RectTransform>();
-        if (Conte != null)
-        {
-            switch (Name)
-            {
-                case "AbstractAdd":
-                    Conte.extraslots.Add(this);
-                    break;
-            }
-        }
     }
     public bool FailToClick()
     {
@@ -63,13 +54,6 @@ public class GISSlot : MonoBehaviour
     {
         switch (Name)
         {
-            case "AbstractAdd":
-                var mitem = Held_Item;
-                Held_Item.AddConnection(Conte);
-                Conte.AbstractAdd(mitem);
-                if (allowsave) SaveItemContainerData();
-                Held_Item = new GISItem();
-                break;
             default:
                 if (allowsave) SaveItemContainerData();
                 break;
@@ -389,7 +373,6 @@ public class GISSlot : MonoBehaviour
             foreach (var nerd in kvps)
             {
                 if (nerd.Value == Conte) continue;
-                if (nerd.Value.IsAbstract) continue;
                 var overflow = nerd.Value.Add(Held_Item);
                 Held_Item = overflow != null ? overflow : new GISItem();
                 nerd.Value.SaveTempContents();
@@ -415,10 +398,11 @@ public class GISSlot : MonoBehaviour
 
     }
 
-    public List<KeyValuePair<string, GISContainer>> GetCtrlConts()
+    public List<KeyValuePair<string, GISContainerComplex>> GetCtrlConts()
     {
         var g = GISLol.Instance;
-        var kvps = g.All_Containers.ToList().Clean();
+        var kvps = g.All_ComplexContainers.ToList().Clean();
+        Debug.Log($"ctrl click with {kvps.Count} found");
         kvps.Sort((x, y) => x.Value.CtrlClickPriority.CompareTo(y.Value.CtrlClickPriority));
         return kvps;
     }
@@ -796,7 +780,7 @@ public class GISSlot : MonoBehaviour
         }
     }
 
-    public void _SetConte(GISContainer e)
+    public void _SetConte(GISContainerComplex e)
     {
         Conte = e;
     }

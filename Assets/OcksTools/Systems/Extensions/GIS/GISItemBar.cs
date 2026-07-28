@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class GISItemBar : MonoBehaviour
 {
-    public GISContainer Container;
+    public GISContainerSimple Container;
     public GameObject DisplayPrefab;
     public CheckingMethod UpdateMethod = CheckingMethod.Event;
     private List<GISDisplay> shites = new List<GISDisplay>();
@@ -25,7 +25,7 @@ public class GISItemBar : MonoBehaviour
     public void UpdateDisplay()
     {
         var e = shites.Count;
-        var s = Container.slots.Count;
+        var s = Container.items.Count;
         var i = e - s;
         if (i > 0)
         {
@@ -48,7 +48,7 @@ public class GISItemBar : MonoBehaviour
 
         for (int iz = 0; iz < shites.Count; iz++)
         {
-            shites[iz].item.SetValue(Container.slots[iz].Held_Item);
+            shites[iz].item.SetValue(Container.items[iz]);
         }
     }
 

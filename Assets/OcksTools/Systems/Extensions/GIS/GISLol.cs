@@ -11,6 +11,7 @@ public class GISLol : SingleInstance<GISLol>
     public List<GISItem_Data> Items = new List<GISItem_Data>();
     public Dictionary<string, GISItem_Data> ItemDict = new Dictionary<string, GISItem_Data>();
     public Dictionary<string, GISContainer> All_Containers = new Dictionary<string, GISContainer>();
+    public Dictionary<string, GISContainerComplex> All_ComplexContainers = new Dictionary<string, GISContainerComplex>();
 
     private bool nono = false;
 
@@ -202,6 +203,11 @@ public class GISItem
     public bool IsEmpty()
     {
         return Name == "Empty";
+    }
+    public void SetEmpty()
+    {
+        Name = "Empty";
+        Amount = new(0);
     }
     private void setdefaultvals()
     {
