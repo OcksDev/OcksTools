@@ -1766,7 +1766,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4007473491773129349, guid: 32aa07c1d97c2ed4cac286e0d66c9ab0, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -35.650024
+      value: -35.649994
       objectReference: {fileID: 0}
     - target: {fileID: 4049151182853182029, guid: 32aa07c1d97c2ed4cac286e0d66c9ab0, type: 3}
       propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
@@ -3927,6 +3927,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2138398334}
   - component: {fileID: 2138398333}
+  - component: {fileID: 2138398335}
   m_Layer: 0
   m_Name: TestForConsole
   m_TagString: Untagged
@@ -3961,6 +3962,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2138398335
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2138398332}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56d322c5f10a60248bbcd005a5b2be40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Achievement
+  Achievements:
+  - Name: 
+    Description: 
+    Progress:
+      IsCompleted: 0
+      SaveLoadMe: 0
+  AchievementsDontSave: []
 --- !u!1001 &324499805638646590
 PrefabInstance:
   m_ObjectHideFlags: 0

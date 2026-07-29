@@ -32,6 +32,7 @@
     - Define now also properly checks against the unsaved achievements 
   - Save/load serialization size majorly reduced
     - It also no longer stores data about achievements that you haven't completed and dont have progess on
+  - Improved inspector readout
 - New Random Functions
   - Added Extension methods Lerp() and LerpT() for the following datatypes:
     - Float, Vector2, Vector3, Quaterion, OXTransform, OXTransformWithScale

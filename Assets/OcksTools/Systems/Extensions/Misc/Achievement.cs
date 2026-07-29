@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 
 public class Achievement : SingleInstance<Achievement>
 {
@@ -181,6 +182,7 @@ public class AchievementProgress
     public bool IsCompleted = false;
     public long? long_prog;
     public double? double_prog;
+    [UnityEngine.HideInInspector]
     public bool SaveLoadMe = true;
     public AchievementProgress(bool saveme)
     {
@@ -197,3 +199,10 @@ public class AchievementProgress
         return false;
     }
 }
+
+#if UNITY_EDITOR
+[CustomPropertyDrawer(typeof(AchievementProgress))]
+public class FuckassAchievementDrawer : AutoCompressedInspector
+{
+}
+#endif
