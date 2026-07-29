@@ -77,10 +77,10 @@ public class Achievement : SingleInstance<Achievement>
     }
     public void LoadAchievements(SaveProfile a)
     {
-        var Achievements = a.GetString("Achievements").StringToDictionary().ABToCD(x => x, x =>
+        var Achievements = a.GetString("Achievements").StringToDictionary().ABToCD((x, y) => x, (x, y) =>
         {
             AchievementData ad = new AchievementData();
-            ad.FromString(x);
+            ad.FromString(x, y);
             return ad;
         }
         );
@@ -112,23 +112,19 @@ public class AchievementData
     public AchievementProgress Progress = new AchievementProgress(true);
     public override string ToString()
     {
-        Dictionary<string, string> banans = new Dictionary<string, string>
-        {
-            { "N", Name },
-            { "C", Progress.IsCompleted.ToString() }
-        };
+        Dictionary<string, string> banans = new Dictionary<string, string>();
+        if (!Progress.IsCompleted) banans.Add("C", "");
         if (Progress.long_prog.HasValue) banans.Add("LP", Progress.long_prog.Value.ToString());
         if (Progress.double_prog.HasValue) banans.Add("DP", Progress.double_prog.Value.ToString());
         return banans.DictionaryToString("==", "++");
     }
-    public void FromString(string data)
+    public void FromString(string name, string data)
     {
         Dictionary<string, string> banans = data.StringToDictionary("==", "++");
-        if (!banans.ContainsKey("N")) return;
-        Name = banans["N"];
+        Name = name;
         Progress = new AchievementProgress(true)
         {
-            IsCompleted = bool.Parse(banans["C"])
+            IsCompleted = !banans.ContainsKey("C")
         };
         if (banans.ContainsKey("LP"))
             Progress.long_prog = long.Parse(banans["LP"]);
