@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 public class Achievement : SingleInstance<Achievement>
 {
@@ -24,6 +25,32 @@ public class Achievement : SingleInstance<Achievement>
     {
         var d = GetAchievementData(name);
         return d != null ? d.Progress.IsCompleted : false;
+    }
+    public static long GetProgressLong(string name)
+    {
+        var d = GetAchievementData(name);
+        return d != null ? (d.Progress.long_prog.HasValue ? d.Progress.long_prog.Value : 0) : 0;
+    }
+    public static double GetProgressDouble(string name)
+    {
+        var d = GetAchievementData(name);
+        return d != null ? (d.Progress.double_prog.HasValue ? d.Progress.double_prog.Value : 0) : 0;
+    }
+    public static void SetProgressLong(string name, long p)
+    {
+        var d = GetAchievementData(name);
+        if (d != null)
+        {
+            d.Progress.long_prog = p;
+        }
+    }
+    public static void SetProgressDouble(string name, double p)
+    {
+        var d = GetAchievementData(name);
+        if (d != null)
+        {
+            d.Progress.double_prog = p;
+        }
     }
     public static void Grant(string name, bool saved = true)
     {
@@ -73,11 +100,18 @@ public class Achievement : SingleInstance<Achievement>
     }
     public void SaveAchievements(SaveProfile a)
     {
-        a.SetString("Achievements", AchievementDict.DictionaryToString());
+        Dictionary<string, AchievementData> sex = new(AchievementDict);
+        var q = sex.ToList();
+        foreach (var item in q)
+        {
+            if (item.Value == null) sex.Remove(item.Key);
+            if (!item.Value.Progress.HasAnything()) sex.Remove(item.Key);
+        }
+        a.SetString("Achievements", sex.DictionaryToString("$", "#"));
     }
     public void LoadAchievements(SaveProfile a)
     {
-        var Achievements = a.GetString("Achievements").StringToDictionary().ABToCD((x, y) => x, (x, y) =>
+        var Achievements = a.GetString("Achievements").StringToDictionary("$", "#").ABToCD((x, y) => x, (x, y) =>
         {
             AchievementData ad = new AchievementData();
             ad.FromString(x, y);
@@ -114,22 +148,22 @@ public class AchievementData
     {
         Dictionary<string, string> banans = new Dictionary<string, string>();
         if (!Progress.IsCompleted) banans.Add("C", "");
-        if (Progress.long_prog.HasValue) banans.Add("LP", Progress.long_prog.Value.ToString());
-        if (Progress.double_prog.HasValue) banans.Add("DP", Progress.double_prog.Value.ToString());
-        return banans.DictionaryToString("==", "++");
+        if (Progress.long_prog.HasValue) banans.Add("L", Progress.long_prog.Value.ToString());
+        if (Progress.double_prog.HasValue) banans.Add("D", Progress.double_prog.Value.ToString());
+        return banans.DictionaryToString(";", "^");
     }
     public void FromString(string name, string data)
     {
-        Dictionary<string, string> banans = data.StringToDictionary("==", "++");
+        Dictionary<string, string> banans = data.StringToDictionary(";", "^");
         Name = name;
         Progress = new AchievementProgress(true)
         {
             IsCompleted = !banans.ContainsKey("C")
         };
-        if (banans.ContainsKey("LP"))
-            Progress.long_prog = long.Parse(banans["LP"]);
-        if (banans.ContainsKey("DP"))
-            Progress.double_prog = double.Parse(banans["DP"]);
+        if (banans.ContainsKey("L"))
+            Progress.long_prog = long.Parse(banans["L"]);
+        if (banans.ContainsKey("D"))
+            Progress.double_prog = double.Parse(banans["D"]);
     }
     public void ResetProgress()
     {
@@ -154,5 +188,12 @@ public class AchievementProgress
         long_prog = null;
         double_prog = null;
         SaveLoadMe = saveme;
+    }
+    public bool HasAnything()
+    {
+        if (IsCompleted) return true;
+        if (long_prog.HasValue && long_prog > 0) return true;
+        if (double_prog.HasValue && double_prog > 0) return true;
+        return false;
     }
 }

@@ -26,6 +26,12 @@
   - Fixed display bug with left-dagging items too fast after double-clicking
   - Removed ReturnItem() since it was redundant (use Add or AbstractAdd instead)
   - Debug console no longer yells are you for using "new" to make a monobehavior (at least the instances referencing the GIS)
+- Achievements Improvements
+  - Added Get/Set progress methods for achievements for both doubles and longs
+  - Revoke fixed to be able to remove non-saved markers
+    - Define now also properly checks against the unsaved achievements 
+  - Save/load serialization size majorly reduced
+    - It also no longer stores data about achievements that you haven't completed and dont have progess on
 - New Random Functions
   - Added Extension methods Lerp() and LerpT() for the following datatypes:
     - Float, Vector2, Vector3, Quaterion, OXTransform, OXTransformWithScale
@@ -37,8 +43,6 @@
   - Entity Skills and Effects update methods now pass a reference to their owner EntityOXS
   - Added OnSkillUse event for EntityOXS
   - Added OnRemove event for DecayingList and DecayingDictionary
-  - Achievement Revoke fixed to be able to remove non-saved markers
-    - Define now also properly checks against the unsaved achievements 
 ------------
 
 ------------
