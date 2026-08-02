@@ -8,7 +8,7 @@ public class GISLol : SingleInstance<GISLol>
     public GISItem Mouse_Held_Item;
     public GISDisplay Mouse_Displayer;
     public GameObject MouseFollower;
-    public List<GISItem_Data> Items = new List<GISItem_Data>();
+    public GISItemDefine ItemDefs;
     public Dictionary<string, GISItem_Data> ItemDict = new Dictionary<string, GISItem_Data>();
     public Dictionary<string, GISContainer> All_Containers = new Dictionary<string, GISContainer>();
     public Dictionary<string, GISContainerComplex> All_ComplexContainers = new Dictionary<string, GISContainerComplex>();
@@ -32,7 +32,7 @@ public class GISLol : SingleInstance<GISLol>
     public override void Awake2()
     {
         Mouse_Held_Item = new GISItem();
-        foreach (var item in Items)
+        foreach (var item in ItemDefs.Items)
         {
             ItemDict.Add(item.Name, item);
         }
@@ -60,7 +60,7 @@ public class GISLol : SingleInstance<GISLol>
             var file = new OXLanguageFileIndex();
             file.FileName = "Items";
             Dictionary<string, string> dat = new Dictionary<string, string>();
-            foreach (var item in Items)
+            foreach (var item in ItemDefs.Items)
             {
                 dat.Add(item.Name, item.GetLangData());
             }

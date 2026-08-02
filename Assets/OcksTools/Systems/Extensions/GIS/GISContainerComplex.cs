@@ -49,7 +49,7 @@ public class GISContainerComplex : GISContainer
         //this is some debug shit for creating a bunch of randomly generated new containers.
         foreach (var s in slots)
         {
-            s.Held_Item = new GISItem(GISLol.Instance.Items.RandomElement().Name);
+            s.Held_Item = new GISItem(GISLol.Instance.ItemDefs.Items.RandomElement().Name);
             s.Held_Item.Amount = new(69);
             s.Held_Item.Container = this;
             s.Held_Item.AnimOverride = 1;

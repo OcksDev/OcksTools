@@ -17,6 +17,7 @@
       - Optimized Simple Containers by way of not having the extra un-needed functionality of slots
       - Renamed to Simple Containers
     - Containers (with item slots and such) renamed to Complex Containers
+  - Added new Item Data Definition scriptable object, which allows you to more easily control what exists, and to hot swap them.
   - Added new Mass Ctrl Click Same functionality, an inherit behavior unlocked if Double Clicking and Ctrl Clicking are both enabled.
     - Works like in minecraft, applying the operation to all items of the same type.
   - Added new Mass Ctrl Click All functionality, an inherit behavior unlocked if Double Clicking, Ctrl Clicking, and Mass Shift Clicking are all enabled.

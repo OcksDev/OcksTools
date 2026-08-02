@@ -17,13 +17,13 @@ public class AbstractContainerTester : MonoBehaviour
         var g = GISLol.Instance;
         if (pp.items.Count < 1)
         {
-            var x = new GISItem(g.Items[1].Name);
+            var x = new GISItem(g.ItemDefs.Items[1].Name);
             x.Amount.SetValue(69);
             pp.AbstractAdd(x);
-            x = new GISItem(g.Items[4].Name);
+            x = new GISItem(g.ItemDefs.Items[4].Name);
             x.Amount.SetValue(690);
             pp.AbstractAdd(x);
-            x = new GISItem(g.Items[3].Name);
+            x = new GISItem(g.ItemDefs.Items[3].Name);
             x.Amount.SetValue(169);
             pp.AbstractAdd(x);
         }
