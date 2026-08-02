@@ -44,6 +44,7 @@
   - Added BoolToString and StringToBool conversions
   - Added StringToArray conversion
 - Misc 
+  - OXTransform set/mod/lerp functions that start with an OXTransform, and have a Transform second, now modify the OXTransform rather than the Transform
   - Entity Skills and Effects update methods now pass a reference to their owner EntityOXS
   - Added OnSkillUse event for EntityOXS
   - Added OnRemove event for DecayingList and DecayingDictionary
