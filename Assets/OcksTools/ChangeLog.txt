@@ -11,6 +11,8 @@
   - RandomFunctions.ShuffleList and RandomElement now support taking an OXRandom class
   - Weighted Averages now uses OXRandom
   - Room Generator now uses OXRandom
+- New OXFactory Class
+  - A generic factory class that allows you to easily get factory behavior for any class
 - GIS Improvements
   - Containers now are either "Complex" or "Simple"
     - Abstract Containers completely seperated and reworked from base containers
