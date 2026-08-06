@@ -9,7 +9,7 @@ public class OXTransform
 [System.Serializable]
 public class OXTransformWithScale : OXTransform
 {
-    public Vector3 Scale;
+    public Vector3 Scale = Vector3.one;
 }
 
 public static class _ApplyTransforms

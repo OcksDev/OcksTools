@@ -4,29 +4,18 @@ using System.Runtime.InteropServices;
 
 public class OXRandom : IOXFile_SaveLoadable<OXRandom>
 {
-    private ulong[] _state;
+    protected ulong[] _state;
     public OXRandom()
     {
         var q = new byte[8];
         new System.Random().NextBytes(q);
         SetState((ulong)BitConverter.ToInt64(q, 0));
     }
-    public OXRandom(long seed)
-    {
-        SetState((ulong)seed);
-    }
-    public OXRandom(ulong seed)
-    {
-        SetState(seed);
-    }
-    public OXRandom(string load)
-    {
-        FromString(load);
-    }
-    public OXRandom(ulong[] state)
-    {
-        _state = state;
-    }
+    public OXRandom(long seed) => SetState((ulong)seed);
+    public OXRandom(ulong seed) => SetState(seed);
+    public OXRandom(string load) => FromString(load);
+    public OXRandom(ulong[] state) => _state = state;
+    public OXRandom(OXRandom other) => _state = (ulong[])other._state.Clone();
     public void SetState(ulong seed)
     {
         _state = xorshift256_init(seed);
@@ -54,6 +43,14 @@ public class OXRandom : IOXFile_SaveLoadable<OXRandom>
         } while (r >= limit);
 
         return r % max;
+    }
+    public void Mutate(ulong x)
+    {
+        _state[0] ^= x;
+        _state[1] ^= splitmix64(_state[0]);
+        _state[2] ^= splitmix64(_state[1]);
+        _state[3] ^= splitmix64(_state[2]);
+        xoshiro256p(_state);
     }
 
     /// <returns>[min, max)</returns>
