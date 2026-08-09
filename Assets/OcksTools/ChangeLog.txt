@@ -13,6 +13,7 @@
   - Room Generator now uses OXRandom
 - New OXFactory Class
   - A generic factory class that allows you to easily get factory behavior for any class
+  - Supports different ways of defining factories/makers, should be good for basically any use case.
 - GIS Improvements
   - Containers now are either "Complex" or "Simple"
     - Abstract Containers completely seperated and reworked from base containers
@@ -49,6 +50,7 @@
   - Added OnSkillUse event for EntityOXS
   - Added OnRemove event for DecayingList and DecayingDictionary
   - All OXDefaultAnimations now use BetterList instead of List
+  - Sploinked AddOrUpdate() to just directly assign a value at a key rather than checking for contains first
 ------------
 
 ------------

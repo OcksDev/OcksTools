@@ -4,13 +4,8 @@ using System.Collections.Generic;
 public class OXFactory
 {
     private static Dictionary<Type, _OXFactory> AllFactories = new();
-    public static T Get<T>(string name) where T : class
-    {
-        if (!AllFactories.TryGetValue(typeof(T), out var factory))
-            throw new KeyNotFoundException($"No factory defined for '{typeof(T)}'");
-
-        return (T)factory.Create(name);
-    }
+    public static T Create<T>(string name) where T : class => (T)_GetFactory<T>().Create(name);
+    public static _CoolOXFactory<T> GetFactory<T>() where T : class => (_CoolOXFactory<T>)_GetFactory<T>();
     public static void Define<T, T2>(string name) where T : class where T2 : T, new()
     {
         if (!AllFactories.TryGetValue(typeof(T), out var factory))
@@ -28,6 +23,12 @@ public class OXFactory
             AllFactories.Add(typeof(T), factory);
         }
         ((_CoolOXFactory<T>)factory).Define<T2>(names);
+    }
+    private static _OXFactory _GetFactory<T>() where T : class
+    {
+        if (!AllFactories.TryGetValue(typeof(T), out var factory))
+            throw new KeyNotFoundException($"No factory defined for '{typeof(T)}'");
+        return factory;
     }
 }
 public abstract class _OXFactory

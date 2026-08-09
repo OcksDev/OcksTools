@@ -599,11 +599,7 @@ public static class OXFunctions
         }
         return tii;
     }
-    public static void AddOrUpdate<T, T2>(this Dictionary<T, T2> ti, T K, T2 V)
-    {
-        if (ti.ContainsKey(K)) ti[K] = V;
-        else ti.Add(K, V);
-    }
+    public static void AddOrUpdate<T, T2>(this Dictionary<T, T2> ti, T K, T2 V) => ti[K] = V;
     public static void AddOrUpdate<T, T2>(this Dictionary<T, T2> ti, KeyValuePair<T, T2> kv) => ti.AddOrUpdate(kv.Key, kv.Value);
     public static T2 GetOrDefine<T, T2>(this Dictionary<T, T2> ti, T inp, T2 def)
     {
