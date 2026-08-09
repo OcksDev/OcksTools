@@ -8,12 +8,12 @@ public class OXAnimationSet
     public List<OXAnimationPart> parts = new();
     public Reactable<bool> HasCompleted = new(false);
 
-    public static OXAnimationSet FromBasicWithHandoff(System.Func<List<GameObject>, IEnumerator> s)
+    public static OXAnimationSet FromBasicWithHandoff(System.Func<BetterList<GameObject>, IEnumerator> s)
     {
         return new OXAnimationPart(s);
     }
 
-    public static OXAnimationSet FromBasic(System.Func<List<GameObject>, IEnumerator> s, BetterList<GameObject> nerds)
+    public static OXAnimationSet FromBasic(System.Func<BetterList<GameObject>, IEnumerator> s, BetterList<GameObject> nerds)
     {
         return new OXAnimationPart(s, nerds);
     }
@@ -79,19 +79,19 @@ public class OXAnimationSet
 
 public class OXAnimationPart
 {
-    public System.Func<List<GameObject>, IEnumerator> _Func;
+    public System.Func<BetterList<GameObject>, IEnumerator> _Func;
     public List<GameObject> gameObjects = new();
     public OXAnimationPlayType _Playtype = OXAnimationPlayType.WaitUntilComplete;
     public float _Delay = 0f;
     public bool OutsideTargeting = false;
     public OXEvent OnPartStart = new();
     public OXEvent OnPartEnd = new();
-    public OXAnimationPart(System.Func<List<GameObject>, IEnumerator> f)
+    public OXAnimationPart(System.Func<BetterList<GameObject>, IEnumerator> f)
     {
         _Func = f;
         OutsideTargeting = true;
     }
-    public OXAnimationPart(System.Func<List<GameObject>, IEnumerator> f, BetterList<GameObject> gameObjects)
+    public OXAnimationPart(System.Func<BetterList<GameObject>, IEnumerator> f, BetterList<GameObject> gameObjects)
     {
         _Func = f;
         this.gameObjects = gameObjects;
@@ -106,7 +106,7 @@ public class OXAnimationPart
         _Delay = delay;
         return this;
     }
-    public OXAnimationPart GameObjects(List<GameObject> gameObjects)
+    public OXAnimationPart GameObjects(BetterList<GameObject> gameObjects)
     {
         this.gameObjects = gameObjects;
         return this;

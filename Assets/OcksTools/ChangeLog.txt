@@ -48,6 +48,7 @@
   - Entity Skills and Effects update methods now pass a reference to their owner EntityOXS
   - Added OnSkillUse event for EntityOXS
   - Added OnRemove event for DecayingList and DecayingDictionary
+  - All OXDefaultAnimations now use BetterList instead of List
 ------------
 
 ------------
