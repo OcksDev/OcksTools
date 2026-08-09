@@ -6,7 +6,10 @@ public class OXFactory
     private static Dictionary<Type, _OXFactory> AllFactories = new();
     public static T Get<T>(string name) where T : class
     {
-        return (T)AllFactories[typeof(T)].Create(name);
+        if (!AllFactories.TryGetValue(typeof(T), out var factory))
+            throw new KeyNotFoundException($"No factory defined for '{typeof(T)}'");
+
+        return (T)factory.Create(name);
     }
     public static void Define<T, T2>(string name) where T : class where T2 : T, new()
     {
@@ -34,20 +37,26 @@ public abstract class _OXFactory
 public class _CoolOXFactory<T> : _OXFactory where T : class
 {
     public Dictionary<string, _Maker<T>> Makers = new();
-    public override object Create(string name) => Makers[name].Create();
+    public override object Create(string name)
+    {
+        if (!Makers.TryGetValue(name, out var maker))
+            throw new KeyNotFoundException($"Nothing defined for \"{name}\" on factory '{typeof(T)}'");
+
+        return maker.Create();
+    }
     public void Define<T2>(string name) where T2 : T, new()
     {
-        Makers[name] = _MakerCache<T2>.Instance;
+        Makers[name] = _CoolFuckinSingleMakerPerTypeShit<T2>.Instance;
     }
     public void Define<T2>(params string[] names) where T2 : T, new()
     {
-        var maker = _MakerCache<T2>.Instance;
+        var maker = _CoolFuckinSingleMakerPerTypeShit<T2>.Instance;
         foreach (var n in names)
             Makers[n] = maker;
     }
 
     // one boxed _Maker<T,T2> per T2
-    private static class _MakerCache<T2> where T2 : T, new()
+    private static class _CoolFuckinSingleMakerPerTypeShit<T2> where T2 : T, new()
     {
         public static readonly _Maker<T> Instance = new _Maker<T, T2>();
     }
