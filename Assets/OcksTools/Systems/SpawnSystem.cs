@@ -75,7 +75,7 @@ public class SpawnSystem : SingleInstance<SpawnSystem>
     }
     public static void Kill(GameObject nerd)
     {
-        Tags.ClearAllOf(Tags.GetIDOf(nerd));
+        Tags.ClearAllOf(Tags.GetIDOf(nerd), nerd);
         Destroy(nerd);
     }
     public static void Kill(SpawnData data)

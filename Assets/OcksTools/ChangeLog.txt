@@ -44,10 +44,12 @@
     - the LerpT and SlerpT automatically apply .TimeStableLerp() to the percent, making it extra convient
   - Added BoolToString and StringToBool conversions
   - Added StringToArray conversion
-- Misc 
+  - Added some extention methods for Tags, just to make it slightly easier to use (I feel like I gotta rework TS)
+- Misc
   - OXTransform set/mod/lerp functions that start with an OXTransform, and have a Transform second, now modify the OXTransform rather than the Transform
   - Entity Skills and Effects update methods now pass a reference to their owner EntityOXS
   - Added OnSkillUse event for EntityOXS
+  - Fixed slight bug in SpawnSystem.Kill() where it would do bad when only passing in a Gameobject reference
   - Added OnRemove event for DecayingList and DecayingDictionary
   - All OXDefaultAnimations now use BetterList instead of List
   - Sploinked AddOrUpdate() to just directly assign a value at a key rather than checking for contains first

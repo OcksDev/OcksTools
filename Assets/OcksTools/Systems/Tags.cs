@@ -49,6 +49,10 @@ public class Tags : SingleInstance<Tags>
     {
         return (T)AllTags[tag][name];
     }
+    public static bool IsInTag(string name, string tag = "Exist")
+    {
+        return AllTags[tag].ContainsKey(name);
+    }
     public static void AddObjectToTag(object a, string namee, string tag)
     {
         if (!AllTags.ContainsKey(tag) || !AllTagsReverse.ContainsKey(tag)) CreateTag(tag);
@@ -74,6 +78,7 @@ public class Tags : SingleInstance<Tags>
         {
             if (AllTags[a.Key].ContainsKey(key)) AllTags[a.Key].Remove(key);
         }
+        if (gm == null) return;
         foreach (var a in AllTagsReverse)
         {
             if (AllTagsReverse[a.Key].ContainsKey(gm)) AllTagsReverse[a.Key].Remove(gm);
@@ -106,4 +111,17 @@ public class OXTagRefThing
         if (Name == "") Name = Object.name;
         Tags.SetRef(Name, Object);
     }
+}
+
+public static class TagsExtensions
+{
+    public static void AddTag(this GameObject go, string tag, string id)
+    {
+        Tags.AddObjectToTag(go, id, tag);
+    }
+    public static void AddTag(this Component go, string tag, string id)
+    {
+        Tags.AddObjectToTag(go, id, tag);
+    }
+    public static string GetOXID(this Component go) => Tags.GetIDOf(go);
 }
