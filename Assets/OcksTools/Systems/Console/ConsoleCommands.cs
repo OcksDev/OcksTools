@@ -396,10 +396,10 @@ public class ConsoleCommands : MonoBehaviour
     {
         string cum = "";
         int icum = 0;
-        foreach (var d in Tags.refs)
+        foreach (var d in GlobalRefs.refs)
         {
             cum += d.Key + ": " + d.Value.name;
-            if (icum < Tags.refs.Count - 1) cum += "<br>";
+            if (icum < GlobalRefs.refs.Count - 1) cum += "<br>";
             icum++;
         }
         Console.Log((

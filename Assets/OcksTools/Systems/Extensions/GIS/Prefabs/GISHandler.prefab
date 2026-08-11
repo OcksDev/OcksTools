@@ -60,7 +60,7 @@ MonoBehaviour:
     AnimOverride: 0
   Mouse_Displayer: {fileID: 0}
   MouseFollower: {fileID: 0}
-  Items: {fileID: 11400000, guid: 305b627367dcb7f40b223999b65d5915, type: 2}
+  ItemDefs: {fileID: 11400000, guid: 305b627367dcb7f40b223999b65d5915, type: 2}
   DragLock: 0
   SameFixedStop: 0
   SameFrameStop: 0

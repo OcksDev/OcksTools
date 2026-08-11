@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 [System.Serializable]
-public class Tags : SingleInstance<Tags>
+public class Tags
 {
     public static Dictionary<string, Dictionary<string, object>> AllTags = new Dictionary<string, Dictionary<string, object>>()
     {
@@ -12,33 +12,10 @@ public class Tags : SingleInstance<Tags>
     {
         {"Exist", new Dictionary<object, string>()}
     };
-    [HideInInspector]
-    public static Dictionary<string, GameObject> refs = new Dictionary<string, GameObject>();
-    public List<OXTagRefThing> RefedObjects = new List<OXTagRefThing>();
-
-
-    public override void Awake2()
-    {
-        foreach (var a in RefedObjects)
-        {
-            a.Zoink();
-        }
-    }
-
     public static void CreateTag(string tag)
     {
         AllTags.Add(tag, new Dictionary<string, object>());
         AllTagsReverse.Add(tag, new Dictionary<object, string>());
-    }
-
-    public static bool ObjectHasTag(object objecty, string tag)
-    {
-        return AllTagsReverse[tag].ContainsKey(objecty);
-    }
-
-    public static bool ObjectHasTag(string objecty, string tag)
-    {
-        return AllTags[tag].ContainsKey(objecty);
     }
     public static string GetIDOf(object a, string tag = "Exist")
     {
@@ -91,25 +68,9 @@ public class Tags : SingleInstance<Tags>
         if (!AllTagsReverse["Exist"].ContainsKey(boner)) AllTagsReverse["Exist"].Add(boner, id);
     }
 
-    public static void SetRef(string name, GameObject ob)
-    {
-        refs.AddOrUpdate(name, ob);
-    }
     public static string GenerateID()
     {
         return Guid.NewGuid().ToString();
-    }
-}
-
-[System.Serializable]
-public class OXTagRefThing
-{
-    public string Name;
-    public GameObject Object;
-    public void Zoink()
-    {
-        if (Name == "") Name = Object.name;
-        Tags.SetRef(Name, Object);
     }
 }
 

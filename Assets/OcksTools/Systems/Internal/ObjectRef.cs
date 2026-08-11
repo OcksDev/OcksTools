@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class TagRef : MonoBehaviour
+public class ObjectRef : MonoBehaviour
 {
     public string namer;
     public GameObject nerd;
@@ -8,6 +8,6 @@ public class TagRef : MonoBehaviour
     {
         if (nerd == null) nerd = gameObject;
         if (namer == "") namer = nerd.name;
-        Tags.SetRef(namer, nerd);
+        GlobalRefs.SetRef(namer, nerd);
     }
 }

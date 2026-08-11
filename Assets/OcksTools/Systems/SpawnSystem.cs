@@ -155,7 +155,7 @@ public class SpawnData
     }
     public SpawnData ParentFromRef(string refd)
     {
-        this._parent = Tags.refs[refd].transform;
+        this._parent = GlobalRefs.refs[refd].transform;
         _parentrefid = refd;
         return this;
     }
@@ -246,7 +246,7 @@ public class SpawnData
             }
             else
             {
-                _parent = Tags.refs[da["par_id"]].transform;
+                _parent = GlobalRefs.refs[da["par_id"]].transform;
             }
         }
     }
