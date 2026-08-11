@@ -8,6 +8,6 @@ public class ObjectRef : MonoBehaviour
     {
         if (nerd == null) nerd = gameObject;
         if (namer == "") namer = nerd.name;
-        GlobalRefs.SetRef(namer, nerd);
+        GlobalRefs.Set(namer, nerd);
     }
 }

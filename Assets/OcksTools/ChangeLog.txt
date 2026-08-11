@@ -14,7 +14,7 @@
   - Supports different ways of defining factories/makers, should be good for basically any use case.
 - New GlobalRefs class
   - Split the functionality off from Tags, now it has its own behavior
-  - Easy accessing through GlobalRefs.Instance["key"]
+  - Easy accessing through GlobalRefs.Instance["key"] or GlobalRefs.Get("key")
 - GIS Improvements
   - Containers now are either "Complex" or "Simple"
     - Abstract Containers completely seperated and reworked from base containers

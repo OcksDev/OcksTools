@@ -13,12 +13,12 @@ public class GlobalRefs : SingleInstance<GlobalRefs>
             a.Zoink();
         }
     }
-    public static void SetRef(string name, GameObject ob) => refs.AddOrUpdate(name, ob);
-    // 🐾 new indexer, nya~
+    public static void Set(string name, GameObject ob) => refs.AddOrUpdate(name, ob);
+    public static GameObject Get(string name) => refs[name];
     public GameObject this[string key]
     {
-        get => refs[key];
-        set => SetRef(key, value);
+        get => Get(key);
+        set => Set(key, value);
     }
 }
 
@@ -30,6 +30,6 @@ public class OXObjectRefThing
     public void Zoink()
     {
         if (Name == "") Name = Object.name;
-        GlobalRefs.SetRef(Name, Object);
+        GlobalRefs.Set(Name, Object);
     }
 }
