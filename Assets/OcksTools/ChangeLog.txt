@@ -4,7 +4,7 @@
 - New OXRandom class
   - Fully seedable and serializable (unlike System.Random and UnityEngine.Random)
   - Provides more functionality than base System.Random like being able to get random points in unit circles, spheres, squares, or cubes
-    - And unlike unity's default versions of these, oxrandom can be seeded!
+    - And unlike unity's default versions of these area functions, oxrandom can be seeded!
     - Both normal c# versions, using tuples, and unity versions, using Vector2s and Vector3s, exist for these sampling functions
   - Implements IOXFile_SaveLoadable
   - Old saved random classes have been moved to UnstableOrUnfinished

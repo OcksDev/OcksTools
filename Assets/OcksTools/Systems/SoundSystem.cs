@@ -153,7 +153,7 @@ public class SoundSystem : SingleInstance<SoundSystem>
             int x = Generations[sound.psource];
             x++;
             sound._generation = Generations[sound.psource] = x;
-            CurrentPlays.AddIfUnique(sound._channel, new());
+            CurrentPlays.AddIfUnique(sound._channel, () => new());
             CurrentPlays[sound._channel].Add(sound);
         }
     }
