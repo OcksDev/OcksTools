@@ -4,11 +4,26 @@ using UnityEngine;
 [System.Serializable]
 public class Tags
 {
-    public static Dictionary<string, Dictionary<string, object>> AllTags = new Dictionary<string, Dictionary<string, object>>()
+    public static Dictionary<string, OXTag> BigTags = new()
+    {
+        {"Exist", new OXTag()}
+    };
+    public static OXTag Tag(string tag)
+    {
+        BigTags.AddIfUnique(tag, new OXTag());
+        return BigTags[tag];
+    }
+    public static OXTag ID => BigTags["Exist"];
+
+
+
+
+    // old system
+    public static Dictionary<string, Dictionary<string, object>> AllTags = new()
     {
         {"Exist", new Dictionary<string, object>()}
     };
-    public static Dictionary<string, Dictionary<object, string>> AllTagsReverse = new Dictionary<string, Dictionary<object, string>>()
+    public static Dictionary<string, Dictionary<object, string>> AllTagsReverse = new()
     {
         {"Exist", new Dictionary<object, string>()}
     };
@@ -85,4 +100,10 @@ public static class TagsExtensions
         Tags.AddObjectToTag(go, id, tag);
     }
     public static string GetOXID(this Component go) => Tags.GetIDOf(go);
+}
+
+public class OXTag
+{
+    public Dictionary<string, object> StToOb = new();
+    public Dictionary<object, string> ObToSt = new();
 }
