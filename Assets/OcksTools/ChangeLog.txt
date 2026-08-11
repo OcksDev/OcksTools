@@ -12,9 +12,14 @@
 - New OXFactory Class
   - A generic factory class that allows you to easily get factory behavior for any class
   - Supports different ways of defining factories/makers, should be good for basically any use case.
-- New GlobalRefs class
-  - Split the functionality off from Tags, now it has its own behavior
-  - Easy accessing through GlobalRefs.Instance["key"] or GlobalRefs.Get("key")
+- Massive Tags Rework
+  - Completely changed how the internal structure is dealt with, every method call to this class has been changed.
+  - Much better ID support, makes it much more clear when you are dealing with a tag or an ID.
+  - Slightly optimized ClearAllOf()
+  - New GlobalRefs class
+    - Split the functionality off from Tags, now it has its own behavior
+    - Easy accessing through GlobalRefs.Instance["key"] or GlobalRefs.Get("key")
+  - Tags is no longer a singleton, instead it is now a static class with static methods
 - GIS Improvements
   - Containers now are either "Complex" or "Simple"
     - Abstract Containers completely seperated and reworked from base containers
@@ -45,7 +50,6 @@
     - the LerpT and SlerpT automatically apply .TimeStableLerp() to the percent, making it extra convient
   - Added BoolToString and StringToBool conversions
   - Added StringToArray conversion
-  - Added some extention methods for Tags, just to make it slightly easier to use (I feel like I gotta rework TS)
 - Misc
   - OXTransform set/mod/lerp functions that start with an OXTransform, and have a Transform second, now modify the OXTransform rather than the Transform
   - Entity Skills and Effects update methods now pass a reference to their owner EntityOXS

@@ -48,8 +48,8 @@ public class SpawnSystem : SingleInstance<SpawnSystem>
         }
         if (!sp._donttag)
         {
-            Tags.AddObjectToTag(a, sp._IDValue, "Exist");
-            Tags.AddObjectToTag(sp, sp._IDValue, "Spawns");
+            Tags.From("Exist").Add(a, sp._IDValue);
+            Tags.From("Spawns").Add(sp, sp._IDValue);
         }
         if (sp._spawnfunc != "") SpawnFunctions[sp._spawnfunc](sp);
         switch (sp._share)
@@ -75,7 +75,7 @@ public class SpawnSystem : SingleInstance<SpawnSystem>
     }
     public static void Kill(GameObject nerd)
     {
-        Tags.ClearAllOf(Tags.GetIDOf(nerd), nerd);
+        Tags.ClearAllOf(Tags.ID.Get(nerd), nerd);
         Destroy(nerd);
     }
     public static void Kill(SpawnData data)
@@ -85,7 +85,7 @@ public class SpawnSystem : SingleInstance<SpawnSystem>
     }
     public static SpawnData GetSpawnData(GameObject nerd)
     {
-        return Tags.GetFromTag<SpawnData>(Tags.GetIDOf(nerd), "Spawns");
+        return Tags.From("Spawns").Get<SpawnData>(Tags.ID.Get(nerd));
     }
 }
 
@@ -150,7 +150,7 @@ public class SpawnData
     }
     public SpawnData Parent(string id)
     {
-        this._parent = Tags.GetFromTag<GameObject>(id).transform;
+        this._parent = Tags.ID.Get<GameObject>(id).transform;
         return this;
     }
     public SpawnData ParentFromRef(string refd)
@@ -211,7 +211,7 @@ public class SpawnData
         {
             if (_parentrefid == "")
             {
-                da.Add("par", Tags.GetIDOf(_parent.gameObject));
+                da.Add("par", Tags.ID.Get(_parent.gameObject));
             }
             else
             {
@@ -242,7 +242,7 @@ public class SpawnData
         {
             if (!da.ContainsKey("par_id"))
             {
-                _parent = Tags.GetFromTag<GameObject>(da["par"]).transform;
+                _parent = Tags.ID.Get<GameObject>(da["par"]).transform;
             }
             else
             {

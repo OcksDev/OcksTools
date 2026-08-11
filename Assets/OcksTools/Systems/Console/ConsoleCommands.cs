@@ -195,7 +195,7 @@ public class ConsoleCommands : MonoBehaviour
     public static void Test_read(OXCommandData r)
     {
         Console.Log(r.com_caps[2]);
-        Console.Log(Tags.GetFromTag<GameObject>(r.com_caps[2]).ToString());
+        Console.Log(Tags.ID.Get<GameObject>(r.com_caps[2]).ToString());
     }
     public static void Test_oxrand()
     {

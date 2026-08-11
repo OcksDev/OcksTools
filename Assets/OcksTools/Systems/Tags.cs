@@ -6,81 +6,25 @@ public class Tags
 {
     public static Dictionary<string, OXTag> BigTags = new()
     {
-        {"Exist", new OXTag()}
+        {"ID", new OXTag()}
     };
-    public static OXTag Tag(string tag)
+    public static OXTag From(string tag)
     {
         BigTags.AddIfUnique(tag, new OXTag());
         return BigTags[tag];
     }
-    public static OXTag ID => BigTags["Exist"];
-
-
-
-
-    // old system
-    public static Dictionary<string, Dictionary<string, object>> AllTags = new()
-    {
-        {"Exist", new Dictionary<string, object>()}
-    };
-    public static Dictionary<string, Dictionary<object, string>> AllTagsReverse = new()
-    {
-        {"Exist", new Dictionary<object, string>()}
-    };
-    public static void CreateTag(string tag)
-    {
-        AllTags.Add(tag, new Dictionary<string, object>());
-        AllTagsReverse.Add(tag, new Dictionary<object, string>());
-    }
-    public static string GetIDOf(object a, string tag = "Exist")
-    {
-        var aa = AllTagsReverse[tag];
-        return aa.ContainsKey(a) ? aa[a] : "";
-    }
-    public static T GetFromTag<T>(string name, string tag = "Exist")
-    {
-        return (T)AllTags[tag][name];
-    }
-    public static bool IsInTag(string name, string tag = "Exist")
-    {
-        return AllTags[tag].ContainsKey(name);
-    }
-    public static void AddObjectToTag(object a, string namee, string tag)
-    {
-        if (!AllTags.ContainsKey(tag) || !AllTagsReverse.ContainsKey(tag)) CreateTag(tag);
-        AllTags[tag].Add(namee, a);
-        AllTagsReverse[tag].Add(a, namee);
-    }
-
+    public static OXTag ID => BigTags["ID"];
     public static void ClearAllOf(string key)
     {
         //should go and clear any instance of the ID found in any tag
-        GameObject gm = null;
-
-        if (AllTags["Exist"].ContainsKey(key))
-        {
-            gm = (GameObject)AllTags["Exist"][key];
-        }
+        object gm = null;
+        if (ID.Has(key)) gm = ID.Get<object>(key);
         ClearAllOf(key, gm);
     }
 
-    public static void ClearAllOf(string key, GameObject gm)
+    public static void ClearAllOf(string key, object gm)
     {
-        foreach (var a in AllTags)
-        {
-            if (AllTags[a.Key].ContainsKey(key)) AllTags[a.Key].Remove(key);
-        }
-        if (gm == null) return;
-        foreach (var a in AllTagsReverse)
-        {
-            if (AllTagsReverse[a.Key].ContainsKey(gm)) AllTagsReverse[a.Key].Remove(gm);
-        }
-
-    }
-    public static void DefineTagReference(GameObject boner, string id)
-    {
-        if (!AllTags["Exist"].ContainsKey(id)) AllTags["Exist"].Add(id, boner);
-        if (!AllTagsReverse["Exist"].ContainsKey(boner)) AllTagsReverse["Exist"].Add(boner, id);
+        foreach (var a in BigTags) { a.Value.ClearAllOf(key, gm); }
     }
 
     public static string GenerateID()
@@ -93,17 +37,42 @@ public static class TagsExtensions
 {
     public static void AddTag(this GameObject go, string tag, string id)
     {
-        Tags.AddObjectToTag(go, id, tag);
+        Tags.From(tag).Add(go, id);
     }
     public static void AddTag(this Component go, string tag, string id)
     {
-        Tags.AddObjectToTag(go, id, tag);
+        Tags.From(tag).Add(go, id);
     }
-    public static string GetOXID(this Component go) => Tags.GetIDOf(go);
+    public static string GetOXID(this Component go) => Tags.ID.Get(go);
 }
 
 public class OXTag
 {
     public Dictionary<string, object> StToOb = new();
     public Dictionary<object, string> ObToSt = new();
+
+    public T Get<T>(string name)
+    {
+        return (T)StToOb[name];
+    }
+
+    public string Get(object a)
+    {
+        return ObToSt[a];
+    }
+    public bool Has(string name)
+    {
+        return StToOb.ContainsKey(name);
+    }
+    public void Add(object a, string namee)
+    {
+        StToOb.Add(namee, a);
+        ObToSt.Add(a, namee);
+    }
+    public void ClearAllOf(string key, object gm)
+    {
+        StToOb.Remove(key);
+        if (gm == null) return;
+        ObToSt.Remove(gm);
+    }
 }

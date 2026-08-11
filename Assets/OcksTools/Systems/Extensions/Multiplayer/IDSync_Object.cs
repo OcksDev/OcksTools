@@ -9,7 +9,7 @@ public class IDSync_Object : NetworkBehaviour
     {
         if (IsHost)
         {
-            var id = Tags.GetIDOf(gameObject);
+            var id = Tags.ID.Get(gameObject);
             Server.Send().SendObjectID(NetworkObjectId, id);
             MyID = id;
         }
