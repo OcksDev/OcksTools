@@ -8,11 +8,11 @@ public class ConsoleCommands : MonoBehaviour
 {
     public static void Test_tag()
     {
-        Tags.AllTags["Exist"].Add("penis", ConsoleLol.Instance.gameObject);
+        Tags.ID.Add(ConsoleLol.Instance.gameObject, "penis");
 
         Console.Log((
 
-            "test result: " + ((GameObject)Tags.AllTags["Exist"]["penis"]).name
+            "test result: " + (Tags.ID.Get<GameObject>("penis")).name
 
         ), "#bdbdbdff");
         Tags.ClearAllOf("penis");
@@ -261,7 +261,7 @@ public class ConsoleCommands : MonoBehaviour
 
     public static void Test_listall()
     {
-        foreach (var d in Tags.AllTags["Exist"])
+        foreach (var d in Tags.ID.StringToObject)
             Console.Log((
 
                 "test result: " + d
@@ -410,8 +410,7 @@ public class ConsoleCommands : MonoBehaviour
     }
     public static void Test_destroy()
     {
-        var a = new Dictionary<string, object>(Tags.AllTags["Exist"]);
-        foreach (var b in a)
+        foreach (var b in Tags.ID.StringToObject)
         {
             var penis = (GameObject)b.Value;
             var d = SpawnSystem.GetSpawnData(penis).GetData();

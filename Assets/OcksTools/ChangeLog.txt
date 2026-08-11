@@ -8,18 +8,20 @@
     - Both normal c# versions, using tuples, and unity versions, using Vector2s and Vector3s, exist for these sampling functions
   - Implements IOXFile_SaveLoadable
   - Old saved random classes have been moved to UnstableOrUnfinished
-  - Impemented or added varients for this across many systems.
+  - Implemented or added variants for this across many systems.
 - New OXFactory Class
   - A generic factory class that allows you to easily get factory behavior for any class
   - Supports different ways of defining factories/makers, should be good for basically any use case.
 - Massive Tags Rework
   - Completely changed how the internal structure is dealt with, every method call to this class has been changed.
   - Much better ID support, makes it much more clear when you are dealing with a tag or an ID.
+    - Also slightly optimized the internal ID storage
   - Slightly optimized ClearAllOf()
   - New GlobalRefs class
     - Split the functionality off from Tags, now it has its own behavior
     - Easy accessing through GlobalRefs.Instance["key"] or GlobalRefs.Get("key")
   - Tags is no longer a singleton, instead it is now a static class with static methods
+  - Much less confusing to use now.
 - GIS Improvements
   - Containers now are either "Complex" or "Simple"
     - Abstract Containers completely seperated and reworked from base containers
@@ -50,6 +52,8 @@
     - the LerpT and SlerpT automatically apply .TimeStableLerp() to the percent, making it extra convient
   - Added BoolToString and StringToBool conversions
   - Added StringToArray conversion
+  - Added variant of AddIfUnique() on Dictionary that takes in a Func<T> to generate the value if the key doesn't exist
+  - Sploinked AddOrUpdate() to just directly assign a value at a key rather than checking for contains first
 - Misc
   - OXTransform set/mod/lerp functions that start with an OXTransform, and have a Transform second, now modify the OXTransform rather than the Transform
   - Entity Skills and Effects update methods now pass a reference to their owner EntityOXS
@@ -57,7 +61,6 @@
   - Fixed slight bug in SpawnSystem.Kill() where it would do bad when only passing in a Gameobject reference
   - Added OnRemove event for DecayingList and DecayingDictionary
   - All OXDefaultAnimations now use BetterList instead of List
-  - Sploinked AddOrUpdate() to just directly assign a value at a key rather than checking for contains first
 ------------
 
 ------------

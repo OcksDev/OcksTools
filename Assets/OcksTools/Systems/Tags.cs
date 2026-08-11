@@ -4,16 +4,18 @@ using UnityEngine;
 [System.Serializable]
 public class Tags
 {
-    public static Dictionary<string, OXTag> BigTags = new()
-    {
-        {"ID", new OXTag()}
-    };
+    public static Dictionary<string, OXTag> BigTags = new();
     public static OXTag From(string tag)
     {
-        BigTags.AddIfUnique(tag, new OXTag());
+        BigTags.AddIfUnique(tag, () => new OXTag());
         return BigTags[tag];
     }
-    public static OXTag ID => BigTags["ID"];
+    private static OXTag ids = new OXTag();
+    public static OXTag ID
+    {
+        get => ids;
+        private set { }
+    }
     public static void ClearAllOf(string key)
     {
         //should go and clear any instance of the ID found in any tag
@@ -48,31 +50,31 @@ public static class TagsExtensions
 
 public class OXTag
 {
-    public Dictionary<string, object> StToOb = new();
-    public Dictionary<object, string> ObToSt = new();
+    public Dictionary<string, object> StringToObject = new();
+    public Dictionary<object, string> ObjectToString = new();
 
     public T Get<T>(string name)
     {
-        return (T)StToOb[name];
+        return (T)StringToObject[name];
     }
 
     public string Get(object a)
     {
-        return ObToSt[a];
+        return ObjectToString[a];
     }
     public bool Has(string name)
     {
-        return StToOb.ContainsKey(name);
+        return StringToObject.ContainsKey(name);
     }
     public void Add(object a, string namee)
     {
-        StToOb.Add(namee, a);
-        ObToSt.Add(a, namee);
+        StringToObject.Add(namee, a);
+        ObjectToString.Add(a, namee);
     }
     public void ClearAllOf(string key, object gm)
     {
-        StToOb.Remove(key);
+        StringToObject.Remove(key);
         if (gm == null) return;
-        ObToSt.Remove(gm);
+        ObjectToString.Remove(gm);
     }
 }

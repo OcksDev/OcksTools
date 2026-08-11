@@ -623,6 +623,11 @@ public static class OXFunctions
         if (!ti.ContainsKey(t)) ti.Add(t, v);
         return ti;
     }
+    public static Dictionary<T, T2> AddIfUnique<T, T2>(this Dictionary<T, T2> ti, T t, System.Func<T2> v)
+    {
+        if (!ti.ContainsKey(t)) ti.Add(t, v());
+        return ti;
+    }
     public static List<T> CombineLists<T>(this List<T> ti, List<T> tee)
     {
         var tea = new List<T>(ti);

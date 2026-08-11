@@ -48,7 +48,7 @@ public class SpawnSystem : SingleInstance<SpawnSystem>
         }
         if (!sp._donttag)
         {
-            Tags.From("Exist").Add(a, sp._IDValue);
+            Tags.ID.Add(a, sp._IDValue);
             Tags.From("Spawns").Add(sp, sp._IDValue);
         }
         if (sp._spawnfunc != "") SpawnFunctions[sp._spawnfunc](sp);
