@@ -1,5 +1,11 @@
 
 ------------
+   v1.2.6
+- It Begins...
+------------
+
+
+------------
    v1.2.5
 - New OXRandom class
   - Fully seedable and serializable (unlike System.Random and UnityEngine.Random)
@@ -63,7 +69,7 @@
   - Added paramater to easily change the max amount of connections
   - Pickthingymabob renamed to MultiplayerUIStuff
   - RelayMoment renamed to RelayServerManager
-  - All real functionality consolidated to RelayServerManager, instead of being randomly split into 
+  - All real functionality consolidated to RelayServerManager, instead of being randomly split across two classes
   - Public/private has been made much more clear, now you only have access to what you can actually use
   - Interfacing has been simplified, and methods have been renamed to be more clear
   - Editor inspector of the RelayServerManager has been improved
