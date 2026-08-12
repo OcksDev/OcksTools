@@ -5,13 +5,18 @@ using UnityEngine;
 public class GISLol : SingleInstance<GISLol>
 {
     public bool UseLanguageFile = true;
-    public GISItem Mouse_Held_Item;
+    public bool UseMouseFollower = true;
+    [NaughtyAttributes.ShowIf("UseMouseFollower")]
+    public GISItem Mouse_Held_Item = new GISItem();
+    [NaughtyAttributes.ShowIf("UseMouseFollower")]
     public GISDisplay Mouse_Displayer;
+    [NaughtyAttributes.ShowIf("UseMouseFollower")]
     public GameObject MouseFollower;
     public GISItemDefine ItemDefs;
-    public Dictionary<string, GISItem_Data> ItemDict = new Dictionary<string, GISItem_Data>();
-    public Dictionary<string, GISContainer> All_Containers = new Dictionary<string, GISContainer>();
-    public Dictionary<string, GISContainerComplex> All_ComplexContainers = new Dictionary<string, GISContainerComplex>();
+    public Dictionary<string, GISItem_Data> ItemDict = new();
+    public Dictionary<string, GISContainer> All_Containers = new();
+    public Dictionary<string, GISContainerComplex> All_ComplexContainers = new();
+    public Dictionary<string, uint> ContainerMultiples = new();
 
     private bool nono = false;
 
@@ -31,7 +36,6 @@ public class GISLol : SingleInstance<GISLol>
 
     public override void Awake2()
     {
-        Mouse_Held_Item = new GISItem();
         foreach (var item in ItemDefs.Items)
         {
             ItemDict.Add(item.Name, item);
@@ -52,7 +56,7 @@ public class GISLol : SingleInstance<GISLol>
 
     private void Start()
     {
-        MouseFollower.SetActive(true);
+        if (UseMouseFollower) MouseFollower.SetActive(true);
 
         if (UseLanguageFile)
         {
@@ -101,10 +105,13 @@ public class GISLol : SingleInstance<GISLol>
     private void Update()
     {
         if (SameFrameStop > 0) SameFrameStop--;
-        Mouse_Displayer.item.SetValue(Mouse_Held_Item);
-        var za = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        za.z = 0;
-        MouseFollower.transform.position = za;
+        if (UseMouseFollower)
+        {
+            Mouse_Displayer.item.SetValue(Mouse_Held_Item);
+            var za = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            za.z = 0;
+            MouseFollower.transform.position = za;
+        }
 #if UNITY_EDITOR
         if (InputManager.IsKeyDown("reload"))
         {

@@ -211,7 +211,7 @@ public class GISContainerSimple : GISContainer
 
     public override void SaveContents(SaveProfile dict)
     {
-        if (SaveLoadData)
+        if (SaveLoadData && !CanBeMultiple)
         {
             GISLol.Instance.LoadTempForAll();
             dict.SetList(GetName(), items);
@@ -220,7 +220,7 @@ public class GISContainerSimple : GISContainer
 
     public override void LoadContents(SaveProfile dict)
     {
-        if (SaveLoadData)
+        if (SaveLoadData && !CanBeMultiple)
         {
             items = dict.GetList(GetName(), new List<GISItem>());
             foreach (GISItem it in items)

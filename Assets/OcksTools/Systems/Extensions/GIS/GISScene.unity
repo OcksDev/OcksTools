@@ -479,6 +479,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GISContainerComplex
   Name: RandomExtraContainer
+  CanBeMultiple: 1
   SaveLoadData: 0
   LoadedData: 0
   saved_items: []
@@ -1304,6 +1305,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GISContainerComplex
   Name: RandomThingIDK
+  CanBeMultiple: 1
   SaveLoadData: 0
   LoadedData: 0
   saved_items: []
@@ -3037,6 +3039,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GISContainerComplex
   Name: Inventory
+  CanBeMultiple: 0
   SaveLoadData: 1
   LoadedData: 0
   saved_items: []
@@ -3711,6 +3714,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GISContainerSimple
   Name: AbstractThing
+  CanBeMultiple: 1
   SaveLoadData: 1
   LoadedData: 0
   saved_items: []
@@ -4023,6 +4027,10 @@ PrefabInstance:
       objectReference: {fileID: 87245306}
     - target: {fileID: 324499805810810541, guid: e0c709a7a21216947a721dc882abbf55, type: 3}
       propertyPath: UseLanguageFile
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 324499805810810541, guid: e0c709a7a21216947a721dc882abbf55, type: 3}
+      propertyPath: UseMouseFollower
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 324499805810810541, guid: e0c709a7a21216947a721dc882abbf55, type: 3}

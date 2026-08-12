@@ -5,6 +5,8 @@ using UnityEngine;
 public abstract class GISContainer : MonoBehaviour
 {
     public string Name = "RandomThingIDK";
+    public bool CanBeMultiple = false;
+    [NaughtyAttributes.HideIf("CanBeMultiple")]
     public bool SaveLoadData = true;
     [HideInInspector]
     public virtual bool IsAbstract => false;
@@ -25,10 +27,17 @@ public abstract class GISContainer : MonoBehaviour
 
     private void Start()
     {
+        if (CanBeMultiple)
+        {
+            var p = GISLol.Instance.ContainerMultiples.GetOrDefine(Name, 0u);
+            GISLol.Instance.ContainerMultiples[Name]++;
+            Name = Name + p;
+        }
+
         GISLol.Instance.All_Containers.Add(Name, this);
         StartCode();
 
-        if (SaveLoadData)
+        if (SaveLoadData && !CanBeMultiple)
         {
             StartCoroutine(WaitForSaveSystem());
         }
@@ -62,7 +71,7 @@ public abstract class GISContainer : MonoBehaviour
 
     private void Awake()
     {
-        if (SaveLoadData)
+        if (SaveLoadData && !CanBeMultiple)
         {
             SaveSystem.SaveAllData.Append($"{GetName()}_save", SaveContents);
         }

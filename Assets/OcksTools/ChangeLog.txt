@@ -28,6 +28,8 @@
       - Optimized Simple Containers by way of not having the extra un-needed functionality of slots
       - Renamed to Simple Containers
     - Containers (with item slots and such) renamed to Complex Containers
+  - Containers can now be marked as "CanBeMultiple" which disables save/loading, but lets it get duplicated
+  - GISLol now can toggle the usage of the Mouse Follower item (default is turned on)
   - Added new Item Data Definition scriptable object, which allows you to more easily control what exists, and to hot swap them.
   - Added new Mass Ctrl Click Same functionality, an inherit behavior unlocked if Double Clicking and Ctrl Clicking are both enabled.
     - Works like in minecraft, applying the operation to all items of the same type.

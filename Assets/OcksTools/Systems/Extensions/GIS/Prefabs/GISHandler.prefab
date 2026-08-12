@@ -51,6 +51,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   UseLanguageFile: 1
+  UseMouseFollower: 1
   Mouse_Held_Item:
     Name: Empty
     Amount:

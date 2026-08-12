@@ -265,7 +265,7 @@ public class GISContainerComplex : GISContainer
 
     public override void SaveContents(SaveProfile dict)
     {
-        if (SaveLoadData)
+        if (SaveLoadData && !CanBeMultiple)
         {
             GISLol.Instance.LoadTempForAll();
             dict.SetList(GetName(), slots.AToB((x) => x.Held_Item));
@@ -274,7 +274,7 @@ public class GISContainerComplex : GISContainer
 
     public override void LoadContents(SaveProfile dict)
     {
-        if (SaveLoadData)
+        if (SaveLoadData && !CanBeMultiple)
         {
             var gg = dict.GetList(GetName(), new List<GISItem>());
             if (gg.Count > 0)
