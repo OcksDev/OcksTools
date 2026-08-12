@@ -15,7 +15,6 @@ public class MultiplayerWindow : EditorWindow
 
     private void OnGUI()
     {
-        var g = GameObject.Find("NetworkManager");
         GUILayout.Space(15);
         /*
         var f22 = new string[3] { "Setup", "Dialog", "Chat" };
@@ -28,16 +27,16 @@ public class MultiplayerWindow : EditorWindow
         if (GUILayout.Button(new GUIContent("Host", "Hosts a match, and generates a new code")))
         {
             seeking = true;
-            _ = g.GetComponent<PickThingymabob>().MakeGame();
+            _ = RelayServerManager.Instance.CreateGame();
         }
         if (GUILayout.Button(new GUIContent("Join", "Enter a code and join a hosted match")))
         {
-            g.GetComponent<PickThingymabob>().GoinGameE2(s2);
+            RelayServerManager.Instance.JoinGame(s2);
         }
         GUILayout.EndHorizontal();
         if (seeking)
         {
-            var g2 = g.GetComponent<RelayMoment>().Join_Code;
+            var g2 = RelayServerManager.Instance.Join_Code;
             if (g2 != "" && g2 != s2)
             {
                 s2 = g2;

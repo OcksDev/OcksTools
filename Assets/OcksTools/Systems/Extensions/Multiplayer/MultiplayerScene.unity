@@ -1452,7 +1452,8 @@ PrefabInstance:
       propertyPath: JoinCodeTextDick
       value: 
       objectReference: {fileID: 1371424980}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7616261651428151912, guid: a3430a4bc775e7a4895e94adf7005cac, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

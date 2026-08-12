@@ -56,6 +56,17 @@
   - Added StringToArray conversion
   - Added variant of AddIfUnique() on Dictionary that takes in a Func<T> to generate the value if the key doesn't exist
   - Sploinked AddOrUpdate() to just directly assign a value at a key rather than checking for contains first
+- Multiplayer Improvements
+  - Added Client Join Checking, so you can easily set up denial of clients
+  - Added KickConnection() method to easily remove people
+  - Added BanConnection() method to easily remove people and keep them removed
+  - Pickthingymabob renamed to MultiplayerUIStuff
+  - RelayMoment renamed to RelayServerManager
+  - All real functionality consolidated to RelayServerManager, instead of being randomly split into 
+  - Public/private has been made much more clear, now you only have access to what you can actually use
+  - Interfacing has been simplified, and methods have been renamed to be more clear
+  - Editor inspector of the RelayServerManager has been improved
+  - Fixed warnings in the console about creating clients that have already been created
 - Misc
   - OXTransform set/mod/lerp functions that start with an OXTransform, and have a Transform second, now modify the OXTransform rather than the Transform
   - Entity Skills and Effects update methods now pass a reference to their owner EntityOXS

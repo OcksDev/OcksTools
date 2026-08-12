@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7616261651428151893}
   - component: {fileID: 7616261651428151915}
   - component: {fileID: 5856764855215001397}
-  - component: {fileID: 7616261651428151912}
+  - component: {fileID: 4963295816126523711}
   - component: {fileID: 6452671135146635083}
   - component: {fileID: 8946709181452498364}
   - component: {fileID: 7616261651428151914}
@@ -29,13 +29,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7616261651428151895}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7616261651428151915
 MonoBehaviour:
@@ -61,6 +61,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 593a2fe42fa9d37498c96f9a383b6521, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  NetworkManagerExpanded: 0
   NetworkConfig:
     ProtocolVersion: 0
     NetworkTransport: {fileID: 7616261651428151914}
@@ -81,12 +82,16 @@ MonoBehaviour:
     NetworkIdRecycleDelay: 120
     RpcHashSize: 0
     LoadSceneTimeOut: 120
-    SpawnTimeout: 1
+    SpawnTimeout: 10
     EnableNetworkLogs: 1
+    NetworkTopology: 0
+    UseCMBService: 0
+    AutoSpawnPlayerPrefabClientSide: 1
+    NetworkProfilingMetrics: 1
     OldPrefabList: []
   RunInBackground: 1
   LogLevel: 1
---- !u!114 &7616261651428151912
+--- !u!114 &4963295816126523711
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -95,12 +100,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 7616261651428151895}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7150fa2decf11e54bb8f06a606e1bd94, type: 3}
+  m_Script: {fileID: 11500000, guid: a28da2b146d5abb4f80a191cf96d1163, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
-  Join_Code: 
+  m_EditorClassIdentifier: Assembly-CSharp::RelayServerManager
   ServerGamerObject: {fileID: 880589326191894371, guid: 85c57e8fe3c62394fbdaaad429dd5d0e, type: 3}
-  SignInState: 
+  SignInState: 0
+  Join_Code: 
 --- !u!114 &6452671135146635083
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -113,6 +118,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae4376f568938f14886d41f6e0e56131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PollForEvents: 1
 --- !u!114 &8946709181452498364
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -138,6 +144,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ProtocolType: 1
+  m_UseWebSockets: 0
+  m_UseEncryption: 0
   m_MaxPacketQueueSize: 128
   m_MaxPayloadSize: 6144
   m_HeartbeatTimeoutMS: 500

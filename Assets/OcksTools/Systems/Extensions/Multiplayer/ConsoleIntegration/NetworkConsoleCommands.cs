@@ -10,7 +10,7 @@ public class NetworkConsoleCommands : MonoBehaviour
         //ConsoleLol.ConsoleHook.Append(NetworkConsoleCommandHook);
         GlobalEvent.Append("Console", NetworkCommands);
 
-        RelayMoment.Instance.GetComponent<PickThingymabob>().DebugCode.Append(PrintCode);
+        RelayServerManager.Instance.DebugCode.Append(PrintCode);
     }
 
     public void NetworkCommands()
@@ -26,12 +26,12 @@ public class NetworkConsoleCommands : MonoBehaviour
     }
     public static void host()
     {
-        RelayMoment.Instance.GetComponent<PickThingymabob>().MakeGameButton();
+        RelayServerManager.Instance.GetComponent<MultiplayerUIStuff>().MakeGameButton();
     }
 
     public static void host_and_copy()
     {
-        RelayMoment.Instance.GetComponent<PickThingymabob>().MakeGameAndCopy();
+        RelayServerManager.Instance.GetComponent<MultiplayerUIStuff>().MakeGameAndCopyButton();
     }
 
     public static void listclients()
@@ -66,11 +66,11 @@ public class NetworkConsoleCommands : MonoBehaviour
     }
     public static void join(OXCommandData r)
     {
-        RelayMoment.Instance.GetComponent<PickThingymabob>().GoinGameE2(r.com[1]);
+        RelayServerManager.Instance.JoinGame(r.com[1]);
     }
     public static void disconnect()
     {
-        RelayMoment.Instance.EndConnection();
+        RelayServerManager.Instance.EndConnection();
     }
 
     public void PrintCode(string a)
