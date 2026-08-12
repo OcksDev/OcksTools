@@ -60,6 +60,7 @@
   - Added Client Join Checking, so you can easily set up denial of clients
   - Added KickConnection() method to easily remove people
   - Added BanConnection() method to easily remove people and keep them removed
+  - Added paramater to easily change the max amount of connections
   - Pickthingymabob renamed to MultiplayerUIStuff
   - RelayMoment renamed to RelayServerManager
   - All real functionality consolidated to RelayServerManager, instead of being randomly split into 

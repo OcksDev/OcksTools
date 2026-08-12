@@ -103,6 +103,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a28da2b146d5abb4f80a191cf96d1163, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RelayServerManager
+  MaxConnections: 8
   ServerGamerObject: {fileID: 880589326191894371, guid: 85c57e8fe3c62394fbdaaad429dd5d0e, type: 3}
   SignInState: 0
   Join_Code: 

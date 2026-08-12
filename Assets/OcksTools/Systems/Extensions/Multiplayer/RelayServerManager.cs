@@ -12,6 +12,8 @@ using UnityEngine;
 
 public class RelayServerManager : SingleInstance<RelayServerManager>
 {
+    [Range(1, 20)]
+    public int MaxConnections = 8;
     public GameObject ServerGamerObject;
     [ReadOnly]
     public SignState SignInState = SignState.None;
@@ -93,7 +95,7 @@ public class RelayServerManager : SingleInstance<RelayServerManager>
         try
         {
             //MAX CONNECTIONS IS SET HERE   VERY IMPORTANT
-            Allocation allo = await RelayService.Instance.CreateAllocationAsync(5);
+            Allocation allo = await RelayService.Instance.CreateAllocationAsync(MaxConnections);
 
             Join_Code = await RelayService.Instance.GetJoinCodeAsync(allo.AllocationId);
             Debug.Log(Join_Code);
