@@ -130,6 +130,7 @@ GameObject:
   - component: {fileID: 356944925}
   - component: {fileID: 356944924}
   - component: {fileID: 356944926}
+  - component: {fileID: 356944927}
   m_Layer: 0
   m_Name: Holder
   m_TagString: Untagged
@@ -178,6 +179,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a210b80301f040641b88d87e29dc5cc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GlobalEntity
+--- !u!114 &356944927
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 356944923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 477cb4bb2c9007d4da15ffb66587f2f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OXSceneManager
+  SceneField:
+    Scene: {fileID: 102900000, guid: 31a8d724a93ebec4fa297ff94b53b6e5, type: 3}
+    InternalName: Chess
 --- !u!1 &430092345
 GameObject:
   m_ObjectHideFlags: 0
@@ -617,7 +633,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4007473491773129349, guid: 32aa07c1d97c2ed4cac286e0d66c9ab0, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -35.649994
+      value: -35.650024
       objectReference: {fileID: 0}
     - target: {fileID: 8297224136127161840, guid: 32aa07c1d97c2ed4cac286e0d66c9ab0, type: 3}
       propertyPath: m_Name

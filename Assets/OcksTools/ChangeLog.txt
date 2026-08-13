@@ -1,7 +1,10 @@
 
 ------------
    v1.2.6
-- It Begins...
+- Scene Manager Improvements
+  - Added ability to provide static names for scenes, so you can rename a scene without changing code
+  - Added class as part of this which lets you easily store/reference scenes from an inspector window (works with builds, unlike the SceneAsset class)
+    - These can also be passed directly into the Scene Manager loading functions instead of the string name.
 ------------
 
 
