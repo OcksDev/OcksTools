@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 using System.Text;
 using Unity.Collections;
 using UnityEngine;
@@ -97,8 +96,7 @@ public abstract class _FixedStringDrawerBase : PropertyDrawer
 
         EditorGUI.BeginProperty(position, label, property);
 
-        object current = GetTargetObject(property);
-        string currentStr = current != null ? ReadStr(current) : "";
+        string currentStr = ReadStr(property.boxedValue);
 
         Rect fieldRect = new Rect(position.x, position.y,
                                   position.width - BadgeWidth - BadgeMargin, position.height);
@@ -129,17 +127,12 @@ public abstract class _FixedStringDrawerBase : PropertyDrawer
         if (EditorGUI.EndChangeCheck())
         {
             edited = ClampUtf8(edited, MaxBytes);
-            object parent = GetParentObject(property);
-            if (parent != null)
-            {
-                var fi = FindField(parent.GetType(), property.name);
-                if (fi != null)
-                {
-                    Undo.RecordObject(property.serializedObject.targetObject, $"Edit {property.name}");
-                    fi.SetValue(parent, ToFixed(edited));
-                    EditorUtility.SetDirty(property.serializedObject.targetObject);
-                }
-            }
+
+            Undo.RecordObject(property.serializedObject.targetObject, $"Edit {property.name}");
+            property.boxedValue = ToFixed(edited);
+            property.serializedObject.ApplyModifiedProperties();
+
+            currentStr = edited;
         }
 
         // ── Badge ────────────────────────────────────────────────────
@@ -154,52 +147,6 @@ public abstract class _FixedStringDrawerBase : PropertyDrawer
         GUI.Label(badgeRect, $"{usedBytes}/{MaxBytes}", style);
 
         EditorGUI.EndProperty();
-    }
-
-    private static object GetTargetObject(SerializedProperty prop)
-        => WalkPath(prop.serializedObject.targetObject,
-                    prop.propertyPath.Replace(".Array.data[", "["));
-
-    private static object GetParentObject(SerializedProperty prop)
-    {
-        string path = prop.propertyPath.Replace(".Array.data[", "[");
-        int last = path.LastIndexOf('.');
-        return last < 0
-            ? prop.serializedObject.targetObject
-            : WalkPath(prop.serializedObject.targetObject, path[..last]);
-    }
-
-    private static object WalkPath(object root, string path)
-    {
-        object cur = root;
-        foreach (string part in path.Split('.'))
-        {
-            if (cur == null) return null;
-            if (part.Contains('['))
-            {
-                string name = part[..part.IndexOf('[')];
-                int index = int.Parse(part[(part.IndexOf('[') + 1)..].TrimEnd(']'));
-                cur = FindField(cur.GetType(), name)?.GetValue(cur);
-                if (cur is System.Collections.IList list) cur = list[index];
-            }
-            else
-            {
-                cur = FindField(cur.GetType(), part)?.GetValue(cur);
-            }
-        }
-        return cur;
-    }
-
-    private static FieldInfo FindField(Type type, string name)
-    {
-        const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-        while (type != null)
-        {
-            var fi = type.GetField(name, flags);
-            if (fi != null) return fi;
-            type = type.BaseType;
-        }
-        return null;
     }
 
     private static string ClampUtf8(string s, int maxBytes)

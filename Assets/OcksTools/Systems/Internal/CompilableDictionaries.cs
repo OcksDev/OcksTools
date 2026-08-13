@@ -38,7 +38,7 @@ public class CompileableDictionaryAlt<A, B> : Dictionary<A, B>
 [System.Serializable]
 public class CompileableDictionary<B> : Dictionary<string, B>
 {
-    public List<MRefSmall<string, B>> List = new();
+    public List<MRefNoName<string, B>> List = new();
     public void Compile()
     {
         Clear();

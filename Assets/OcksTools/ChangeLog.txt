@@ -11,6 +11,8 @@
 - Misc
   - Fixed the FixedString inspector readout, at some point that stopped working but now its good again.
   - MultiRef renamed to MRef
+    - By default, MRef now uses SideBySideWithName, added a varient called MRefNoName which allows you to hide the label
+    - Also moved to its own class file instead of hiding inside of Converter
 ------------
 
 

@@ -2,12 +2,14 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 public class OXSceneManager : SingleInstance<OXSceneManager>
 {
-    public List<MRefSmall<string, SceneField>> StaticNameOverrides = new();
+    public List<MRefNoName<string, SceneField>> StaticNameOverrides = new();
     public Dictionary<string, SceneData> Datas = new();
     public Dictionary<string, string> StaticNames = new();
     public override void Awake2()

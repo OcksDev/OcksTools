@@ -285,6 +285,11 @@ public abstract class AutoCompressedInspectorWithName : PropertyDrawer
 
 public abstract class AutoCompressedSideBySideInspector : PropertyDrawer
 {
+    // Fixed width given to boolean toggles so they don't get a huge
+    // equal-share column full of empty space. Tweak to taste.
+    private const float BoolFieldWidth = 16f;
+    private const float Spacing = 4f;
+
     protected virtual bool ShouldDraw(SerializedProperty prop, int parentDepth)
     {
         if (prop.name == "m_Script")
@@ -317,6 +322,42 @@ public abstract class AutoCompressedSideBySideInspector : PropertyDrawer
         return list;
     }
 
+    // Computes the width to draw each child at: bools get a small fixed
+    // width, and every other field shares the remaining space equally.
+    private float[] GetWidths(List<SerializedProperty> children, float totalWidth)
+    {
+        var widths = new float[children.Count];
+
+        int flexCount = 0;
+        float fixedWidth = 0f;
+
+        for (int i = 0; i < children.Count; i++)
+        {
+            if (children[i].propertyType == SerializedPropertyType.Boolean)
+            {
+                widths[i] = BoolFieldWidth;
+                fixedWidth += BoolFieldWidth;
+            }
+            else
+            {
+                flexCount++;
+            }
+        }
+        float totalSpacing = Spacing * (children.Count - 1);
+        float remaining = Mathf.Max(0f, totalWidth - totalSpacing - fixedWidth);
+        float flexWidth = flexCount > 0 ? remaining / flexCount : 0f;
+
+        for (int i = 0; i < children.Count; i++)
+        {
+            if (children[i].propertyType != SerializedPropertyType.Boolean)
+            {
+                widths[i] = flexWidth;
+            }
+        }
+
+        return widths;
+    }
+
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
         EditorGUI.BeginProperty(position, label, property);
@@ -333,24 +374,24 @@ public abstract class AutoCompressedSideBySideInspector : PropertyDrawer
         int prevIndent = EditorGUI.indentLevel;
         EditorGUI.indentLevel = 0;
 
-        const float spacing = 4f;
-        float totalSpacing = spacing * (children.Count - 1);
-        float fieldWidth = (position.width - totalSpacing) / children.Count;
+        var widths = GetWidths(children, position.width);
 
         float x = position.x;
 
-        foreach (var child in children)
+        for (int i = 0; i < children.Count; i++)
         {
+            var child = children[i];
+            float w = widths[i];
             float height = EditorGUI.GetPropertyHeight(child, GUIContent.none, true);
 
             EditorGUI.PropertyField(
-                new Rect(x, position.y, fieldWidth, height),
+                new Rect(x, position.y, w, height),
                 child,
                 GUIContent.none,
                 true
             );
 
-            x += fieldWidth + spacing;
+            x += w + Spacing;
         }
 
         EditorGUI.indentLevel = prevIndent;
@@ -380,6 +421,11 @@ public abstract class AutoCompressedSideBySideInspector : PropertyDrawer
 
 public abstract class AutoCompressedSideBySideInspectorWithName : PropertyDrawer
 {
+    // Fixed width given to boolean toggles so they don't get a huge
+    // equal-share column full of empty space. Tweak to taste.
+    private const float BoolFieldWidth = 20f;
+    private const float Spacing = 4f;
+
     protected virtual bool ShouldDraw(SerializedProperty prop, int parentDepth)
     {
         if (prop.name == "m_Script")
@@ -412,29 +458,66 @@ public abstract class AutoCompressedSideBySideInspectorWithName : PropertyDrawer
         return list;
     }
 
+    // Computes the width to draw each child at: bools get a small fixed
+    // width, and every other field shares the remaining space equally.
+    private float[] GetWidths(List<SerializedProperty> children, float totalWidth)
+    {
+        var widths = new float[children.Count];
+
+        int flexCount = 0;
+        float fixedWidth = 0f;
+
+        for (int i = 0; i < children.Count; i++)
+        {
+            if (children[i].propertyType == SerializedPropertyType.Boolean)
+            {
+                widths[i] = BoolFieldWidth;
+                fixedWidth += BoolFieldWidth;
+            }
+            else
+            {
+                flexCount++;
+            }
+        }
+
+        float totalSpacing = Spacing * (children.Count - 1);
+        float remaining = Mathf.Max(0f, totalWidth - totalSpacing - fixedWidth);
+        float flexWidth = flexCount > 0 ? remaining / flexCount : 0f;
+
+        for (int i = 0; i < children.Count; i++)
+        {
+            if (children[i].propertyType != SerializedPropertyType.Boolean)
+            {
+                widths[i] = flexWidth;
+            }
+        }
+
+        return widths;
+    }
+
     private void DrawRow(Rect position, List<SerializedProperty> children)
     {
         int prevIndent = EditorGUI.indentLevel;
         EditorGUI.indentLevel = 0;
 
-        const float spacing = 4f;
-        float totalSpacing = spacing * (children.Count - 1);
-        float fieldWidth = (position.width - totalSpacing) / children.Count;
+        var widths = GetWidths(children, position.width);
 
         float x = position.x;
 
-        foreach (var child in children)
+        for (int i = 0; i < children.Count; i++)
         {
+            var child = children[i];
+            float w = widths[i];
             float height = EditorGUI.GetPropertyHeight(child, GUIContent.none, true);
 
             EditorGUI.PropertyField(
-                new Rect(x, position.y, fieldWidth, height),
+                new Rect(x, position.y, w, height),
                 child,
                 GUIContent.none,
                 true
             );
 
-            x += fieldWidth + spacing;
+            x += w + Spacing;
         }
 
         EditorGUI.indentLevel = prevIndent;
