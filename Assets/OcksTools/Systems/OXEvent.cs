@@ -257,7 +257,7 @@ public class AddToEvent : Attribute
 
 public class _OXEventLayeredBase<T, T2, T3> where T : _OXEventBase<T2, T3>, new()
 {
-    public List<MultiRef<int, T>> StoredEvents = new List<MultiRef<int, T>>();
+    public List<MRef<int, T>> StoredEvents = new List<MRef<int, T>>();
 
     // Finds the event bucket for a given layer, creating and inserting it
     // in sorted order if it doesn't exist yet.
@@ -270,12 +270,12 @@ public class _OXEventLayeredBase<T, T2, T3> where T : _OXEventBase<T2, T3>, new(
             if (w.a > layer)
             {
                 var x = new T();
-                StoredEvents.Insert(i, new MultiRef<int, T>(layer, x));
+                StoredEvents.Insert(i, new MRef<int, T>(layer, x));
                 return x;
             }
         }
         var x2 = new T();
-        StoredEvents.Add(new MultiRef<int, T>(layer, x2));
+        StoredEvents.Add(new MRef<int, T>(layer, x2));
         return x2;
     }
 

@@ -67,12 +67,12 @@ public class GlobalAttributeCollector
 }
 public static class Freakybob
 {
-    public static List<MultiRef<string, MethodInfo>> ToMultiref(this IEnumerable<MethodInfo> banana, Func<MethodInfo, string> nutt)
+    public static List<MRef<string, MethodInfo>> ToMultiref(this IEnumerable<MethodInfo> banana, Func<MethodInfo, string> nutt)
     {
-        var dd = new List<MultiRef<string, MethodInfo>>();
+        var dd = new List<MRef<string, MethodInfo>>();
         foreach (var z in banana)
         {
-            dd.Add(new MultiRef<string, MethodInfo>(z.ReflectedType.Name, z));
+            dd.Add(new MRef<string, MethodInfo>(z.ReflectedType.Name, z));
         }
         return dd;
     }

@@ -32,10 +32,10 @@ public class WeightedAverageHandler
 }
 public class WeightedAverage
 {
-    public List<MultiRef<float, object>> lists = new List<MultiRef<float, object>>();
+    public List<MRef<float, object>> lists = new List<MRef<float, object>>();
     public WeightedAverage Add(float weight, object n)
     {
-        lists.Add(new MultiRef<float, object>(weight, n));
+        lists.Add(new MRef<float, object>(weight, n));
         return this;
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -449,4 +450,14 @@ public class OXSound
     public bool IsAlive => psource != null && psource.isPlaying && SoundSystem.Instance.Generations.TryGetValue(psource, out var gen)
       && gen == _generation;
 }
+#if UNITY_EDITOR
 
+[CustomPropertyDrawer(typeof(OXSoundData))]
+public class FuckassSoundComDrawer : AutoCompressedSideBySideInspector
+{
+}
+[CustomPropertyDrawer(typeof(OXMixerData))]
+public class FuckassMixerComDrawer : AutoCompressedSideBySideInspector
+{
+}
+#endif

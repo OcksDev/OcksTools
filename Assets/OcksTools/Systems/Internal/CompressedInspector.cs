@@ -14,6 +14,7 @@ using UnityEditor;
 
 public class AutoCompressFieldAttribute : PropertyAttribute { }
 public class AutoCompressFieldWithNameAttribute : PropertyAttribute { }
+public class SideBySideFieldAttribute : PropertyAttribute { }
 
 #if UNITY_EDITOR
 [CustomPropertyDrawer(typeof(AutoCompressFieldAttribute))]
@@ -22,6 +23,10 @@ public class AutoCompressDrawer : AutoCompressedInspector
 }
 [CustomPropertyDrawer(typeof(AutoCompressFieldWithNameAttribute))]
 public class AutoCompressWithNameDrawer : AutoCompressedInspectorWithName
+{
+}
+[CustomPropertyDrawer(typeof(SideBySideFieldAttribute))]
+public class SideBySideDrawer : AutoCompressedSideBySideInspector
 {
 }
 
@@ -270,6 +275,101 @@ public abstract class AutoCompressedInspectorWithName : PropertyDrawer
         }
 
         return total;
+    }
+}
+
+public abstract class AutoCompressedSideBySideInspector : PropertyDrawer
+{
+    protected virtual bool ShouldDraw(SerializedProperty prop, int parentDepth)
+    {
+        if (prop.name == "m_Script")
+            return false;
+
+        return prop.depth == parentDepth + 1;
+    }
+
+    private List<SerializedProperty> GetChildren(SerializedProperty property)
+    {
+        var list = new List<SerializedProperty>();
+
+        int parentDepth = property.depth;
+
+        var iterator = property.Copy();
+        var end = iterator.GetEndProperty();
+
+        bool enterChildren = true;
+
+        while (iterator.NextVisible(enterChildren) && !SerializedProperty.EqualContents(iterator, end))
+        {
+            if (ShouldDraw(iterator, parentDepth))
+            {
+                list.Add(iterator.Copy());
+            }
+
+            enterChildren = false;
+        }
+
+        return list;
+    }
+
+    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+    {
+        EditorGUI.BeginProperty(position, label, property);
+
+        var children = GetChildren(property);
+
+        if (children.Count == 0)
+        {
+            EditorGUI.EndProperty();
+            return;
+        }
+
+        // No parent label, no per-field labels — just boxes in a row.
+        int prevIndent = EditorGUI.indentLevel;
+        EditorGUI.indentLevel = 0;
+
+        const float spacing = 4f;
+        float totalSpacing = spacing * (children.Count - 1);
+        float fieldWidth = (position.width - totalSpacing) / children.Count;
+
+        float x = position.x;
+
+        foreach (var child in children)
+        {
+            float height = EditorGUI.GetPropertyHeight(child, GUIContent.none, true);
+
+            EditorGUI.PropertyField(
+                new Rect(x, position.y, fieldWidth, height),
+                child,
+                GUIContent.none,
+                true
+            );
+
+            x += fieldWidth + spacing;
+        }
+
+        EditorGUI.indentLevel = prevIndent;
+
+        EditorGUI.EndProperty();
+    }
+
+    public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+    {
+        var children = GetChildren(property);
+
+        if (children.Count == 0)
+            return 0f;
+
+        float maxHeight = 0f;
+
+        foreach (var child in children)
+        {
+            float height = EditorGUI.GetPropertyHeight(child, GUIContent.none, true);
+            if (height > maxHeight)
+                maxHeight = height;
+        }
+
+        return maxHeight;
     }
 }
 

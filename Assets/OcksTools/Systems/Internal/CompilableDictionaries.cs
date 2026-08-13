@@ -9,7 +9,7 @@ using UnityEditor;
 [System.Serializable]
 public class CompileableDictionary<A, B> : Dictionary<A, B>
 {
-    public List<MultiRef<A, B>> List = new List<MultiRef<A, B>>();
+    public List<MRef<A, B>> List = new List<MRef<A, B>>();
     public void Compile()
     {
         Clear();
@@ -38,7 +38,7 @@ public class CompileableDictionaryAlt<A, B> : Dictionary<A, B>
 [System.Serializable]
 public class CompileableDictionary<B> : Dictionary<string, B>
 {
-    public List<MultiRef<string, B>> List = new List<MultiRef<string, B>>();
+    public List<MRef<string, B>> List = new List<MRef<string, B>>();
     public void Compile()
     {
         Clear();

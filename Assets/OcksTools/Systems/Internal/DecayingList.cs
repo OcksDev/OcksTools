@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 public class DecayingList<T>
 {
-    public List<MultiRefClass<T, float>> Items = new List<MultiRefClass<T, float>>();
+    public List<MRefClass<T, float>> Items = new List<MRefClass<T, float>>();
     public OXEvent<T> OnRemove = new();
     public int Count => Items.Count;
     public void Add(T item, float stayDuration) =>
-        Items.Add(new MultiRefClass<T, float>(item, stayDuration));
+        Items.Add(new MRefClass<T, float>(item, stayDuration));
 
     public bool Contains(T item)
     {

@@ -3,13 +3,13 @@ using System.Linq;
 
 public class DecayingDictionary<T, T2>
 {
-    public Dictionary<T, MultiRefClass<T2, float>> Items = new Dictionary<T, MultiRefClass<T2, float>>();
+    public Dictionary<T, MRefClass<T2, float>> Items = new Dictionary<T, MRefClass<T2, float>>();
     public OXEvent<T, T2> OnRemove = new();
 
     public int Count => Items.Count;
 
     public void Add(T key, T2 item, float stayDuration) =>
-        Items.AddOrUpdate(key, new MultiRefClass<T2, float>(item, stayDuration));
+        Items.AddOrUpdate(key, new MRefClass<T2, float>(item, stayDuration));
 
     public bool Contains(T key) => Items.ContainsKey(key);
 

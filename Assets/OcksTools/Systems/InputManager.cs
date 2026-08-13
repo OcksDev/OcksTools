@@ -56,9 +56,9 @@ public class InputManager : SingleInstance<InputManager>
 
     }
 
-    public static Dictionary<string, MultiRef<string, List<string>, OXEvent>> InputEvents = new();
-    public static Dictionary<string, MultiRef<string, List<string>, OXEvent>> InputEventsUp = new();
-    public static Dictionary<string, MultiRef<string, List<string>, OXEvent>> InputEventsDown = new();
+    public static Dictionary<string, MRef<string, List<string>, OXEvent>> InputEvents = new();
+    public static Dictionary<string, MRef<string, List<string>, OXEvent>> InputEventsUp = new();
+    public static Dictionary<string, MRef<string, List<string>, OXEvent>> InputEventsDown = new();
     private void Update()
     {
         if (!PollForEvents) return;
@@ -128,7 +128,7 @@ public class InputManager : SingleInstance<InputManager>
     {
         var sex = GetExistingEvent(name);
         if (sex != null) return sex;
-        MultiRef<string, List<string>, OXEvent> b = new();
+        MRef<string, List<string>, OXEvent> b = new();
         b.a = name;
         b.b = ide.HasValue ? ide.Value.ToList() : null;
         b.c = new OXEvent();
@@ -140,7 +140,7 @@ public class InputManager : SingleInstance<InputManager>
     {
         var sex = GetExistingEventUp(name);
         if (sex != null) return sex;
-        MultiRef<string, List<string>, OXEvent> b = new();
+        MRef<string, List<string>, OXEvent> b = new();
         b.a = name;
         b.b = ide.HasValue ? ide.Value.ToList() : null;
         b.c = new OXEvent();
@@ -152,7 +152,7 @@ public class InputManager : SingleInstance<InputManager>
     {
         var sex = GetExistingEventDown(name);
         if (sex != null) return sex;
-        MultiRef<string, List<string>, OXEvent> b = new();
+        MRef<string, List<string>, OXEvent> b = new();
         b.a = name;
         b.b = ide.HasValue ? ide.Value.ToList() : null;
         b.c = new OXEvent();

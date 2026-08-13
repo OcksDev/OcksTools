@@ -356,7 +356,7 @@ public class RecordedObject : MonoBehaviour
 [System.Serializable]
 public class DataRecord<T>
 {
-    public List<MultiRef<float, T>> record = new List<MultiRef<float, T>>();
+    public List<MRef<float, T>> record = new List<MRef<float, T>>();
     private float starttime = 0;
     private float pause_progress = 0;
     public void StartRecording(float t)
@@ -368,7 +368,7 @@ public class DataRecord<T>
     {
         time -= starttime;
         var dingle = record.Last();
-        record.Add(new MultiRef<float, T>(time, dingle.b));
+        record.Add(new MRef<float, T>(time, dingle.b));
     }
     public void ResumeRecording(float time)
     {
@@ -406,7 +406,7 @@ public class DataRecord<T>
         time -= starttime;
         if (record.Count == 0)
         {
-            record.Add(new MultiRef<float, T>(time, data));
+            record.Add(new MRef<float, T>(time, data));
             return;
         }
         var dingle = record.Last();
@@ -415,9 +415,9 @@ public class DataRecord<T>
             var dif = time - record.Last().a;
             if (dif > (delta + 0.001f))
             {
-                record.Add(new MultiRef<float, T>(time - delta, dingle.b));
+                record.Add(new MRef<float, T>(time - delta, dingle.b));
             }
-            record.Add(new MultiRef<float, T>(time, data));
+            record.Add(new MRef<float, T>(time, data));
         }
     }
     private int last = 0;
@@ -447,7 +447,7 @@ public class DataRecord<T>
         last = record.Count - 1;
         return record[record.Count - 1].b;
     }
-    public MultiRef<float, T, T>? PollPlayback(float time)
+    public MRef<float, T, T>? PollPlayback(float time)
     {
         if (reversed) return PollPlaybackReversed(time);
         time -= starttime;
@@ -458,11 +458,11 @@ public class DataRecord<T>
             last++;
             var dif = record[last].a - record[last - 1].a;
             dif /= playback_speed;
-            return new MultiRef<float, T, T>(dif, record[last - 1].b, record[last].b);
+            return new MRef<float, T, T>(dif, record[last - 1].b, record[last].b);
         }
         return null;
     }
-    private MultiRef<float, T, T>? PollPlaybackReversed(float time)
+    private MRef<float, T, T>? PollPlaybackReversed(float time)
     {
         var st = ((starttime - time) * playback_speed) + record[record.Count - 1].a;
         if (last == 0) return null;
@@ -471,7 +471,7 @@ public class DataRecord<T>
             last--;
             var dif = Mathf.Abs(record[last + 1].a - record[last].a);
             dif /= playback_speed;
-            return new MultiRef<float, T, T>(dif, record[last + 1].b, record[last].b);
+            return new MRef<float, T, T>(dif, record[last + 1].b, record[last].b);
         }
         return null;
     }
@@ -491,7 +491,7 @@ public class DataRecord<T>
         var dingle = record.Last();
 
         time -= starttime;
-        record.Add(new MultiRef<float, T>(time, dingle.b));
+        record.Add(new MRef<float, T>(time, dingle.b));
     }
 
 }

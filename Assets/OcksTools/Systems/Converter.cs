@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using UnityEditor;
 using UnityEngine;
 public readonly struct BetterList<T>
 {
@@ -741,24 +742,25 @@ public class ConversionMethod : Attribute
 }
 
 [System.Serializable]
-public struct MultiRef<A, B>
+public struct MRef<A, B>
 {
     public A a;
     public B b;
-    public MultiRef(A a, B b)
+    public MRef(A a, B b)
     {
         this.a = a;
         this.b = b;
     }
 }
 
+
 [System.Serializable]
-public struct MultiRef<A, B, C>
+public struct MRef<A, B, C>
 {
     public A a;
     public B b;
     public C c;
-    public MultiRef(A a, B b, C c)
+    public MRef(A a, B b, C c)
     {
         this.a = a;
         this.b = b;
@@ -766,13 +768,13 @@ public struct MultiRef<A, B, C>
     }
 }
 [System.Serializable]
-public struct MultiRef<A, B, C, D>
+public struct MRef<A, B, C, D>
 {
     public A a;
     public B b;
     public C c;
     public D d;
-    public MultiRef(A a, B b, C c, D d)
+    public MRef(A a, B b, C c, D d)
     {
         this.a = a;
         this.b = b;
@@ -783,11 +785,11 @@ public struct MultiRef<A, B, C, D>
 
 
 [System.Serializable]
-public class MultiRefClass<A, B>
+public class MRefClass<A, B>
 {
     public A a;
     public B b;
-    public MultiRefClass(A a, B b)
+    public MRefClass(A a, B b)
     {
         this.a = a;
         this.b = b;
@@ -795,12 +797,12 @@ public class MultiRefClass<A, B>
 }
 
 [System.Serializable]
-public class MultiRefClass<A, B, C>
+public class MRefClass<A, B, C>
 {
     public A a;
     public B b;
     public C c;
-    public MultiRefClass(A a, B b, C c)
+    public MRefClass(A a, B b, C c)
     {
         this.a = a;
         this.b = b;
@@ -808,13 +810,13 @@ public class MultiRefClass<A, B, C>
     }
 }
 [System.Serializable]
-public class MultiRefClass<A, B, C, D>
+public class MRefClass<A, B, C, D>
 {
     public A a;
     public B b;
     public C c;
     public D d;
-    public MultiRefClass(A a, B b, C c, D d)
+    public MRefClass(A a, B b, C c, D d)
     {
         this.a = a;
         this.b = b;
@@ -822,3 +824,62 @@ public class MultiRefClass<A, B, C, D>
         this.d = d;
     }
 }
+
+[System.Serializable]
+public struct MRefSmall<A, B>
+{
+    public A a;
+    public B b;
+    public MRefSmall(A a, B b)
+    {
+        this.a = a;
+        this.b = b;
+    }
+}
+
+[System.Serializable]
+public struct MRefSmall<A, B, C>
+{
+    public A a;
+    public B b;
+    public C c;
+    public MRefSmall(A a, B b, C c)
+    {
+        this.a = a;
+        this.b = b;
+        this.c = c;
+    }
+}
+
+[System.Serializable]
+public struct MRefSmall<A, B, C, D>
+{
+    public A a;
+    public B b;
+    public C c;
+    public D d;
+    public MRefSmall(A a, B b, C c, D d)
+    {
+        this.a = a;
+        this.b = b;
+        this.c = c;
+        this.d = d;
+    }
+}
+
+#if UNITY_EDITOR
+[CustomPropertyDrawer(typeof(MRefSmall<,>))]
+public class FuckassMultiRefComDrawer : AutoCompressedSideBySideInspector
+{
+}
+
+[CustomPropertyDrawer(typeof(MRefSmall<,,>))]
+public class FuckassMultiRef2ComDrawer : AutoCompressedSideBySideInspector
+{
+}
+
+[CustomPropertyDrawer(typeof(MRefSmall<,,,>))]
+public class FuckassMultiRef3ComDrawer : AutoCompressedSideBySideInspector
+{
+}
+#endif

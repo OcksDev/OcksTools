@@ -20,13 +20,13 @@ public class MenuHandler : SingleInstance<MenuHandler>
     {
         if (state.Objects.Count == 0) Debug.LogWarning($"Menu {state.Name} has no objects assigned at initilization");
         if (state.Name == "") state.Name = state.Objects[0].name;
-        if (state.InitialTransforms == null) state.InitialTransforms = new Dictionary<GameObject, MultiRef<Vector3, Vector3, Quaternion>>();
+        if (state.InitialTransforms == null) state.InitialTransforms = new Dictionary<GameObject, MRef<Vector3, Vector3, Quaternion>>();
         if (!state.OptOutTransformRecord)
         {
             foreach (var gm in state.Objects)
             {
                 if (gm == null) continue;
-                state.InitialTransforms.Add(gm, new MultiRef<Vector3, Vector3, Quaternion>
+                state.InitialTransforms.Add(gm, new MRef<Vector3, Vector3, Quaternion>
                     (
                         gm.transform.localPosition,
                         gm.transform.localScale,
@@ -164,7 +164,7 @@ public class MenuState
     public string Name;
     public List<GameObject> Objects;
     [HideInInspector]
-    public Dictionary<GameObject, MultiRef<Vector3, Vector3, Quaternion>> InitialTransforms;
+    public Dictionary<GameObject, MRef<Vector3, Vector3, Quaternion>> InitialTransforms;
     public bool OptOutTransformRecord = false;
     public bool State;
     public OXAnimationSet OpeningAnimation = null;

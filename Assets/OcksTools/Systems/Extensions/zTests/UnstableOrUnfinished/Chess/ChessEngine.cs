@@ -60,7 +60,7 @@ public class ChessEngine
 public abstract class BoardState
 {
     public List<ChessPieceBase> CurrentPieces = new();
-    public List<MultiRef<int, string>> History = new();
+    public List<MRef<int, string>> History = new();
     public int CurrentTurn = 0;
     public ChessTeam CurrentTeam = ChessTeam.White;
     public bool IsGameUnderCheck = false;
@@ -122,7 +122,7 @@ public abstract class BoardState
     }
     public void RecordHistory(ChessPieceBase nerd)
     {
-        History.Add(new MultiRef<int, string>(CurrentTurn, nerd.ToString()));
+        History.Add(new MRef<int, string>(CurrentTurn, nerd.ToString()));
     }
 
     public abstract bool IsWithinBounds(Vector2Int pos);

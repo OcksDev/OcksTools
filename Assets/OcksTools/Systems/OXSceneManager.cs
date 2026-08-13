@@ -7,7 +7,7 @@ using UnityEditor;
 #endif
 public class OXSceneManager : SingleInstance<OXSceneManager>
 {
-    public List<MultiRef<string, SceneField>> StaticNameOverrides = new();
+    public List<MRefSmall<string, SceneField>> StaticNameOverrides = new();
     public Dictionary<string, SceneData> Datas = new();
     public Dictionary<string, string> StaticNames = new();
     public override void Awake2()

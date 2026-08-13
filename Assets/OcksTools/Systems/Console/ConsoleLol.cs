@@ -531,10 +531,10 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
         CommandDict.Add(x.Value, x);
     }
     [HideInInspector]
-    public List<MultiRef<string, OXCommand>> pathcomps = new List<MultiRef<string, OXCommand>>();
+    public List<MRef<string, OXCommand>> pathcomps = new List<MRef<string, OXCommand>>();
     public void Append(string path, OXCommand x)
     {
-        pathcomps.Add(new MultiRef<string, OXCommand>(path, x));
+        pathcomps.Add(new MRef<string, OXCommand>(path, x));
     }
     private void RealAppend(string path, OXCommand x)
     {
@@ -575,7 +575,7 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
 
 public static class Console
 {
-    public static List<MultiRef<string, string>> console_backlog = new List<MultiRef<string, string>>();
+    public static List<MRef<string, string>> console_backlog = new List<MRef<string, string>>();
     // a shortcut/shorthand for the console, makes writing to the console faster
     public static void Log(this object text, string hex = "#bdbdbdff")
     {
@@ -590,7 +590,7 @@ public static class Console
         }
         else
         {
-            console_backlog.Add(new MultiRef<string, string>(text, hex));
+            console_backlog.Add(new MRef<string, string>(text, hex));
         }
     }
     public static void Log(this object text)
