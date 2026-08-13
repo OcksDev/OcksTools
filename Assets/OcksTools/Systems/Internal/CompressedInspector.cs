@@ -15,6 +15,7 @@ using UnityEditor;
 public class AutoCompressFieldAttribute : PropertyAttribute { }
 public class AutoCompressFieldWithNameAttribute : PropertyAttribute { }
 public class SideBySideFieldAttribute : PropertyAttribute { }
+public class SideBySideFieldWithNameAttribute : PropertyAttribute { }
 
 #if UNITY_EDITOR
 [CustomPropertyDrawer(typeof(AutoCompressFieldAttribute))]
@@ -27,6 +28,10 @@ public class AutoCompressWithNameDrawer : AutoCompressedInspectorWithName
 }
 [CustomPropertyDrawer(typeof(SideBySideFieldAttribute))]
 public class SideBySideDrawer : AutoCompressedSideBySideInspector
+{
+}
+[CustomPropertyDrawer(typeof(SideBySideFieldWithNameAttribute))]
+public class SideBySideWithNameDrawer : AutoCompressedSideBySideInspectorWithName
 {
 }
 
@@ -370,6 +375,137 @@ public abstract class AutoCompressedSideBySideInspector : PropertyDrawer
         }
 
         return maxHeight;
+    }
+}
+
+public abstract class AutoCompressedSideBySideInspectorWithName : PropertyDrawer
+{
+    protected virtual bool ShouldDraw(SerializedProperty prop, int parentDepth)
+    {
+        if (prop.name == "m_Script")
+            return false;
+
+        return prop.depth == parentDepth + 1;
+    }
+
+    private List<SerializedProperty> GetChildren(SerializedProperty property)
+    {
+        var list = new List<SerializedProperty>();
+
+        int parentDepth = property.depth;
+
+        var iterator = property.Copy();
+        var end = iterator.GetEndProperty();
+
+        bool enterChildren = true;
+
+        while (iterator.NextVisible(enterChildren) && !SerializedProperty.EqualContents(iterator, end))
+        {
+            if (ShouldDraw(iterator, parentDepth))
+            {
+                list.Add(iterator.Copy());
+            }
+
+            enterChildren = false;
+        }
+
+        return list;
+    }
+
+    private void DrawRow(Rect position, List<SerializedProperty> children)
+    {
+        int prevIndent = EditorGUI.indentLevel;
+        EditorGUI.indentLevel = 0;
+
+        const float spacing = 4f;
+        float totalSpacing = spacing * (children.Count - 1);
+        float fieldWidth = (position.width - totalSpacing) / children.Count;
+
+        float x = position.x;
+
+        foreach (var child in children)
+        {
+            float height = EditorGUI.GetPropertyHeight(child, GUIContent.none, true);
+
+            EditorGUI.PropertyField(
+                new Rect(x, position.y, fieldWidth, height),
+                child,
+                GUIContent.none,
+                true
+            );
+
+            x += fieldWidth + spacing;
+        }
+
+        EditorGUI.indentLevel = prevIndent;
+    }
+
+    private float RowHeight(List<SerializedProperty> children)
+    {
+        float maxHeight = 0f;
+
+        foreach (var child in children)
+        {
+            float height = EditorGUI.GetPropertyHeight(child, GUIContent.none, true);
+            if (height > maxHeight)
+                maxHeight = height;
+        }
+
+        return maxHeight;
+    }
+
+    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+    {
+        EditorGUI.BeginProperty(position, label, property);
+
+        var children = GetChildren(property);
+
+        if (children.Count == 0)
+        {
+            EditorGUI.EndProperty();
+            return;
+        }
+
+        // ✅ CASE 1: Single field → inline, using the object label (same as WithName)
+        if (children.Count == 1)
+        {
+            EditorGUI.PropertyField(
+                position,
+                children[0],
+                label,
+                true
+            );
+
+            EditorGUI.EndProperty();
+            return;
+        }
+
+        // ✅ CASE 2: Multiple fields → label as a prefix, boxes on the SAME line
+        float rowHeight = RowHeight(children);
+
+        Rect fullRect = new Rect(position.x, position.y, position.width, rowHeight);
+        Rect fieldsRect = EditorGUI.PrefixLabel(fullRect, label);
+
+        DrawRow(fieldsRect, children);
+
+        EditorGUI.EndProperty();
+    }
+
+    public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+    {
+        var children = GetChildren(property);
+
+        if (children.Count == 0)
+            return 0f;
+
+        // ✅ Single field → just its own height
+        if (children.Count == 1)
+        {
+            return EditorGUI.GetPropertyHeight(children[0], true);
+        }
+
+        // ✅ Multiple fields → single row height (label is inline now, not a separate line)
+        return RowHeight(children);
     }
 }
 

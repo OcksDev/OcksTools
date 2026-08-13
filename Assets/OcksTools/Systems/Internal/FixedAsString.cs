@@ -93,13 +93,6 @@ public abstract class _FixedStringDrawerBase : PropertyDrawer
 
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
-        bool hasAttr = fieldInfo?.GetCustomAttribute<ShowFixedBetterAttribute>() != null;
-        if (!hasAttr)
-        {
-            EditorGUI.PropertyField(position, property, label, true);
-            return;
-        }
-
         EnsureStyles();
 
         EditorGUI.BeginProperty(position, label, property);

@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 356944924}
   - component: {fileID: 356944926}
   - component: {fileID: 356944927}
+  - component: {fileID: 356944928}
   m_Layer: 0
   m_Name: Holder
   m_TagString: Untagged
@@ -191,9 +192,44 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 477cb4bb2c9007d4da15ffb66587f2f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OXSceneManager
-  SceneField:
-    Scene: {fileID: 102900000, guid: 31a8d724a93ebec4fa297ff94b53b6e5, type: 3}
-    InternalName: Chess
+  banana:
+    a: 0
+    b: 1
+    c: 1
+  StaticNameOverrides:
+  - a: fdsfdsdfs
+    b:
+      Scene: {fileID: 102900000, guid: c7a42b6c2e3f0d34dae4e6a9972005ec, type: 3}
+      InternalName: ConsoleHookTest
+  - a: frss
+    b:
+      Scene: {fileID: 102900000, guid: 2dad2e6e7828eae439f8aca03dd1e6dc, type: 3}
+      InternalName: AudioTesting
+  - a: dsaasddsasad
+    b:
+      Scene: {fileID: 102900000, guid: 25f8bd4929bb876448e5c23217475aba, type: 3}
+      InternalName: InfGridTilemap
+--- !u!114 &356944928
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 356944923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94e724cbf681d7a44ad5a268c1fce716, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SoundSystem
+  DebugVolumeMult: 1
+  AudioClips:
+  - Name: fgfgfgdgfdfgdffgfgdfgdfgdfdg
+    Clip: {fileID: 0}
+  AudioLibraries:
+  - {fileID: 0}
+  AudioMixers:
+  - Name: dsadas
+    Mixer: {fileID: 0}
 --- !u!1 &430092345
 GameObject:
   m_ObjectHideFlags: 0
@@ -436,6 +472,10 @@ PrefabInstance:
       propertyPath: Spawnables.List.Array.data[2].b.Object
       value: 
       objectReference: {fileID: 522952103151037963, guid: 31d7ab23d8a02cd41afa4275411b9bb0, type: 3}
+    - target: {fileID: 5761330745494254821, guid: 6322f23dea144e04b9fa9443ed389dff, type: 3}
+      propertyPath: Files.Array.size
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8019270817284996194, guid: 6322f23dea144e04b9fa9443ed389dff, type: 3}
       propertyPath: m_Name
       value: ConsoleHandler
@@ -488,6 +528,10 @@ PrefabInstance:
       propertyPath: ConsoleObject
       value: 
       objectReference: {fileID: 1370519542}
+    - target: {fileID: 9052928420890788963, guid: 6322f23dea144e04b9fa9443ed389dff, type: 3}
+      propertyPath: RefedObjects.Array.size
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

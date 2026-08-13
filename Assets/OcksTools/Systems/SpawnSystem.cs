@@ -261,7 +261,7 @@ public class Pool
 
 #if UNITY_EDITOR
 [CustomPropertyDrawer(typeof(Pool))]
-public class FuckassDrawer_Pool : AutoCompressedInspector
+public class FuckassDrawer_Pool : AutoCompressedSideBySideInspector
 {
 }
 #endif

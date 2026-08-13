@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using UnityEditor;
 using UnityEngine;
 
 public class DialogLol : SingleInstance<DialogLol>
@@ -1739,3 +1740,7 @@ public class DialogSettings
         }
     }
 }
+#if UNITY_EDITOR
+[CustomPropertyDrawer(typeof(DialogHolder))]
+public class FuckassDialogComDrawer : AutoCompressedSideBySideInspector { }
+#endif

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 public class RecordedObject : MonoBehaviour
@@ -356,7 +357,7 @@ public class RecordedObject : MonoBehaviour
 [System.Serializable]
 public class DataRecord<T>
 {
-    public List<MRef<float, T>> record = new List<MRef<float, T>>();
+    public List<MRefSmall<float, T>> record = new();
     private float starttime = 0;
     private float pause_progress = 0;
     public void StartRecording(float t)
@@ -368,7 +369,7 @@ public class DataRecord<T>
     {
         time -= starttime;
         var dingle = record.Last();
-        record.Add(new MRef<float, T>(time, dingle.b));
+        record.Add(new MRefSmall<float, T>(time, dingle.b));
     }
     public void ResumeRecording(float time)
     {
@@ -406,7 +407,7 @@ public class DataRecord<T>
         time -= starttime;
         if (record.Count == 0)
         {
-            record.Add(new MRef<float, T>(time, data));
+            record.Add(new MRefSmall<float, T>(time, data));
             return;
         }
         var dingle = record.Last();
@@ -415,12 +416,13 @@ public class DataRecord<T>
             var dif = time - record.Last().a;
             if (dif > (delta + 0.001f))
             {
-                record.Add(new MRef<float, T>(time - delta, dingle.b));
+                record.Add(new MRefSmall<float, T>(time - delta, dingle.b));
             }
-            record.Add(new MRef<float, T>(time, data));
+            record.Add(new MRefSmall<float, T>(time, data));
         }
     }
     private int last = 0;
+    [HideInInspector]
     public float playback_speed = 1;
     private bool reversed = false;
     public T StartPlayback(float t, float speed = 1)
@@ -491,7 +493,12 @@ public class DataRecord<T>
         var dingle = record.Last();
 
         time -= starttime;
-        record.Add(new MRef<float, T>(time, dingle.b));
+        record.Add(new MRefSmall<float, T>(time, dingle.b));
     }
 
 }
+
+#if UNITY_EDITOR
+[CustomPropertyDrawer(typeof(DataRecord<>))]
+public class FuckassDataRecordDrawer : AutoCompressedInspectorWithName { }
+#endif

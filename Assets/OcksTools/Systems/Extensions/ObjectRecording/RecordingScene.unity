@@ -269,6 +269,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae4376f568938f14886d41f6e0e56131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: OcksTools::InputManager
+  PollForEvents: 1
 --- !u!1 &1618179840
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class GlobalRefs : SingleInstance<GlobalRefs>
@@ -33,3 +34,11 @@ public class OXObjectRefThing
         GlobalRefs.Set(Name, Object);
     }
 }
+
+#if UNITY_EDITOR
+[CustomPropertyDrawer(typeof(OXObjectRefThing))]
+public class FuckassOBJRefComDrawer : AutoCompressedSideBySideInspector
+{
+
+}
+#endif
