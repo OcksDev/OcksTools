@@ -23,14 +23,14 @@ public static class Ease
         }
     }
 
-    public static float CircIn(float perc)
+    public static float CircOut(float perc, float pow = 2)
     {
-        return 1 - Mathf.Sqrt(1 - Mathf.Pow(perc, 2));
+        return 1 - Mathf.Pow(1 - Mathf.Pow(perc, pow), 1 / pow);
     }
 
-    public static float CircOut(float perc)
+    public static float CircIn(float perc, float pow)
     {
-        return Mathf.Sqrt(1 - Mathf.Pow(perc - 1, 2));
+        return Mathf.Pow(1 - Mathf.Pow(perc - 1, pow), 1 / pow);
     }
 
 

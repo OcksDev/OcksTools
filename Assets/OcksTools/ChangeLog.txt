@@ -12,6 +12,8 @@
   - Added class as part of this which lets you easily store/reference scenes from an inspector window (works with builds, unlike the SceneAsset class)
     - These can also be passed directly into the Scene Manager loading functions instead of the string name.
 - Misc
+  - Sound System now has spam protection built in (only 1 of a sound can be triggered per fixed update), on by default
+    - Currently only works for global sounds, so positional audio skips this
   - Added new image to default images, a Fade Circle
   - Fixed the FixedString inspector readout, at some point that stopped working but now its good again.
   - Added CopyFrom() to OXEvents (and layered events)

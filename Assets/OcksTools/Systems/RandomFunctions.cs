@@ -273,12 +273,6 @@ public class RandomFunctions : SingleInstance<RandomFunctions>
                 return ah.TotalDays;
         }
     }
-
-
-    public void DisconnectFromMatch()
-    {
-        //NetworkManager.Singleton.Shutdown();
-    }
     public static float Dist(Vector3 p1, Vector3 p2)
     {
         var x = p2.x - p1.x;

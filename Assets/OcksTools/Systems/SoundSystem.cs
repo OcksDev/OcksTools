@@ -10,6 +10,7 @@ public class SoundSystem : SingleInstance<SoundSystem>
 #if UNITY_EDITOR
     public float DebugVolumeMult = 1.0f;
 #endif
+    public AudioMixerGroup DefaultMixerGroup;
     public Dictionary<string, float> Volumes = new Dictionary<string, float>();
     public List<OXSoundData> AudioClips = new();
     public List<AudioLibrary> AudioLibraries = new();
@@ -19,7 +20,11 @@ public class SoundSystem : SingleInstance<SoundSystem>
     private Dictionary<Transform, List<AudioSource>> AudioSources = new();
     public Dictionary<AudioSource, int> Generations = new();
     private Dictionary<string, List<OXSound>> CurrentPlays = new();
-
+    private HashSet<string> SpamProtection = new HashSet<string>();
+    private void FixedUpdate()
+    {
+        SpamProtection.Clear();
+    }
 
     public OXEvent<OXSound> SoundMod = new();
     public OXEvent SoundDictCompile = new();
@@ -226,9 +231,10 @@ public class SoundSystem : SingleInstance<SoundSystem>
     }
     public OXSound PlaySound(OXSound sound)
     {
+        if (!sound._pos.HasValue && sound._spamname != "<->" && SpamProtection.Contains(sound._spamname)) return sound;
         ModSound(sound, sound._clipping);
         var p = sound.psource;
-        p.outputAudioMixerGroup = sound._mixer;
+        p.outputAudioMixerGroup = sound._mixer != null ? sound._mixer : DefaultMixerGroup;
         p.pitch = sound._pitch;
         p.panStereo = sound._pan;
         p.bypassEffects = sound._bypass;
@@ -243,6 +249,7 @@ public class SoundSystem : SingleInstance<SoundSystem>
         }
         sound.SetVolume(sound._volume);
         p.Play();
+        if (sound._spamname != "<->") SpamProtection.Add(sound._spamname);
         return sound;
     }
 
@@ -298,6 +305,7 @@ public class OXMixerData
 public class OXSound
 {
     public string name;
+    public string _spamname;
     public AudioClip clip;
     public AudioSource psource;
     public AudioMixerGroup _mixer = null;
@@ -348,6 +356,16 @@ public class OXSound
     public OXSound Channel(string s)
     {
         _channel = s;
+        return this;
+    }
+    public OXSound JoinSpamProtectTo(string s)
+    {
+        _spamname = s;
+        return this;
+    }
+    public OXSound DoNotSpamProtect()
+    {
+        _spamname = "<->";
         return this;
     }
     public OXSound Position(Vector3 v)
