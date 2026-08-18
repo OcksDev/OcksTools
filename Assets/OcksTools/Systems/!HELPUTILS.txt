@@ -5,13 +5,6 @@ this isnt really important for most people, just some helpful stuff for me as a 
 
 
 
-Organization:
-Main Systems go in the systems folder
-	Misc classes go in the Misc folder
-	Things consisting of many classes or parts have their own folder
-
-
-
 NavMesh 2D Help:
 https://www.youtube.com/watch?v=SDfEytEjb5o
 
