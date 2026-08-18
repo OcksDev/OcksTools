@@ -11350,6 +11350,14 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1798882000586106620, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
+      propertyPath: DefaultMixerGroup
+      value: 
+      objectReference: {fileID: -2051746999072423555, guid: 50e999dfef36a64429c8ce61c60bbb84, type: 2}
+    - target: {fileID: 1798882000586106620, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
+      propertyPath: AudioMixers.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1798882000586106620, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
       propertyPath: AudioLibraries.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -11357,6 +11365,14 @@ PrefabInstance:
       propertyPath: 'AudioLibraries.Array.data[0]'
       value: 
       objectReference: {fileID: 11400000, guid: 7be7f7393d9392347b692f4f33a39a06, type: 2}
+    - target: {fileID: 1798882000586106620, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
+      propertyPath: AudioMixers.Array.data[0].Name
+      value: Master
+      objectReference: {fileID: 0}
+    - target: {fileID: 1798882000586106620, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
+      propertyPath: AudioMixers.Array.data[0].Mixer
+      value: 
+      objectReference: {fileID: 24300002, guid: 50e999dfef36a64429c8ce61c60bbb84, type: 2}
     - target: {fileID: 6167858925768747828, guid: e098ef03bdfcc114c935df61ce01347f, type: 3}
       propertyPath: DialogBoxObject
       value: 

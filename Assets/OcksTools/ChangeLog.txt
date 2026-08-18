@@ -11,9 +11,12 @@
   - Added ability to provide static names for scenes, so you can rename a scene without changing code
   - Added class as part of this which lets you easily store/reference scenes from an inspector window (works with builds, unlike the SceneAsset class)
     - These can also be passed directly into the Scene Manager loading functions instead of the string name.
-- Misc
-  - Sound System now has spam protection built in (only 1 of a sound can be triggered per fixed update), on by default
+- Sound System Improvements
+  - Added DefaultMixerGroup so anything that doesn't specify will get routed to that
+  - Added spam protection (only 1 of a sound can be triggered per fixed update), which is on by default
     - Currently only works for global sounds, so positional audio skips this
+  - Added a compressor on the default Master audio mixer to help with audio balance
+- Misc
   - Added new image to default images, a Fade Circle
   - Fixed the FixedString inspector readout, at some point that stopped working but now its good again.
   - Added CopyFrom() to OXEvents (and layered events)
