@@ -18,9 +18,9 @@ public static class ExtensionForEntityOXSForEffects
     public static Dictionary<EntityOXS, EffectContainer> EffectsGlobal = new Dictionary<EntityOXS, EffectContainer>();
     public static EffectContainer Effect(this EntityOXS nerd)
     {
-        if (EffectsGlobal.ContainsKey(nerd))
+        if (EffectsGlobal.TryGetValue(nerd, out var pp))
         {
-            return EffectsGlobal[nerd];
+            return pp;
         }
         else
         {

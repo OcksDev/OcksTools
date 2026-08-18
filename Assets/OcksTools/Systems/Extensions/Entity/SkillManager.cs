@@ -23,9 +23,9 @@ public static class ExtensionForEntityOXSForSkills
     public static Dictionary<EntityOXS, SkillContainer> SkillsGlobal = new Dictionary<EntityOXS, SkillContainer>();
     public static SkillContainer Skill(this EntityOXS nerd)
     {
-        if (SkillsGlobal.ContainsKey(nerd))
+        if (SkillsGlobal.TryGetValue(nerd, out var pp))
         {
-            return SkillsGlobal[nerd];
+            return pp;
         }
         else
         {

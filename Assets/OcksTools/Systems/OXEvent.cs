@@ -49,6 +49,11 @@ public abstract class _OXEventBase<T, T2>
     public bool Contains(string name) => StoredMethods.ContainsKey(name);
     public void Clear() => StoredMethods.Clear();
     public abstract T2 Convert(T input);
+    public _OXEventBase<T, T2> CopyFrom(_OXEventBase<T, T2> nerd)
+    {
+        StoredMethods = new(nerd.StoredMethods);
+        return this;
+    }
 }
 
 public class OXEvent : _OXEventBase<Action, Func<bool>>
@@ -296,6 +301,15 @@ public class _OXEventLayeredBase<T, T2, T3> where T : _OXEventBase<T2, T3>, new(
     public void Append(T2 method) => Append(0, method);
 
     public void Clear() => StoredEvents.Clear();
+    public _OXEventLayeredBase<T, T2, T3> CopyFrom(_OXEventLayeredBase<T, T2, T3> nerd)
+    {
+        StoredEvents.Clear();
+        foreach (var a in nerd.StoredEvents)
+        {
+            var q = new MRef<int, T>(a.a, (T)(new T().CopyFrom(a.b)));
+        }
+        return this;
+    }
 }
 
 public class OXEventLayered : _OXEventLayeredBase<OXEvent, Action, Func<bool>>
