@@ -1,6 +1,9 @@
 
 ------------
    v1.2.6
+- New Ease Class (kinda)
+  - Moved all RandomFunctions.Ease functions into this static class
+  - Added some new functions like CircIn and CircOut
 - Compressed Inspector Improvements
   - Added SideBySide and SideBySideWithName functionality, so things are even cooler now.
   - Many systems now implement this

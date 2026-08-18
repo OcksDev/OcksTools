@@ -106,7 +106,7 @@ public class Shake
             p2 = GetRandomPosByRT();
             x -= 1;
         }
-        var s = Vector3.Lerp(p1, p2, RandomFunctions.EaseSinInAndOut(x)) * _Strength;
+        var s = Vector3.Lerp(p1, p2, Ease.SinInAndOut(x)) * _Strength;
         _Strength *= _Decay.TimeStablePow(dt);
         return s;
 

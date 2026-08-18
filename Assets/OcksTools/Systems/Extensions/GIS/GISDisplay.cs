@@ -122,7 +122,7 @@ public class GISDisplay : MonoBehaviour
     {
         yield return OXLerp.Linear((x) =>
         {
-            float overshoot = RandomFunctions.EaseOscillate(x, 3, 2f).Remap(0, 1, 0.7f, 1);
+            float overshoot = Ease.Oscillate(x, 3, 2f).Remap(0, 1, 0.7f, 1);
             foreach (var a in cum)
             {
                 a.transform.localScale = Vector3.one * overshoot;
@@ -133,7 +133,7 @@ public class GISDisplay : MonoBehaviour
     {
         yield return OXLerp.Linear((x) =>
         {
-            x = 1 - RandomFunctions.EaseOut(x);
+            x = 1 - Ease.Out(x);
             foreach (var a in cum)
             {
                 a.transform.localScale = Vector3.one * x;

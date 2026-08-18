@@ -22,15 +22,15 @@ public class EaseTesting : MonoBehaviour
         var pp = peb.transform.position;
         yield return StartCoroutine(OXLerp.Bounce((x) =>
         {
-            peb.transform.position = Vector3.LerpUnclamped(pp, Vector3.zero, RandomFunctions.EaseInAndOut(x));
+            peb.transform.position = Vector3.LerpUnclamped(pp, Vector3.zero, Ease.InAndOut(x));
         }, 4, 1));
         StartCoroutine(OXLerp.BounceInfinite((x) =>
         {
-            peb.transform.position = Vector3.LerpUnclamped(pp, Vector3.zero, RandomFunctions.EaseInAndOut(x));
+            peb.transform.position = Vector3.LerpUnclamped(pp, Vector3.zero, Ease.InAndOut(x));
         }));
         StartCoroutine(OXLerp.LinearInfniteLooped((x) =>
         {
-            peb2.transform.position = (Quaternion.Euler(0, 0, RandomFunctions.EaseInAndOut(x) * 360) * Vector3.right) * 2.5f;
+            peb2.transform.position = (Quaternion.Euler(0, 0, Ease.InAndOut(x) * 360) * Vector3.right) * 2.5f;
         }, 3f));
 
     }
@@ -40,11 +40,11 @@ public class EaseTesting : MonoBehaviour
         timer = timer + Time.deltaTime * speed;
         timer %= 1;
         sex(0, timer);
-        sex(1, RandomFunctions.EaseIn(timer));
-        sex(2, RandomFunctions.EaseOut(timer));
-        sex(3, RandomFunctions.EaseInAndOut(timer));
-        sex(4, RandomFunctions.EaseBounce(timer));
-        sex(5, RandomFunctions.EaseOscillate(timer));
+        sex(1, Ease.In(timer));
+        sex(2, Ease.InAndOut(timer));
+        sex(3, Ease.InAndOut(timer));
+        sex(4, Ease.Bounce(timer));
+        sex(5, Ease.Oscillate(timer));
     }
     private void sex(int index, float perc)
     {

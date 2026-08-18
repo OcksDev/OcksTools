@@ -52,8 +52,8 @@ public abstract class OXCamera : MonoBehaviour
             if (Rotation.Override) rot = Rotation.Target.Current;
             return (pos, rot);
         }
-        if (Position.Override) pos = Vector3.Lerp(Position.Target.Initial, Position.Target.Current, RandomFunctions.EaseInAndOut(p));
-        if (Rotation.Override) rot = Quaternion.Slerp(Rotation.Target.Initial, Rotation.Target.Current, RandomFunctions.EaseInAndOut(p));
+        if (Position.Override) pos = Vector3.Lerp(Position.Target.Initial, Position.Target.Current, Ease.InAndOut(p));
+        if (Rotation.Override) rot = Quaternion.Slerp(Rotation.Target.Initial, Rotation.Target.Current, Ease.InAndOut(p));
         if (p >= 1)
         {
             OnWaypointReach.Invoke();
