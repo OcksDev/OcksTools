@@ -98,7 +98,7 @@ public class PlayerController3D : MonoBehaviour
 
     public Coroutine ApplyVelocityOverTime(Func<float, Vector3> force_func, float time)
     {
-        return StartCoroutine(OXLerp.LinearFixed((x) =>
+        return StartCoroutine(OXLerp.Fixed.Linear((x) =>
         {
             var force = force_func(x);
             rigid.linearVelocity += force;

@@ -20,15 +20,15 @@ public class EaseTesting : MonoBehaviour
 
 
         var pp = peb.transform.position;
-        yield return StartCoroutine(OXLerp.Bounce((x) =>
+        yield return StartCoroutine(OXLerp.Frame.Bounce((x) =>
         {
             peb.transform.position = Vector3.LerpUnclamped(pp, Vector3.zero, Ease.InAndOut(x));
         }, 4, 1));
-        StartCoroutine(OXLerp.BounceInfinite((x) =>
+        StartCoroutine(OXLerp.Frame.BounceInfinite((x) =>
         {
             peb.transform.position = Vector3.LerpUnclamped(pp, Vector3.zero, Ease.InAndOut(x));
         }));
-        StartCoroutine(OXLerp.LinearInfniteLooped((x) =>
+        StartCoroutine(OXLerp.Frame.LinearInfniteLooped((x) =>
         {
             peb2.transform.position = (Quaternion.Euler(0, 0, Ease.InAndOut(x) * 360) * Vector3.right) * 2.5f;
         }, 3f));

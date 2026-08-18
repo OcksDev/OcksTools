@@ -6,7 +6,7 @@ public class OXDefaultAnimations
     public static IEnumerator WobbleInEven(BetterList<GameObject> cum)
     {
         var c = cum.ToList();
-        yield return OXLerp.Linear((x) =>
+        yield return OXLerp.Frame.Linear((x) =>
         {
             float overshoot = Ease.Oscillate(x, 4, 2f);
             foreach (var a in c)
@@ -18,7 +18,7 @@ public class OXDefaultAnimations
     public static IEnumerator WobbleInVH(BetterList<GameObject> cum)
     {
         var c = cum.ToList();
-        yield return OXLerp.Linear((x) =>
+        yield return OXLerp.Frame.Linear((x) =>
         {
             float off = 0.15f;
             var y = x * (1 + off);
@@ -33,7 +33,7 @@ public class OXDefaultAnimations
     public static IEnumerator WobbleInHV(BetterList<GameObject> cum)
     {
         var c = cum.ToList();
-        yield return OXLerp.Linear((x) =>
+        yield return OXLerp.Frame.Linear((x) =>
         {
             float off = 0.15f;
             var y = x * (1 + off);
@@ -49,7 +49,7 @@ public class OXDefaultAnimations
     public static IEnumerator SpinInLeft(BetterList<GameObject> cum)
     {
         var c = cum.ToList();
-        yield return OXLerp.Linear((x) =>
+        yield return OXLerp.Frame.Linear((x) =>
         {
             float off = 0.35f;
             var y = x * (1 + off);
@@ -69,7 +69,7 @@ public class OXDefaultAnimations
     public static IEnumerator SpinOutLeft(BetterList<GameObject> cum)
     {
         var c = cum.ToList();
-        yield return OXLerp.Linear((x) =>
+        yield return OXLerp.Frame.Linear((x) =>
         {
             var y = x;
             float overshoot1 = Ease.Out(Mathf.Clamp01(y));
@@ -85,7 +85,7 @@ public class OXDefaultAnimations
     public static IEnumerator SpinInRight(BetterList<GameObject> cum)
     {
         var c = cum.ToList();
-        yield return OXLerp.Linear((x) =>
+        yield return OXLerp.Frame.Linear((x) =>
         {
             float off = 0.35f;
             var y = x * (1 + off);
@@ -105,7 +105,7 @@ public class OXDefaultAnimations
     public static IEnumerator SpinOutRight(BetterList<GameObject> cum)
     {
         var c = cum.ToList();
-        yield return OXLerp.Linear((x) =>
+        yield return OXLerp.Frame.Linear((x) =>
         {
             var y = x;
             float overshoot1 = Ease.Out(Mathf.Clamp01(y));
@@ -121,7 +121,7 @@ public class OXDefaultAnimations
     public static IEnumerator TVOut(BetterList<GameObject> cum)
     {
         var c = cum.ToList();
-        yield return OXLerp.Linear((x) =>
+        yield return OXLerp.Frame.Linear((x) =>
         {
             float overshootx = Ease.In(x, 3);
             float overshooty = Ease.In(x, 9);
@@ -134,7 +134,7 @@ public class OXDefaultAnimations
     public static IEnumerator TVOutAlt(BetterList<GameObject> cum)
     {
         var c = cum.ToList();
-        yield return OXLerp.Linear((x) =>
+        yield return OXLerp.Frame.Linear((x) =>
         {
             float off = 0.35f;
             var y = x * (1 + off);
@@ -150,7 +150,7 @@ public class OXDefaultAnimations
     public static IEnumerator EaseInEven(BetterList<GameObject> cum)
     {
         var c = cum.ToList();
-        yield return OXLerp.Linear((x) =>
+        yield return OXLerp.Frame.Linear((x) =>
         {
             float off = 0.0f;
             var y = x * (1 + off);
@@ -165,7 +165,7 @@ public class OXDefaultAnimations
     public static IEnumerator EaseOutEven(BetterList<GameObject> cum)
     {
         var c = cum.ToList();
-        yield return OXLerp.Linear((x) =>
+        yield return OXLerp.Frame.Linear((x) =>
         {
             float off = 0.0f;
             var y = x * (1 + off);
@@ -180,7 +180,7 @@ public class OXDefaultAnimations
     public static IEnumerator EaseInVH(BetterList<GameObject> cum)
     {
         var c = cum.ToList();
-        yield return OXLerp.Linear((x) =>
+        yield return OXLerp.Frame.Linear((x) =>
         {
             float off = 0.15f;
             var y = x * (1 + off);
@@ -195,7 +195,7 @@ public class OXDefaultAnimations
     public static IEnumerator EaseOutVH(BetterList<GameObject> cum)
     {
         var c = cum.ToList();
-        yield return OXLerp.Linear((x) =>
+        yield return OXLerp.Frame.Linear((x) =>
         {
             float off = 0.15f;
             var y = x * (1 + off);
@@ -210,7 +210,7 @@ public class OXDefaultAnimations
     public static IEnumerator EaseInHV(BetterList<GameObject> cum)
     {
         var c = cum.ToList();
-        yield return OXLerp.Linear((x) =>
+        yield return OXLerp.Frame.Linear((x) =>
         {
             float off = 0.15f;
             var y = x * (1 + off);
@@ -225,7 +225,7 @@ public class OXDefaultAnimations
     public static IEnumerator EaseOutHV(BetterList<GameObject> cum)
     {
         var c = cum.ToList();
-        yield return OXLerp.Linear((x) =>
+        yield return OXLerp.Frame.Linear((x) =>
         {
             float off = 0.15f;
             var y = x * (1 + off);

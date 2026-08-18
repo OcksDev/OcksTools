@@ -252,7 +252,7 @@ public class RecordedObject : MonoBehaviour
                 var g = Position.PollPlayback(Time.time);
                 if (g.HasValue)
                 {
-                    StartCoroutine(OXLerp.Linear((x) =>
+                    StartCoroutine(OXLerp.Frame.Linear((x) =>
                     {
                         transform.localPosition = Vector3.Lerp(g.Value.b, g.Value.c, x);
                     }, g.Value.a));
@@ -263,7 +263,7 @@ public class RecordedObject : MonoBehaviour
                 var g = Scale.PollPlayback(Time.time);
                 if (g.HasValue)
                 {
-                    StartCoroutine(OXLerp.Linear((x) =>
+                    StartCoroutine(OXLerp.Frame.Linear((x) =>
                     {
                         transform.localScale = Vector3.Lerp(g.Value.b, g.Value.c, x);
                     }, g.Value.a));
@@ -274,7 +274,7 @@ public class RecordedObject : MonoBehaviour
                 var g = Rotation.PollPlayback(Time.time);
                 if (g.HasValue)
                 {
-                    StartCoroutine(OXLerp.Linear((x) =>
+                    StartCoroutine(OXLerp.Frame.Linear((x) =>
                     {
                         transform.localRotation = Quaternion.Slerp(g.Value.b, g.Value.c, x);
                     }, g.Value.a));
@@ -285,7 +285,7 @@ public class RecordedObject : MonoBehaviour
                 var g = Velocity.PollPlayback(Time.time);
                 if (g.HasValue)
                 {
-                    StartCoroutine(OXLerp.Linear((x) =>
+                    StartCoroutine(OXLerp.Frame.Linear((x) =>
                     {
                         body.linearVelocity = Vector3.Lerp(g.Value.b, g.Value.c, x);
                     }, g.Value.a));
@@ -296,7 +296,7 @@ public class RecordedObject : MonoBehaviour
                 var g = AngVelocity.PollPlayback(Time.time);
                 if (g.HasValue)
                 {
-                    StartCoroutine(OXLerp.Linear((x) =>
+                    StartCoroutine(OXLerp.Frame.Linear((x) =>
                     {
                         body.angularVelocity = Vector3.Lerp(g.Value.b, g.Value.c, x);
                     }, g.Value.a));
@@ -307,7 +307,7 @@ public class RecordedObject : MonoBehaviour
                 var g = Velocity2D.PollPlayback(Time.time);
                 if (g.HasValue)
                 {
-                    StartCoroutine(OXLerp.Linear((x) =>
+                    StartCoroutine(OXLerp.Frame.Linear((x) =>
                     {
                         body2d.linearVelocity = Vector2.Lerp(g.Value.b, g.Value.c, x);
                     }, g.Value.a));
@@ -318,7 +318,7 @@ public class RecordedObject : MonoBehaviour
                 var g = AngVelocity2D.PollPlayback(Time.time);
                 if (g.HasValue)
                 {
-                    StartCoroutine(OXLerp.Linear((x) =>
+                    StartCoroutine(OXLerp.Frame.Linear((x) =>
                     {
                         body2d.angularVelocity = Mathf.Lerp(g.Value.b, g.Value.c, x);
                     }, g.Value.a));

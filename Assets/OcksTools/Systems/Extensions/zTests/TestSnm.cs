@@ -13,7 +13,7 @@ public class TestSnm : MonoBehaviour
             float z = 1 / 50f;
             var d2 = (Quaternion.Euler(0, 0, (Time.time + z) * 90) * Vector3.right) * dist;
             //var d2 = Vector3.zero;
-            banana = OXLerp.Linear((x) =>
+            banana = OXLerp.Frame.Linear((x) =>
             {
                 transform.position = Vector3.Lerp(d, d2, x);
             }, z);

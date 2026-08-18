@@ -120,7 +120,7 @@ public class GISDisplay : MonoBehaviour
     }
     public static IEnumerator GISInteract(List<GameObject> cum)
     {
-        yield return OXLerp.Linear((x) =>
+        yield return OXLerp.Frame.Linear((x) =>
         {
             float overshoot = Ease.Oscillate(x, 3, 2f).Remap(0, 1, 0.7f, 1);
             foreach (var a in cum)
@@ -131,7 +131,7 @@ public class GISDisplay : MonoBehaviour
     }
     public static IEnumerator GISInteractToEmpty(List<GameObject> cum, GISDisplay a)
     {
-        yield return OXLerp.Linear((x) =>
+        yield return OXLerp.Frame.Linear((x) =>
         {
             x = 1 - Ease.Out(x);
             foreach (var a in cum)

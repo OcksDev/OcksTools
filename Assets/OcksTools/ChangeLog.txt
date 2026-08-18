@@ -16,6 +16,9 @@
   - Added spam protection (only 1 of a sound can be triggered per fixed update), which is on by default
     - Currently only works for global sounds, so positional audio skips this
   - Added a compressor on the default Master audio mixer to help with audio balance
+- OXLerp Improvements
+  - Adjusted API Syntax to match Tags style, it's much cleaner now (OXLerp.Frame.Linear/OXLerp.Fixed.Linear instead of OXLerp.Linear()/OXLerp.LinearFixed())
+  - Added new varients for timing, FrameEnd and Custom(). Custom allows you to specify a float time to wait between updates
 - Misc
   - Added new image to default images, a Fade Circle
   - Fixed the FixedString inspector readout, at some point that stopped working but now its good again.
