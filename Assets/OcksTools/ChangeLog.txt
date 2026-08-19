@@ -21,6 +21,7 @@
   - Added new varients for timing, FrameEnd and Custom(). Custom allows you to specify a float time to wait between updates
 - Misc
   - Added new image to default images, a Fade Circle
+  - Added FakeHDR color option for ColorSystem, should make HDR colors just easier to work with
   - Fixed the FixedString inspector readout, at some point that stopped working but now its good again.
   - Added CopyFrom() to OXEvents (and layered events)
   - Marginally optimized Entity Skill/Effect getting (with trygetvalue insteaad of containskey) 
