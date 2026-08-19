@@ -22,6 +22,7 @@
 - Misc
   - Added new image to default images, a Fade Circle
   - Added FakeHDR color option for ColorSystem, should make HDR colors just easier to work with
+  - Dynamic String AddRef() now can take in any about of references
   - Fixed the FixedString inspector readout, at some point that stopped working but now its good again.
   - Added CopyFrom() to OXEvents (and layered events)
   - Marginally optimized Entity Skill/Effect getting (with trygetvalue insteaad of containskey) 

@@ -43,30 +43,12 @@ public class DynamicString
         References[x] = y;
         return this;
     }
-    public DynamicString AddRef(object y)
+    public DynamicString AddRef(params object[] y)
     {
-        References.Add(y);
-        return this;
-    }
-    public DynamicString AddRef(object y, object y2)
-    {
-        References.Add(y);
-        References.Add(y2);
-        return this;
-    }
-    public DynamicString AddRef(object y, object y2, object y3)
-    {
-        References.Add(y);
-        References.Add(y2);
-        References.Add(y3);
-        return this;
-    }
-    public DynamicString AddRef(object y, object y2, object y3, object y4)
-    {
-        References.Add(y);
-        References.Add(y2);
-        References.Add(y3);
-        References.Add(y4);
+        foreach (var a in y)
+        {
+            References.Add(a);
+        }
         return this;
     }
     public override string ToString()
