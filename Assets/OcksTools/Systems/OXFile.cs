@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using UnityEngine;
@@ -53,6 +54,7 @@ public class OXFile
         Data = new OXFileData(OXFileData.OXFileType.OXFileData);
         Data.pVersion = FileVersion;
         Data.DataRaw = WankFuckYou(cd, index, cd.Length - index);
+        if (GetFlag(1)) Data.DataRaw = Decompress(Data.DataRaw);
         Data.DataOXFiles = Data.Get_OXFileData(GetFileData());
 
         return true;
@@ -65,11 +67,15 @@ public class OXFile
         if (CanOverride || !e)
         {
             var wank = Data.BytesOfData(GetFileData(), 0);
+            if (wank.Count >= 300)
+            {
+                SetFlag(1);
+                wank = Compress(wank.ToArray()).ToList();
+            }
             List<byte> bytes = new List<byte>();
             SetVersionIntoFlag();
             var ver = BitConverter.GetBytes(Flags);
             foreach (byte b in ver) { bytes.Add(b); }
-
             wank = bytes.CombineLists(wank);
             File.WriteAllBytes(FileName, wank.ToArray());
         }
@@ -113,9 +119,16 @@ public class OXFile
         int mask = (1 << (i + 16));
         return (Flags & mask) != 0;
     }
+    public void ResetAllFlags()
+    {
+        int mask = (255 << (16));
+        mask |= (255 << (16 + 8));
+        Flags &= ~mask;
+    }
     /*
      * Flags:
      * 0 -> Linker
+     * 1 -> Compressed with GZIP
      */
     public static readonly Dictionary<OXFileType, byte> DefinedLengths = new()
     {
@@ -795,6 +808,32 @@ public class OXFileData
         return ret;
     }
 
+    public static byte[] Compress(byte[] data)
+    {
+        using var output = new MemoryStream();
+        using (var gzip = new GZipStream(output, System.IO.Compression.CompressionLevel.Optimal, leaveOpen: true))
+        {
+            gzip.Write(data, 0, data.Length);
+        }
+        return output.ToArray();
+    }
+
+    public static byte[] Decompress(byte[] compressedData)
+    {
+        try
+        {
+            using var input = new MemoryStream(compressedData);
+            using var gzip = new GZipStream(input, CompressionMode.Decompress);
+            using var output = new MemoryStream();
+            gzip.CopyTo(output);
+            return output.ToArray();
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError(ex);
+            throw;
+        }
+    }
 
     public enum OXFileType
     {

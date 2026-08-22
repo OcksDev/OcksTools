@@ -112,9 +112,10 @@ public class ConsoleCommands : MonoBehaviour
             oxf.Data.Add("bigname", "Hello my name is balls");
             oxf.Data.Add("numbanana2", 5000);
             oxf.Data.Add("numbanana3", 123456789);
+            oxf.Data.Add("numcum", 42067);
             oxf.WriteFile(FileSystem.Instance.GameDirectory + "/Temp.ox", true);
 
-
+            oxf.ResetAllFlags();
 
             oxf.LinkOptimizer(new()
             {
@@ -123,6 +124,7 @@ public class ConsoleCommands : MonoBehaviour
                 {"bigname", 2 },
                 {"numbanana2", 3 },
                 {"numbanana3", 4 },
+                {"numcum", 5 },
             }).WriteFile(FileSystem.Instance.GameDirectory + "/TempLinker.ox", true);
 
 
@@ -132,6 +134,7 @@ public class ConsoleCommands : MonoBehaviour
             Console.Log($"num: {oxf2.Data["num"].DataInt}");
             Console.Log($"numbanana2: {oxf2.Data["numbanana2"].DataInt}");
             Console.Log($"numbanana3: {oxf2.Data["numbanana3"].DataInt}");
+            Console.Log($"numcum: {oxf2.Data["numcum"].DataInt}");
             Console.Log($"coolnums: {oxf2.Data["coolnums"].DataCustom}");
             Console.Log($"name: {oxf2.Data["bigname"].DataString}");
 
@@ -140,6 +143,7 @@ public class ConsoleCommands : MonoBehaviour
                 {"num", "69"},
                 {"numbanana2", "5000"},
                 {"numbanana3", "123456789"},
+                {"numcum", "42067"},
                 {"coolnums", new TestClass3(-1, 420).ToString()},
                 {"bigname", "Hello my name is balls"},
             };

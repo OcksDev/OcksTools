@@ -19,6 +19,8 @@
 - OXLerp Improvements
   - Adjusted API Syntax to match Tags style, it's much cleaner now (OXLerp.Frame.Linear/OXLerp.Fixed.Linear instead of OXLerp.Linear()/OXLerp.LinearFixed())
   - Added new varients for timing, FrameEnd and Custom(). Custom allows you to specify a float time to wait between updates
+- OXFile Improvements
+  - Added automatic compression that kicks in at total data sizes of 300 bytes or larger
 - Misc
   - Added new image to default images, a Fade Circle
   - Added FakeHDR color option for ColorSystem, should make HDR colors just easier to work with
