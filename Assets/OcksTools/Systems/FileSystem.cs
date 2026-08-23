@@ -113,6 +113,18 @@ public class FileSystem : SingleInstance<FileSystem>
     {
         return File.GetLastWriteTime(file);
     }
+    public long ReadFileSize(string file)
+    {
+        return new FileInfo(file).Length;
+    }
+    public string PathToName(string file)
+    {
+        file = file.Replace("\\", "/");
+        if (file.EndsWith("/")) file = file.Substring(0, file.Length - 1);
+        file = file.Substring(file.LastIndexOf("/") + 1);
+        if (file.Contains(".")) file = file.Substring(0, file.LastIndexOf("."));
+        return file;
+    }
     public void DeleteFile(string file)
     {
         File.Delete(file);

@@ -192,6 +192,21 @@ public class OXFileData
         get => _value is bool b && b;
         set => _value = value;
     }
+    public Texture2D DataTexture
+    {
+        get => _value as Texture2D;
+        set => _value = value;
+    }
+    public Sprite DataSprite
+    {
+        get => DataTexture.Texture2DToSprite();
+        set => DataTexture = value.texture;
+    }
+    public AudioClip DataSound
+    {
+        get => _value as AudioClip;
+        set => _value = value;
+    }
     public _IOXFile DataCustom
     {
         get => (_IOXFile)_value;
@@ -376,6 +391,12 @@ public class OXFileData
             case OXFileType.DictStringString:
                 DataDictStringString = Get_DictStringString();
                 break;
+            case OXFileType.Texture:
+                DataTexture = Get_Texture();
+                break;
+            case OXFileType.Sound:
+                DataSound = Get_Sound();
+                break;
             case OXFileType.Custom:
                 DataCustom = Get_Custom();
                 break;
@@ -414,6 +435,27 @@ public class OXFileData
         var dat = new OXFileData();
         dat.Type = OXFileData.OXFileType.Bool;
         dat.DataBool = DataIn;
+        Add(Name, dat);
+    }
+    public void Add(string Name, Texture2D DataIn)
+    {
+        var dat = new OXFileData();
+        dat.Type = OXFileData.OXFileType.Texture;
+        dat.DataTexture = DataIn;
+        Add(Name, dat);
+    }
+    public void Add(string Name, Sprite DataIn)
+    {
+        var dat = new OXFileData();
+        dat.Type = OXFileData.OXFileType.Texture;
+        dat.DataSprite = DataIn;
+        Add(Name, dat);
+    }
+    public void Add(string Name, AudioClip DataIn)
+    {
+        var dat = new OXFileData();
+        dat.Type = OXFileData.OXFileType.Sound;
+        dat.DataSound = DataIn;
         Add(Name, dat);
     }
     public void Add(string Name, float DataIn)
@@ -629,6 +671,20 @@ public class OXFileData
                     ret.Add(b);
                 }
                 break;
+            case OXFileType.Texture:
+                bytez = DataTexture.EncodeToPNG();
+                foreach (var b in bytez)
+                {
+                    ret.Add(b);
+                }
+                break;
+            case OXFileType.Sound:
+                bytez = AudioClipToBytes(DataSound);
+                foreach (var b in bytez)
+                {
+                    ret.Add(b);
+                }
+                break;
             case OXFileType.Custom:
                 var bytez2 = DataCustom.GetBytes();
                 foreach (var b in bytez2)
@@ -691,6 +747,14 @@ public class OXFileData
     private string Get_String()
     {
         return Encoding.UTF8.GetString(DataRaw);
+    }
+    private Texture2D Get_Texture()
+    {
+        return BytesToTexture(DataRaw);
+    }
+    private AudioClip Get_Sound()
+    {
+        return BytesToAudioClip(DataRaw);
     }
     private int Get_Int()
     {
@@ -834,7 +898,124 @@ public class OXFileData
             throw;
         }
     }
+    public static Texture2D BytesToTexture(byte[] bytes, int width = 2, int height = 2)
+    {
+        Texture2D texture = new Texture2D(width, height, TextureFormat.RGBA32, false);
+        bool success = texture.LoadImage(bytes); // auto-resizes texture
 
+        if (!success)
+        {
+            Debug.LogError("BytesToTexture: failed to load image data!");
+            return null;
+        }
+
+        return texture;
+    }
+
+
+    // Convert an AudioClip into a byte array (WAV format)
+    public static byte[] AudioClipToBytes(AudioClip clip)
+    {
+        // Grab raw float samples from the clip
+        float[] samples = new float[clip.samples * clip.channels];
+        clip.GetData(samples, 0);
+
+        // Convert float samples (-1f to 1f) into 16-bit PCM shorts
+        Int16[] intData = new Int16[samples.Length];
+        byte[] bytesData = new byte[samples.Length * 2]; // 2 bytes per sample (16-bit)
+
+        const float rescaleFactor = 32767f; // to convert float to Int16
+
+        for (int i = 0; i < samples.Length; i++)
+        {
+            intData[i] = (short)(samples[i] * rescaleFactor);
+            byte[] byteArr = BitConverter.GetBytes(intData[i]);
+            byteArr.CopyTo(bytesData, i * 2);
+        }
+
+        // Build the WAV file header + data
+        return WriteWavHeader(bytesData, clip.channels, clip.frequency);
+    }
+
+    // Convert a WAV byte array back into an AudioClip
+    public static AudioClip BytesToAudioClip(byte[] wavBytes, string clipName = "loadedClip")
+    {
+        // Parse WAV header
+        int channels = BitConverter.ToInt16(wavBytes, 22);
+        int frequency = BitConverter.ToInt32(wavBytes, 24);
+
+        // Find "data" chunk (skips over any extra chunks safely)
+        int dataChunkPos = FindDataChunk(wavBytes);
+        if (dataChunkPos < 0)
+        {
+            Debug.LogError("BytesToAudioClip: could not find data chunk owo!");
+            return null;
+        }
+
+        int dataSize = BitConverter.ToInt32(wavBytes, dataChunkPos + 4);
+        int sampleStart = dataChunkPos + 8;
+
+        int sampleCount = dataSize / 2; // 16-bit = 2 bytes per sample
+        float[] samples = new float[sampleCount];
+
+        for (int i = 0; i < sampleCount; i++)
+        {
+            short sampleShort = BitConverter.ToInt16(wavBytes, sampleStart + i * 2);
+            samples[i] = sampleShort / 32767f;
+        }
+
+        AudioClip clip = AudioClip.Create(clipName, sampleCount / channels, channels, frequency, false);
+        clip.SetData(samples, 0);
+
+        return clip;
+    }
+
+    private static byte[] WriteWavHeader(byte[] pcmData, int channels, int frequency)
+    {
+        int byteRate = frequency * channels * 2; // 16-bit
+        int blockAlign = channels * 2;
+        int dataSize = pcmData.Length;
+        int fileSize = 36 + dataSize;
+
+        using (MemoryStream stream = new MemoryStream())
+        using (BinaryWriter writer = new BinaryWriter(stream))
+        {
+            // RIFF header
+            writer.Write(System.Text.Encoding.ASCII.GetBytes("RIFF"));
+            writer.Write(fileSize);
+            writer.Write(System.Text.Encoding.ASCII.GetBytes("WAVE"));
+
+            // fmt chunk
+            writer.Write(System.Text.Encoding.ASCII.GetBytes("fmt "));
+            writer.Write(16); // Subchunk1Size for PCM
+            writer.Write((short)1); // AudioFormat = 1 (PCM)
+            writer.Write((short)channels);
+            writer.Write(frequency);
+            writer.Write(byteRate);
+            writer.Write((short)blockAlign);
+            writer.Write((short)16); // bits per sample
+
+            // data chunk
+            writer.Write(System.Text.Encoding.ASCII.GetBytes("data"));
+            writer.Write(dataSize);
+            writer.Write(pcmData);
+
+            return stream.ToArray();
+        }
+    }
+
+    private static int FindDataChunk(byte[] wavBytes)
+    {
+        // Search for "data" tag starting after the standard 12-byte RIFF/WAVE header
+        for (int i = 12; i < wavBytes.Length - 4; i++)
+        {
+            if (wavBytes[i] == 'd' && wavBytes[i + 1] == 'a' && wavBytes[i + 2] == 't' && wavBytes[i + 3] == 'a')
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
     public enum OXFileType
     {
         String,
@@ -850,7 +1031,9 @@ public class OXFileData
         Raw,
         Custom,
         Repeat,
-        r3, r4, r5, r6, r7, r8, r9, r10
+        r3, r4, r5, r6, r7, r8, r9, r10,
+        Texture,
+        Sound,
     }
     private byte[] WankFuckYou(byte[] array, int offset, int length)
     {

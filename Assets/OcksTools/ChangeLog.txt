@@ -21,6 +21,11 @@
   - Added new varients for timing, FrameEnd and Custom(). Custom allows you to specify a float time to wait between updates
 - OXFile Improvements
   - Added automatic compression that kicks in at total data sizes of 300 bytes or larger
+  - Added Texture type (which lets you save/load textures and sprites directly)
+  - Added Sound type (which lets you save/load sounds directly)
+- File System Improvements
+  - Added ReadFileSize() method to easily read the file size of a file, it's in the name bro
+  - Added PathToName() method to easily read the name of a file/folder
 - Misc
   - Added new image to default images, a Fade Circle
   - Added FakeHDR color option for ColorSystem, should make HDR colors just easier to work with
