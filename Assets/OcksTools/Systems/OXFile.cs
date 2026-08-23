@@ -226,6 +226,8 @@ public class OXFileData
     public byte[] DataRaw;
     public int LengthOffset;
     public int pVersion = 0;
+    // Only meaningful for OXFileType.Sound: true = lossless (delta+gzip), false = lossy (ADPCM). Defaults lossy for max space savings.
+    public bool SoundLossless = false;
     public OXFileData() { }
     public OXFileData(OXFileType tp)
     {
@@ -451,11 +453,12 @@ public class OXFileData
         dat.DataSprite = DataIn;
         Add(Name, dat);
     }
-    public void Add(string Name, AudioClip DataIn)
+    public void Add(string Name, AudioClip DataIn, bool lossless = false)
     {
         var dat = new OXFileData();
         dat.Type = OXFileData.OXFileType.Sound;
         dat.DataSound = DataIn;
+        dat.SoundLossless = lossless;
         Add(Name, dat);
     }
     public void Add(string Name, float DataIn)
@@ -679,7 +682,7 @@ public class OXFileData
                 }
                 break;
             case OXFileType.Sound:
-                bytez = AudioClipToBytes(DataSound);
+                bytez = AudioClipToBytes(DataSound, SoundLossless);
                 foreach (var b in bytez)
                 {
                     ret.Add(b);
@@ -913,17 +916,24 @@ public class OXFileData
     }
 
 
-    // Marker byte identifying OX's own delta+gzip lossless sound container.
-    // It's distinct from any legal WAV first byte ('R' = 0x52 for "RIFF"), so old .ox
-    // files saved before this existed (raw uncompressed WAV) still decode correctly nya.
-    private const byte SoundCompressionMagic = 0xAC;
+    // Marker bytes identifying OX's own sound containers. Both are distinct from any
+    // legal WAV first byte ('R' = 0x52 for "RIFF"), so old .ox files saved before any
+    // of this existed (raw uncompressed WAV) still decode correctly nya.
+    private const byte SoundMagicLossless = 0xAC; // delta + gzip, bit-exact
+    private const byte SoundMagicLossy = 0xAD;    // IMA ADPCM + gzip, ~4x smaller, tiny quality loss
 
-    // Convert an AudioClip into a losslessly-compressed byte array uwu
-    // Pipeline: PCM16 -> per-channel order-1 delta -> WAV container -> GZip.
-    // Delta-coding turns audio into small, repetitive values (silence/steady tones
-    // collapse near zero), which GZip then squeezes way harder than raw PCM ever
-    // would. Every step is fully reversible so there's zero quality loss :3
-    public static byte[] AudioClipToBytes(AudioClip clip)
+    // Standard IMA ADPCM tables (public-domain algorithm, our own implementation) uwu
+    private static readonly int[] ImaIndexTable = { -1, -1, -1, -1, 2, 4, 6, 8, -1, -1, -1, -1, 2, 4, 6, 8 };
+    private static readonly int[] ImaStepTable =
+    {
+        7,8,9,10,11,12,13,14,16,17,19,21,23,25,28,31,34,37,41,45,50,55,60,66,73,80,88,97,107,118,130,143,157,173,190,209,230,253,279,307,337,371,408,449,494,544,598,658,724,796,876,963,1060,1166,1282,1411,1552,1707,1878,2066,2272,2499,2749,3024,3327,3660,4026,4428,4871,5358,5894,6484,7132,7845,8630,9493,10442,11487,12635,13899,15289,16818,18500,20350,22385,24623,27086,29794,32767
+    };
+
+    // Convert an AudioClip into a compressed byte array uwu. lossless = true keeps every
+    // sample bit-exact (delta+gzip); lossless = false (default) uses IMA ADPCM, which
+    // packs each 16-bit sample into 4 bits (~4x smaller) for maximum space saving, with
+    // a small, usually inaudible amount of quality loss.
+    public static byte[] AudioClipToBytes(AudioClip clip, bool lossless = false)
     {
         // Grab raw float samples from the clip
         float[] samples = new float[clip.samples * clip.channels];
@@ -936,6 +946,21 @@ public class OXFileData
         for (int i = 0; i < samples.Length; i++)
         {
             pcm[i] = (short)(samples[i] * rescaleFactor);
+        }
+
+        if (!lossless)
+        {
+            byte[] adpcm = EncodeImaAdpcm(pcm, channels);
+            byte[] adpcmCompressed = Compress(adpcm);
+
+            byte[] lossyResult = new byte[17 + adpcmCompressed.Length];
+            lossyResult[0] = SoundMagicLossy;
+            BitConverter.GetBytes(channels).CopyTo(lossyResult, 1);
+            BitConverter.GetBytes(clip.frequency).CopyTo(lossyResult, 5);
+            BitConverter.GetBytes(pcm.Length).CopyTo(lossyResult, 9);
+            BitConverter.GetBytes(adpcm.Length).CopyTo(lossyResult, 13);
+            adpcmCompressed.CopyTo(lossyResult, 17);
+            return lossyResult;
         }
 
         // Order-1 delta encode per channel (lossless, wraps safely and un-wraps exactly)
@@ -962,18 +987,45 @@ public class OXFileData
         byte[] compressed = Compress(wav);
 
         byte[] result = new byte[5 + compressed.Length];
-        result[0] = SoundCompressionMagic;
+        result[0] = SoundMagicLossless;
         BitConverter.GetBytes(wav.Length).CopyTo(result, 1);
         compressed.CopyTo(result, 5);
         return result;
     }
 
     // Convert a byte array back into an AudioClip nya~
-    // Handles both the new delta+gzip lossless container and legacy raw WAV bytes
-    // (anything saved before this feature existed), so old .ox files keep working.
+    // Handles the lossless delta+gzip container, the lossy ADPCM container, and legacy
+    // raw WAV bytes (anything saved before compression existed), so old .ox files keep working.
     public static AudioClip BytesToAudioClip(byte[] wavBytes, string clipName = "loadedClip")
     {
-        bool deltaEncoded = wavBytes.Length > 5 && wavBytes[0] == SoundCompressionMagic;
+        if (wavBytes.Length > 17 && wavBytes[0] == SoundMagicLossy)
+        {
+            int channels = BitConverter.ToInt32(wavBytes, 1);
+            int frequency = BitConverter.ToInt32(wavBytes, 5);
+            int totalSamples = BitConverter.ToInt32(wavBytes, 9);
+            int adpcmLength = BitConverter.ToInt32(wavBytes, 13);
+
+            byte[] compressed = new byte[wavBytes.Length - 17];
+            Array.Copy(wavBytes, 17, compressed, 0, compressed.Length);
+            byte[] adpcm = Decompress(compressed);
+            if (adpcm.Length != adpcmLength)
+            {
+                Debug.LogWarning("BytesToAudioClip: decompressed ADPCM size mismatch owo, data might be corrupt!");
+            }
+
+            short[] pcm = DecodeImaAdpcm(adpcm, channels, totalSamples);
+            float[] lossySamples = new float[pcm.Length];
+            for (int i = 0; i < pcm.Length; i++)
+            {
+                lossySamples[i] = pcm[i] / 32767f;
+            }
+
+            AudioClip lossyClip = AudioClip.Create(clipName, pcm.Length / channels, channels, frequency, false);
+            lossyClip.SetData(lossySamples, 0);
+            return lossyClip;
+        }
+
+        bool deltaEncoded = wavBytes.Length > 5 && wavBytes[0] == SoundMagicLossless;
         byte[] wav;
 
         if (deltaEncoded)
@@ -993,8 +1045,8 @@ public class OXFileData
         }
 
         // Parse WAV header
-        int channels = BitConverter.ToInt16(wav, 22);
-        int frequency = BitConverter.ToInt32(wav, 24);
+        int wavChannels = BitConverter.ToInt16(wav, 22);
+        int wavFrequency = BitConverter.ToInt32(wav, 24);
 
         // Find "data" chunk (skips over any extra chunks safely)
         int dataChunkPos = FindDataChunk(wav);
@@ -1013,10 +1065,10 @@ public class OXFileData
         if (deltaEncoded)
         {
             // Undo the per-channel delta (cumulative sum) before normalizing to float
-            short[] prev = new short[channels];
+            short[] prev = new short[wavChannels];
             for (int i = 0; i < sampleCount; i++)
             {
-                int ch = i % channels;
+                int ch = i % wavChannels;
                 short d = BitConverter.ToInt16(wav, sampleStart + i * 2);
                 short cur = (short)(prev[ch] + d);
                 prev[ch] = cur;
@@ -1032,10 +1084,98 @@ public class OXFileData
             }
         }
 
-        AudioClip clip = AudioClip.Create(clipName, sampleCount / channels, channels, frequency, false);
+        AudioClip clip = AudioClip.Create(clipName, sampleCount / wavChannels, wavChannels, wavFrequency, false);
         clip.SetData(samples, 0);
 
         return clip;
+    }
+
+    // Encodes interleaved 16-bit PCM into 4-bit-per-sample IMA ADPCM, one predictor/step
+    // pair per channel so multi-channel audio doesn't bleed state between channels.
+    private static byte[] EncodeImaAdpcm(short[] pcm, int channels)
+    {
+        int[] predictor = new int[channels];
+        int[] stepIndex = new int[channels];
+        byte[] output = new byte[(pcm.Length + 1) / 2];
+        bool highNibble = false;
+        int outPos = 0;
+        byte pending = 0;
+
+        for (int i = 0; i < pcm.Length; i++)
+        {
+            int ch = i % channels;
+            byte nibble = EncodeImaSample(pcm[i], ref predictor[ch], ref stepIndex[ch]);
+
+            if (!highNibble)
+            {
+                pending = nibble;
+                highNibble = true;
+            }
+            else
+            {
+                output[outPos++] = (byte)(pending | (nibble << 4));
+                highNibble = false;
+            }
+        }
+        if (highNibble)
+        {
+            output[outPos] = pending; // trailing lone nibble, high bits stay 0
+        }
+        return output;
+    }
+
+    private static short[] DecodeImaAdpcm(byte[] adpcm, int channels, int totalSamples)
+    {
+        int[] predictor = new int[channels];
+        int[] stepIndex = new int[channels];
+        short[] pcm = new short[totalSamples];
+
+        for (int i = 0; i < totalSamples; i++)
+        {
+            int ch = i % channels;
+            byte packed = adpcm[i / 2];
+            byte nibble = (i % 2 == 0) ? (byte)(packed & 0x0F) : (byte)((packed >> 4) & 0x0F);
+            pcm[i] = DecodeImaSample(nibble, ref predictor[ch], ref stepIndex[ch]);
+        }
+        return pcm;
+    }
+
+    private static byte EncodeImaSample(short sample, ref int predictor, ref int stepIndex)
+    {
+        int step = ImaStepTable[stepIndex];
+        int diff = sample - predictor;
+        int sign = 0;
+        if (diff < 0) { sign = 8; diff = -diff; }
+
+        int delta = 0;
+        int vpdiff = step >> 3;
+        if (diff >= step) { delta = 4; diff -= step; vpdiff += step; }
+        step >>= 1;
+        if (diff >= step) { delta |= 2; diff -= step; vpdiff += step; }
+        step >>= 1;
+        if (diff >= step) { delta |= 1; vpdiff += step; }
+
+        predictor = sign != 0 ? predictor - vpdiff : predictor + vpdiff;
+        predictor = Math.Clamp(predictor, -32768, 32767);
+
+        stepIndex = Math.Clamp(stepIndex + ImaIndexTable[delta | sign], 0, ImaStepTable.Length - 1);
+
+        return (byte)(delta | sign);
+    }
+
+    private static short DecodeImaSample(byte nibble, ref int predictor, ref int stepIndex)
+    {
+        int step = ImaStepTable[stepIndex];
+        int diff = step >> 3;
+        if ((nibble & 4) != 0) diff += step;
+        if ((nibble & 2) != 0) diff += step >> 1;
+        if ((nibble & 1) != 0) diff += step >> 2;
+        if ((nibble & 8) != 0) diff = -diff;
+
+        predictor = Math.Clamp(predictor + diff, -32768, 32767);
+        stepIndex = Math.Clamp(stepIndex + ImaIndexTable[nibble], 0, ImaStepTable.Length - 1);
+
+        return (short)predictor;
     }
 
     private static byte[] WriteWavHeader(byte[] pcmData, int channels, int frequency)
