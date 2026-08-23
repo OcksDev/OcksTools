@@ -913,55 +913,123 @@ public class OXFileData
     }
 
 
-    // Convert an AudioClip into a byte array (WAV format)
+    // Marker byte identifying OX's own delta+gzip lossless sound container.
+    // It's distinct from any legal WAV first byte ('R' = 0x52 for "RIFF"), so old .ox
+    // files saved before this existed (raw uncompressed WAV) still decode correctly nya.
+    private const byte SoundCompressionMagic = 0xAC;
+
+    // Convert an AudioClip into a losslessly-compressed byte array uwu
+    // Pipeline: PCM16 -> per-channel order-1 delta -> WAV container -> GZip.
+    // Delta-coding turns audio into small, repetitive values (silence/steady tones
+    // collapse near zero), which GZip then squeezes way harder than raw PCM ever
+    // would. Every step is fully reversible so there's zero quality loss :3
     public static byte[] AudioClipToBytes(AudioClip clip)
     {
         // Grab raw float samples from the clip
         float[] samples = new float[clip.samples * clip.channels];
         clip.GetData(samples, 0);
+        int channels = Mathf.Max(1, clip.channels);
 
         // Convert float samples (-1f to 1f) into 16-bit PCM shorts
-        Int16[] intData = new Int16[samples.Length];
-        byte[] bytesData = new byte[samples.Length * 2]; // 2 bytes per sample (16-bit)
-
         const float rescaleFactor = 32767f; // to convert float to Int16
-
+        short[] pcm = new short[samples.Length];
         for (int i = 0; i < samples.Length; i++)
         {
-            intData[i] = (short)(samples[i] * rescaleFactor);
-            byte[] byteArr = BitConverter.GetBytes(intData[i]);
-            byteArr.CopyTo(bytesData, i * 2);
+            pcm[i] = (short)(samples[i] * rescaleFactor);
         }
 
-        // Build the WAV file header + data
-        return WriteWavHeader(bytesData, clip.channels, clip.frequency);
+        // Order-1 delta encode per channel (lossless, wraps safely and un-wraps exactly)
+        short[] delta = new short[pcm.Length];
+        for (int ch = 0; ch < channels; ch++)
+        {
+            short prev = 0;
+            for (int i = ch; i < pcm.Length; i += channels)
+            {
+                short cur = pcm[i];
+                delta[i] = (short)(cur - prev);
+                prev = cur;
+            }
+        }
+
+        byte[] deltaBytes = new byte[delta.Length * 2];
+        for (int i = 0; i < delta.Length; i++)
+        {
+            BitConverter.GetBytes(delta[i]).CopyTo(deltaBytes, i * 2);
+        }
+
+        // Build the WAV file header + delta data, then gzip the whole thing
+        byte[] wav = WriteWavHeader(deltaBytes, channels, clip.frequency);
+        byte[] compressed = Compress(wav);
+
+        byte[] result = new byte[5 + compressed.Length];
+        result[0] = SoundCompressionMagic;
+        BitConverter.GetBytes(wav.Length).CopyTo(result, 1);
+        compressed.CopyTo(result, 5);
+        return result;
     }
 
-    // Convert a WAV byte array back into an AudioClip
+    // Convert a byte array back into an AudioClip nya~
+    // Handles both the new delta+gzip lossless container and legacy raw WAV bytes
+    // (anything saved before this feature existed), so old .ox files keep working.
     public static AudioClip BytesToAudioClip(byte[] wavBytes, string clipName = "loadedClip")
     {
+        bool deltaEncoded = wavBytes.Length > 5 && wavBytes[0] == SoundCompressionMagic;
+        byte[] wav;
+
+        if (deltaEncoded)
+        {
+            int originalLength = BitConverter.ToInt32(wavBytes, 1);
+            byte[] compressed = new byte[wavBytes.Length - 5];
+            Array.Copy(wavBytes, 5, compressed, 0, compressed.Length);
+            wav = Decompress(compressed);
+            if (wav.Length != originalLength)
+            {
+                Debug.LogWarning("BytesToAudioClip: decompressed sound size mismatch owo, data might be corrupt!");
+            }
+        }
+        else
+        {
+            wav = wavBytes; // legacy uncompressed WAV, read as-is
+        }
+
         // Parse WAV header
-        int channels = BitConverter.ToInt16(wavBytes, 22);
-        int frequency = BitConverter.ToInt32(wavBytes, 24);
+        int channels = BitConverter.ToInt16(wav, 22);
+        int frequency = BitConverter.ToInt32(wav, 24);
 
         // Find "data" chunk (skips over any extra chunks safely)
-        int dataChunkPos = FindDataChunk(wavBytes);
+        int dataChunkPos = FindDataChunk(wav);
         if (dataChunkPos < 0)
         {
             Debug.LogError("BytesToAudioClip: could not find data chunk owo!");
             return null;
         }
 
-        int dataSize = BitConverter.ToInt32(wavBytes, dataChunkPos + 4);
+        int dataSize = BitConverter.ToInt32(wav, dataChunkPos + 4);
         int sampleStart = dataChunkPos + 8;
 
         int sampleCount = dataSize / 2; // 16-bit = 2 bytes per sample
         float[] samples = new float[sampleCount];
 
-        for (int i = 0; i < sampleCount; i++)
+        if (deltaEncoded)
         {
-            short sampleShort = BitConverter.ToInt16(wavBytes, sampleStart + i * 2);
-            samples[i] = sampleShort / 32767f;
+            // Undo the per-channel delta (cumulative sum) before normalizing to float
+            short[] prev = new short[channels];
+            for (int i = 0; i < sampleCount; i++)
+            {
+                int ch = i % channels;
+                short d = BitConverter.ToInt16(wav, sampleStart + i * 2);
+                short cur = (short)(prev[ch] + d);
+                prev[ch] = cur;
+                samples[i] = cur / 32767f;
+            }
+        }
+        else
+        {
+            for (int i = 0; i < sampleCount; i++)
+            {
+                short sampleShort = BitConverter.ToInt16(wav, sampleStart + i * 2);
+                samples[i] = sampleShort / 32767f;
+            }
         }
 
         AudioClip clip = AudioClip.Create(clipName, sampleCount / channels, channels, frequency, false);

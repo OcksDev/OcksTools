@@ -17,6 +17,8 @@ public class TextOXFileStuff : MonoBehaviour
         x.Data.Add("snd", CoolSound);
         string path = FileSystem.Instance.GameDirectory + "/ImgAndAudio.ox";
         x.WriteFile(path, true);
+        a.clip = CoolSound;
+        a.Play();
 
         yield return new WaitForSeconds(1.5f);
         var ox = new OXFile();
