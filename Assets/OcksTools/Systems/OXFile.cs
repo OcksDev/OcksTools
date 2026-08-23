@@ -23,9 +23,9 @@ using static OXFileData;
 public class OXFile
 {
     //touch away
-    public const short ParserVersion = 1;
+    public const short ParserVersion = 2;
     //no touchy
-    public int FileVersion = 1;
+    public int FileVersion = -1;
     public OXFileData Data = new OXFileData(OXFileData.OXFileType.OXFileData);
     public Dictionary<string, byte> NameLinker = new();
     public Dictionary<byte, string> IndexLinker = new();
@@ -43,6 +43,12 @@ public class OXFile
         return this;
     }
 
+    public OXFile DisableObfuscation()
+    {
+        SetFlag(2);
+        return this;
+    }
+
     public bool ReadFile(string str)
     {
         var cd = File.ReadAllBytes(str);
@@ -54,6 +60,7 @@ public class OXFile
         Data = new OXFileData(OXFileData.OXFileType.OXFileData);
         Data.pVersion = FileVersion;
         Data.DataRaw = WankFuckYou(cd, index, cd.Length - index);
+        if (!GetFlag(2)) DeObfuscate(Data.DataRaw);
         if (GetFlag(1)) Data.DataRaw = Decompress(Data.DataRaw);
         Data.DataOXFiles = Data.Get_OXFileData(GetFileData());
 
@@ -71,6 +78,10 @@ public class OXFile
             {
                 SetFlag(1);
                 wank = Compress(wank.ToArray()).ToList();
+            }
+            if (!GetFlag(2))
+            {
+                wank = Obfuscate(wank.ToArray()).ToList();
             }
             List<byte> bytes = new List<byte>();
             SetVersionIntoFlag();
@@ -129,6 +140,7 @@ public class OXFile
      * Flags:
      * 0 -> Linker
      * 1 -> Compressed with GZIP
+     * 2 -> Simple Anti-Skim Obfuscation
      */
     public static readonly Dictionary<OXFileType, byte> DefinedLengths = new()
     {
@@ -900,6 +912,26 @@ public class OXFileData
             Debug.LogError(ex);
             throw;
         }
+    }
+    private static string SuperSecretKey = "B!d&llp)897633G%^&*g576iyu";
+    public static byte[] Obfuscate(byte[] data)
+    {
+        byte[] b = Encoding.UTF8.GetBytes(SuperSecretKey);
+        for (int i = 0; i < data.Length; i++)
+        {
+            data[i] ^= (byte)((i + 100) ^ b[i % b.Length]);
+        }
+        return data;
+    }
+
+    public static byte[] DeObfuscate(byte[] data)
+    {
+        byte[] b = Encoding.UTF8.GetBytes(SuperSecretKey);
+        for (int i = 0; i < data.Length; i++)
+        {
+            data[i] ^= (byte)((i + 100) ^ b[i % b.Length]);
+        }
+        return data;
     }
     public static Texture2D BytesToTexture(byte[] bytes)
     {
