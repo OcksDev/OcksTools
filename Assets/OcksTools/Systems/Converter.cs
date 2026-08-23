@@ -307,35 +307,68 @@ public static class Converter
         return dic;
     }
 
-    public static Vector3Int StringToVector3Int(this string e)
+    public static string ToStringSmaller(this Vector2 a) { string x = a.ToString(); return x.Substring(1, x.Length - 2); }
+
+    public static string ToStringSmaller(this Vector3 a) { string x = a.ToString(); return x.Substring(1, x.Length - 2); }
+
+    public static string ToStringSmaller(this Vector2Int a) { string x = a.ToString(); return x.Substring(1, x.Length - 2); }
+
+    public static string ToStringSmaller(this Vector3Int a) { string x = a.ToString(); return x.Substring(1, x.Length - 2); }
+
+    public static string ToStringSmaller(this Quaternion a) { string x = a.ToString(); return x.Substring(1, x.Length - 2); }
+
+    public static Vector2 StringToVector2(this string e)
     {
         var s = StringToList(e.Substring(1, e.Length - 2));
-        return new Vector3Int(int.Parse(s[0]), int.Parse(s[1]), int.Parse(s[2]));
+        return new Vector2(float.Parse(s[0]), float.Parse(s[1]));
     }
-
     public static Vector3 StringToVector3(this string e)
     {
         var s = StringToList(e.Substring(1, e.Length - 2));
         return new Vector3(float.Parse(s[0]), float.Parse(s[1]), float.Parse(s[2]));
     }
-
+    public static Vector2Int StringToVector2Int(this string e)
+    {
+        var s = StringToList(e.Substring(1, e.Length - 2));
+        return new Vector2Int(int.Parse(s[0]), int.Parse(s[1]));
+    }
+    public static Vector3Int StringToVector3Int(this string e)
+    {
+        var s = StringToList(e.Substring(1, e.Length - 2));
+        return new Vector3Int(int.Parse(s[0]), int.Parse(s[1]), int.Parse(s[2]));
+    }
     public static Quaternion StringToQuaternion(this string e)
     {
         var s = StringToList(e.Substring(1, e.Length - 2));
         return new Quaternion(float.Parse(s[0]), float.Parse(s[1]), float.Parse(s[2]), float.Parse(s[3]));
     }
-
-    public static Vector2Int StringToVector2Int(this string e)
+    public static Vector2 StringSmallToVector2(this string e)
     {
-        var s = Converter.StringToList(e.Substring(1, e.Length - 2));
-        return new Vector2Int(int.Parse(s[0]), int.Parse(s[1]));
-    }
-
-    public static Vector2 StringToVector2(this string e)
-    {
-        var s = Converter.StringToList(e.Substring(1, e.Length - 2));
+        var s = StringToList(e);
         return new Vector2(float.Parse(s[0]), float.Parse(s[1]));
     }
+    public static Vector3 StringSmallToVector3(this string e)
+    {
+        var s = StringToList(e);
+        return new Vector3(float.Parse(s[0]), float.Parse(s[1]), float.Parse(s[2]));
+    }
+    public static Vector2Int StringSmallToVector2Int(this string e)
+    {
+        var s = StringToList(e);
+        return new Vector2Int(int.Parse(s[0]), int.Parse(s[1]));
+    }
+    public static Vector3Int StringSmallToVector3Int(this string e)
+    {
+        var s = StringToList(e);
+        return new Vector3Int(int.Parse(s[0]), int.Parse(s[1]), int.Parse(s[2]));
+    }
+    public static Quaternion StringSmallToQuaternion(this string e)
+    {
+        var s = StringToList(e);
+        return new Quaternion(float.Parse(s[0]), float.Parse(s[1]), float.Parse(s[2]), float.Parse(s[3]));
+    }
+
+
 
     public static string BoolArrayToString(this bool[] arr)
     {
