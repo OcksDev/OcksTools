@@ -898,10 +898,10 @@ public class OXFileData
             throw;
         }
     }
-    public static Texture2D BytesToTexture(byte[] bytes, int width = 2, int height = 2)
+    public static Texture2D BytesToTexture(byte[] bytes)
     {
-        Texture2D texture = new Texture2D(width, height, TextureFormat.RGBA32, false);
-        bool success = texture.LoadImage(bytes); // auto-resizes texture
+        Texture2D texture = new Texture2D(1, 1);
+        bool success = texture.LoadImage(bytes);
 
         if (!success)
         {
