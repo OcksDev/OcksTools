@@ -11,9 +11,7 @@ using static OXFileData;
 /*
  * What is this?
  * 
- * This is an experimental file format/parser I have been working on.
- * Currently this is not the same thing as the FileSystem, as that is meant for more general file interaction.
- * This specifically is only designed to read/write/parse any .ox file.
+ * This is a file format/parser I have been working on, to read/write/parse any .ox file.
  * 
  */
 
@@ -49,6 +47,12 @@ public class OXFile
         return this;
     }
 
+    public OXFile DisableCompression()
+    {
+        SetFlag(1);
+        return this;
+    }
+
     public bool ReadFile(string str)
     {
         var cd = File.ReadAllBytes(str);
@@ -70,14 +74,18 @@ public class OXFile
     {
         //string fullpath = //Path.Combine(DirectoryLol, FileName);
         bool e = File.Exists(FileName);
-
         if (CanOverride || !e)
         {
+            int oldflags = Flags;
             var wank = Data.BytesOfData(GetFileData(), 0);
-            if (wank.Count >= 300)
+            if (wank.Count >= 300 && !GetFlag(1))
             {
                 SetFlag(1);
                 wank = Compress(wank.ToArray()).ToList();
+            }
+            else
+            {
+                SetFlag(1, false);
             }
             if (!GetFlag(2))
             {
@@ -89,6 +97,7 @@ public class OXFile
             foreach (byte b in ver) { bytes.Add(b); }
             wank = bytes.CombineLists(wank);
             File.WriteAllBytes(FileName, wank.ToArray());
+            Flags = oldflags;
         }
 
     }
@@ -149,6 +158,10 @@ public class OXFile
         { OXFileType.Long, 8 },
         { OXFileType.Float, 4 },
         { OXFileType.Double, 8 },
+        { OXFileType.Vector2, 8 },
+        { OXFileType.Vector3, 12 },
+        { OXFileType.Quaternion, 16 },
+        { OXFileType.Color, 16 },
     };
 }
 
@@ -204,6 +217,26 @@ public class OXFileData
         get => _value is bool b && b;
         set => _value = value;
     }
+    public Vector2 DataVector2
+    {
+        get => _value is Vector2 v ? v : Vector2.zero;
+        set => _value = value;
+    }
+    public Vector3 DataVector3
+    {
+        get => _value is Vector3 v ? v : Vector3.zero;
+        set => _value = value;
+    }
+    public Quaternion DataQuaternion
+    {
+        get => _value is Quaternion q ? q : Quaternion.identity;
+        set => _value = value;
+    }
+    public Color DataColor
+    {
+        get => _value is Color c ? c : Color.clear;
+        set => _value = value;
+    }
     public Texture2D DataTexture
     {
         get => _value as Texture2D;
@@ -236,6 +269,32 @@ public class OXFileData
     }
 
     public byte[] DataRaw;
+
+
+    public enum OXFileType
+    {
+        String,
+        OXFileData,
+        ListOXFileData,
+        DictStringString,
+        ListString,
+        Int,
+        Float,
+        Long,
+        Double,
+        Bool,
+        Raw,
+        Custom,
+        Repeat,
+        r3, r4, r5, r6, r7, r8, r9, r10,
+        Texture,
+        Sound,
+        Vector2,
+        Vector3,
+        Quaternion,
+        Color,
+    }
+
     public int LengthOffset;
     public int pVersion = 0;
     // Only meaningful for OXFileType.Sound: true = lossless (delta+gzip), false = lossy (ADPCM). Defaults lossy for max space savings.
@@ -396,6 +455,18 @@ public class OXFileData
             case OXFileType.Double:
                 DataDouble = Get_Double();
                 break;
+            case OXFileType.Vector2:
+                DataVector2 = Get_Vector2();
+                break;
+            case OXFileType.Vector3:
+                DataVector3 = Get_Vector3();
+                break;
+            case OXFileType.Quaternion:
+                DataQuaternion = Get_Quaternion();
+                break;
+            case OXFileType.Color:
+                DataColor = Get_Color();
+                break;
             case OXFileType.OXFileData:
                 DataOXFiles = Get_OXFileData(fd);
                 break;
@@ -449,6 +520,34 @@ public class OXFileData
         var dat = new OXFileData();
         dat.Type = OXFileData.OXFileType.Bool;
         dat.DataBool = DataIn;
+        Add(Name, dat);
+    }
+    public void Add(string Name, Vector2 DataIn)
+    {
+        var dat = new OXFileData();
+        dat.Type = OXFileData.OXFileType.Vector2;
+        dat.DataVector2 = DataIn;
+        Add(Name, dat);
+    }
+    public void Add(string Name, Vector3 DataIn)
+    {
+        var dat = new OXFileData();
+        dat.Type = OXFileData.OXFileType.Vector3;
+        dat.DataVector3 = DataIn;
+        Add(Name, dat);
+    }
+    public void Add(string Name, Quaternion DataIn)
+    {
+        var dat = new OXFileData();
+        dat.Type = OXFileData.OXFileType.Quaternion;
+        dat.DataQuaternion = DataIn;
+        Add(Name, dat);
+    }
+    public void Add(string Name, Color DataIn)
+    {
+        var dat = new OXFileData();
+        dat.Type = OXFileData.OXFileType.Color;
+        dat.DataColor = DataIn;
         Add(Name, dat);
     }
     public void Add(string Name, Texture2D DataIn)
@@ -686,6 +785,27 @@ public class OXFileData
                     ret.Add(b);
                 }
                 break;
+            case OXFileType.Vector2:
+                ret.AddRange(BitConverter.GetBytes(DataVector2.x));
+                ret.AddRange(BitConverter.GetBytes(DataVector2.y));
+                break;
+            case OXFileType.Vector3:
+                ret.AddRange(BitConverter.GetBytes(DataVector3.x));
+                ret.AddRange(BitConverter.GetBytes(DataVector3.y));
+                ret.AddRange(BitConverter.GetBytes(DataVector3.z));
+                break;
+            case OXFileType.Quaternion:
+                ret.AddRange(BitConverter.GetBytes(DataQuaternion.x));
+                ret.AddRange(BitConverter.GetBytes(DataQuaternion.y));
+                ret.AddRange(BitConverter.GetBytes(DataQuaternion.z));
+                ret.AddRange(BitConverter.GetBytes(DataQuaternion.w));
+                break;
+            case OXFileType.Color:
+                ret.AddRange(BitConverter.GetBytes(DataColor.r));
+                ret.AddRange(BitConverter.GetBytes(DataColor.g));
+                ret.AddRange(BitConverter.GetBytes(DataColor.b));
+                ret.AddRange(BitConverter.GetBytes(DataColor.a));
+                break;
             case OXFileType.Texture:
                 bytez = DataTexture.EncodeToPNG();
                 foreach (var b in bytez)
@@ -786,6 +906,35 @@ public class OXFileData
     private double Get_Double()
     {
         return BitConverter.ToDouble(DataRaw, 0);
+    }
+    private Vector2 Get_Vector2()
+    {
+        return new Vector2(
+            BitConverter.ToSingle(DataRaw, 0),
+            BitConverter.ToSingle(DataRaw, 4));
+    }
+    private Vector3 Get_Vector3()
+    {
+        return new Vector3(
+            BitConverter.ToSingle(DataRaw, 0),
+            BitConverter.ToSingle(DataRaw, 4),
+            BitConverter.ToSingle(DataRaw, 8));
+    }
+    private Quaternion Get_Quaternion()
+    {
+        return new Quaternion(
+            BitConverter.ToSingle(DataRaw, 0),
+            BitConverter.ToSingle(DataRaw, 4),
+            BitConverter.ToSingle(DataRaw, 8),
+            BitConverter.ToSingle(DataRaw, 12));
+    }
+    private Color Get_Color()
+    {
+        return new Color(
+            BitConverter.ToSingle(DataRaw, 0),
+            BitConverter.ToSingle(DataRaw, 4),
+            BitConverter.ToSingle(DataRaw, 8),
+            BitConverter.ToSingle(DataRaw, 12));
     }
 
     public static Dictionary<string, Func<byte[], _IOXFile>> CustomFormats = new();
@@ -1255,25 +1404,6 @@ public class OXFileData
             }
         }
         return -1;
-    }
-    public enum OXFileType
-    {
-        String,
-        OXFileData,
-        ListOXFileData,
-        DictStringString,
-        ListString,
-        Int,
-        Float,
-        Long,
-        Double,
-        Bool,
-        Raw,
-        Custom,
-        Repeat,
-        r3, r4, r5, r6, r7, r8, r9, r10,
-        Texture,
-        Sound,
     }
     private byte[] WankFuckYou(byte[] array, int offset, int length)
     {

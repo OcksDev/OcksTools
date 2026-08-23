@@ -20,10 +20,15 @@
   - Adjusted API Syntax to match Tags style, it's much cleaner now (OXLerp.Frame.Linear/OXLerp.Fixed.Linear instead of OXLerp.Linear()/OXLerp.LinearFixed())
   - Added new varients for timing, FrameEnd and Custom(). Custom allows you to specify a float time to wait between updates
 - OXFile Improvements
-  - Added automatic compression that kicks in at total data sizes of 300 bytes or larger
+  - Added automatic compression that kicks in at total data sizes of 300 bytes or larger (can be manually disabled)
   - Added Texture type (which lets you save/load textures and sprites directly)
   - Added Sound type (which lets you save/load sounds directly)
-  - Readded Obfuscation, simple anti skimming measures to stop someone from peaking into the file (it wont stop someone dedicated though)
+  - Added Vector2 type
+  - Added Vector3 type
+  - Added Quaternion type
+  - Added Color type
+  - Readded Obfuscation, simple anti skimming measures to stop someone from peaking into the file (it wont stop someone dedicated though) (can be manually disabled)
+  - Fixed bug with flags changing from a write file call
 - File System Improvements
   - Added ReadFileSize() method to easily read the file size of a file, it's in the name bro
   - Added PathToName() method to easily read the name of a file/folder
