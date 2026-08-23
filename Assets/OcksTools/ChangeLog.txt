@@ -26,12 +26,14 @@
 - File System Improvements
   - Added ReadFileSize() method to easily read the file size of a file, it's in the name bro
   - Added PathToName() method to easily read the name of a file/folder
+- Random Functions
+  - Added ToStringSmall() and StringSmallTo...() for Vector2, Vector2Int, Vector3, Vector3Int, and quaternion, which simply converts them to strings but without the parenthesis
+  - Fixed Texture2DToSprite() conversion method
 - Misc
   - Added new image to default images, a Fade Circle
   - Added FakeHDR color option for ColorSystem, should make HDR colors just easier to work with
   - Dynamic String AddRef() now can take in any about of references
   - Fixed the FixedString inspector readout, at some point that stopped working but now its good again.
-  - Added ToStringSmall() and StringSmallTo...() for Vector2, Vector2Int, Vector3, Vector3Int, and quaternion, which simply converts them to strings but without the parenthesis
   - Added CopyFrom() to OXEvents (and layered events)
   - Marginally optimized Entity Skill/Effect getting (with trygetvalue insteaad of containskey) 
   - MultiRef renamed to MRef

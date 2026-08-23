@@ -807,6 +807,8 @@ GameObject:
   - component: {fileID: 1528432285}
   - component: {fileID: 1528432284}
   - component: {fileID: 1528432286}
+  - component: {fileID: 1528432288}
+  - component: {fileID: 1528432287}
   m_Layer: 0
   m_Name: Circle
   m_TagString: Untagged
@@ -862,7 +864,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 0.62740695, g: 0.23113209, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -900,6 +902,36 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   zzzz: 1
+--- !u!114 &1528432287
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1528432283}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac1cfc2e71f50cf4496bb3866b830a15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FileSystem
+  WorkingDirectory: 
+  OcksDirectry: 
+  UniversalDirectory: 
+  GameDirectory: 
+--- !u!114 &1528432288
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1528432283}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d8a03c3ed3e7874c81aa4a04f5c00c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TextOXFileStuff
+  CoolImage: {fileID: 21300000, guid: f10dcfa5a64722e4fab1eef72583f731, type: 3}
+  CoolSound: {fileID: 8300000, guid: b946100d2e044674dba1ad459b9c4ba9, type: 3}
 --- !u!1 &1713775340
 GameObject:
   m_ObjectHideFlags: 0

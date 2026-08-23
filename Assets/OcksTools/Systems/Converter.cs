@@ -506,10 +506,9 @@ public static class Converter
             return new Color32(r, g, b, a);
         }
     }
-
     public static Sprite Texture2DToSprite(this Texture2D tex)
     {
-        return Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(tex.width / 2, tex.height / 2));
+        return Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), Mathf.Max(tex.width, tex.height));
     }
     public static string NumToRead(this string number, int style = 0)
     {

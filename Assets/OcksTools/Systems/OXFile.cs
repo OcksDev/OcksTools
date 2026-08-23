@@ -900,7 +900,7 @@ public class OXFileData
     }
     public static Texture2D BytesToTexture(byte[] bytes)
     {
-        Texture2D texture = new Texture2D(1, 1);
+        Texture2D texture = new Texture2D(1, 1, TextureFormat.RGBA32, false);
         bool success = texture.LoadImage(bytes);
 
         if (!success)
