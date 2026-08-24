@@ -23,10 +23,10 @@
   - Added automatic compression that kicks in at total data sizes of 300 bytes or larger (can be manually disabled)
   - Added Texture type (which lets you save/load textures and sprites directly)
   - Added Sound type (which lets you save/load sounds directly)
-  - Added Vector2 type
-  - Added Vector3 type
+  - Added Vector2 type (and Vector2Int)
+  - Added Vector3 type (and Vector3Int)
   - Added Quaternion type
-  - Added Color type
+  - Added Color type (and Color32)
   - Added Mesh type
   - Readded Obfuscation, simple anti skimming measures to stop someone from peaking into the file (it wont stop someone dedicated though) (can be manually disabled)
   - Fixed bug with flags changing from a write file call

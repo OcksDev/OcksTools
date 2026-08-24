@@ -162,6 +162,9 @@ public class OXFile
         { OXFileType.Vector3, 12 },
         { OXFileType.Quaternion, 16 },
         { OXFileType.Color, 16 },
+        { OXFileType.Vector2Int, 8 },
+        { OXFileType.Vector3Int, 12 },
+        { OXFileType.Color32, 4 },
     };
 }
 
@@ -237,6 +240,21 @@ public class OXFileData
         get => _value is Color c ? c : Color.clear;
         set => _value = value;
     }
+    public Vector2Int DataVector2Int
+    {
+        get => _value is Vector2Int v ? v : Vector2Int.zero;
+        set => _value = value;
+    }
+    public Vector3Int DataVector3Int
+    {
+        get => _value is Vector3Int v ? v : Vector3Int.zero;
+        set => _value = value;
+    }
+    public Color32 DataColor32
+    {
+        get => _value is Color32 c ? c : new Color32(0, 0, 0, 0);
+        set => _value = value;
+    }
     public Texture2D DataTexture
     {
         get => _value as Texture2D;
@@ -296,9 +314,12 @@ public class OXFileData
         Sound,
         Mesh,
         Vector2,
+        Vector2Int,
         Vector3,
+        Vector3Int,
         Quaternion,
         Color,
+        Color32,
     }
 
     public int LengthOffset;
@@ -470,6 +491,15 @@ public class OXFileData
             case OXFileType.Color:
                 DataColor = Get_Color();
                 break;
+            case OXFileType.Vector2Int:
+                DataVector2Int = Get_Vector2Int();
+                break;
+            case OXFileType.Vector3Int:
+                DataVector3Int = Get_Vector3Int();
+                break;
+            case OXFileType.Color32:
+                DataColor32 = Get_Color32();
+                break;
             case OXFileType.OXFileData:
                 DataOXFiles = Get_OXFileData(fd);
                 break;
@@ -554,6 +584,27 @@ public class OXFileData
         var dat = new OXFileData();
         dat.Type = OXFileData.OXFileType.Color;
         dat.DataColor = DataIn;
+        Add(Name, dat);
+    }
+    public void Add(string Name, Vector2Int DataIn)
+    {
+        var dat = new OXFileData();
+        dat.Type = OXFileData.OXFileType.Vector2Int;
+        dat.DataVector2Int = DataIn;
+        Add(Name, dat);
+    }
+    public void Add(string Name, Vector3Int DataIn)
+    {
+        var dat = new OXFileData();
+        dat.Type = OXFileData.OXFileType.Vector3Int;
+        dat.DataVector3Int = DataIn;
+        Add(Name, dat);
+    }
+    public void Add(string Name, Color32 DataIn)
+    {
+        var dat = new OXFileData();
+        dat.Type = OXFileData.OXFileType.Color32;
+        dat.DataColor32 = DataIn;
         Add(Name, dat);
     }
     public void Add(string Name, Texture2D DataIn)
@@ -798,6 +849,21 @@ public class OXFileData
                 ret.AddRange(BitConverter.GetBytes(DataColor.b));
                 ret.AddRange(BitConverter.GetBytes(DataColor.a));
                 break;
+            case OXFileType.Vector2Int:
+                ret.AddRange(BitConverter.GetBytes(DataVector2Int.x));
+                ret.AddRange(BitConverter.GetBytes(DataVector2Int.y));
+                break;
+            case OXFileType.Vector3Int:
+                ret.AddRange(BitConverter.GetBytes(DataVector3Int.x));
+                ret.AddRange(BitConverter.GetBytes(DataVector3Int.y));
+                ret.AddRange(BitConverter.GetBytes(DataVector3Int.z));
+                break;
+            case OXFileType.Color32:
+                ret.Add(DataColor32.r);
+                ret.Add(DataColor32.g);
+                ret.Add(DataColor32.b);
+                ret.Add(DataColor32.a);
+                break;
             case OXFileType.Texture:
                 bytez = DataTexture.EncodeToPNG();
                 ret.AddRange(bytez);
@@ -902,6 +968,23 @@ public class OXFileData
             BitConverter.ToSingle(DataRaw, 4),
             BitConverter.ToSingle(DataRaw, 8),
             BitConverter.ToSingle(DataRaw, 12));
+    }
+    private Vector2Int Get_Vector2Int()
+    {
+        return new Vector2Int(
+            BitConverter.ToInt32(DataRaw, 0),
+            BitConverter.ToInt32(DataRaw, 4));
+    }
+    private Vector3Int Get_Vector3Int()
+    {
+        return new Vector3Int(
+            BitConverter.ToInt32(DataRaw, 0),
+            BitConverter.ToInt32(DataRaw, 4),
+            BitConverter.ToInt32(DataRaw, 8));
+    }
+    private Color32 Get_Color32()
+    {
+        return new Color32(DataRaw[0], DataRaw[1], DataRaw[2], DataRaw[3]);
     }
 
     public static Dictionary<string, Func<byte[], _IOXFile>> CustomFormats = new();
