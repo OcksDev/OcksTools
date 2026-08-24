@@ -252,6 +252,11 @@ public class OXFileData
         get => _value as AudioClip;
         set => _value = value;
     }
+    public Mesh DataMesh
+    {
+        get => _value as Mesh;
+        set => _value = value;
+    }
     public _IOXFile DataCustom
     {
         get => (_IOXFile)_value;
@@ -289,6 +294,7 @@ public class OXFileData
         r3, r4, r5, r6, r7, r8, r9, r10,
         Texture,
         Sound,
+        Mesh,
         Vector2,
         Vector3,
         Quaternion,
@@ -479,6 +485,9 @@ public class OXFileData
             case OXFileType.Sound:
                 DataSound = Get_Sound();
                 break;
+            case OXFileType.Mesh:
+                DataMesh = Get_Mesh();
+                break;
             case OXFileType.Custom:
                 DataCustom = Get_Custom();
                 break;
@@ -567,6 +576,13 @@ public class OXFileData
         dat.Type = OXFileData.OXFileType.Sound;
         dat.DataSound = DataIn;
         dat.SoundLossless = lossless;
+        Add(Name, dat);
+    }
+    public void Add(string Name, Mesh DataIn)
+    {
+        var dat = new OXFileData();
+        dat.Type = OXFileData.OXFileType.Mesh;
+        dat.DataMesh = DataIn;
         Add(Name, dat);
     }
     public void Add(string Name, float DataIn)
@@ -790,6 +806,10 @@ public class OXFileData
                 bytez = AudioClipToBytes(DataSound, SoundLossless);
                 ret.AddRange(bytez);
                 break;
+            case OXFileType.Mesh:
+                bytez = MeshToBytes(DataMesh);
+                ret.AddRange(bytez);
+                break;
             case OXFileType.Custom:
                 var bytez2 = DataCustom.GetBytes();
                 ret.AddRange(bytez2);
@@ -833,6 +853,10 @@ public class OXFileData
     private AudioClip Get_Sound()
     {
         return BytesToAudioClip(DataRaw);
+    }
+    private Mesh Get_Mesh()
+    {
+        return BytesToMesh(DataRaw);
     }
     private int Get_Int()
     {
@@ -1019,6 +1043,150 @@ public class OXFileData
     }
     public static byte[] Obfuscate(byte[] data) => XorObfuscate(data);
     public static byte[] DeObfuscate(byte[] data) => XorObfuscate(data);
+
+    [Flags]
+    private enum MeshDataFlags : byte
+    {
+        None = 0,
+        Normals = 1,
+        UV = 2,
+        Colors = 4,
+        Tangents = 8,
+    }
+
+    // Packs a Unity Mesh (positions, optional normals/uv/vertex colors/tangents, and all submeshes with their topology)
+    public static byte[] MeshToBytes(Mesh mesh)
+    {
+        Vector3[] vertices = mesh.vertices;
+        Vector3[] normals = mesh.normals;
+        Vector2[] uv = mesh.uv;
+        Color[] colors = mesh.colors;
+        Vector4[] tangents = mesh.tangents;
+
+        MeshDataFlags flags = MeshDataFlags.None;
+        if (normals != null && normals.Length == vertices.Length) flags |= MeshDataFlags.Normals;
+        if (uv != null && uv.Length == vertices.Length) flags |= MeshDataFlags.UV;
+        if (colors != null && colors.Length == vertices.Length) flags |= MeshDataFlags.Colors;
+        if (tangents != null && tangents.Length == vertices.Length) flags |= MeshDataFlags.Tangents;
+
+        using (MemoryStream stream = new MemoryStream())
+        using (BinaryWriter writer = new BinaryWriter(stream))
+        {
+            writer.Write(vertices.Length);
+            foreach (var v in vertices)
+            {
+                writer.Write(v.x); writer.Write(v.y); writer.Write(v.z);
+            }
+
+            writer.Write((byte)flags);
+
+            if ((flags & MeshDataFlags.Normals) != 0)
+            {
+                foreach (var n in normals) { writer.Write(n.x); writer.Write(n.y); writer.Write(n.z); }
+            }
+            if ((flags & MeshDataFlags.UV) != 0)
+            {
+                foreach (var u in uv) { writer.Write(u.x); writer.Write(u.y); }
+            }
+            if ((flags & MeshDataFlags.Colors) != 0)
+            {
+                foreach (var c in colors) { writer.Write(c.r); writer.Write(c.g); writer.Write(c.b); writer.Write(c.a); }
+            }
+            if ((flags & MeshDataFlags.Tangents) != 0)
+            {
+                foreach (var t in tangents) { writer.Write(t.x); writer.Write(t.y); writer.Write(t.z); writer.Write(t.w); }
+            }
+
+            writer.Write(mesh.subMeshCount);
+            for (int s = 0; s < mesh.subMeshCount; s++)
+            {
+                int[] indices = mesh.GetTriangles(s);
+                writer.Write((byte)mesh.GetTopology(s));
+                writer.Write(indices.Length);
+                foreach (var idx in indices) writer.Write(idx);
+            }
+            return stream.ToArray();
+        }
+    }
+    public static Mesh BytesToMesh(byte[] raw, string meshName = "loadedMesh")
+    {
+
+        using (MemoryStream stream = new MemoryStream(raw))
+        using (BinaryReader reader = new BinaryReader(stream))
+        {
+            int vertexCount = reader.ReadInt32();
+            Vector3[] vertices = new Vector3[vertexCount];
+            for (int i = 0; i < vertexCount; i++)
+            {
+                vertices[i] = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+            }
+
+            MeshDataFlags flags = (MeshDataFlags)reader.ReadByte();
+
+            Vector3[] normals = null;
+            if ((flags & MeshDataFlags.Normals) != 0)
+            {
+                normals = new Vector3[vertexCount];
+                for (int i = 0; i < vertexCount; i++)
+                    normals[i] = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+            }
+
+            Vector2[] uv = null;
+            if ((flags & MeshDataFlags.UV) != 0)
+            {
+                uv = new Vector2[vertexCount];
+                for (int i = 0; i < vertexCount; i++)
+                    uv[i] = new Vector2(reader.ReadSingle(), reader.ReadSingle());
+            }
+
+            Color[] colors = null;
+            if ((flags & MeshDataFlags.Colors) != 0)
+            {
+                colors = new Color[vertexCount];
+                for (int i = 0; i < vertexCount; i++)
+                    colors[i] = new Color(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+            }
+
+            Vector4[] tangents = null;
+            if ((flags & MeshDataFlags.Tangents) != 0)
+            {
+                tangents = new Vector4[vertexCount];
+                for (int i = 0; i < vertexCount; i++)
+                    tangents[i] = new Vector4(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+            }
+
+            int subMeshCount = reader.ReadInt32();
+
+            Mesh mesh = new Mesh();
+            mesh.name = meshName;
+            // Large meshes (>65535 verts) need a 32-bit index format nya
+            mesh.indexFormat = vertexCount > 65535
+                ? UnityEngine.Rendering.IndexFormat.UInt32
+                : UnityEngine.Rendering.IndexFormat.UInt16;
+
+            mesh.vertices = vertices;
+            if (normals != null) mesh.normals = normals;
+            if (uv != null) mesh.uv = uv;
+            if (colors != null) mesh.colors = colors;
+            if (tangents != null) mesh.tangents = tangents;
+
+            mesh.subMeshCount = subMeshCount;
+            for (int s = 0; s < subMeshCount; s++)
+            {
+                MeshTopology topology = (MeshTopology)reader.ReadByte();
+                int indexCount = reader.ReadInt32();
+                int[] indices = new int[indexCount];
+                for (int i = 0; i < indexCount; i++) indices[i] = reader.ReadInt32();
+                mesh.SetIndices(indices, topology, s);
+            }
+
+            if (normals == null) mesh.RecalculateNormals();
+            mesh.RecalculateBounds();
+
+            return mesh;
+        }
+    }
+
     public static Texture2D BytesToTexture(byte[] bytes)
     {
         Texture2D texture = new Texture2D(1, 1, TextureFormat.RGBA32, false);

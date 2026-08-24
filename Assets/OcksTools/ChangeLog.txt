@@ -27,6 +27,7 @@
   - Added Vector3 type
   - Added Quaternion type
   - Added Color type
+  - Added Mesh type
   - Readded Obfuscation, simple anti skimming measures to stop someone from peaking into the file (it wont stop someone dedicated though) (can be manually disabled)
   - Fixed bug with flags changing from a write file call
   - Some general speed optimizations
