@@ -33,7 +33,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -143,13 +142,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 2225194912508327085}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c3f9d3a67bef344780eba851ec5b401, type: 3}
+  m_Script: {fileID: 11500000, guid: 1ad7c2ff30704524a8465f3234044eb6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Type: TestToggle
+  fard: 0
+  images:
+  - {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
   color32s:
   - serializedVersion: 2
     rgba: 4294967295
   - serializedVersion: 2
-    rgba: 4285164138
-  fard: 0
+    rgba: 4286545791

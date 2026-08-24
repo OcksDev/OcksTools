@@ -42,6 +42,7 @@
   - Dynamic String AddRef() now can take in any about of references
   - Fixed the FixedString inspector readout, at some point that stopped working but now its good again.
   - Added CopyFrom() to OXEvents (and layered events)
+  - Easy Settings Toggle moved to its own script, and given the ability to change images on toggle
   - Marginally optimized Entity Skill/Effect getting (with trygetvalue insteaad of containskey) 
   - MultiRef renamed to MRef
     - By default, MRef now uses SideBySideWithName, added a varient called MRefNoName which allows you to hide the label

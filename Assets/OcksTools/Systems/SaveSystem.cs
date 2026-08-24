@@ -286,9 +286,6 @@ public class SaveProfile
     {
         SetDict(key, data.ABToString());
     }
-
-
-
     public string GetString(string key, string defaul = "")
     {
         //use this method to properly query data 

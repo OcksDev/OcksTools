@@ -4,9 +4,8 @@ using UnityEngine.UI;
 public class SettingInput : MonoBehaviour
 {
     public string Type = "";
-    public Color32[] color32s = null;
     private Slider slider;
-    private Image img;
+    protected Image img;
     private Switcher switcher;
     private KeybindInput keybinder;
     [HideInInspector]
@@ -21,7 +20,7 @@ public class SettingInput : MonoBehaviour
         if (!hasattached)
         {
             hasattached = true;
-            SaveSystem.LoadAllData.Append(Tags.GenerateID(), ReadValue);
+            SaveSystem.LoadAllData.Append(ReadValue);
         }
         else
         {
@@ -91,12 +90,11 @@ public class SettingInput : MonoBehaviour
         }
     }
 
-    public void UpdateValue()
+    public virtual void UpdateValue()
     {
         switch (Type)
         {
-            case "TestToggle":
-                img.color = color32s[fard ? 0 : 1];
+            default:
                 break;
         }
     }
