@@ -77,11 +77,11 @@ public class OXFile
         if (CanOverride || !e)
         {
             int oldflags = Flags;
-            var wank = Data.BytesOfData(GetFileData(), 0);
-            if (wank.Count >= 300 && !GetFlag(1))
+            byte[] wank = Data.BytesOfData(GetFileData(), 0).ToArray();
+            if (wank.Length >= 300 && !GetFlag(1))
             {
                 SetFlag(1);
-                wank = Compress(wank.ToArray()).ToList();
+                wank = Compress(wank);
             }
             else
             {
@@ -89,14 +89,14 @@ public class OXFile
             }
             if (!GetFlag(2))
             {
-                wank = Obfuscate(wank.ToArray()).ToList();
+                wank = Obfuscate(wank);
             }
-            List<byte> bytes = new List<byte>();
             SetVersionIntoFlag();
             var ver = BitConverter.GetBytes(Flags);
-            foreach (byte b in ver) { bytes.Add(b); }
-            wank = bytes.CombineLists(wank);
-            File.WriteAllBytes(FileName, wank.ToArray());
+            byte[] final = new byte[ver.Length + wank.Length];
+            Buffer.BlockCopy(ver, 0, final, 0, ver.Length);
+            Buffer.BlockCopy(wank, 0, final, ver.Length, wank.Length);
+            File.WriteAllBytes(FileName, final);
             Flags = oldflags;
         }
 
@@ -323,15 +323,12 @@ public class OXFileData
 
     public List<byte> ToByte(FileData fd)
     {
-        List<byte> ret = new List<byte>();
         var w = Encoding.UTF8.GetBytes(Name);
         var w2 = DataRaw;
+        List<byte> ret = new List<byte>(w2.Length + w.Length + 8);
         Func<byte[], int> AppendAll = (x) =>
         {
-            foreach (var a in x)
-            {
-                ret.Add(a);
-            }
+            ret.AddRange(x);
             return 1;
         };
 
@@ -725,10 +722,7 @@ public class OXFileData
                         a.Value.DataRaw = a.Value.BytesOfData(fd, fd.CurrentStep).ToArray();
                         bytes = a.Value.ToByte(fd);
                     }
-                    foreach (var b in bytes)
-                    {
-                        ret.Add(b);
-                    }
+                    ret.AddRange(bytes);
                 }
                 break;
             case OXFileType.ListOXFileData:
@@ -744,46 +738,28 @@ public class OXFileData
                         a.DataRaw = a.BytesOfData(fd, fd.CurrentStep).ToArray();
                         bytes = a.ToByte(fd);
                     }
-                    foreach (var b in bytes)
-                    {
-                        ret.Add(b);
-                    }
+                    ret.AddRange(bytes);
                 }
                 break;
             case OXFileType.String:
                 bytez = Encoding.UTF8.GetBytes(DataString);
-                foreach (var b in bytez)
-                {
-                    ret.Add(b);
-                }
+                ret.AddRange(bytez);
                 break;
             case OXFileType.Int:
                 bytez = BitConverter.GetBytes(DataInt);
-                foreach (var b in bytez)
-                {
-                    ret.Add(b);
-                }
+                ret.AddRange(bytez);
                 break;
             case OXFileType.Long:
                 bytez = BitConverter.GetBytes(DataLong);
-                foreach (var b in bytez)
-                {
-                    ret.Add(b);
-                }
+                ret.AddRange(bytez);
                 break;
             case OXFileType.Float:
                 bytez = BitConverter.GetBytes(DataFloat);
-                foreach (var b in bytez)
-                {
-                    ret.Add(b);
-                }
+                ret.AddRange(bytez);
                 break;
             case OXFileType.Double:
                 bytez = BitConverter.GetBytes(DataDouble);
-                foreach (var b in bytez)
-                {
-                    ret.Add(b);
-                }
+                ret.AddRange(bytez);
                 break;
             case OXFileType.Vector2:
                 ret.AddRange(BitConverter.GetBytes(DataVector2.x));
@@ -808,24 +784,15 @@ public class OXFileData
                 break;
             case OXFileType.Texture:
                 bytez = DataTexture.EncodeToPNG();
-                foreach (var b in bytez)
-                {
-                    ret.Add(b);
-                }
+                ret.AddRange(bytez);
                 break;
             case OXFileType.Sound:
                 bytez = AudioClipToBytes(DataSound, SoundLossless);
-                foreach (var b in bytez)
-                {
-                    ret.Add(b);
-                }
+                ret.AddRange(bytez);
                 break;
             case OXFileType.Custom:
                 var bytez2 = DataCustom.GetBytes();
-                foreach (var b in bytez2)
-                {
-                    ret.Add(b);
-                }
+                ret.AddRange(bytez2);
                 break;
             case OXFileType.Raw: //I dont think this will ever be called
                 return DataRaw.ToList();
@@ -833,16 +800,8 @@ public class OXFileData
                 foreach (var li in DataListString)
                 {
                     var ccc = Encoding.UTF8.GetBytes(li);
-                    bytez = BitConverter.GetBytes(ccc.Length);
-                    foreach (var b in bytez)
-                    {
-                        ret.Add(b);
-                    }
-                    bytez = ccc;
-                    foreach (var b in bytez)
-                    {
-                        ret.Add(b);
-                    }
+                    ret.AddRange(BitConverter.GetBytes(ccc.Length));
+                    ret.AddRange(ccc);
                 }
                 break;
             case OXFileType.DictStringString:
@@ -850,26 +809,10 @@ public class OXFileData
                 {
                     var ccc = Encoding.UTF8.GetBytes(li.Key);
                     var ccc2 = Encoding.UTF8.GetBytes(li.Value);
-                    bytez = BitConverter.GetBytes(ccc.Length);
-                    foreach (var b in bytez)
-                    {
-                        ret.Add(b);
-                    }
-                    bytez = BitConverter.GetBytes(ccc2.Length);
-                    foreach (var b in bytez)
-                    {
-                        ret.Add(b);
-                    }
-                    bytez = ccc;
-                    foreach (var b in bytez)
-                    {
-                        ret.Add(b);
-                    }
-                    bytez = ccc2;
-                    foreach (var b in bytez)
-                    {
-                        ret.Add(b);
-                    }
+                    ret.AddRange(BitConverter.GetBytes(ccc.Length));
+                    ret.AddRange(BitConverter.GetBytes(ccc2.Length));
+                    ret.AddRange(ccc);
+                    ret.AddRange(ccc2);
                 }
                 break;
             case OXFileType.Bool:
@@ -1062,26 +1005,20 @@ public class OXFileData
             throw;
         }
     }
-    private static string SuperSecretKey = "B!d&llp)897633G%^&*g576iyu";
-    public static byte[] Obfuscate(byte[] data)
-    {
-        byte[] b = Encoding.UTF8.GetBytes(SuperSecretKey);
-        for (int i = 0; i < data.Length; i++)
-        {
-            data[i] ^= (byte)((i + 100) ^ b[i % b.Length]);
-        }
-        return data;
-    }
+    private const string SuperSecretKey = "B!d&llp)897633G%^&*g576iyu";
+    private static readonly byte[] SuperSecretKeyBytes = Encoding.UTF8.GetBytes(SuperSecretKey);
 
-    public static byte[] DeObfuscate(byte[] data)
+    private static byte[] XorObfuscate(byte[] data)
     {
-        byte[] b = Encoding.UTF8.GetBytes(SuperSecretKey);
+        int bLen = SuperSecretKeyBytes.Length;
         for (int i = 0; i < data.Length; i++)
         {
-            data[i] ^= (byte)((i + 100) ^ b[i % b.Length]);
+            data[i] ^= (byte)((i + 100) ^ SuperSecretKeyBytes[i % bLen]);
         }
         return data;
     }
+    public static byte[] Obfuscate(byte[] data) => XorObfuscate(data);
+    public static byte[] DeObfuscate(byte[] data) => XorObfuscate(data);
     public static Texture2D BytesToTexture(byte[] bytes)
     {
         Texture2D texture = new Texture2D(1, 1, TextureFormat.RGBA32, false);

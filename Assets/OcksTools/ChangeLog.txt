@@ -29,6 +29,7 @@
   - Added Color type
   - Readded Obfuscation, simple anti skimming measures to stop someone from peaking into the file (it wont stop someone dedicated though) (can be manually disabled)
   - Fixed bug with flags changing from a write file call
+  - Some general speed optimizations
 - File System Improvements
   - Added ReadFileSize() method to easily read the file size of a file, it's in the name bro
   - Added PathToName() method to easily read the name of a file/folder
