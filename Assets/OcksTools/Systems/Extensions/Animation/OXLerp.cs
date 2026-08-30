@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class OXLerp
 {
+    //all input functions garentee a call at x=1, but not at x=0
     public static _OXL_Fixed Fixed = new _OXL_Fixed();
     public static _OXL_FrameSTart Frame = new _OXL_FrameSTart();
     public static _OXL_FrameEnd FrameEnd = new _OXL_FrameEnd();
@@ -48,9 +49,9 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
         float f = 1 / time;
         while (x < 1)
         {
+            yield return Get();
             x = Mathf.Clamp01(x + (Delta * f));
             method(x);
-            yield return Get();
         }
     }
     public IEnumerator Linear(Func<float, OXYielder> method, float time = 1f)
@@ -59,6 +60,7 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
         float f = 1 / time;
         while (x < 1)
         {
+            yield return Get();
             x = Mathf.Clamp01(x + (Delta * f));
             var q = method(x);
             if (q.setperc.HasValue)
@@ -67,7 +69,6 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
                 method(x);
             }
             if (q.yielder != null) yield return q.yielder;
-            yield return Get();
         }
     }
     //infinitely progresses from 0-1, when it reaches 1 it jumps back to 0
@@ -77,9 +78,9 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
         float f = 1 / time;
         while (true)
         {
+            yield return Get();
             x = (x + Delta * f) % 1;
             method(x);
-            yield return Get();
         }
     }
     public IEnumerator LinearInfniteLooped(Func<float, OXYielder> method, float time = 1f)
@@ -88,6 +89,7 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
         float f = 1 / time;
         while (true)
         {
+            yield return Get();
             x = (x + Delta * f) % 1;
             var q = method(x);
             if (q.setperc.HasValue)
@@ -96,7 +98,6 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
                 method(x);
             }
             if (q.yielder != null) yield return q.yielder;
-            yield return Get();
         }
     }
 
@@ -107,9 +108,9 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
         float f = 1 / time;
         while (true)
         {
+            yield return Get();
             x = x + Delta * f;
             method(x);
-            yield return Get();
         }
     }
     public IEnumerator LinearInfniteUncapped(Func<float, OXYielder> method, float time = 1f)
@@ -118,6 +119,7 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
         float f = 1 / time;
         while (true)
         {
+            yield return Get();
             x = x + Delta * f;
             var q = method(x);
             if (q.setperc.HasValue)
@@ -126,7 +128,6 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
                 method(x);
             }
             if (q.yielder != null) yield return q.yielder;
-            yield return Get();
         }
     }
 
@@ -140,17 +141,17 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
         {
             while (x < 1)
             {
+                yield return Get();
                 x = Mathf.Clamp01(x + Delta * f);
                 method(x);
-                yield return Get();
             }
             i++;
             if (i >= bounces) yield break;
             while (x > 0)
             {
+                yield return Get();
                 x = Mathf.Clamp01(x - Delta * f);
                 method(x);
-                yield return Get();
             }
             i++;
             if (i >= bounces) yield break;
@@ -167,6 +168,7 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
         {
             while (x < 1)
             {
+                yield return Get();
                 x = Mathf.Clamp01(x + Delta * f);
                 var q = method(x);
                 if (q.setperc.HasValue)
@@ -175,12 +177,12 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
                     method(x);
                 }
                 if (q.yielder != null) yield return q.yielder;
-                yield return Get();
             }
             i++;
             if (i >= bounces) yield break;
             while (x > 0)
             {
+                yield return Get();
                 x = Mathf.Clamp01(x - Delta * f);
                 var q = method(x);
                 if (q.setperc.HasValue)
@@ -189,7 +191,6 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
                     method(x);
                 }
                 if (q.yielder != null) yield return q.yielder;
-                yield return Get();
             }
             i++;
             if (i >= bounces) yield break;
@@ -203,15 +204,15 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
         {
             while (x < 1)
             {
+                yield return Get();
                 x = Mathf.Clamp01(x + Delta * f);
                 method(x);
-                yield return Get();
             }
             while (x > 0)
             {
+                yield return Get();
                 x = Mathf.Clamp01(x - Delta * f);
                 method(x);
-                yield return Get();
             }
         }
     }
@@ -223,6 +224,7 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
         {
             while (x < 1)
             {
+                yield return Get();
                 x = Mathf.Clamp01(x + Delta * f);
                 var q = method(x);
                 if (q.setperc.HasValue)
@@ -231,10 +233,10 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
                     method(x);
                 }
                 if (q.yielder != null) yield return q.yielder;
-                yield return Get();
             }
             while (x > 0)
             {
+                yield return Get();
                 x = Mathf.Clamp01(x - Delta * f);
                 var q = method(x);
                 if (q.setperc.HasValue)
@@ -243,7 +245,6 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
                     method(x);
                 }
                 if (q.yielder != null) yield return q.yielder;
-                yield return Get();
             }
         }
     }
