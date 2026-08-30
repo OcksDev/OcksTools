@@ -19,6 +19,7 @@
 - OXLerp Improvements
   - Adjusted API Syntax to match Tags style, it's much cleaner now (OXLerp.Frame.Linear/OXLerp.Fixed.Linear instead of OXLerp.Linear()/OXLerp.LinearFixed())
   - Added new varients for timing, FrameEnd and Custom(). Custom allows you to specify a float time to wait between updates
+  - All interp functions now can change to take in a func<float,yielder>, allowing you to create pauses, or otherwise mess with the interp value
 - OXFile Improvements
   - Added automatic compression that kicks in at total data sizes of 300 bytes or larger (can be manually disabled)
   - Added Texture type (which lets you save/load textures and sprites directly)

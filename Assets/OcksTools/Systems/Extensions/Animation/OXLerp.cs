@@ -53,6 +53,23 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
             yield return Get();
         }
     }
+    public IEnumerator Linear(Func<float, OXYielder> method, float time = 1f)
+    {
+        float x = 0f;
+        float f = 1 / time;
+        while (x < 1)
+        {
+            x = Mathf.Clamp01(x + (Delta * f));
+            var q = method(x);
+            if (q.setperc.HasValue)
+            {
+                x = q.setperc.Value;
+                method(x);
+            }
+            if (q.yielder != null) yield return q.yielder;
+            yield return Get();
+        }
+    }
     //infinitely progresses from 0-1, when it reaches 1 it jumps back to 0
     public IEnumerator LinearInfniteLooped(Action<float> method, float time = 1f)
     {
@@ -62,7 +79,24 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
         {
             x = (x + Delta * f) % 1;
             method(x);
-            yield return null;
+            yield return Get();
+        }
+    }
+    public IEnumerator LinearInfniteLooped(Func<float, OXYielder> method, float time = 1f)
+    {
+        float x = 0f;
+        float f = 1 / time;
+        while (true)
+        {
+            x = (x + Delta * f) % 1;
+            var q = method(x);
+            if (q.setperc.HasValue)
+            {
+                x = q.setperc.Value;
+                method(x);
+            }
+            if (q.yielder != null) yield return q.yielder;
+            yield return Get();
         }
     }
 
@@ -75,7 +109,24 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
         {
             x = x + Delta * f;
             method(x);
-            yield return null;
+            yield return Get();
+        }
+    }
+    public IEnumerator LinearInfniteUncapped(Func<float, OXYielder> method, float time = 1f)
+    {
+        float x = 0f;
+        float f = 1 / time;
+        while (true)
+        {
+            x = x + Delta * f;
+            var q = method(x);
+            if (q.setperc.HasValue)
+            {
+                x = q.setperc.Value;
+                method(x);
+            }
+            if (q.yielder != null) yield return q.yielder;
+            yield return Get();
         }
     }
 
@@ -105,6 +156,45 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
             if (i >= bounces) yield break;
         }
     }
+
+    //bounces back and forth linearly between 0-1
+    public IEnumerator Bounce(Func<float, OXYielder> method, int bounces, float time = 1f)
+    {
+        float x = 0f;
+        float f = 1 / time;
+        int i = 0;
+        while (i < bounces)
+        {
+            while (x < 1)
+            {
+                x = Mathf.Clamp01(x + Delta * f);
+                var q = method(x);
+                if (q.setperc.HasValue)
+                {
+                    x = q.setperc.Value;
+                    method(x);
+                }
+                if (q.yielder != null) yield return q.yielder;
+                yield return Get();
+            }
+            i++;
+            if (i >= bounces) yield break;
+            while (x > 0)
+            {
+                x = Mathf.Clamp01(x - Delta * f);
+                var q = method(x);
+                if (q.setperc.HasValue)
+                {
+                    x = q.setperc.Value;
+                    method(x);
+                }
+                if (q.yielder != null) yield return q.yielder;
+                yield return Get();
+            }
+            i++;
+            if (i >= bounces) yield break;
+        }
+    }
     public IEnumerator BounceInfinite(Action<float> method, float time = 1f)
     {
         float x = 0f;
@@ -125,4 +215,45 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
             }
         }
     }
+    public IEnumerator BounceInfinite(Func<float, OXYielder> method, float time = 1f)
+    {
+        float x = 0f;
+        float f = 1 / time;
+        while (true)
+        {
+            while (x < 1)
+            {
+                x = Mathf.Clamp01(x + Delta * f);
+                var q = method(x);
+                if (q.setperc.HasValue)
+                {
+                    x = q.setperc.Value;
+                    method(x);
+                }
+                if (q.yielder != null) yield return q.yielder;
+                yield return Get();
+            }
+            while (x > 0)
+            {
+                x = Mathf.Clamp01(x - Delta * f);
+                var q = method(x);
+                if (q.setperc.HasValue)
+                {
+                    x = q.setperc.Value;
+                    method(x);
+                }
+                if (q.yielder != null) yield return q.yielder;
+                yield return Get();
+            }
+        }
+    }
+}
+
+
+public struct OXYielder
+{
+    public YieldInstruction yielder;
+    public float? setperc;
+    public static implicit operator OXYielder(YieldInstruction yielder)
+    => new OXYielder { yielder = yielder, setperc = null };
 }
