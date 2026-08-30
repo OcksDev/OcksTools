@@ -256,4 +256,11 @@ public struct OXYielder
     public float? setperc;
     public static implicit operator OXYielder(YieldInstruction yielder)
     => new OXYielder { yielder = yielder, setperc = null };
+    public static implicit operator OXYielder(float x)
+    => new OXYielder { yielder = null, setperc = x };
+    public OXYielder(YieldInstruction a, float? b = null)
+    {
+        yielder = a;
+        setperc = b;
+    }
 }
