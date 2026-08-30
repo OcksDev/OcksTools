@@ -146,7 +146,6 @@ public struct MRefNoName<A, B, C, D>
     public static implicit operator MRefNoName<A, B, C, D>((A, B, C, D) l) => new MRefNoName<A, B, C, D>(l.Item1, l.Item2, l.Item3, l.Item4);
     public static implicit operator (A, B, C, D)(MRefNoName<A, B, C, D> l) => (l.a, l.b, l.c, l.d);
 }
-}
 
 #if UNITY_EDITOR
 [CustomPropertyDrawer(typeof(MRefNoName<,>))]
