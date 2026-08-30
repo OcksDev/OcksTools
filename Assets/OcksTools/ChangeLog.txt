@@ -39,17 +39,20 @@
 - Random Functions
   - Added ToStringSmall() and StringSmallTo...() for Vector2, Vector2Int, Vector3, Vector3Int, and quaternion, which simply converts them to strings but without the parenthesis
   - Fixed Texture2DToSprite() conversion method
+- MultiRef Improvements
+  - Renamed to MRef
+  - Added implicit conversions both ways between any MRef and tuples
+  - By default, now uses SideBySideWithName, added a varient called MRefNoName which allows you to hide the label
+  - Also moved to its own class file instead of hiding inside of Converter
 - Misc
   - Added new image to default images, a Fade Circle
+  - Weighted Averages now has a better constructor option, and implicit conversion for ease of use
   - Added FakeHDR color option for ColorSystem, should make HDR colors just easier to work with
   - Dynamic String AddRef() now can take in any about of references
   - Fixed the FixedString inspector readout, at some point that stopped working but now its good again.
   - Added CopyFrom() to OXEvents (and layered events)
   - Easy Settings Toggle moved to its own script, and given the ability to change images on toggle
   - Marginally optimized Entity Skill/Effect getting (with trygetvalue insteaad of containskey) 
-  - MultiRef renamed to MRef
-    - By default, MRef now uses SideBySideWithName, added a varient called MRefNoName which allows you to hide the label
-    - Also moved to its own class file instead of hiding inside of Converter
 ------------
 
 

@@ -11,8 +11,9 @@ public struct MRef<A, B>
         this.a = a;
         this.b = b;
     }
+    public static implicit operator MRef<A, B>((A, B) l) => new MRef<A, B>(l.Item1, l.Item2);
+    public static implicit operator (A, B)(MRef<A, B> l) => (l.a, l.b);
 }
-
 
 [System.Serializable]
 public struct MRef<A, B, C>
@@ -26,7 +27,10 @@ public struct MRef<A, B, C>
         this.b = b;
         this.c = c;
     }
+    public static implicit operator MRef<A, B, C>((A, B, C) l) => new MRef<A, B, C>(l.Item1, l.Item2, l.Item3);
+    public static implicit operator (A, B, C)(MRef<A, B, C> l) => (l.a, l.b, l.c);
 }
+
 [System.Serializable]
 public struct MRef<A, B, C, D>
 {
@@ -41,6 +45,8 @@ public struct MRef<A, B, C, D>
         this.c = c;
         this.d = d;
     }
+    public static implicit operator MRef<A, B, C, D>((A, B, C, D) l) => new MRef<A, B, C, D>(l.Item1, l.Item2, l.Item3, l.Item4);
+    public static implicit operator (A, B, C, D)(MRef<A, B, C, D> l) => (l.a, l.b, l.c, l.d);
 }
 
 
@@ -54,6 +60,8 @@ public class MRefClass<A, B>
         this.a = a;
         this.b = b;
     }
+    public static implicit operator MRefClass<A, B>((A, B) l) => new MRefClass<A, B>(l.Item1, l.Item2);
+    public static implicit operator (A, B)(MRefClass<A, B> l) => (l.a, l.b);
 }
 
 [System.Serializable]
@@ -68,7 +76,10 @@ public class MRefClass<A, B, C>
         this.b = b;
         this.c = c;
     }
+    public static implicit operator MRefClass<A, B, C>((A, B, C) l) => new MRefClass<A, B, C>(l.Item1, l.Item2, l.Item3);
+    public static implicit operator (A, B, C)(MRefClass<A, B, C> l) => (l.a, l.b, l.c);
 }
+
 [System.Serializable]
 public class MRefClass<A, B, C, D>
 {
@@ -83,7 +94,10 @@ public class MRefClass<A, B, C, D>
         this.c = c;
         this.d = d;
     }
+    public static implicit operator MRefClass<A, B, C, D>((A, B, C, D) l) => new MRefClass<A, B, C, D>(l.Item1, l.Item2, l.Item3, l.Item4);
+    public static implicit operator (A, B, C, D)(MRefClass<A, B, C, D> l) => (l.a, l.b, l.c, l.d);
 }
+
 
 [System.Serializable]
 public struct MRefNoName<A, B>
@@ -95,6 +109,8 @@ public struct MRefNoName<A, B>
         this.a = a;
         this.b = b;
     }
+    public static implicit operator MRefNoName<A, B>((A, B) l) => new MRefNoName<A, B>(l.Item1, l.Item2);
+    public static implicit operator (A, B)(MRefNoName<A, B> l) => (l.a, l.b);
 }
 
 [System.Serializable]
@@ -109,6 +125,8 @@ public struct MRefNoName<A, B, C>
         this.b = b;
         this.c = c;
     }
+    public static implicit operator MRefNoName<A, B, C>((A, B, C) l) => new MRefNoName<A, B, C>(l.Item1, l.Item2, l.Item3);
+    public static implicit operator (A, B, C)(MRefNoName<A, B, C> l) => (l.a, l.b, l.c);
 }
 
 [System.Serializable]
@@ -125,6 +143,9 @@ public struct MRefNoName<A, B, C, D>
         this.c = c;
         this.d = d;
     }
+    public static implicit operator MRefNoName<A, B, C, D>((A, B, C, D) l) => new MRefNoName<A, B, C, D>(l.Item1, l.Item2, l.Item3, l.Item4);
+    public static implicit operator (A, B, C, D)(MRefNoName<A, B, C, D> l) => (l.a, l.b, l.c, l.d);
+}
 }
 
 #if UNITY_EDITOR
