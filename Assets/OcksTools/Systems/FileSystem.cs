@@ -78,16 +78,14 @@ public class FileSystem : SingleInstance<FileSystem>
         };
         LocationEvent.Invoke();
     }
-    public void WriteFile(string FileName, string data, bool CanOverride)
+    public bool WriteFile(string FileName, string data, bool CanOverride)
     {
-        bool e = File.Exists(FileName);
-        if (CanOverride || !e)
+        if (CanOverride || !File.Exists(FileName))
         {
             File.WriteAllText(FileName, data);
+            return true;
         }
-
-
-        //Environment.NewLine
+        return false;
     }
     public string ReadFile(string FileName)
     {

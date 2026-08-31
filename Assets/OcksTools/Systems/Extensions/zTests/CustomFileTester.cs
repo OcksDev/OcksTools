@@ -12,7 +12,7 @@ public class CustomFileTester : MonoBehaviour
         {
             file.ReadFile(FileSystem.Instance.FileLocations["OXFileTest"]);
             Debug.Log("OXFile Detected!");
-            Debug.Log("Version Detected: " + file.FileVersion);
+            Debug.Log("Version Detected: " + file.ObservedFileVersion);
 
             /*foreach (var a in file.Data.DataOXFiles)
             {

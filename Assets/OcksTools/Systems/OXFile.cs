@@ -23,13 +23,17 @@ public class OXFile
     //touch away
     public const short ParserVersion = 2;
     //no touchy
-    public int FileVersion = -1;
+    public int ObservedFileVersion = -1;
     public OXFileData Data = new OXFileData(OXFileData.OXFileType.OXFileData);
     public Dictionary<string, byte> NameLinker = new();
     public Dictionary<byte, string> IndexLinker = new();
 
     public OXFile LinkOptimizer(Dictionary<string, byte> n)
     {
+        if (n.Count > 128)
+        {
+            throw new Exception("Linker only supports up to 128 unique entry names");
+        }
         var p = new Dictionary<byte, string>();
         NameLinker = n;
         foreach (var k in NameLinker)
@@ -62,7 +66,7 @@ public class OXFile
         SetVersionFromFlag();
         index += 4;
         Data = new OXFileData(OXFileData.OXFileType.OXFileData);
-        Data.pVersion = FileVersion;
+        Data.pVersion = ObservedFileVersion;
         Data.DataRaw = WankFuckYou(cd, index, cd.Length - index);
         if (!GetFlag(2)) DeObfuscate(Data.DataRaw);
         if (GetFlag(1)) Data.DataRaw = Decompress(Data.DataRaw);
@@ -70,11 +74,10 @@ public class OXFile
 
         return true;
     }
-    public void WriteFile(string FileName, bool CanOverride)
+    public bool WriteFile(string FileName, bool CanOverride)
     {
         //string fullpath = //Path.Combine(DirectoryLol, FileName);
-        bool e = File.Exists(FileName);
-        if (CanOverride || !e)
+        if (CanOverride || !File.Exists(FileName))
         {
             int oldflags = Flags;
             byte[] wank = Data.BytesOfData(GetFileData(), 0).ToArray();
@@ -98,8 +101,9 @@ public class OXFile
             Buffer.BlockCopy(wank, 0, final, ver.Length, wank.Length);
             File.WriteAllBytes(FileName, final);
             Flags = oldflags;
+            return true;
         }
-
+        return false;
     }
     private byte[] WankFuckYou(byte[] array, int offset, int length)
     {
@@ -126,7 +130,7 @@ public class OXFile
     {
         int p = 255;
         p |= p << 8;
-        FileVersion = Flags & p;
+        ObservedFileVersion = Flags & p;
     }
     public void SetFlag(int i, bool enabled = true)
     {
