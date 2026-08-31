@@ -67,5 +67,4 @@ public class CompileableDictionaryDrawer2 : AutoCompressedInspectorWithName
 public class CompileableDictionaryDrawer3 : AutoCompressedInspectorWithName
 {
 }
-
 #endif
