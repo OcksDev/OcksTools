@@ -138,7 +138,7 @@ public abstract class BoardState2
             {
                 foreach (var p in CurrentPieces)
                 {
-                    if (p.Team != piece.Team && p.GetValidMoves().Any(m => m.Position == piece.Position))
+                    if (p.Team != piece.Team && p.GetAllPossibleMoves().Any(m => m.Position == piece.Position))
                     {
                         return (true, piece);
                     }
@@ -147,7 +147,18 @@ public abstract class BoardState2
         }
         return (false, null);
     }
-
+    public BoardState2 Clone()
+    {
+        var clone = MemberwiseClone() as BoardState2;
+        clone.CurrentPieces = new List<ChessPieceBase2>();
+        foreach (var piece in CurrentPieces)
+        {
+            var pieceClone = piece.Clone();
+            pieceClone.CurrentBoard = clone;
+            clone.CurrentPieces.Add(pieceClone);
+        }
+        return clone;
+    }
 }
 [System.Serializable]
 public abstract class ChessPieceBase2
@@ -162,7 +173,7 @@ public abstract class ChessPieceBase2
     public virtual bool IgnoreBounds => false;
     public virtual void OnAddedToBoard() { }
 
-    public List<(Vector2Int Position, ChessPieceBase2 Piece)> GetValidMoves()
+    public List<(Vector2Int Position, ChessPieceBase2 Piece)> GetAllPossibleMoves()
     {
         List<(Vector2Int Position, ChessPieceBase2 Piece)> validMoves = new();
         List<(Vector2Int Position, ChessPieceBase2 Piece)> validSpaces = new();
@@ -174,16 +185,36 @@ public abstract class ChessPieceBase2
             {
                 var p = CurrentBoard.GetPieceAtPos(pp[i]);
                 if (p == null && vector.MustCapture) continue;
-                if (p.Team == Team) break;
+                if (p != null && p.Team == Team) break;
                 validSpaces.Add((pp[i], p));
-                if (pp != null) break;
+                if (p != null) break;
             }
             validMoves.AddRange(validSpaces);
         }
         return validMoves;
     }
+    public List<(Vector2Int Position, ChessPieceBase2 Piece)> GetLegalMoves(ChessPieceBase2 piece)
+    {
+        // track the piece by its index in the list, since Clone() preserves list order
+        int pieceIndex = CurrentBoard.CurrentPieces.IndexOf(piece);
+        var legalMoves = new List<(Vector2Int Position, ChessPieceBase2 Piece)>();
 
+        foreach (var move in piece.GetAllPossibleMoves())
+        {
+            var clone = CurrentBoard.Clone();
+            var clonedPiece = clone.CurrentPieces[pieceIndex];
 
+            clone.MovePiece(clonedPiece, move.Position);
+
+            var (inCheck, _) = clone.IsTeamInCheck(piece.Team);
+            if (!inCheck)
+                legalMoves.Add(move);
+        }
+
+        return legalMoves;
+    }
+
+    public ChessPieceBase2 Clone() { return MemberwiseClone() as ChessPieceBase2; }
 
 }
 
