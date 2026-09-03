@@ -46,6 +46,7 @@
   - Added implicit conversions both ways between any MRef and tuples
   - By default, now uses SideBySideWithName, added a varient called MRefNoName which allows you to hide the label
   - Also moved to its own class file instead of hiding inside of Converter
+- Chess Engine v2 Begins
 - Misc
   - Added new image to default images, a Fade Circle
   - Weighted Averages now has a better constructor option, and implicit conversion for ease of use

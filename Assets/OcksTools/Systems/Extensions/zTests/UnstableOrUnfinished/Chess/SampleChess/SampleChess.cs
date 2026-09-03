@@ -17,7 +17,7 @@ public class SampleChess : SingleInstance<SampleChess>
             Debug.Log($"{a.Name}: {a.Position}");
             var c = SpawnSystem.Spawn(new SpawnData("Piece").Position(PosToWorld(a.Position)).Scale(piecescale * Vector3.one));
             a._object = c;
-            c.GetComponent<SpriteRenderer>().sprite = ChessPieces[a.Name + (a.Team == ChessEngine.ChessTeam.White ? "W" : "B")];
+            c.GetComponent<SpriteRenderer>().sprite = ChessPieces[a.Name + (a.Team == ChessTeam.White ? "W" : "B")];
             c.GetComponent<SampleChessPiece>().me = a;
             a.OnPositionChange.Append((x) => x._object.transform.position = PosToWorld(x.Position));
             a.OnDestroy.Append((x) => Destroy(x._object));

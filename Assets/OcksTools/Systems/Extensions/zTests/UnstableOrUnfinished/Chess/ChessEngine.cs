@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using static ChessEngine;
 
 public class ChessEngine
 {
@@ -43,17 +42,6 @@ public class ChessEngine
         board.AddPiece(new Chess_Rook().SetTeam(ChessTeam.Black), new Vector2Int(7, 7));
 
         return board;
-    }
-
-
-    public enum ChessTeam
-    {
-        White,
-        Black,
-        Red, // 4-player white equiv
-        Blue, // 4-player left
-        Yellow, // 4-player black equiv
-        Green, // 4-player right
     }
 }
 
