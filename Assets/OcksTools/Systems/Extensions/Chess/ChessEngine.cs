@@ -196,7 +196,6 @@ public abstract class ChessBoard
 
     public HashSet<string> MovePiece(ChessPieceBase piece, Vector2Int NewPosition)
     {
-        if (piece.Position == NewPosition) { return new(); }
         MoveFlags.Clear();
         MovePieceInternal(piece, NewPosition);
         if (IsTeamInCheck(NextTeam(CurrentTeam)).valid)
@@ -387,20 +386,20 @@ public abstract class ChessPieceBase
         return false;
     }
 
-    public List<(Vector2Int Position, ChessPieceBase Piece)> GetLegalMoves()
+    public List<(Vector2Int Position, ChessPieceBase Piece, HashSet<string> Flags)> GetLegalMoves()
     {
-        var legalMoves = new List<(Vector2Int Position, ChessPieceBase Piece)>();
+        var legalMoves = new List<(Vector2Int Position, ChessPieceBase Piece, HashSet<string> Flags)>();
 
         foreach (var move in GetAllPossibleMoves())
         {
             var clone = CurrentBoard.Clone();
             var clonedPiece = clone.CurrentPieces[BoardIndex];
 
-            clone.MovePieceInternal(clonedPiece, move.Position);
+            var f = clone.MovePiece(clonedPiece, move.Position);
 
             var (inCheck, _) = clone.IsTeamInCheck(Team);
             if (!inCheck)
-                legalMoves.Add(move);
+                legalMoves.Add((move.Position, move.Piece, new(f)));
         }
 
         return legalMoves;

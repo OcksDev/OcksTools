@@ -56,7 +56,7 @@ public class SampleChess : SingleInstance<SampleChess>
         var m = nerd.GetLegalMoves();
         foreach (var a in m)
         {
-            if (a.Piece != null) continue;
+            if (a.Flags.Contains("capture")) continue;
             var c = SpawnSystem.Spawn(new SpawnData("Move").Position(PosToWorld(a.Position)).Scale(piecescale * Vector3.one * 0.3333f));
             markers.Add(c);
             c = SpawnSystem.Spawn(new SpawnData("MoveArea").Position(PosToWorld(a.Position)).Scale(piecescale * Vector3.one));
@@ -68,7 +68,7 @@ public class SampleChess : SingleInstance<SampleChess>
         }
         foreach (var a in m)
         {
-            if (a.Piece == null) continue;
+            if (!a.Flags.Contains("capture")) continue;
             var c = SpawnSystem.Spawn(new SpawnData("Capture").Position(PosToWorld(a.Position)).Scale(piecescale * Vector3.one * 0.6f).Rotation(Quaternion.Euler(0, 0, 45)));
             markers.Add(c);
             c = SpawnSystem.Spawn(new SpawnData("MoveArea").Position(PosToWorld(a.Position)).Scale(piecescale * Vector3.one));
