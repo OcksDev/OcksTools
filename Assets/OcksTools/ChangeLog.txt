@@ -1,6 +1,11 @@
 
 ------------
    v1.2.6
+- Chess Engine v2 (Completely rewrote from the ground up)
+  - Fully functional chess engine, with all the rules and logic implemented
+  - Extendable and modular, so you can easily add new pieces, boards, or really anything you want
+  - Moved from UnstableOrUnfinished to the main Extensions folder, as it is now fully functional
+  - Added totally not stolen sfx from chess.com in the sample scene
 - New Ease Class (kinda)
   - Moved all RandomFunctions.Ease functions into this static class
   - Added some new functions like CircIn and CircOut
@@ -46,7 +51,6 @@
   - Added implicit conversions both ways between any MRef and tuples
   - By default, now uses SideBySideWithName, added a varient called MRefNoName which allows you to hide the label
   - Also moved to its own class file instead of hiding inside of Converter
-- Chess Engine v2 Begins
 - Misc
   - Added new image to default images, a Fade Circle
   - Weighted Averages now has a better constructor option, and implicit conversion for ease of use
