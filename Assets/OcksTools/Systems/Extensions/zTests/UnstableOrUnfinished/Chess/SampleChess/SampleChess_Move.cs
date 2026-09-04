@@ -4,7 +4,7 @@ public class SampleChess_Move : MonoBehaviour
 {
     public Vector2Int Mypos;
     public bool cap;
-    public ChessPieceBase me;
+    public ChessPieceBase2 me;
     private void Update()
     {
         if (Hover.IsHovering(gameObject))

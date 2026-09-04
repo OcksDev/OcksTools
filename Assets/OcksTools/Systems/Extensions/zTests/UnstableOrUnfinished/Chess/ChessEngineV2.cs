@@ -132,10 +132,13 @@ public abstract class BoardState2
         piece.Position = NewPosition;
         _positionLookup.Add(NewPosition, piece);
         piece.OnMove(oldpos);
+        piece.OnMoveEvent?.Invoke(piece, oldpos);
     }
     public void CapturePiece(ChessPieceBase2 piece, ChessPieceBase2 cap_piece)
     {
-        piece.OnCapture(new List<ChessPieceBase2>() { cap_piece });
+        var l = new List<ChessPieceBase2>() { cap_piece };
+        piece.OnCapture(l);
+        piece.OnCaptureEvent?.Invoke(piece, l);
         RemovePieceFast(cap_piece);
     }
 
@@ -222,8 +225,12 @@ public abstract class ChessPieceBase2
     public List<ChessBoardVector2> BoardVectors = new();
     public virtual bool IgnoreBounds => false;
     public virtual void OnAddedToBoard() { }
+    public OXEvent<ChessPieceBase2, Vector2Int> OnMoveEvent = new();
     public virtual void OnMove(Vector2Int OldPosition) { }
+    public OXEvent<ChessPieceBase2, List<ChessPieceBase2>> OnCaptureEvent = new();
     public virtual void OnCapture(List<ChessPieceBase2> CapturedPieces) { }
+    public OXEvent<ChessPieceBase2> OnDestroyEvent = new();
+    public GameObject WorldObject;
     public List<(Vector2Int Position, ChessPieceBase2 Piece)> GetAllPossibleMoves()
     {
         var validMoves = new List<(Vector2Int Position, ChessPieceBase2 Piece)>();
@@ -282,7 +289,14 @@ public abstract class ChessPieceBase2
 
         return legalMoves;
     }
-    public ChessPieceBase2 Clone() { return MemberwiseClone() as ChessPieceBase2; }
+    public ChessPieceBase2 Clone()
+    {
+        var c = MemberwiseClone() as ChessPieceBase2;
+        c.OnCaptureEvent = null;
+        c.OnMoveEvent = null;
+        c.OnDestroyEvent = null;
+        return c;
+    }
 
 }
 
