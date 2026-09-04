@@ -41,7 +41,6 @@ public class Chess_DefaultBoard : ChessBoard
 public class ChessPiece_Pawn : ChessPieceBase
 {
     public override string GetName() => "Pawn";
-    public int MoveTurn = -1;
     public bool DoublePushed = false;
     public override void OnAddedToBoard()
     {
