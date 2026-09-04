@@ -1,29 +1,55 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 public class OXFactory
 {
     private static Dictionary<Type, _OXFactory> AllFactories = new();
+
     public static T Create<T>(string name) where T : class => (T)_GetFactory<T>().Create(name);
     public static _CoolOXFactory<T> GetFactory<T>() where T : class => (_CoolOXFactory<T>)_GetFactory<T>();
+
     public static void Define<T, T2>(string name) where T : class where T2 : T, new()
     {
-        if (!AllFactories.TryGetValue(typeof(T), out var factory))
-        {
-            factory = new _CoolOXFactory<T>();
-            AllFactories.Add(typeof(T), factory);
-        }
-        ((_CoolOXFactory<T>)factory).Define<T2>(name);
+        _GetOrCreateFactory<T>().Define<T2>(name);
     }
     public static void Define<T, T2>(params string[] names) where T : class where T2 : T, new()
     {
+        _GetOrCreateFactory<T>().Define<T2>(names);
+    }
+    public static void DefineForInheritorsOf<T>(Func<T, string> getName) where T : class
+    {
+        var factory = _GetOrCreateFactory<T>();
+
+        // Cache the single-string overload's MethodInfo once (not per-type).
+        var defineMethod = typeof(_CoolOXFactory<T>)
+            .GetMethod(nameof(_CoolOXFactory<T>.Define), new[] { typeof(string) });
+
+        var candidateTypes = Assembly.GetAssembly(typeof(T)).GetTypes()
+            .Where(t => t.IsClass && !t.IsAbstract
+                        && typeof(T).IsAssignableFrom(t)
+                        && t.GetConstructor(Type.EmptyTypes) != null);
+
+        foreach (var type in candidateTypes)
+        {
+            T instance = (T)Activator.CreateInstance(type);
+            string name = getName(instance);
+
+            defineMethod.MakeGenericMethod(type).Invoke(factory, new object[] { name });
+        }
+    }
+
+    private static _CoolOXFactory<T> _GetOrCreateFactory<T>() where T : class
+    {
         if (!AllFactories.TryGetValue(typeof(T), out var factory))
         {
             factory = new _CoolOXFactory<T>();
             AllFactories.Add(typeof(T), factory);
         }
-        ((_CoolOXFactory<T>)factory).Define<T2>(names);
+        return (_CoolOXFactory<T>)factory;
     }
+
     private static _OXFactory _GetFactory<T>() where T : class
     {
         if (!AllFactories.TryGetValue(typeof(T), out var factory))

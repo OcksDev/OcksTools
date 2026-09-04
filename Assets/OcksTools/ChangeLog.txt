@@ -52,6 +52,7 @@
   - By default, now uses SideBySideWithName, added a varient called MRefNoName which allows you to hide the label
   - Also moved to its own class file instead of hiding inside of Converter
 - Misc
+  - OXFactory now has a DefineForInheritorsOf<>() method, which lets you define a factory for all inheritors of a given type automatically
   - Added new image to default images, a Fade Circle
   - Weighted Averages now has a better constructor option, and implicit conversion for ease of use
   - Added FakeHDR color option for ColorSystem, should make HDR colors just easier to work with

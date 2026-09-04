@@ -451,6 +451,10 @@ MonoBehaviour:
     Clip: {fileID: 8300000, guid: 04202834bdf5de9449046b7049dfcf76, type: 3}
   - Name: MoveSelf
     Clip: {fileID: 8300000, guid: f1c8d1e45bc8c9a48af36e3f413a2f5d, type: 3}
+  - Name: Castle
+    Clip: {fileID: 8300000, guid: 97743b1e3fc42744d8f8f9558ef64d57, type: 3}
+  - Name: Promote
+    Clip: {fileID: 8300000, guid: abbdb01647b01064cb56ba2b514b540f, type: 3}
   AudioLibraries: []
   AudioMixers: []
 --- !u!1660057539 &9223372036854775807

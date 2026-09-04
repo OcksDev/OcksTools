@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -20,16 +21,23 @@ public class SampleChess : SingleInstance<SampleChess>
             a.WorldObject = c;
             c.GetComponent<SpriteRenderer>().sprite = ChessPieces[a.Name + (a.Team == ChessTeam.White ? "W" : "B")];
             c.GetComponent<SampleChessPiece>().me = a;
-            a.OnMoveEvent.Append((x, y) => x.WorldObject.transform.position = PosToWorld(x.Position));
+            a.OnMoveEvent.Append((x, y) => StartCoroutine(MovePieceAnimation(x, PosToWorld(y), PosToWorld(x.Position))));
             a.OnDestroyEvent.Append((x, y) => Destroy(x.WorldObject));
         });
 
         b.Make();
         b.StartGame_2Player();
-        foreach (var a in b.CurrentPieces)
-        {
-        }
     }
+
+    public IEnumerator MovePieceAnimation(ChessPieceBase piece, Vector3 oldpos, Vector3 newpos)
+    {
+        yield return OXLerp.Frame.Linear((x) =>
+        {
+            x = Ease.In(x);
+            piece.WorldObject.transform.position = Vector3.Lerp(oldpos, newpos, x);
+        }, 0.1f);
+    }
+
     private List<GameObject> markers = new();
     public void ClearMarkers()
     {

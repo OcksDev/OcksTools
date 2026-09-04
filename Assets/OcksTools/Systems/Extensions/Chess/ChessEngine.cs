@@ -22,11 +22,11 @@ public static class ChessEngine
         }
         return pos;
     }
-    public static Vector2Int TranslateToWhitePOV(ChessTeam Team, Vector2Int pos)
+    [RuntimeInitializeOnLoadMethod]
+    public static void InitPieces()
     {
-        if (Team == ChessTeam.White) return pos;
-
-        return pos;
+        OXFactory.DefineForInheritorsOf<ChessPieceBase>((x) => x.GetName());
+        OXFactory.DefineForInheritorsOf<ChessBoard>((x) => x.GetName());
     }
 }
 
@@ -42,6 +42,7 @@ public enum ChessTeam
 
 public abstract class ChessBoard
 {
+    public abstract string GetName();
     public List<ChessPieceBase> CurrentPieces = new();
     private Dictionary<Vector2Int, ChessPieceBase> _positionLookup = new();
     public int CurrentTurn = 0;
@@ -266,6 +267,25 @@ public abstract class ChessBoard
         if (inCheck) return ChessGameStatus.Check;
         return ChessGameStatus.Normal;
     }
+
+
+    public void SaveBoard(SaveProfile dict, string key)
+    {
+        key = "Chess_" + key;
+        List<string> PieceData = new List<string>(CurrentPieces.Count);
+        foreach (var a in CurrentPieces)
+        {
+            PieceData.Add(a.SaveToString());
+        }
+        Dictionary<string, string> data = new Dictionary<string, string>()
+        {
+            {"Board", GetName()},
+            {"Team", CurrentTeam.ToString()},
+            {"Turn", CurrentTurn.ToString()},
+            {"Pieces", PieceData.ListToString("<>")},
+        };
+        dict.SetDict(key, data);
+    }
 }
 public enum ChessGameStatus { Normal, Check, Checkmate, Stalemate }
 [System.Serializable]
@@ -362,7 +382,22 @@ public abstract class ChessPieceBase
         c.OnDestroyEvent = null;
         return c;
     }
-
+    public string SaveToString()
+    {
+        List<string> d = new()
+        {
+            Name,
+            Team.ToString(),
+            Position.ToString(),
+            MoveTurn.ToString(),
+            HasMoved.ToString(),
+        };
+        string s = GetExtraData();
+        if (s != null && s != "") d.Add(s);
+        return d.ListToString("|");
+    }
+    public virtual string GetExtraData() { return ""; }
+    public virtual void LoadExtraData(string a) { }
 }
 
 public struct ChessBoardVector

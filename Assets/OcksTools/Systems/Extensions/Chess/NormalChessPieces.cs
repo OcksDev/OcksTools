@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class ChessBoard_Default : ChessBoard
 {
+    public override string GetName() => "Default";
     public override bool IsSpaceInBounds(Vector2Int pos)
     {
         return pos.x >= 0 && pos.x < 8 && pos.y >= 0 && pos.y < 8;
