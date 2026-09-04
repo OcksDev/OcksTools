@@ -28,6 +28,54 @@ public static class ChessEngine
         OXFactory.DefineForInheritorsOf<ChessPieceBase>((x) => x.GetName());
         OXFactory.DefineForInheritorsOf<ChessBoard>((x) => x.GetName());
     }
+
+    public static void SaveBoard(ChessBoard board, SaveProfile dict, string key)
+    {
+        key = "Chess_" + key;
+        List<string> PieceData = new List<string>(board.CurrentPieces.Count);
+        foreach (var a in board.CurrentPieces)
+        {
+            PieceData.Add(a.SaveToString());
+        }
+        Dictionary<string, string> data = new Dictionary<string, string>()
+        {
+            {"Board", board.GetName()},
+            {"Team", board.CurrentTeam.ToString()},
+            {"Turn", board.CurrentTurn.ToString()},
+            {"Pieces", PieceData.ListToString("<>")},
+        };
+        dict.SetDict(key, data);
+    }
+
+    public static ChessBoard LoadBoard(SaveProfile dict, string key)
+    {
+        key = "Chess_" + key;
+        var data = dict.GetDict(key, new());
+        var board = OXFactory.Create<ChessBoard>(data["Board"]);
+        board.CurrentTeam = System.Enum.Parse<ChessTeam>(data["Team"]);
+        board.CurrentTurn = int.Parse(data["Turn"]);
+        List<string> PieceData = data["Turn"].StringToList("<>");
+        foreach (var a in PieceData)
+        {
+            var p = LoadPiece(a);
+            board.AddPiece(p, p.Position, p.Team);
+        }
+        return board;
+    }
+
+    public static ChessPieceBase LoadPiece(string data)
+    {
+        List<string> real_data = data.StringToList("|");
+        var p = OXFactory.Create<ChessPieceBase>(real_data[0]);
+        p.Name = real_data[0];
+        p.Team = System.Enum.Parse<ChessTeam>(real_data[1]);
+        p.Position = real_data[2].StringToVector2Int();
+        p.MoveTurn = int.Parse(real_data[3]);
+        string ed = "";
+        if (real_data.Count == 5) ed = real_data[4];
+        p.LoadExtraData(ed);
+        return p;
+    }
 }
 
 public enum ChessTeam
@@ -124,6 +172,7 @@ public abstract class ChessBoard
         piece.CurrentBoard = this;
         piece.Name = piece.GetName();
         piece.BoardIndex = CurrentPieces.Count;
+        piece.HasMoved = piece.MoveTurn >= 0;
         CurrentPieces.Add(piece);
         _positionLookup.Add(Position, piece);
         piece.OnAddedToBoard();
@@ -268,24 +317,6 @@ public abstract class ChessBoard
         return ChessGameStatus.Normal;
     }
 
-
-    public void SaveBoard(SaveProfile dict, string key)
-    {
-        key = "Chess_" + key;
-        List<string> PieceData = new List<string>(CurrentPieces.Count);
-        foreach (var a in CurrentPieces)
-        {
-            PieceData.Add(a.SaveToString());
-        }
-        Dictionary<string, string> data = new Dictionary<string, string>()
-        {
-            {"Board", GetName()},
-            {"Team", CurrentTeam.ToString()},
-            {"Turn", CurrentTurn.ToString()},
-            {"Pieces", PieceData.ListToString("<>")},
-        };
-        dict.SetDict(key, data);
-    }
 }
 public enum ChessGameStatus { Normal, Check, Checkmate, Stalemate }
 [System.Serializable]
@@ -390,7 +421,6 @@ public abstract class ChessPieceBase
             Team.ToString(),
             Position.ToString(),
             MoveTurn.ToString(),
-            HasMoved.ToString(),
         };
         string s = GetExtraData();
         if (s != null && s != "") d.Add(s);

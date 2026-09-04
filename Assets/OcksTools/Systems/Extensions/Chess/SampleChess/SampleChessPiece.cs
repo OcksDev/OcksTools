@@ -4,9 +4,11 @@ public class SampleChessPiece : MonoBehaviour
 {
     public ChessPieceBase me;
     private SpriteRenderer sr;
+    public SpriteRenderer cr;
     private void Awake()
     {
         sr = GetComponent<SpriteRenderer>();
+        cr.gameObject.SetActive(false);
     }
     private void Update()
     {

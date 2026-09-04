@@ -115,6 +115,10 @@ public class SampleChess : SingleInstance<SampleChess>
         }
 
         b.AdvanceTurn();
+
+        //check square shit lol
+        // get the king piece with isteamincheck?
+        // disable on turn end, you cant end your turn still being in  check
     }
 
 
