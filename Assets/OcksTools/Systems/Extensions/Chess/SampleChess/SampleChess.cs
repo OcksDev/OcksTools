@@ -31,11 +31,13 @@ public class SampleChess : SingleInstance<SampleChess>
 
     public IEnumerator MovePieceAnimation(ChessPieceBase piece, Vector3 oldpos, Vector3 newpos)
     {
+        var m = Mathf.Pow((oldpos - newpos).magnitude, 0.33f);
         yield return OXLerp.Frame.Linear((x) =>
         {
+            if (piece.WorldObject == null) return;
             x = Ease.In(x);
             piece.WorldObject.transform.position = Vector3.Lerp(oldpos, newpos, x);
-        }, 0.1f);
+        }, 0.15f * m);
     }
 
     private List<GameObject> markers = new();
@@ -81,8 +83,14 @@ public class SampleChess : SingleInstance<SampleChess>
     {
         ClearMarkers();
     }
+    ChessPieceBase oldking = null;
     public void SelectMove(SampleChess_Move m)
     {
+        if (oldking != null)
+        {
+            oldking.WorldObject.GetComponent<SampleChessPiece>().cr.gameObject.SetActive(false);
+            oldking = null;
+        }
         var pp = m.me;
         var flags = b.MovePiece(m.me, m.Mypos);
         DelectPiece();
@@ -116,9 +124,12 @@ public class SampleChess : SingleInstance<SampleChess>
 
         b.AdvanceTurn();
 
-        //check square shit lol
-        // get the king piece with isteamincheck?
-        // disable on turn end, you cant end your turn still being in  check
+        var d = b.IsTeamInCheck(b.CurrentTeam);
+        if (d.valid)
+        {
+            d.king.WorldObject.GetComponent<SampleChessPiece>().cr.gameObject.SetActive(true);
+            oldking = d.king;
+        }
     }
 
 
