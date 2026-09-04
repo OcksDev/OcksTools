@@ -57,7 +57,6 @@ public class ChessPiece_Pawn : ChessPieceBase
         if (!CurrentBoard.Simulation)
         {
             if (MoveTurn == -1) BoardVectors[0] = new ChessBoardVector((0, 1), ChessMoveRequirement.RequireEmptySpace);
-            MoveTurn = CurrentBoard.CurrentTurn;
             DoublePushed = Mathf.Abs(OldPosition.y - Position.y) == 2;
         }
         if (OldPosition.x != Position.x)
@@ -73,6 +72,7 @@ public class ChessPiece_Pawn : ChessPieceBase
     {
         EnPassCheck(1);
         EnPassCheck(2);
+        DoublePushed = false;
     }
 
     private void EnPassCheck(int i)
@@ -94,7 +94,7 @@ public class ChessPiece_Pawn : ChessPieceBase
         if (p.Team != Team && p.Name == "Pawn")
         {
             var pp = p as ChessPiece_Pawn;
-            if ((pp.MoveTurn == CurrentBoard.CurrentTurn - 1 || pp.MoveTurn == CurrentBoard.CurrentTurn) && pp.DoublePushed)
+            if (pp.DoublePushed)
                 return true;
         }
         return false;
@@ -108,11 +108,11 @@ public class ChessPiece_King : ChessPieceBase
     {
         BoardVectors = new()
         {
+            new ChessBoardVector((1,0)),
+            new ChessBoardVector((0,-1)),
             new ChessBoardVector((0,1)),
             new ChessBoardVector((1,1)),
             new ChessBoardVector((-1,1)),
-            new ChessBoardVector((1,0)),
-            new ChessBoardVector((0,-1)),
             new ChessBoardVector((1,-1)),
             new ChessBoardVector((-1,-1)),
             new ChessBoardVector((-1,0))
