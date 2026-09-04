@@ -83,7 +83,7 @@ public class SampleChess : SingleInstance<SampleChess>
     {
         ClearMarkers();
     }
-    ChessPieceBase oldking = null;
+    private ChessPieceBase oldking = null;
     public void SelectMove(SampleChess_Move m)
     {
         if (oldking != null)
