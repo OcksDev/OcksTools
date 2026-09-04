@@ -185,8 +185,9 @@ public class ChessPiece_King : ChessPieceBase
         else
             rook = CurrentBoard.GetPieceAtPos(Position + worldStep * 3 * flip);
 
-        if (rook == null || rook.HasMoved) return;
+        if ((step * flip) == -1 && CurrentBoard.GetPieceAtPos(Position + worldStep * (flip == 1 ? -3 : 3)) != null) return;
 
+        if (rook == null || rook.HasMoved) return;
 
         if (IsSquareAttacked(Position)) return;              // king currently in check
         if (IsSquareAttacked(Position + worldStep)) return;   // passes through attack
