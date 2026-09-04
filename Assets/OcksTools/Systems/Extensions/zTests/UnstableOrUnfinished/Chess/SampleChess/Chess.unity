@@ -269,6 +269,7 @@ GameObject:
   - component: {fileID: 1638320092}
   - component: {fileID: 1638320091}
   - component: {fileID: 1638320095}
+  - component: {fileID: 1638320096}
   m_Layer: 0
   m_Name: Square
   m_TagString: Untagged
@@ -340,6 +341,7 @@ MonoBehaviour:
       b: {fileID: 21300000, guid: 215ba13639bcd394db81840fe6cde311, type: 3}
     - a: PawnW
       b: {fileID: 21300000, guid: 077e619d52019284f9b9fc234b2b1ddb, type: 3}
+  my_team: 0
   piecescale: 69
 --- !u!212 &1638320093
 SpriteRenderer:
@@ -426,6 +428,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dfb6dde2519ba31478704408696778d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Hover
+--- !u!114 &1638320096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1638320090}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94e724cbf681d7a44ad5a268c1fce716, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SoundSystem
+  DebugVolumeMult: 1
+  DefaultMixerGroup: {fileID: 0}
+  AudioClips:
+  - Name: Capture
+    Clip: {fileID: 8300000, guid: 47d60e07b80d8104f93e55ba99e16e5b, type: 3}
+  - Name: Check
+    Clip: {fileID: 8300000, guid: 9edbe866410af89468b749d8bb912316, type: 3}
+  - Name: MoveOpponent
+    Clip: {fileID: 8300000, guid: 04202834bdf5de9449046b7049dfcf76, type: 3}
+  - Name: MoveSelf
+    Clip: {fileID: 8300000, guid: f1c8d1e45bc8c9a48af36e3f413a2f5d, type: 3}
+  AudioLibraries: []
+  AudioMixers: []
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

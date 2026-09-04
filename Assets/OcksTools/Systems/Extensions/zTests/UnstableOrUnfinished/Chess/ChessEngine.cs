@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-public class ChessEngine
+public static class ChessEngine
 {
     public static Vector2Int TeamRotation(ChessTeam Team, Vector2Int pos)
     {
@@ -34,7 +34,7 @@ public enum ChessTeam
     Green, // 4-player right
 }
 
-public abstract class BoardState
+public abstract class ChessBoard
 {
     public List<ChessPieceBase> CurrentPieces = new();
     private Dictionary<Vector2Int, ChessPieceBase> _positionLookup = new();
@@ -94,6 +94,11 @@ public abstract class BoardState
         return CurrentTeam;
     }
 
+    public void AddPiece(ChessPieceBase piece, (int, int) Position, ChessTeam Team)
+    {
+        AddPiece(piece, new Vector2Int(Position.Item1, Position.Item2), Team);
+    }
+
     public void AddPiece(ChessPieceBase piece, Vector2Int Position, ChessTeam Team)
     {
         if (!piece.IgnoreBounds && !IsSpaceInBounds(Position))
@@ -115,8 +120,10 @@ public abstract class BoardState
     {
         return _positionLookup.TryGetValue(pos, out var piece) ? piece : null;
     }
-    public void MovePiece(ChessPieceBase piece, Vector2Int NewPosition)
+    private bool was_capture_made = false;
+    public bool MovePiece(ChessPieceBase piece, Vector2Int NewPosition)
     {
+        was_capture_made = false;
         if (!piece.IgnoreBounds && !IsSpaceInBounds(NewPosition))
         {
             throw new System.Exception($"Position {NewPosition} is out of bounds for this board.");
@@ -125,6 +132,7 @@ public abstract class BoardState
         if (pieceAtNewPos != null)
         {
             CapturePiece(piece, pieceAtNewPos);
+            was_capture_made = true;
         }
         var oldpos = piece.Position;
         _positionLookup.Remove(piece.Position);
@@ -132,12 +140,14 @@ public abstract class BoardState
         _positionLookup.Add(NewPosition, piece);
         piece.OnMove(oldpos);
         piece.OnMoveEvent?.Invoke(piece, oldpos);
+        return was_capture_made;
     }
     public void CapturePiece(ChessPieceBase piece, ChessPieceBase cap_piece)
     {
-        var l = new List<ChessPieceBase>() { cap_piece };
-        piece.OnCapture(l);
-        piece.OnCaptureEvent?.Invoke(piece, l);
+        piece.OnCapture(cap_piece);
+        piece.OnCaptureEvent?.Invoke(piece, cap_piece);
+        cap_piece.OnDestroy(piece);
+        cap_piece.OnDestroyEvent?.Invoke(cap_piece, piece);
         RemovePieceFast(cap_piece);
     }
 
@@ -173,9 +183,9 @@ public abstract class BoardState
         }
         return (false, null);
     }
-    public BoardState Clone()
+    public ChessBoard Clone()
     {
-        var clone = MemberwiseClone() as BoardState;
+        var clone = MemberwiseClone() as ChessBoard;
         clone.CurrentPieces = new List<ChessPieceBase>(CurrentPieces.Count);
         clone._positionLookup = new Dictionary<Vector2Int, ChessPieceBase>(CurrentPieces.Count);
         foreach (var piece in CurrentPieces)
@@ -217,18 +227,19 @@ public abstract class ChessPieceBase
     public string Name = "";
     public int BoardIndex = -1;
     public abstract string GetName();
-    public BoardState CurrentBoard;
+    public ChessBoard CurrentBoard;
     public ChessTeam Team;
     public Vector2Int Position;
     public Vector2Int TeamRotation(Vector2Int Pos) => ChessEngine.TeamRotation(Team, Pos);
-    public List<ChessBoardVector2> BoardVectors = new();
+    public List<ChessBoardVector> BoardVectors = new();
     public virtual bool IgnoreBounds => false;
-    public virtual void OnAddedToBoard() { }
     public OXEvent<ChessPieceBase, Vector2Int> OnMoveEvent = new();
+    public OXEvent<ChessPieceBase, ChessPieceBase> OnCaptureEvent = new();
+    public OXEvent<ChessPieceBase, ChessPieceBase> OnDestroyEvent = new();
+    public virtual void OnAddedToBoard() { }
     public virtual void OnMove(Vector2Int OldPosition) { }
-    public OXEvent<ChessPieceBase, List<ChessPieceBase>> OnCaptureEvent = new();
-    public virtual void OnCapture(List<ChessPieceBase> CapturedPieces) { }
-    public OXEvent<ChessPieceBase> OnDestroyEvent = new();
+    public virtual void OnCapture(ChessPieceBase CapturedPiece) { }
+    public virtual void OnDestroy(ChessPieceBase Killer) { }
     public GameObject WorldObject;
     public List<(Vector2Int Position, ChessPieceBase Piece)> GetAllPossibleMoves()
     {
@@ -240,8 +251,10 @@ public abstract class ChessPieceBase
             for (int i = 0; i < spaces.Length; i++)
             {
                 var pp = TeamRotation(spaces[i]) + Position;
+                if (!IgnoreBounds && !CurrentBoard.IsSpaceInBounds(pp)) break;
                 var p = CurrentBoard.GetPieceAtPos(pp);
-                if (p == null && vector.MustCapture) continue;
+                if (p == null && vector.MoveReq == ChessMoveRequirement.RequireCapture) continue;
+                if (p != null && vector.MoveReq == ChessMoveRequirement.RequireEmptySpace) continue;
                 if (p != null && p.Team == Team) break;
                 validMoves.Add((pp, p));
                 if (p != null) break;
@@ -259,7 +272,8 @@ public abstract class ChessPieceBase
             {
                 var pp = TeamRotation(spaces[i]) + Position;
                 var p = CurrentBoard.GetPieceAtPos(pp);
-                if (p == null && vector.MustCapture) continue;
+                if (p == null && vector.MoveReq == ChessMoveRequirement.RequireCapture) continue;
+                if (p != null && vector.MoveReq == ChessMoveRequirement.RequireEmptySpace) continue;
                 if (p != null && p.Team == Team) break;
 
                 if (pp == target) return true;
@@ -299,30 +313,66 @@ public abstract class ChessPieceBase
 
 }
 
-public struct ChessBoardVector2
+public struct ChessBoardVector
 {
     public Vector2Int Position;
     public Vector2Int Direction;
     public int Length;
-    public bool MustCapture;
+    public ChessMoveRequirement MoveReq;
     public bool IncludeStartSpace;
     private Vector2Int[] _cachedSpaces;
-    public ChessBoardVector2((short x, short y) pos, (short x, short y) direction, int length, bool mustCapture = false, bool includeStartSpace = true)
+    public ChessBoardVector((short x, short y) pos, (short x, short y) direction, int length, ChessMoveRequirement mustCapture = ChessMoveRequirement.Normal, bool includeStartSpace = false)
     {
         Position = new Vector2Int(pos.x, pos.y);
         Direction = new Vector2Int(direction.x, direction.y);
         Length = length;
-        MustCapture = mustCapture;
+        MoveReq = mustCapture;
         IncludeStartSpace = includeStartSpace;
         _cachedSpaces = null;
     }
+    public ChessBoardVector((short x, short y) direction, int length, ChessMoveRequirement mustCapture = ChessMoveRequirement.Normal)
+    {
+        Position = new Vector2Int(0, 0);
+        Direction = new Vector2Int(direction.x, direction.y);
+        Length = length;
+        MoveReq = mustCapture;
+        IncludeStartSpace = false;
+        _cachedSpaces = null;
+    }
+    public ChessBoardVector(Vector2Int direction, int length, ChessMoveRequirement mustCapture = ChessMoveRequirement.Normal)
+    {
+        Position = new Vector2Int(0, 0);
+        Direction = direction;
+        Length = length;
+        MoveReq = mustCapture;
+        IncludeStartSpace = false;
+        _cachedSpaces = null;
+    }
+    public ChessBoardVector((short x, short y) pos, ChessMoveRequirement mustCapture = ChessMoveRequirement.Normal)
+    {
+        Position = new Vector2Int(pos.x, pos.y);
+        Direction = new Vector2Int(0, 0);
+        Length = 0;
+        MoveReq = mustCapture;
+        IncludeStartSpace = true;
+        _cachedSpaces = null;
+    }
+    public ChessBoardVector(Vector2Int pos, ChessMoveRequirement mustCapture = ChessMoveRequirement.Normal)
+    {
+        Position = pos;
+        Direction = new Vector2Int(0, 0);
+        Length = 0;
+        MoveReq = mustCapture;
+        IncludeStartSpace = true;
+        _cachedSpaces = null;
+    }
 
-    public ChessBoardVector2(Vector2Int pos, Vector2Int direction, int length, bool mustCapture = false, bool includeStartSpace = true)
+    public ChessBoardVector(Vector2Int pos, Vector2Int direction, int length, ChessMoveRequirement mustCapture = ChessMoveRequirement.Normal, bool includeStartSpace = false)
     {
         Position = pos;
         Direction = direction;
         Length = length;
-        MustCapture = mustCapture;
+        MoveReq = mustCapture;
         IncludeStartSpace = includeStartSpace;
         _cachedSpaces = null;
     }
@@ -330,6 +380,11 @@ public struct ChessBoardVector2
     {
         if (_cachedSpaces == null)
         {
+            if (Length == 0)
+            {
+                _cachedSpaces = new Vector2Int[1] { Position };
+                return _cachedSpaces;
+            }
             int start = IncludeStartSpace ? 0 : 1;
             _cachedSpaces = new Vector2Int[Length - start + 1];
             for (int i = start; i <= Length; i++)
@@ -337,4 +392,11 @@ public struct ChessBoardVector2
         }
         return _cachedSpaces;
     }
+}
+
+public enum ChessMoveRequirement
+{
+    Normal,
+    RequireCapture,
+    RequireEmptySpace,
 }

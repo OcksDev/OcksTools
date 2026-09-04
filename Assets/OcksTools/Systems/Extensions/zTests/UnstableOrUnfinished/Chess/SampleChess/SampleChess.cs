@@ -3,13 +3,17 @@ using UnityEngine;
 
 public class SampleChess : SingleInstance<SampleChess>
 {
-    public CompileableDictionary<string, Sprite> ChessPieces = new();
-    public BoardState b;
+    public CompileableDictionary<Sprite> ChessPieces = new();
+    public ChessBoard b;
+    public ChessTeam my_team = ChessTeam.White;
+    [HideInInspector]
     public float piecescale = 69;
     private void Start()
     {
         ChessPieces.Compile();
         //set pieces
+        b = Chess_DefaultBoard.MakeDefaultBoard();
+
         b.StartGame_2Player();
         piecescale = transform.localScale.x / 8;
         foreach (var a in b.CurrentPieces)
@@ -20,7 +24,7 @@ public class SampleChess : SingleInstance<SampleChess>
             c.GetComponent<SpriteRenderer>().sprite = ChessPieces[a.Name + (a.Team == ChessTeam.White ? "W" : "B")];
             c.GetComponent<SampleChessPiece>().me = a;
             a.OnMoveEvent.Append((x, y) => x.WorldObject.transform.position = PosToWorld(x.Position));
-            a.OnDestroyEvent.Append((x) => Destroy(x.WorldObject));
+            a.OnDestroyEvent.Append((x, y) => Destroy(x.WorldObject));
         }
     }
     private List<GameObject> markers = new();
@@ -69,8 +73,28 @@ public class SampleChess : SingleInstance<SampleChess>
     public void SelectMove(SampleChess_Move m)
     {
         var pp = m.me;
-        b.MovePiece(m.me, m.Mypos);
+        var cap = b.MovePiece(m.me, m.Mypos);
         DelectPiece();
+        if (b.IsTeamInCheck(ChessBoard.NextTeam(b.CurrentTeam)).valid)
+        {
+            SoundSystem.Instance.PlaySound(new OXSound("Check", 1));
+        }
+        else if (cap)
+        {
+            SoundSystem.Instance.PlaySound(new OXSound("Capture", 1));
+        }
+        else
+        {
+            if (b.CurrentTeam == my_team)
+            {
+                SoundSystem.Instance.PlaySound(new OXSound("MoveSelf", 1));
+            }
+            else
+            {
+                SoundSystem.Instance.PlaySound(new OXSound("MoveOpponent", 1));
+            }
+        }
+
         b.AdvanceTurn();
     }
 
