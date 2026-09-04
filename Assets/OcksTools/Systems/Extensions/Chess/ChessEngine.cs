@@ -54,7 +54,7 @@ public static class ChessEngine
         var board = OXFactory.Create<ChessBoard>(data["Board"]);
         board.CurrentTeam = System.Enum.Parse<ChessTeam>(data["Team"]);
         board.CurrentTurn = int.Parse(data["Turn"]);
-        List<string> PieceData = data["Turn"].StringToList("<>");
+        List<string> PieceData = data["Pieces"].StringToList("<>");
         foreach (var a in PieceData)
         {
             var p = LoadPiece(a);
@@ -297,7 +297,7 @@ public abstract class ChessBoard
     {
         foreach (var piece in CurrentPieces)
         {
-            if (piece.Team == team && piece.GetLegalMoves().Count > 0)
+            if (piece.Team == team && piece.HasAnyLegalMoves())
             {
                 return true;
             }
@@ -373,6 +373,7 @@ public abstract class ChessPieceBase
             for (int i = 0; i < spaces.Length; i++)
             {
                 var pp = TeamRotation(spaces[i]) + Position;
+                if (!IgnoreBounds && !CurrentBoard.IsSpaceInBounds(pp)) break;
                 var p = CurrentBoard.GetPieceAtPos(pp);
                 if (p == null && vector.MoveReq == ChessMoveRequirement.RequireCapture) continue;
                 if (p != null && vector.MoveReq == ChessMoveRequirement.RequireEmptySpace) continue;
@@ -403,6 +404,23 @@ public abstract class ChessPieceBase
         }
 
         return legalMoves;
+    }
+
+    public bool HasAnyLegalMoves()
+    {
+        foreach (var move in GetAllPossibleMoves())
+        {
+            var clone = CurrentBoard.Clone();
+            var clonedPiece = clone.CurrentPieces[BoardIndex];
+
+            clone.MovePieceInternal(clonedPiece, move.Position);
+
+            var (inCheck, _) = clone.IsTeamInCheck(Team);
+            if (!inCheck)
+                return true;
+        }
+
+        return false;
     }
     public ChessPieceBase Clone()
     {
