@@ -73,13 +73,13 @@ public class SampleChess : SingleInstance<SampleChess>
     public void SelectMove(SampleChess_Move m)
     {
         var pp = m.me;
-        var cap = b.MovePiece(m.me, m.Mypos);
+        var flags = b.MovePiece(m.me, m.Mypos);
         DelectPiece();
-        if (b.IsTeamInCheck(ChessBoard.NextTeam(b.CurrentTeam)).valid)
+        if (flags.Contains("check"))
         {
             SoundSystem.Instance.PlaySound(new OXSound("Check", 1));
         }
-        else if (cap)
+        else if (flags.Contains("capture"))
         {
             SoundSystem.Instance.PlaySound(new OXSound("Capture", 1));
         }

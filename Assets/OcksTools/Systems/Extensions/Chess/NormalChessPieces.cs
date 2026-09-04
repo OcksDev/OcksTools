@@ -66,6 +66,7 @@ public class ChessPiece_Pawn : ChessPieceBase
             if (IsGoodPissPawn(p))
             {
                 CurrentBoard.CapturePiece(this, p);
+                CurrentBoard.MoveFlags.Add("en passant");
             }
         }
     }
@@ -148,13 +149,14 @@ public class ChessPiece_King : ChessPieceBase
             if (OldPosition.x > Position.x)
             {
                 //moved left, so move the rook to the right
-                CurrentBoard.MovePiece(CurrentBoard.GetPieceAtPos(Position + worldStep * -2 * flip), Position + worldStep);
+                CurrentBoard.MovePieceInternal(CurrentBoard.GetPieceAtPos(Position + worldStep * -2 * flip), Position + worldStep);
             }
             else
             {
                 //moved right, so move the rook to the left
-                CurrentBoard.MovePiece(CurrentBoard.GetPieceAtPos(Position + worldStep * 1 * flip), Position + worldStep);
+                CurrentBoard.MovePieceInternal(CurrentBoard.GetPieceAtPos(Position + worldStep * 1 * flip), Position + worldStep);
             }
+            CurrentBoard.MoveFlags.Add("castle");
         }
     }
 

@@ -41,6 +41,7 @@ public abstract class ChessBoard
     public int CurrentTurn = 0;
     public ChessTeam CurrentTeam = ChessTeam.White;
     public bool Simulation = false;
+    public HashSet<string> MoveFlags = new HashSet<string>();
 
     public void StartGame_2Player()
     {
@@ -126,11 +127,22 @@ public abstract class ChessBoard
     {
         return _positionLookup.TryGetValue(pos, out var piece) ? piece : null;
     }
-    private bool was_capture_made = false;
-    public bool MovePiece(ChessPieceBase piece, Vector2Int NewPosition)
+
+    public HashSet<string> MovePiece(ChessPieceBase piece, Vector2Int NewPosition)
     {
-        if (piece.Position == NewPosition) { return false; }
-        was_capture_made = false;
+        if (piece.Position == NewPosition) { return new(); }
+        MoveFlags.Clear();
+        MovePieceInternal(piece, NewPosition);
+        if (IsTeamInCheck(NextTeam(CurrentTeam)).valid)
+        {
+            MoveFlags.Add("check");
+        }
+        return MoveFlags;
+    }
+
+    public HashSet<string> MovePieceInternal(ChessPieceBase piece, Vector2Int NewPosition)
+    {
+        if (piece.Position == NewPosition) { return new(); }
         if (!piece.IgnoreBounds && !IsSpaceInBounds(NewPosition))
         {
             throw new System.Exception($"Position {NewPosition} is out of bounds for this board.");
@@ -139,7 +151,7 @@ public abstract class ChessBoard
         if (pieceAtNewPos != null)
         {
             CapturePiece(piece, pieceAtNewPos);
-            was_capture_made = true;
+            MoveFlags.Add("capture");
         }
         piece.MoveTurn = CurrentTurn;
         var oldpos = piece.Position;
@@ -149,7 +161,7 @@ public abstract class ChessBoard
         piece.OnMove(oldpos);
         piece.OnMoveEvent?.Invoke(piece, oldpos);
 
-        return was_capture_made;
+        return MoveFlags;
     }
     public void CapturePiece(ChessPieceBase piece, ChessPieceBase cap_piece)
     {
@@ -157,7 +169,7 @@ public abstract class ChessBoard
         piece.OnCaptureEvent?.Invoke(piece, cap_piece);
         cap_piece.OnDestroy(piece);
         cap_piece.OnDestroyEvent?.Invoke(cap_piece, piece);
-        was_capture_made = true;
+        MoveFlags.Add("capture");
         RemovePieceFast(cap_piece);
     }
 
@@ -308,7 +320,7 @@ public abstract class ChessPieceBase
             var clone = CurrentBoard.Clone();
             var clonedPiece = clone.CurrentPieces[BoardIndex];
 
-            clone.MovePiece(clonedPiece, move.Position);
+            clone.MovePieceInternal(clonedPiece, move.Position);
 
             var (inCheck, _) = clone.IsTeamInCheck(Team);
             if (!inCheck)
