@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Chess_DefaultBoard : BoardState2
+public class Chess_DefaultBoard : BoardState
 {
     public override bool IsSpaceInBounds(Vector2Int pos)
     {

@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class SampleChessPiece : MonoBehaviour
 {
-    public ChessPieceBase2 me;
+    public ChessPieceBase me;
     private SpriteRenderer sr;
     private void Awake()
     {

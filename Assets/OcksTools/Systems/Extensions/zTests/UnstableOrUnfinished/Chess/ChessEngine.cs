@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
-public class ChessEngineV2
+public class ChessEngine
 {
-
     public static Vector2Int TeamRotation(ChessTeam Team, Vector2Int pos)
     {
         if (Team == ChessTeam.Black) return -pos;
@@ -35,10 +34,10 @@ public enum ChessTeam
     Green, // 4-player right
 }
 
-public abstract class BoardState2
+public abstract class BoardState
 {
-    public List<ChessPieceBase2> CurrentPieces = new();
-    private Dictionary<Vector2Int, ChessPieceBase2> _positionLookup = new();
+    public List<ChessPieceBase> CurrentPieces = new();
+    private Dictionary<Vector2Int, ChessPieceBase> _positionLookup = new();
     public int CurrentTurn = 0;
     public ChessTeam CurrentTeam = ChessTeam.White;
 
@@ -95,7 +94,7 @@ public abstract class BoardState2
         return CurrentTeam;
     }
 
-    public void AddPiece(ChessPieceBase2 piece, Vector2Int Position, ChessTeam Team)
+    public void AddPiece(ChessPieceBase piece, Vector2Int Position, ChessTeam Team)
     {
         if (!piece.IgnoreBounds && !IsSpaceInBounds(Position))
         {
@@ -112,11 +111,11 @@ public abstract class BoardState2
     }
 
     public abstract bool IsSpaceInBounds(Vector2Int pos);
-    public ChessPieceBase2 GetPieceAtPos(Vector2Int pos)
+    public ChessPieceBase GetPieceAtPos(Vector2Int pos)
     {
         return _positionLookup.TryGetValue(pos, out var piece) ? piece : null;
     }
-    public void MovePiece(ChessPieceBase2 piece, Vector2Int NewPosition)
+    public void MovePiece(ChessPieceBase piece, Vector2Int NewPosition)
     {
         if (!piece.IgnoreBounds && !IsSpaceInBounds(NewPosition))
         {
@@ -134,15 +133,15 @@ public abstract class BoardState2
         piece.OnMove(oldpos);
         piece.OnMoveEvent?.Invoke(piece, oldpos);
     }
-    public void CapturePiece(ChessPieceBase2 piece, ChessPieceBase2 cap_piece)
+    public void CapturePiece(ChessPieceBase piece, ChessPieceBase cap_piece)
     {
-        var l = new List<ChessPieceBase2>() { cap_piece };
+        var l = new List<ChessPieceBase>() { cap_piece };
         piece.OnCapture(l);
         piece.OnCaptureEvent?.Invoke(piece, l);
         RemovePieceFast(cap_piece);
     }
 
-    private void RemovePieceFast(ChessPieceBase2 piece)
+    private void RemovePieceFast(ChessPieceBase piece)
     {
         int idx = piece.BoardIndex;
         int lastIdx = CurrentPieces.Count - 1;
@@ -157,7 +156,7 @@ public abstract class BoardState2
         _positionLookup.Remove(piece.Position);
     }
 
-    public (bool valid, ChessPieceBase2 king) IsTeamInCheck(ChessTeam team)
+    public (bool valid, ChessPieceBase king) IsTeamInCheck(ChessTeam team)
     {
         foreach (var piece in CurrentPieces)
         {
@@ -174,11 +173,11 @@ public abstract class BoardState2
         }
         return (false, null);
     }
-    public BoardState2 Clone()
+    public BoardState Clone()
     {
-        var clone = MemberwiseClone() as BoardState2;
-        clone.CurrentPieces = new List<ChessPieceBase2>(CurrentPieces.Count);
-        clone._positionLookup = new Dictionary<Vector2Int, ChessPieceBase2>(CurrentPieces.Count);
+        var clone = MemberwiseClone() as BoardState;
+        clone.CurrentPieces = new List<ChessPieceBase>(CurrentPieces.Count);
+        clone._positionLookup = new Dictionary<Vector2Int, ChessPieceBase>(CurrentPieces.Count);
         foreach (var piece in CurrentPieces)
         {
             var pieceClone = piece.Clone();
@@ -213,27 +212,27 @@ public abstract class BoardState2
 }
 public enum ChessGameStatus { Normal, Check, Checkmate, Stalemate }
 [System.Serializable]
-public abstract class ChessPieceBase2
+public abstract class ChessPieceBase
 {
     public string Name = "";
     public int BoardIndex = -1;
     public abstract string GetName();
-    public BoardState2 CurrentBoard;
+    public BoardState CurrentBoard;
     public ChessTeam Team;
     public Vector2Int Position;
-    public Vector2Int TeamRotation(Vector2Int Pos) => ChessEngineV2.TeamRotation(Team, Pos);
+    public Vector2Int TeamRotation(Vector2Int Pos) => ChessEngine.TeamRotation(Team, Pos);
     public List<ChessBoardVector2> BoardVectors = new();
     public virtual bool IgnoreBounds => false;
     public virtual void OnAddedToBoard() { }
-    public OXEvent<ChessPieceBase2, Vector2Int> OnMoveEvent = new();
+    public OXEvent<ChessPieceBase, Vector2Int> OnMoveEvent = new();
     public virtual void OnMove(Vector2Int OldPosition) { }
-    public OXEvent<ChessPieceBase2, List<ChessPieceBase2>> OnCaptureEvent = new();
-    public virtual void OnCapture(List<ChessPieceBase2> CapturedPieces) { }
-    public OXEvent<ChessPieceBase2> OnDestroyEvent = new();
+    public OXEvent<ChessPieceBase, List<ChessPieceBase>> OnCaptureEvent = new();
+    public virtual void OnCapture(List<ChessPieceBase> CapturedPieces) { }
+    public OXEvent<ChessPieceBase> OnDestroyEvent = new();
     public GameObject WorldObject;
-    public List<(Vector2Int Position, ChessPieceBase2 Piece)> GetAllPossibleMoves()
+    public List<(Vector2Int Position, ChessPieceBase Piece)> GetAllPossibleMoves()
     {
-        var validMoves = new List<(Vector2Int Position, ChessPieceBase2 Piece)>();
+        var validMoves = new List<(Vector2Int Position, ChessPieceBase Piece)>();
 
         foreach (var vector in BoardVectors)
         {
@@ -271,9 +270,9 @@ public abstract class ChessPieceBase2
         return false;
     }
 
-    public List<(Vector2Int Position, ChessPieceBase2 Piece)> GetLegalMoves()
+    public List<(Vector2Int Position, ChessPieceBase Piece)> GetLegalMoves()
     {
-        var legalMoves = new List<(Vector2Int Position, ChessPieceBase2 Piece)>();
+        var legalMoves = new List<(Vector2Int Position, ChessPieceBase Piece)>();
 
         foreach (var move in GetAllPossibleMoves())
         {
@@ -289,9 +288,9 @@ public abstract class ChessPieceBase2
 
         return legalMoves;
     }
-    public ChessPieceBase2 Clone()
+    public ChessPieceBase Clone()
     {
-        var c = MemberwiseClone() as ChessPieceBase2;
+        var c = MemberwiseClone() as ChessPieceBase;
         c.OnCaptureEvent = null;
         c.OnMoveEvent = null;
         c.OnDestroyEvent = null;

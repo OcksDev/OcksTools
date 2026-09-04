@@ -4,7 +4,7 @@ using UnityEngine;
 public class SampleChess : SingleInstance<SampleChess>
 {
     public CompileableDictionary<string, Sprite> ChessPieces = new();
-    public BoardState2 b;
+    public BoardState b;
     public float piecescale = 69;
     private void Start()
     {
@@ -32,7 +32,7 @@ public class SampleChess : SingleInstance<SampleChess>
         }
         markers.Clear();
     }
-    public void SelectPiece(ChessPieceBase2 nerd)
+    public void SelectPiece(ChessPieceBase nerd)
     {
         if (nerd.Team != b.CurrentTeam) return;
         ClearMarkers();
