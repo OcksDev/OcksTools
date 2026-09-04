@@ -82,7 +82,15 @@ public class SampleChess : SingleInstance<SampleChess>
         {
             SoundSystem.Instance.PlaySound(new OXSound("Check", 1));
         }
-        else if (flags.Contains("capture"))
+        else if (flags.Contains("promotion"))
+        {
+            SoundSystem.Instance.PlaySound(new OXSound("Promote", 1));
+        }
+        else if (flags.Contains("castle"))
+        {
+            SoundSystem.Instance.PlaySound(new OXSound("Castle", 1));
+        }
+        if (flags.Contains("capture"))
         {
             SoundSystem.Instance.PlaySound(new OXSound("Capture", 1));
         }

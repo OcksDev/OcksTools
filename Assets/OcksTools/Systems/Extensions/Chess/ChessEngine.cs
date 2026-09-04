@@ -22,6 +22,12 @@ public static class ChessEngine
         }
         return pos;
     }
+    public static Vector2Int TranslateToWhitePOV(ChessTeam Team, Vector2Int pos)
+    {
+        if (Team == ChessTeam.White) return pos;
+
+        return pos;
+    }
 }
 
 public enum ChessTeam
@@ -170,7 +176,7 @@ public abstract class ChessBoard
         _positionLookup.Add(NewPosition, piece);
         piece.OnMove(oldpos);
         piece.OnMoveEvent?.Invoke(piece, oldpos);
-
+        piece.HasMoved = true;
         return MoveFlags;
     }
     public void CapturePiece(ChessPieceBase piece, ChessPieceBase cap_piece)
@@ -272,6 +278,7 @@ public abstract class ChessPieceBase
     public ChessTeam Team;
     public Vector2Int Position;
     public int MoveTurn = -1;
+    public bool HasMoved = false;
     public Vector2Int TeamRotation(Vector2Int Pos) => ChessEngine.TeamRotation(Team, Pos);
     public List<ChessBoardVector> BoardVectors = new();
     public virtual bool IgnoreBounds => false;

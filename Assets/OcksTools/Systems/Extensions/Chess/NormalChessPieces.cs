@@ -63,7 +63,7 @@ public class ChessPiece_Pawn : ChessPieceBase
     {
         if (!CurrentBoard.Simulation)
         {
-            if (MoveTurn == -1) BoardVectors[0] = new ChessBoardVector((0, 1), ChessMoveRequirement.RequireEmptySpace);
+            BoardVectors[0] = new ChessBoardVector((0, 1), ChessMoveRequirement.RequireEmptySpace);
             DoublePushed = Mathf.Abs(OldPosition.y - Position.y) == 2;
         }
         if (OldPosition.x != Position.x)
@@ -150,7 +150,7 @@ public class ChessPiece_King : ChessPieceBase
     public override void OnMove(Vector2Int OldPosition)
     {
         if (CurrentBoard.Simulation) return;
-        if (MoveTurn != -1) return;
+        if (HasMoved) return;
 
         int localDx = Mathf.Abs(OldPosition.x - Position.x);
         if (localDx == 2)
@@ -158,15 +158,16 @@ public class ChessPiece_King : ChessPieceBase
             Vector2Int worldStep = TeamRotation(new Vector2Int(1, 0));
             int flip = 1;
             if (Team == ChessTeam.Black) flip = -1;
+            Vector2Int worldStep2 = TeamRotation(new Vector2Int(flip, 0));
             if (OldPosition.x > Position.x)
             {
                 //moved left, so move the rook to the right
-                CurrentBoard.MovePieceInternal(CurrentBoard.GetPieceAtPos(Position + worldStep * -2 * flip), Position + worldStep);
+                CurrentBoard.MovePieceInternal(CurrentBoard.GetPieceAtPos(Position + worldStep * -2 * flip), Position + worldStep2);
             }
             else
             {
                 //moved right, so move the rook to the left
-                CurrentBoard.MovePieceInternal(CurrentBoard.GetPieceAtPos(Position + worldStep * 1 * flip), Position + worldStep);
+                CurrentBoard.MovePieceInternal(CurrentBoard.GetPieceAtPos(Position + worldStep * 1 * flip), Position - worldStep2);
             }
             CurrentBoard.MoveFlags.Add("castle");
         }
@@ -183,7 +184,7 @@ public class ChessPiece_King : ChessPieceBase
         else
             rook = CurrentBoard.GetPieceAtPos(Position + worldStep * 3 * flip);
 
-        if (rook == null) return;
+        if (rook == null || rook.HasMoved) return;
 
 
         if (IsSquareAttacked(Position)) return;              // king currently in check
