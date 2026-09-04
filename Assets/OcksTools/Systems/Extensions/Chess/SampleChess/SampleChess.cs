@@ -4,7 +4,7 @@ using UnityEngine;
 public class SampleChess : SingleInstance<SampleChess>
 {
     public CompileableDictionary<Sprite> ChessPieces = new();
-    public ChessBoard b;
+    public ChessBoard_Default b;
     public ChessTeam my_team = ChessTeam.White;
     [HideInInspector]
     public float piecescale = 69;
@@ -12,19 +12,22 @@ public class SampleChess : SingleInstance<SampleChess>
     {
         ChessPieces.Compile();
         //set pieces
-        b = Chess_DefaultBoard.MakeDefaultBoard();
-
-        b.StartGame_2Player();
+        b = new ChessBoard_Default();
         piecescale = transform.localScale.x / 8;
-        foreach (var a in b.CurrentPieces)
+        b.OnPieceAddedEvent.Append("m", (a) =>
         {
-            Debug.Log($"{a.Name}: {a.Position}");
             var c = SpawnSystem.Spawn(new SpawnData("Piece").Position(PosToWorld(a.Position)).Scale(piecescale * Vector3.one));
             a.WorldObject = c;
             c.GetComponent<SpriteRenderer>().sprite = ChessPieces[a.Name + (a.Team == ChessTeam.White ? "W" : "B")];
             c.GetComponent<SampleChessPiece>().me = a;
             a.OnMoveEvent.Append((x, y) => x.WorldObject.transform.position = PosToWorld(x.Position));
             a.OnDestroyEvent.Append((x, y) => Destroy(x.WorldObject));
+        });
+
+        b.Make();
+        b.StartGame_2Player();
+        foreach (var a in b.CurrentPieces)
+        {
         }
     }
     private List<GameObject> markers = new();

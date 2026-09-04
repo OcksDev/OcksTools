@@ -105,7 +105,7 @@ public abstract class ChessBoard
     {
         AddPiece(piece, new Vector2Int(Position.Item1, Position.Item2), Team);
     }
-
+    public OXEvent<ChessPieceBase> OnPieceAddedEvent = new();
     public void AddPiece(ChessPieceBase piece, Vector2Int Position, ChessTeam Team)
     {
         if (!piece.IgnoreBounds && !IsSpaceInBounds(Position))
@@ -120,9 +120,19 @@ public abstract class ChessBoard
         CurrentPieces.Add(piece);
         _positionLookup.Add(Position, piece);
         piece.OnAddedToBoard();
+        OnPieceAddedEvent?.Invoke(piece);
     }
 
     public abstract bool IsSpaceInBounds(Vector2Int pos);
+    public virtual HashSet<string> GetSpaceFlags(ChessTeam Team, Vector2Int pos)
+    {
+        var h = new HashSet<string>();
+        if (IsSpaceInBounds(pos))
+        {
+            h.Add("inbounds");
+        }
+        return h;
+    }
     public ChessPieceBase GetPieceAtPos(Vector2Int pos)
     {
         return _positionLookup.TryGetValue(pos, out var piece) ? piece : null;
@@ -173,7 +183,7 @@ public abstract class ChessBoard
         RemovePieceFast(cap_piece);
     }
 
-    private void RemovePieceFast(ChessPieceBase piece)
+    public void RemovePieceFast(ChessPieceBase piece, bool destroy = true)
     {
         int idx = piece.BoardIndex;
         int lastIdx = CurrentPieces.Count - 1;
@@ -184,6 +194,13 @@ public abstract class ChessBoard
             CurrentPieces[idx] = lastPiece;
             lastPiece.BoardIndex = idx;
         }
+
+        if (destroy)
+        {
+            piece.OnDestroy(piece);
+            piece.OnDestroyEvent?.Invoke(piece, piece);
+        }
+
         CurrentPieces.RemoveAt(lastIdx);
         _positionLookup.Remove(piece.Position);
     }
@@ -211,6 +228,7 @@ public abstract class ChessBoard
         clone.Simulation = true;
         clone.CurrentPieces = new List<ChessPieceBase>(CurrentPieces.Count);
         clone._positionLookup = new Dictionary<Vector2Int, ChessPieceBase>(CurrentPieces.Count);
+        clone.OnPieceAddedEvent = null;
         foreach (var piece in CurrentPieces)
         {
             var pieceClone = piece.Clone();

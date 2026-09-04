@@ -1,39 +1,45 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Chess_DefaultBoard : ChessBoard
+public class ChessBoard_Default : ChessBoard
 {
     public override bool IsSpaceInBounds(Vector2Int pos)
     {
         return pos.x >= 0 && pos.x < 8 && pos.y >= 0 && pos.y < 8;
     }
 
-
-    public static ChessBoard MakeDefaultBoard()
+    public override HashSet<string> GetSpaceFlags(ChessTeam Team, Vector2Int pos)
     {
-        var board = new Chess_DefaultBoard();
+        var h = base.GetSpaceFlags(Team, pos);
+        if (Team == ChessTeam.White && pos.y == 7) h.Add("promotion");
+        else if (Team == ChessTeam.Black && pos.y == 0) h.Add("promotion");
+        return h;
+    }
+
+    public ChessBoard Make()
+    {
         for (int i = 0; i < 8; i++)
         {
-            board.AddPiece(new ChessPiece_Pawn(), (i, 1), ChessTeam.White);
-            board.AddPiece(new ChessPiece_Pawn(), (i, 6), ChessTeam.Black);
+            AddPiece(new ChessPiece_Pawn(), (i, 1), ChessTeam.White);
+            AddPiece(new ChessPiece_Pawn(), (i, 6), ChessTeam.Black);
         }
-        board.AddPiece(new ChessPiece_Rook(), (0, 0), ChessTeam.White);
-        board.AddPiece(new ChessPiece_Rook(), (7, 0), ChessTeam.White);
-        board.AddPiece(new ChessPiece_Rook(), (0, 7), ChessTeam.Black);
-        board.AddPiece(new ChessPiece_Rook(), (7, 7), ChessTeam.Black);
-        board.AddPiece(new ChessPiece_Knight(), (1, 0), ChessTeam.White);
-        board.AddPiece(new ChessPiece_Knight(), (6, 0), ChessTeam.White);
-        board.AddPiece(new ChessPiece_Knight(), (1, 7), ChessTeam.Black);
-        board.AddPiece(new ChessPiece_Knight(), (6, 7), ChessTeam.Black);
-        board.AddPiece(new ChessPiece_Bishop(), (2, 0), ChessTeam.White);
-        board.AddPiece(new ChessPiece_Bishop(), (5, 0), ChessTeam.White);
-        board.AddPiece(new ChessPiece_Bishop(), (2, 7), ChessTeam.Black);
-        board.AddPiece(new ChessPiece_Bishop(), (5, 7), ChessTeam.Black);
-        board.AddPiece(new ChessPiece_Queen(), (3, 0), ChessTeam.White);
-        board.AddPiece(new ChessPiece_Queen(), (3, 7), ChessTeam.Black);
-        board.AddPiece(new ChessPiece_King(), (4, 0), ChessTeam.White);
-        board.AddPiece(new ChessPiece_King(), (4, 7), ChessTeam.Black);
-        return board;
+        AddPiece(new ChessPiece_Rook(), (0, 0), ChessTeam.White);
+        AddPiece(new ChessPiece_Rook(), (7, 0), ChessTeam.White);
+        AddPiece(new ChessPiece_Rook(), (0, 7), ChessTeam.Black);
+        AddPiece(new ChessPiece_Rook(), (7, 7), ChessTeam.Black);
+        AddPiece(new ChessPiece_Knight(), (1, 0), ChessTeam.White);
+        AddPiece(new ChessPiece_Knight(), (6, 0), ChessTeam.White);
+        AddPiece(new ChessPiece_Knight(), (1, 7), ChessTeam.Black);
+        AddPiece(new ChessPiece_Knight(), (6, 7), ChessTeam.Black);
+        AddPiece(new ChessPiece_Bishop(), (2, 0), ChessTeam.White);
+        AddPiece(new ChessPiece_Bishop(), (5, 0), ChessTeam.White);
+        AddPiece(new ChessPiece_Bishop(), (2, 7), ChessTeam.Black);
+        AddPiece(new ChessPiece_Bishop(), (5, 7), ChessTeam.Black);
+        AddPiece(new ChessPiece_Queen(), (3, 0), ChessTeam.White);
+        AddPiece(new ChessPiece_Queen(), (3, 7), ChessTeam.Black);
+        AddPiece(new ChessPiece_King(), (4, 0), ChessTeam.White);
+        AddPiece(new ChessPiece_King(), (4, 7), ChessTeam.Black);
+        return this;
     }
 
 }
@@ -68,6 +74,12 @@ public class ChessPiece_Pawn : ChessPieceBase
                 CurrentBoard.CapturePiece(this, p);
                 CurrentBoard.MoveFlags.Add("en passant");
             }
+        }
+        if (CurrentBoard.GetSpaceFlags(Team, Position).Contains("promotion"))
+        {
+            CurrentBoard.RemovePieceFast(this, true);
+            CurrentBoard.AddPiece(new ChessPiece_Queen(), Position, Team);
+            CurrentBoard.MoveFlags.Add("promotion");
         }
     }
     public override void OnUpdate()
