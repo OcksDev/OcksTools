@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 public class ChessEngineV2
 {
@@ -39,6 +38,7 @@ public enum ChessTeam
 public abstract class BoardState2
 {
     public List<ChessPieceBase2> CurrentPieces = new();
+    private Dictionary<Vector2Int, ChessPieceBase2> _positionLookup = new();
     public int CurrentTurn = 0;
     public ChessTeam CurrentTeam = ChessTeam.White;
 
@@ -105,19 +105,16 @@ public abstract class BoardState2
         piece.Team = Team;
         piece.CurrentBoard = this;
         piece.Name = piece.GetName();
+        piece.BoardIndex = CurrentPieces.Count;
         CurrentPieces.Add(piece);
+        _positionLookup.Add(Position, piece);
         piece.OnAddedToBoard();
     }
 
     public abstract bool IsSpaceInBounds(Vector2Int pos);
-
     public ChessPieceBase2 GetPieceAtPos(Vector2Int pos)
     {
-        foreach (var a in CurrentPieces)
-        {
-            if (a.Position == pos) return a;
-        }
-        return null;
+        return _positionLookup.TryGetValue(pos, out var piece) ? piece : null;
     }
     public void MovePiece(ChessPieceBase2 piece, Vector2Int NewPosition)
     {
@@ -126,8 +123,35 @@ public abstract class BoardState2
             throw new System.Exception($"Position {NewPosition} is out of bounds for this board.");
         }
         var pieceAtNewPos = GetPieceAtPos(NewPosition);
-        CurrentPieces.Remove(pieceAtNewPos);
+        if (pieceAtNewPos != null)
+        {
+            CapturePiece(piece, pieceAtNewPos);
+        }
+        var oldpos = piece.Position;
+        _positionLookup.Remove(piece.Position);
         piece.Position = NewPosition;
+        _positionLookup.Add(NewPosition, piece);
+        piece.OnMove(oldpos);
+    }
+    public void CapturePiece(ChessPieceBase2 piece, ChessPieceBase2 cap_piece)
+    {
+        piece.OnCapture(new List<ChessPieceBase2>() { cap_piece });
+        RemovePieceFast(cap_piece);
+    }
+
+    private void RemovePieceFast(ChessPieceBase2 piece)
+    {
+        int idx = piece.BoardIndex;
+        int lastIdx = CurrentPieces.Count - 1;
+
+        if (idx != lastIdx)
+        {
+            var lastPiece = CurrentPieces[lastIdx];
+            CurrentPieces[idx] = lastPiece;
+            lastPiece.BoardIndex = idx;
+        }
+        CurrentPieces.RemoveAt(lastIdx);
+        _positionLookup.Remove(piece.Position);
     }
 
     public (bool valid, ChessPieceBase2 king) IsTeamInCheck(ChessTeam team)
@@ -138,7 +162,7 @@ public abstract class BoardState2
             {
                 foreach (var p in CurrentPieces)
                 {
-                    if (p.Team != piece.Team && p.GetAllPossibleMoves().Any(m => m.Position == piece.Position))
+                    if (p.Team != piece.Team && p.AttacksSquare(piece.Position))
                     {
                         return (true, piece);
                     }
@@ -150,20 +174,46 @@ public abstract class BoardState2
     public BoardState2 Clone()
     {
         var clone = MemberwiseClone() as BoardState2;
-        clone.CurrentPieces = new List<ChessPieceBase2>();
+        clone.CurrentPieces = new List<ChessPieceBase2>(CurrentPieces.Count);
+        clone._positionLookup = new Dictionary<Vector2Int, ChessPieceBase2>(CurrentPieces.Count);
         foreach (var piece in CurrentPieces)
         {
             var pieceClone = piece.Clone();
             pieceClone.CurrentBoard = clone;
             clone.CurrentPieces.Add(pieceClone);
+            clone._positionLookup.Add(pieceClone.Position, pieceClone);
         }
         return clone;
     }
+    public bool HasAnyLegalMoves(ChessTeam team)
+    {
+        foreach (var piece in CurrentPieces)
+        {
+            if (piece.Team == team && piece.GetLegalMoves().Count > 0)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public ChessGameStatus GetGameStatus(ChessTeam team)
+    {
+        var (inCheck, _) = IsTeamInCheck(team);
+        bool hasMoves = HasAnyLegalMoves(team);
+
+        if (inCheck && !hasMoves) return ChessGameStatus.Checkmate;
+        if (!inCheck && !hasMoves) return ChessGameStatus.Stalemate;
+        if (inCheck) return ChessGameStatus.Check;
+        return ChessGameStatus.Normal;
+    }
 }
+public enum ChessGameStatus { Normal, Check, Checkmate, Stalemate }
 [System.Serializable]
 public abstract class ChessPieceBase2
 {
     public string Name = "";
+    public int BoardIndex = -1;
     public abstract string GetName();
     public BoardState2 CurrentBoard;
     public ChessTeam Team;
@@ -172,52 +222,69 @@ public abstract class ChessPieceBase2
     public List<ChessBoardVector2> BoardVectors = new();
     public virtual bool IgnoreBounds => false;
     public virtual void OnAddedToBoard() { }
-
+    public virtual void OnMove(Vector2Int OldPosition) { }
+    public virtual void OnCapture(List<ChessPieceBase2> CapturedPieces) { }
     public List<(Vector2Int Position, ChessPieceBase2 Piece)> GetAllPossibleMoves()
     {
-        List<(Vector2Int Position, ChessPieceBase2 Piece)> validMoves = new();
-        List<(Vector2Int Position, ChessPieceBase2 Piece)> validSpaces = new();
+        var validMoves = new List<(Vector2Int Position, ChessPieceBase2 Piece)>();
+
         foreach (var vector in BoardVectors)
         {
-            var pp = vector.GetSpaces().Select(x => TeamRotation(x) + Position).ToList();
-            validSpaces.Clear();
-            for (int i = 0; i < pp.Count; i++)
+            var spaces = vector.GetSpaces();
+            for (int i = 0; i < spaces.Length; i++)
             {
-                var p = CurrentBoard.GetPieceAtPos(pp[i]);
+                var pp = TeamRotation(spaces[i]) + Position;
+                var p = CurrentBoard.GetPieceAtPos(pp);
                 if (p == null && vector.MustCapture) continue;
                 if (p != null && p.Team == Team) break;
-                validSpaces.Add((pp[i], p));
+                validMoves.Add((pp, p));
                 if (p != null) break;
             }
-            validMoves.AddRange(validSpaces);
         }
+
         return validMoves;
     }
-    public List<(Vector2Int Position, ChessPieceBase2 Piece)> GetLegalMoves(ChessPieceBase2 piece)
+    public bool AttacksSquare(Vector2Int target)
     {
-        // track the piece by its index in the list, since Clone() preserves list order
-        int pieceIndex = CurrentBoard.CurrentPieces.IndexOf(piece);
+        foreach (var vector in BoardVectors)
+        {
+            var spaces = vector.GetSpaces();
+            for (int i = 0; i < spaces.Length; i++)
+            {
+                var pp = TeamRotation(spaces[i]) + Position;
+                var p = CurrentBoard.GetPieceAtPos(pp);
+                if (p == null && vector.MustCapture) continue;
+                if (p != null && p.Team == Team) break;
+
+                if (pp == target) return true;
+
+                if (p != null) break;
+            }
+        }
+        return false;
+    }
+
+    public List<(Vector2Int Position, ChessPieceBase2 Piece)> GetLegalMoves()
+    {
         var legalMoves = new List<(Vector2Int Position, ChessPieceBase2 Piece)>();
 
-        foreach (var move in piece.GetAllPossibleMoves())
+        foreach (var move in GetAllPossibleMoves())
         {
             var clone = CurrentBoard.Clone();
-            var clonedPiece = clone.CurrentPieces[pieceIndex];
+            var clonedPiece = clone.CurrentPieces[BoardIndex];
 
             clone.MovePiece(clonedPiece, move.Position);
 
-            var (inCheck, _) = clone.IsTeamInCheck(piece.Team);
+            var (inCheck, _) = clone.IsTeamInCheck(Team);
             if (!inCheck)
                 legalMoves.Add(move);
         }
 
         return legalMoves;
     }
-
     public ChessPieceBase2 Clone() { return MemberwiseClone() as ChessPieceBase2; }
 
 }
-
 
 public struct ChessBoardVector2
 {
@@ -226,6 +293,7 @@ public struct ChessBoardVector2
     public int Length;
     public bool MustCapture;
     public bool IncludeStartSpace;
+    private Vector2Int[] _cachedSpaces;
     public ChessBoardVector2((short x, short y) pos, (short x, short y) direction, int length, bool mustCapture = false, bool includeStartSpace = true)
     {
         Position = new Vector2Int(pos.x, pos.y);
@@ -233,6 +301,7 @@ public struct ChessBoardVector2
         Length = length;
         MustCapture = mustCapture;
         IncludeStartSpace = includeStartSpace;
+        _cachedSpaces = null;
     }
 
     public ChessBoardVector2(Vector2Int pos, Vector2Int direction, int length, bool mustCapture = false, bool includeStartSpace = true)
@@ -242,15 +311,17 @@ public struct ChessBoardVector2
         Length = length;
         MustCapture = mustCapture;
         IncludeStartSpace = includeStartSpace;
+        _cachedSpaces = null;
     }
-
-    public List<Vector2Int> GetSpaces()
+    public Vector2Int[] GetSpaces()
     {
-        List<Vector2Int> a = new List<Vector2Int>();
-        for (int i = (IncludeStartSpace ? 0 : 1); i <= Length; i++)
+        if (_cachedSpaces == null)
         {
-            a.Add(Position + new Vector2Int(Direction.x * i, Direction.y * i));
+            int start = IncludeStartSpace ? 0 : 1;
+            _cachedSpaces = new Vector2Int[Length - start + 1];
+            for (int i = start; i <= Length; i++)
+                _cachedSpaces[i - start] = Position + new Vector2Int(Direction.x * i, Direction.y * i);
         }
-        return a;
+        return _cachedSpaces;
     }
 }
