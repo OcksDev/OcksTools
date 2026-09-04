@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Chess_DefaultBoard : ChessBoard
@@ -100,23 +101,92 @@ public class ChessPiece_Pawn : ChessPieceBase
         return false;
     }
 }
-
 public class ChessPiece_King : ChessPieceBase
 {
     public override string GetName() => "King";
+
+    private List<ChessBoardVector> _baseVectors;
+
     public override void OnAddedToBoard()
     {
         BoardVectors = new()
         {
-            new ChessBoardVector((1,0)),
-            new ChessBoardVector((0,-1)),
             new ChessBoardVector((0,1)),
             new ChessBoardVector((1,1)),
             new ChessBoardVector((-1,1)),
+            new ChessBoardVector((1,0)),
+            new ChessBoardVector((0,-1)),
             new ChessBoardVector((1,-1)),
             new ChessBoardVector((-1,-1)),
             new ChessBoardVector((-1,0))
         };
+        _baseVectors = new List<ChessBoardVector>(BoardVectors);
+    }
+
+    public override void OnUpdate()
+    {
+        // start fresh from the normal 8 king moves each turn
+        BoardVectors = new List<ChessBoardVector>(_baseVectors);
+
+        if (MoveTurn != -1) return; // king has moved before -> castling permanently disabled
+
+        TryAddCastleVector(step: 1);   // kingside (toward local +x)
+        TryAddCastleVector(step: -1);  // queenside (toward local -x)
+    }
+
+    public override void OnMove(Vector2Int OldPosition)
+    {
+        if (CurrentBoard.Simulation) return;
+        if (MoveTurn != -1) return;
+
+        int localDx = Mathf.Abs(OldPosition.x - Position.x);
+        if (localDx == 2)
+        {
+            Vector2Int worldStep = TeamRotation(new Vector2Int(1, 0));
+            int flip = 1;
+            if (Team == ChessTeam.Black) flip = -1;
+            if (OldPosition.x > Position.x)
+            {
+                //moved left, so move the rook to the right
+                CurrentBoard.MovePiece(CurrentBoard.GetPieceAtPos(Position + worldStep * -2 * flip), Position + worldStep);
+            }
+            else
+            {
+                //moved right, so move the rook to the left
+                CurrentBoard.MovePiece(CurrentBoard.GetPieceAtPos(Position + worldStep * 1 * flip), Position + worldStep);
+            }
+        }
+    }
+
+    private void TryAddCastleVector(int step)
+    {
+        Vector2Int worldStep = TeamRotation(new Vector2Int(1, 0));
+        ChessPieceBase rook = null;
+        int flip = 1;
+        if (Team == ChessTeam.Black) flip = -1;
+        if (step == -1)
+            rook = CurrentBoard.GetPieceAtPos(Position + worldStep * -4 * flip);
+        else
+            rook = CurrentBoard.GetPieceAtPos(Position + worldStep * 3 * flip);
+
+        if (rook == null) return;
+
+
+        if (IsSquareAttacked(Position)) return;              // king currently in check
+        if (IsSquareAttacked(Position + worldStep)) return;   // passes through attack
+        if (IsSquareAttacked(Position + worldStep * 2)) return; // lands on attack
+
+        BoardVectors.Add(new ChessBoardVector(
+            new Vector2Int(step * 2, 0), ChessMoveRequirement.RequireEmptySpace));
+    }
+
+    private bool IsSquareAttacked(Vector2Int square)
+    {
+        foreach (var p in CurrentBoard.CurrentPieces)
+        {
+            if (p.Team != Team && p.AttacksSquare(square)) return true;
+        }
+        return false;
     }
 }
 
