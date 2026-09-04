@@ -41,14 +41,64 @@ public class Chess_DefaultBoard : ChessBoard
 public class ChessPiece_Pawn : ChessPieceBase
 {
     public override string GetName() => "Pawn";
+    public int MoveTurn = -1;
+    public bool DoublePushed = false;
     public override void OnAddedToBoard()
     {
         BoardVectors = new()
         {
-            new ChessBoardVector((0,1), ChessMoveRequirement.RequireEmptySpace),
+            new ChessBoardVector((0,1), 2, ChessMoveRequirement.RequireEmptySpace),
             new ChessBoardVector((1,1), ChessMoveRequirement.RequireCapture),
             new ChessBoardVector((-1,1), ChessMoveRequirement.RequireCapture)
         };
+        DoublePushed = false;
+    }
+    public override void OnMove(Vector2Int OldPosition)
+    {
+        if (!CurrentBoard.Simulation)
+        {
+            if (MoveTurn == -1) BoardVectors[0] = new ChessBoardVector((0, 1), ChessMoveRequirement.RequireEmptySpace);
+            MoveTurn = CurrentBoard.CurrentTurn;
+            DoublePushed = Mathf.Abs(OldPosition.y - Position.y) == 2;
+        }
+        if (OldPosition.x != Position.x)
+        {
+            var p = CurrentBoard.GetPieceAtPos(Position + TeamRotation(new Vector2Int(0, -1)));
+            if (IsGoodPissPawn(p))
+            {
+                CurrentBoard.CapturePiece(this, p);
+            }
+        }
+    }
+    public override void OnUpdate()
+    {
+        EnPassCheck(1);
+        EnPassCheck(2);
+    }
+
+    private void EnPassCheck(int i)
+    {
+        BoardVectors[i] = BoardVectors[i].SetReq(ChessMoveRequirement.RequireCapture);
+        var p = CurrentBoard.GetPieceAtPos(Position + TeamRotation(new Vector2Int(BoardVectors[i].Position.x, 0)));
+        if (IsGoodPissPawn(p))
+        {
+            BoardVectors[i] = BoardVectors[i].SetReq(ChessMoveRequirement.Normal);
+        }
+    }
+
+    private bool IsGoodPissPawn(ChessPieceBase p)
+    {
+        if (p == null)
+        {
+            return false;
+        }
+        if (p.Team != Team && p.Name == "Pawn")
+        {
+            var pp = p as ChessPiece_Pawn;
+            if ((pp.MoveTurn == CurrentBoard.CurrentTurn - 1 || pp.MoveTurn == CurrentBoard.CurrentTurn) && pp.DoublePushed)
+                return true;
+        }
+        return false;
     }
 }
 

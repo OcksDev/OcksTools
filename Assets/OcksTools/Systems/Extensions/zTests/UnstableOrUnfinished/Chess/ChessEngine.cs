@@ -40,6 +40,7 @@ public abstract class ChessBoard
     private Dictionary<Vector2Int, ChessPieceBase> _positionLookup = new();
     public int CurrentTurn = 0;
     public ChessTeam CurrentTeam = ChessTeam.White;
+    public bool Simulation = false;
 
     public void StartGame_2Player()
     {
@@ -65,6 +66,11 @@ public abstract class ChessBoard
             CurrentTurn++;
         }
         CurrentTeam = NextTeam(CurrentTeam);
+        foreach (var item in CurrentPieces)
+        {
+            if (item.Team != CurrentTeam) continue;
+            item.OnUpdate();
+        }
     }
 
     public static ChessTeam NextTeam(ChessTeam CurrentTeam)
@@ -123,6 +129,7 @@ public abstract class ChessBoard
     private bool was_capture_made = false;
     public bool MovePiece(ChessPieceBase piece, Vector2Int NewPosition)
     {
+        if (piece.Position == NewPosition) { return false; }
         was_capture_made = false;
         if (!piece.IgnoreBounds && !IsSpaceInBounds(NewPosition))
         {
@@ -134,12 +141,14 @@ public abstract class ChessBoard
             CapturePiece(piece, pieceAtNewPos);
             was_capture_made = true;
         }
+        piece.MoveTurn = CurrentTurn;
         var oldpos = piece.Position;
         _positionLookup.Remove(piece.Position);
         piece.Position = NewPosition;
         _positionLookup.Add(NewPosition, piece);
         piece.OnMove(oldpos);
         piece.OnMoveEvent?.Invoke(piece, oldpos);
+
         return was_capture_made;
     }
     public void CapturePiece(ChessPieceBase piece, ChessPieceBase cap_piece)
@@ -148,6 +157,7 @@ public abstract class ChessBoard
         piece.OnCaptureEvent?.Invoke(piece, cap_piece);
         cap_piece.OnDestroy(piece);
         cap_piece.OnDestroyEvent?.Invoke(cap_piece, piece);
+        was_capture_made = true;
         RemovePieceFast(cap_piece);
     }
 
@@ -186,6 +196,7 @@ public abstract class ChessBoard
     public ChessBoard Clone()
     {
         var clone = MemberwiseClone() as ChessBoard;
+        clone.Simulation = true;
         clone.CurrentPieces = new List<ChessPieceBase>(CurrentPieces.Count);
         clone._positionLookup = new Dictionary<Vector2Int, ChessPieceBase>(CurrentPieces.Count);
         foreach (var piece in CurrentPieces)
@@ -230,6 +241,7 @@ public abstract class ChessPieceBase
     public ChessBoard CurrentBoard;
     public ChessTeam Team;
     public Vector2Int Position;
+    public int MoveTurn = -1;
     public Vector2Int TeamRotation(Vector2Int Pos) => ChessEngine.TeamRotation(Team, Pos);
     public List<ChessBoardVector> BoardVectors = new();
     public virtual bool IgnoreBounds => false;
@@ -237,6 +249,7 @@ public abstract class ChessPieceBase
     public OXEvent<ChessPieceBase, ChessPieceBase> OnCaptureEvent = new();
     public OXEvent<ChessPieceBase, ChessPieceBase> OnDestroyEvent = new();
     public virtual void OnAddedToBoard() { }
+    public virtual void OnUpdate() { }
     public virtual void OnMove(Vector2Int OldPosition) { }
     public virtual void OnCapture(ChessPieceBase CapturedPiece) { }
     public virtual void OnDestroy(ChessPieceBase Killer) { }
@@ -244,19 +257,21 @@ public abstract class ChessPieceBase
     public List<(Vector2Int Position, ChessPieceBase Piece)> GetAllPossibleMoves()
     {
         var validMoves = new List<(Vector2Int Position, ChessPieceBase Piece)>();
-
+        HashSet<Vector2Int> visitedPositions = new();
         foreach (var vector in BoardVectors)
         {
             var spaces = vector.GetSpaces();
             for (int i = 0; i < spaces.Length; i++)
             {
                 var pp = TeamRotation(spaces[i]) + Position;
+                if (visitedPositions.Contains(pp)) continue;
                 if (!IgnoreBounds && !CurrentBoard.IsSpaceInBounds(pp)) break;
                 var p = CurrentBoard.GetPieceAtPos(pp);
                 if (p == null && vector.MoveReq == ChessMoveRequirement.RequireCapture) continue;
-                if (p != null && vector.MoveReq == ChessMoveRequirement.RequireEmptySpace) continue;
+                if (p != null && vector.MoveReq == ChessMoveRequirement.RequireEmptySpace) break;
                 if (p != null && p.Team == Team) break;
                 validMoves.Add((pp, p));
+                visitedPositions.Add(pp);
                 if (p != null) break;
             }
         }
@@ -391,6 +406,12 @@ public struct ChessBoardVector
                 _cachedSpaces[i - start] = Position + new Vector2Int(Direction.x * i, Direction.y * i);
         }
         return _cachedSpaces;
+    }
+
+    public ChessBoardVector SetReq(ChessMoveRequirement req)
+    {
+        MoveReq = req;
+        return this;
     }
 }
 
