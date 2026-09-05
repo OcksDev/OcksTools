@@ -37,7 +37,7 @@ public class SampleChess : SingleInstance<SampleChess>
             if (piece.WorldObject == null) return;
             x = Ease.In(x);
             piece.WorldObject.transform.position = Vector3.Lerp(oldpos, newpos, x);
-        }, 0.15f * m);
+        }, 0.12f * m);
     }
 
     private List<GameObject> markers = new();
