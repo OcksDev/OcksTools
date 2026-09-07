@@ -459,6 +459,39 @@ MonoBehaviour:
     Clip: {fileID: 8300000, guid: abbdb01647b01064cb56ba2b514b540f, type: 3}
   AudioLibraries: []
   AudioMixers: []
+--- !u!114 &1638320097
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1638320090}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e079614b067d2db4faf31eb5e5f87b5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SaveSystem
+  SaveMethod_: 0
+  test: 0
+  TestBool: 0
+  testkeybind: 0
+  LoadedData: 0
+--- !u!114 &1638320098
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1638320090}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac1cfc2e71f50cf4496bb3866b830a15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FileSystem
+  WorkingDirectory: 
+  OcksDirectry: 
+  UniversalDirectory: 
+  GameDirectory: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
