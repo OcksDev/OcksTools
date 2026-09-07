@@ -3,9 +3,11 @@
    v1.2.6
 - Chess Engine v2 (Completely rewrote from the ground up)
   - Fully functional chess engine, with all the rules and logic implemented
+  - Fully save/loadable
   - Extendable and modular, so you can easily add new pieces, boards, or really anything you want
+  - Improved sample chess scene with new animations, sfx, and vfx
+    - Totally not stolen sfx from chess.com
   - Moved from UnstableOrUnfinished to the main Extensions folder, as it is now fully functional
-  - Added totally not stolen sfx from chess.com in the sample scene
 - New Ease Class (kinda)
   - Moved all RandomFunctions.Ease functions into this static class
   - Added some new functions like CircIn and CircOut

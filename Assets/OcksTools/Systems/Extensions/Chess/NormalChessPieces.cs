@@ -50,7 +50,7 @@ public class ChessPiece_Pawn : ChessPieceBase
 {
     public override string GetName() => "Pawn";
     public bool DoublePushed = false;
-    public override void OnAddedToBoard()
+    public override void Initialize()
     {
         BoardVectors = new()
         {
@@ -125,7 +125,7 @@ public class ChessPiece_King : ChessPieceBase
 
     private List<ChessBoardVector> _baseVectors;
 
-    public override void OnAddedToBoard()
+    public override void Initialize()
     {
         BoardVectors = new()
         {
@@ -214,7 +214,7 @@ public class ChessPiece_King : ChessPieceBase
 public class ChessPiece_Queen : ChessPieceBase
 {
     public override string GetName() => "Queen";
-    public override void OnAddedToBoard()
+    public override void Initialize()
     {
         BoardVectors = new()
         {
@@ -233,7 +233,7 @@ public class ChessPiece_Queen : ChessPieceBase
 public class ChessPiece_Bishop : ChessPieceBase
 {
     public override string GetName() => "Bishop";
-    public override void OnAddedToBoard()
+    public override void Initialize()
     {
         BoardVectors = new()
         {
@@ -247,7 +247,7 @@ public class ChessPiece_Bishop : ChessPieceBase
 public class ChessPiece_Rook : ChessPieceBase
 {
     public override string GetName() => "Rook";
-    public override void OnAddedToBoard()
+    public override void Initialize()
     {
         BoardVectors = new()
         {
@@ -262,7 +262,7 @@ public class ChessPiece_Rook : ChessPieceBase
 public class ChessPiece_Knight : ChessPieceBase
 {
     public override string GetName() => "Knight";
-    public override void OnAddedToBoard()
+    public override void Initialize()
     {
         BoardVectors = new()
         {

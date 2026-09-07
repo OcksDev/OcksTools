@@ -740,6 +740,7 @@ public class OXFileData
         {
             case OXFileType.OXFileData:
                 var p = DataOXFiles.ToList();
+                if (p.Count == 0) break;
                 p.Sort((a, b) => a.Value.Type.CompareTo(b.Value.Type));
                 OXFileType c = p[0].Value.Type;
                 int same = 0;

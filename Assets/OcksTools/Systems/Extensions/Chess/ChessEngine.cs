@@ -79,6 +79,7 @@ public static class ChessEngine
         p.Team = System.Enum.Parse<ChessTeam>(real_data[1]);
         p.Position = real_data[2].StringToVector2Int();
         p.MoveTurn = int.Parse(real_data[3]);
+        p.InitAttempt();
         string ed = "";
         if (real_data.Count == 5) ed = real_data[4];
         p.LoadExtraData(ed);
@@ -186,6 +187,7 @@ public abstract class ChessBoard
     public List<(ChessPieceBase piece, Vector2Int Position, ChessTeam Team)> stores = new();
     public void AddStoredPiece(ChessPieceBase piece, Vector2Int Position, ChessTeam Team)
     {
+        piece.InitAttempt();
         stores.Add((piece, Position, Team));
     }
     public void AddAllStoredPieces()
@@ -210,6 +212,7 @@ public abstract class ChessBoard
         piece.HasMoved = piece.MoveTurn >= 0;
         CurrentPieces.Add(piece);
         _positionLookup.Add(Position, piece);
+        piece.InitAttempt();
         piece.OnAddedToBoard();
         OnPieceAddedEvent?.Invoke(piece);
     }
@@ -364,12 +367,14 @@ public abstract class ChessPieceBase
     public Vector2Int Position;
     public int MoveTurn = -1;
     public bool HasMoved = false;
+    public bool HasInitialized = false;
     public Vector2Int TeamRotation(Vector2Int Pos) => ChessEngine.TeamRotation(Team, Pos);
     public List<ChessBoardVector> BoardVectors = new();
     public virtual bool IgnoreBounds => false;
     public OXEvent<ChessPieceBase, Vector2Int> OnMoveEvent = new();
     public OXEvent<ChessPieceBase, ChessPieceBase> OnCaptureEvent = new();
     public OXEvent<ChessPieceBase, ChessPieceBase> OnDestroyEvent = new();
+    public virtual void Initialize() { }
     public virtual void OnAddedToBoard() { }
     public virtual void OnUpdate() { }
     public virtual void OnMove(Vector2Int OldPosition) { }
@@ -480,6 +485,12 @@ public abstract class ChessPieceBase
     }
     public virtual string GetExtraData() { return ""; }
     public virtual void LoadExtraData(string a) { }
+    public void InitAttempt()
+    {
+        if (HasInitialized) return;
+        Initialize();
+        HasInitialized = true;
+    }
 }
 
 public struct ChessBoardVector
