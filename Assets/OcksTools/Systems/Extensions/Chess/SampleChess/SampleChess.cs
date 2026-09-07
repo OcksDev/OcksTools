@@ -9,11 +9,19 @@ public class SampleChess : SingleInstance<SampleChess>
     public ChessTeam my_team = ChessTeam.White;
     [HideInInspector]
     public float piecescale = 69;
-    private void Start()
+
+    public override void Awake2()
     {
         ChessPieces.Compile();
-        //set pieces
         b = new ChessBoard_Default();
+        SaveSystem.SaveAllData.Append("cb", (x) => ChessEngine.SaveBoard(b, x, "main"));
+        SaveSystem.LoadAllData.Append("cb", (x) => b = (ChessBoard_Default)ChessEngine.LoadBoard(x, "main"));
+    }
+
+    private IEnumerator Start()
+    {
+        //set pieces
+        yield return new WaitUntil(() => SaveSystem.Instance.LoadedData);
         piecescale = transform.localScale.x / 8;
         b.OnPieceAddedEvent.Append("m", (a) =>
         {
@@ -24,9 +32,16 @@ public class SampleChess : SingleInstance<SampleChess>
             a.OnMoveEvent.Append((x, y) => StartCoroutine(MovePieceAnimation(x, PosToWorld(y), PosToWorld(x.Position))));
             a.OnDestroyEvent.Append((x, y) => Destroy(x.WorldObject));
         });
-
-        b.Make();
-        b.StartGame_2Player();
+        if (b.stores.Count == 0)
+        {
+            b.Make();
+            b.StartGame_2Player();
+        }
+        else
+        {
+            b.AddAllStoredPieces();
+            b.StartGame_FromLoad();
+        }
     }
 
     public IEnumerator MovePieceAnimation(ChessPieceBase piece, Vector3 oldpos, Vector3 newpos)

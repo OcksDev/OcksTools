@@ -79,7 +79,7 @@ public class ChessPiece_Pawn : ChessPieceBase
         if (CurrentBoard.GetSpaceFlags(Team, Position).Contains("promotion"))
         {
             CurrentBoard.RemovePieceFast(this, true);
-            CurrentBoard.AddPiece(new ChessPiece_Queen(), Position, Team);
+            CurrentBoard.AddPiece(OXFactory.Create<ChessPieceBase>("Queen"), Position, Team);
             CurrentBoard.MoveFlags.Add("promotion");
         }
     }
@@ -88,6 +88,7 @@ public class ChessPiece_Pawn : ChessPieceBase
         EnPassCheck(1);
         EnPassCheck(2);
         DoublePushed = false;
+        if (MoveTurn > -1) BoardVectors[0] = new ChessBoardVector((0, 1), ChessMoveRequirement.RequireEmptySpace);
     }
 
     private void EnPassCheck(int i)
@@ -114,6 +115,9 @@ public class ChessPiece_Pawn : ChessPieceBase
         }
         return false;
     }
+
+    public override string GetExtraData() => DoublePushed.ToString();
+    public override void LoadExtraData(string a) => DoublePushed = bool.Parse(a);
 }
 public class ChessPiece_King : ChessPieceBase
 {

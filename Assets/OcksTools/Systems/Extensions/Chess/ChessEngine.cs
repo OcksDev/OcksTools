@@ -51,6 +51,14 @@ public static class ChessEngine
     {
         key = "Chess_" + key;
         var data = dict.GetDict(key, new());
+        Dictionary<string, string> defaults = new()
+        {
+            {"Board", "Default"},
+            {"Team", "White"},
+            {"Turn", "0"},
+            {"Pieces", ""},
+        };
+        data = defaults.MergeDictionary(data);
         var board = OXFactory.Create<ChessBoard>(data["Board"]);
         board.CurrentTeam = System.Enum.Parse<ChessTeam>(data["Team"]);
         board.CurrentTurn = int.Parse(data["Turn"]);
@@ -58,7 +66,7 @@ public static class ChessEngine
         foreach (var a in PieceData)
         {
             var p = LoadPiece(a);
-            board.AddPiece(p, p.Position, p.Team);
+            board.AddStoredPiece(p, p.Position, p.Team);
         }
         return board;
     }
@@ -109,10 +117,15 @@ public abstract class ChessBoard
         CurrentTeam = ChessTeam.Red;
         StartGame();
     }
+    public void StartGame_FromLoad()
+    {
+        StartGame();
+    }
 
     private void StartGame()
     {
         CurrentTurn = 0;
+        SendUpdateToTeam(CurrentTeam);
     }
 
     public void AdvanceTurn()
@@ -122,9 +135,14 @@ public abstract class ChessBoard
             CurrentTurn++;
         }
         CurrentTeam = NextTeam(CurrentTeam);
+        SendUpdateToTeam(CurrentTeam);
+    }
+
+    public void SendUpdateToTeam(ChessTeam Team)
+    {
         foreach (var item in CurrentPieces)
         {
-            if (item.Team != CurrentTeam) continue;
+            if (item.Team != Team) continue;
             item.OnUpdate();
         }
     }
@@ -159,6 +177,23 @@ public abstract class ChessBoard
     public void AddPiece(ChessPieceBase piece, (int, int) Position, ChessTeam Team)
     {
         AddPiece(piece, new Vector2Int(Position.Item1, Position.Item2), Team);
+    }
+
+    public void AddStoredPiece(ChessPieceBase piece, (int, int) Position, ChessTeam Team)
+    {
+        AddStoredPiece(piece, new Vector2Int(Position.Item1, Position.Item2), Team);
+    }
+    public List<(ChessPieceBase piece, Vector2Int Position, ChessTeam Team)> stores = new();
+    public void AddStoredPiece(ChessPieceBase piece, Vector2Int Position, ChessTeam Team)
+    {
+        stores.Add((piece, Position, Team));
+    }
+    public void AddAllStoredPieces()
+    {
+        foreach (var a in stores)
+        {
+            AddPiece(a.piece, a.Position, a.Team);
+        }
     }
     public OXEvent<ChessPieceBase> OnPieceAddedEvent = new();
     public void AddPiece(ChessPieceBase piece, Vector2Int Position, ChessTeam Team)
