@@ -562,14 +562,14 @@ public class OXFileData
         dat.DataBool = DataIn;
         Add(Name, dat);
     }
-    public void Add(string Name, Vector2 DataIn)
+    public void Add(string Name, BetterVector2 DataIn)
     {
         var dat = new OXFileData();
         dat.Type = OXFileData.OXFileType.Vector2;
         dat.DataVector2 = DataIn;
         Add(Name, dat);
     }
-    public void Add(string Name, Vector3 DataIn)
+    public void Add(string Name, BetterVector3 DataIn)
     {
         var dat = new OXFileData();
         dat.Type = OXFileData.OXFileType.Vector3;
@@ -590,14 +590,14 @@ public class OXFileData
         dat.DataColor = DataIn;
         Add(Name, dat);
     }
-    public void Add(string Name, Vector2Int DataIn)
+    public void Add(string Name, BetterVector2Int DataIn)
     {
         var dat = new OXFileData();
         dat.Type = OXFileData.OXFileType.Vector2Int;
         dat.DataVector2Int = DataIn;
         Add(Name, dat);
     }
-    public void Add(string Name, Vector3Int DataIn)
+    public void Add(string Name, BetterVector3Int DataIn)
     {
         var dat = new OXFileData();
         dat.Type = OXFileData.OXFileType.Vector3Int;
@@ -675,7 +675,7 @@ public class OXFileData
         dat.DataOXFiles = DataIn;
         Add(Name, dat);
     }
-    public void Add(string Name, List<OXFileData> DataIn)
+    public void Add(string Name, BetterList<OXFileData> DataIn)
     {
         var dat = new OXFileData();
         dat.Type = OXFileData.OXFileType.ListOXFileData;
@@ -683,7 +683,7 @@ public class OXFileData
         Add(Name, dat);
     }
 
-    public void Add(string Name, List<string> DataIn)
+    public void Add(string Name, BetterList<string> DataIn)
     {
         var dat = new OXFileData();
         dat.Type = OXFileData.OXFileType.ListString;

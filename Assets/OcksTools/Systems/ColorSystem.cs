@@ -38,6 +38,9 @@ public struct HDRColor
 {
     [ColorUsage(true, true)]
     public Color color;
+
+    public static implicit operator Color(HDRColor values)
+        => values.color;
 }
 
 [System.Serializable]
@@ -45,6 +48,11 @@ public struct FakeHDRColor
 {
     public Color color;
     public float intensity;
+    public Color GetColor() => color.SetIntensity(intensity);
+
+    public static implicit operator Color(FakeHDRColor values)
+        => values.GetColor();
+
 }
 
 #if UNITY_EDITOR
