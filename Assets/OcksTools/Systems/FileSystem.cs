@@ -55,26 +55,17 @@ public class FileSystem : SingleInstance<FileSystem>
             WriteFile(FileLocations["OcksGames"], s, true);
         }
     }
-    private void Start()
-    {
-        //ConsoleLol.instance.ConsoleLog("Current File Location: " + DirectoryLol);
-        //ConsoleLol.instance.ConsoleLog("Game Data Location: " + GameDirectory);
-
-        //WriteFile($"{GameDirectory}\\Test.txt", "Test Data Lol", false);
-
-        AssembleFilePaths();
-    }
     public void AssembleFilePaths()
     {
         WorkingDirectory = Directory.GetCurrentDirectory();
-        OcksDirectry = $"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\\Ocks";
-        GameDirectory = OcksDirectry + "\\" + GameFolderName;
-        UniversalDirectory = OcksDirectry + "\\Universal";
+        OcksDirectry = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Ocks");
+        GameDirectory = Path.Combine(OcksDirectry, GameFolderName);
+        UniversalDirectory = Path.Combine(OcksDirectry, "Universal");
 
         FileLocations = new Dictionary<string, string>()
         {
-            {"OcksGames",$"{OcksDirectry}\\Ocks_Games_Owned.txt"},
-            {"OXFileTest",$"{GameDirectory}\\Testing.ox"},
+            {"OcksGames", Path.Combine(OcksDirectry, "Ocks_Games_Owned.txt")},
+            {"OXFileTest", Path.Combine(GameDirectory, "Testing.ox")},
         };
         LocationEvent.Invoke();
     }
@@ -107,6 +98,28 @@ public class FileSystem : SingleInstance<FileSystem>
     {
         return Directory.GetDirectories(FolderPath);
     }
+    public List<string> ReadFilePathsInFolderRecursively(string FolderPath)
+    {
+        List<string> paths = new();
+        paths.AddRange(Directory.GetFiles(FolderPath));
+        foreach (var subFolder in Directory.GetDirectories(FolderPath))
+        {
+            paths.AddRange(ReadFilePathsInFolderRecursively(subFolder));
+        }
+        return paths;
+    }
+
+    public List<string> ReadFolderPathsInFolderRecursively(string FolderPath)
+    {
+        List<string> paths = new();
+        var subFolders = Directory.GetDirectories(FolderPath);
+        paths.AddRange(subFolders);
+        foreach (var subFolder in subFolders)
+        {
+            paths.AddRange(ReadFolderPathsInFolderRecursively(subFolder));
+        }
+        return paths;
+    }
     public DateTime ReadFileLastWriteTime(string file)
     {
         return File.GetLastWriteTime(file);
@@ -127,9 +140,9 @@ public class FileSystem : SingleInstance<FileSystem>
     {
         File.Delete(file);
     }
-    public void DeleteFolder(string FolderPath)
+    public void DeleteFolder(string FolderPath, bool can_delete_contents = false)
     {
-        Directory.Delete(FolderPath);
+        Directory.Delete(FolderPath, can_delete_contents);
     }
     public DownloadDataHandler<Texture> LoadTexture(string filelocation)
     {

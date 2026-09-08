@@ -175,17 +175,8 @@ public abstract class ChessBoard
         return CurrentTeam;
     }
 
-    public void AddPiece(ChessPieceBase piece, (int, int) Position, ChessTeam Team)
-    {
-        AddPiece(piece, new Vector2Int(Position.Item1, Position.Item2), Team);
-    }
-
-    public void AddStoredPiece(ChessPieceBase piece, (int, int) Position, ChessTeam Team)
-    {
-        AddStoredPiece(piece, new Vector2Int(Position.Item1, Position.Item2), Team);
-    }
     public List<(ChessPieceBase piece, Vector2Int Position, ChessTeam Team)> stores = new();
-    public void AddStoredPiece(ChessPieceBase piece, Vector2Int Position, ChessTeam Team)
+    public void AddStoredPiece(ChessPieceBase piece, BetterVector2Int Position, ChessTeam Team)
     {
         piece.InitAttempt();
         stores.Add((piece, Position, Team));
@@ -198,7 +189,7 @@ public abstract class ChessBoard
         }
     }
     public OXEvent<ChessPieceBase> OnPieceAddedEvent = new();
-    public void AddPiece(ChessPieceBase piece, Vector2Int Position, ChessTeam Team)
+    public void AddPiece(ChessPieceBase piece, BetterVector2Int Position, ChessTeam Team)
     {
         if (!piece.IgnoreBounds && !IsSpaceInBounds(Position))
         {
@@ -232,7 +223,7 @@ public abstract class ChessBoard
         return _positionLookup.TryGetValue(pos, out var piece) ? piece : null;
     }
 
-    public HashSet<string> MovePiece(ChessPieceBase piece, Vector2Int NewPosition)
+    public HashSet<string> MovePiece(ChessPieceBase piece, BetterVector2Int NewPosition)
     {
         MoveFlags.Clear();
         MovePieceInternal(piece, NewPosition);
@@ -243,7 +234,7 @@ public abstract class ChessBoard
         return MoveFlags;
     }
 
-    public HashSet<string> MovePieceInternal(ChessPieceBase piece, Vector2Int NewPosition)
+    public HashSet<string> MovePieceInternal(ChessPieceBase piece, BetterVector2Int NewPosition)
     {
         if (piece.Position == NewPosition) { return new(); }
         if (!piece.IgnoreBounds && !IsSpaceInBounds(NewPosition))
@@ -501,25 +492,7 @@ public struct ChessBoardVector
     public ChessMoveRequirement MoveReq;
     public bool IncludeStartSpace;
     private Vector2Int[] _cachedSpaces;
-    public ChessBoardVector((short x, short y) pos, (short x, short y) direction, int length, ChessMoveRequirement mustCapture = ChessMoveRequirement.Normal, bool includeStartSpace = false)
-    {
-        Position = new Vector2Int(pos.x, pos.y);
-        Direction = new Vector2Int(direction.x, direction.y);
-        Length = length;
-        MoveReq = mustCapture;
-        IncludeStartSpace = includeStartSpace;
-        _cachedSpaces = null;
-    }
-    public ChessBoardVector((short x, short y) direction, int length, ChessMoveRequirement mustCapture = ChessMoveRequirement.Normal)
-    {
-        Position = new Vector2Int(0, 0);
-        Direction = new Vector2Int(direction.x, direction.y);
-        Length = length;
-        MoveReq = mustCapture;
-        IncludeStartSpace = false;
-        _cachedSpaces = null;
-    }
-    public ChessBoardVector(Vector2Int direction, int length, ChessMoveRequirement mustCapture = ChessMoveRequirement.Normal)
+    public ChessBoardVector(BetterVector2Int direction, int length, ChessMoveRequirement mustCapture = ChessMoveRequirement.Normal)
     {
         Position = new Vector2Int(0, 0);
         Direction = direction;
@@ -528,16 +501,7 @@ public struct ChessBoardVector
         IncludeStartSpace = false;
         _cachedSpaces = null;
     }
-    public ChessBoardVector((short x, short y) pos, ChessMoveRequirement mustCapture = ChessMoveRequirement.Normal)
-    {
-        Position = new Vector2Int(pos.x, pos.y);
-        Direction = new Vector2Int(0, 0);
-        Length = 0;
-        MoveReq = mustCapture;
-        IncludeStartSpace = true;
-        _cachedSpaces = null;
-    }
-    public ChessBoardVector(Vector2Int pos, ChessMoveRequirement mustCapture = ChessMoveRequirement.Normal)
+    public ChessBoardVector(BetterVector2Int pos, ChessMoveRequirement mustCapture = ChessMoveRequirement.Normal)
     {
         Position = pos;
         Direction = new Vector2Int(0, 0);
@@ -547,7 +511,7 @@ public struct ChessBoardVector
         _cachedSpaces = null;
     }
 
-    public ChessBoardVector(Vector2Int pos, Vector2Int direction, int length, ChessMoveRequirement mustCapture = ChessMoveRequirement.Normal, bool includeStartSpace = false)
+    public ChessBoardVector(BetterVector2Int pos, BetterVector2Int direction, int length, ChessMoveRequirement mustCapture = ChessMoveRequirement.Normal, bool includeStartSpace = false)
     {
         Position = pos;
         Direction = direction;

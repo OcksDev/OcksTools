@@ -12,6 +12,13 @@
   - Moved all RandomFunctions.Ease functions into this static class
   - Added some new functions like CircIn and CircOut
 - New RangeMap (could be useful, idk)
+- New Better Base Classes
+  - Added BetterVector2
+  - Added BetterVector2Int
+  - Added BetterVector3
+  - Added BetterVector3Int
+  - Moved BetterList<> that used to be in Converter to this new location
+    - BetterList now also can replace and transform into arrays
 - Compressed Inspector Improvements
   - Added SideBySide and SideBySideWithName functionality, so things are even cooler now.
   - Many systems now implement this
@@ -39,12 +46,16 @@
   - Added Color type (and Color32)
   - Added Mesh type
   - Readded Obfuscation, simple anti skimming measures to stop someone from peaking into the file (it wont stop someone dedicated though) (can be manually disabled)
+  - Fixed bug with saving empty oxfiles
   - Fixed bug with flags changing from a write file call
   - Added bool return to WriteFile for success (applied same change to FileSystem's WriteFile also)
   - Some general speed optimizations
 - File System Improvements
   - Added ReadFileSize() method to easily read the file size of a file, it's in the name bro
   - Added PathToName() method to easily read the name of a file/folder
+  - Added ReadFilePathsInFolderRecursively()
+  - Added ReadFolderPathsInFolderRecursively()
+  - Replaced hard coded \\ paths with Path.Combine (this should make the stuff work for linux/mac builds, hopefully, idk this is untested)
 - Random Functions
   - Added ToStringSmall() and StringSmallTo...() for Vector2, Vector2Int, Vector3, Vector3Int, and quaternion, which simply converts them to strings but without the parenthesis
   - Fixed Texture2DToSprite() conversion method

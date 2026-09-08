@@ -579,7 +579,7 @@ public readonly struct InputManagerKeyVal
     private readonly string nerd;
     public InputManagerKeyVal(string value)
     {
-        _keyvals = null;
+        _keyvals = default;
         nerd = value;
     }
 
