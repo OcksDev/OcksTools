@@ -1,5 +1,10 @@
 
 ------------
+   v1.2.7
+- It begins...
+------------
+
+------------
    v1.2.6
 - Chess Engine v2 (Completely rewrote from the ground up)
   - Fully functional chess engine, with all the rules and logic implemented
@@ -75,7 +80,6 @@
   - Easy Settings Toggle moved to its own script, and given the ability to change images on toggle
   - Marginally optimized Entity Skill/Effect getting (with trygetvalue insteaad of containskey) 
 ------------
-
 
 ------------
    v1.2.5
