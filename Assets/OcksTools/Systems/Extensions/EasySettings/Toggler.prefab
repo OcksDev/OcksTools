@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 5002496897918996640}
   - component: {fileID: 853176180245495612}
+  - component: {fileID: 8579556027731400633}
   - component: {fileID: 1482394609938720169}
   - component: {fileID: 2126862283610984425}
-  - component: {fileID: 8425528625863375420}
   m_Layer: 5
   m_Name: Toggler
   m_TagString: Untagged
@@ -47,6 +47,28 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2225194912508327085}
   m_CullTransparentMesh: 1
+--- !u!114 &8579556027731400633
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2225194912508327085}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c20af4e5a13dd94083713eaf75a61f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ToggleSetting
+  Setting: {fileID: 11400000, guid: 5e739c14ffa956948a1015443d0abd33, type: 2}
+  Renderer: {fileID: 1482394609938720169}
+  images:
+  - {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  color32s:
+  - serializedVersion: 2
+    rgba: 0
+  - serializedVersion: 2
+    rgba: 0
 --- !u!114 &1482394609938720169
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -121,9 +143,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8425528625863375420}
-        m_TargetAssemblyTypeName: SettingInput, Assembly-CSharp
-        m_MethodName: ToggleVal
+      - m_Target: {fileID: 8579556027731400633}
+        m_TargetAssemblyTypeName: ToggleSetting, Assembly-CSharp
+        m_MethodName: Toggle
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -133,25 +155,3 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &8425528625863375420
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2225194912508327085}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1ad7c2ff30704524a8465f3234044eb6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Type: TestToggle
-  fard: 0
-  images:
-  - {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  - {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  color32s:
-  - serializedVersion: 2
-    rgba: 4294967295
-  - serializedVersion: 2
-    rgba: 4286545791

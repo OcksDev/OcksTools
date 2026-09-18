@@ -8,7 +8,7 @@ public class SettingSwitcherSO : SettingSO<int>
 {
     public List<string> Items = new List<string>();
 
-    public override void LoadFromString(string s) => Value = int.Parse(s);
+    public override void LoadFromString(string s) => Data.Value = int.Parse(s);
 
-    public override string SaveToString() => Value.ToString();
+    public override string SaveToString() => Data.Value.ToString();
 }

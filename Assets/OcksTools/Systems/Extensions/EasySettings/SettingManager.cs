@@ -9,9 +9,11 @@ public class SettingManager : SingleInstance<SettingManager>
         StoredData.Compile((x) =>
         {
             x.SaveCurrentToDefault();
+            x.DupeData();
             return x.Name;
         });
-        //save/load stuff
+        SaveSystem.SaveAllData.Append(SaveAll);
+        SaveSystem.LoadAllData.Append(LoadAll);
     }
 
     public static T GetValue<T>(string name)
@@ -21,6 +23,26 @@ public class SettingManager : SingleInstance<SettingManager>
         {
             Debug.LogWarning($"Trying to read setting '{name}' but it does not exist.");
             return default;
+        }
+    }
+
+
+    public void SaveAll(SaveProfile dict)
+    {
+        foreach (var kvp in StoredData)
+        {
+            dict.SetString(kvp.Key, kvp.Value.SaveToString());
+        }
+    }
+    public void LoadAll(SaveProfile dict)
+    {
+        foreach (var kvp in StoredData)
+        {
+            string s = dict.GetString(kvp.Key, "-=-");
+            if (s != "-=-")
+            {
+                kvp.Value.LoadFromString(s);
+            }
         }
     }
 }

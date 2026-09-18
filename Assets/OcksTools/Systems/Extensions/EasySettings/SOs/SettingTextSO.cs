@@ -6,7 +6,7 @@ using UnityEngine;
 public class SettingTextSO : SettingSO<string>
 {
 
-    public override void LoadFromString(string s) => Value = s;
+    public override void LoadFromString(string s) => Data.Value = s;
 
-    public override string SaveToString() => Value;
+    public override string SaveToString() => Data.Value;
 }
