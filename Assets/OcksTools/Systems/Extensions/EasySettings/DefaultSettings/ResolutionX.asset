@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SettingSwitcherSO
   Name: ResX
   InspectorData:
-    Value: -1
+    Value: 2
     DefaultValue: 0
+  Modifier: {fileID: 11400000, guid: 4d615623096687340b2bd7bbe214fa59, type: 2}
   Items:
   - 1280
   - 1920

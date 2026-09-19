@@ -45,4 +45,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SettingManager
   StoredData:
-    List: []
+    List:
+    - {fileID: 11400000, guid: ba80fc97842584d48a84fbe6bf0ea3bf, type: 2}
+    - {fileID: 11400000, guid: 65177b6eda8c2b74fa36c315711a088d, type: 2}
+    - {fileID: 11400000, guid: 4fe39ea5b0cd03045a3d1ec7b184701a, type: 2}
+    - {fileID: 11400000, guid: 79500ba26b515d341b796572ca26a6af, type: 2}
+    - {fileID: 11400000, guid: 1ac3966358bc4db468128bb432238ad1, type: 2}

@@ -29,7 +29,8 @@ public abstract class SettingSO<T> : SettingData
         };
         if (Modifier != null)
         {
-            T d = Modifier.GetDefault();
+            Modifier.Setting = this;
+            T d = Modifier.GetDefault(Data.Value);
             Data.Value = d;
             Data.DefaultValue = d;
         }
@@ -70,7 +71,8 @@ public class CoolSettingData<T>
 
 public abstract class SettingModifierSO<T> : ScriptableObject
 {
-    public virtual T GetDefault() => default;
+    public SettingSO<T> Setting;
+    public virtual T GetDefault(T v) => v;
     public virtual T ModifyGet(T v) => v;
     public virtual T ModifySet(T v) => v;
     public virtual string ModifyDisplay(T v) => null;

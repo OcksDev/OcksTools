@@ -1,6 +1,6 @@
 public class DefSet_FPS : SettingModifierSO<float>
 {
-    public override float GetDefault()
+    public override float GetDefault(float v)
     {
         return (float)(Render.GetMonitorRefreshRate() / 4);
     }

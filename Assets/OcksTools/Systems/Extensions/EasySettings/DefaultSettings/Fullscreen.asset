@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SettingSwitcherSO
   Name: ResY
   InspectorData:
-    Value: -1
+    Value: -69
     DefaultValue: 0
+  Modifier: {fileID: 11400000, guid: 016e449c4322aea46aa3a5147598196e, type: 2}
   Items:
   - Windowed
   - Maximized

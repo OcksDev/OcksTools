@@ -16,3 +16,4 @@ MonoBehaviour:
   InspectorData:
     Value: 1
     DefaultValue: 0
+  Modifier: {fileID: 11400000, guid: 5b7bcfbf9d7c365459ac06ddc87bf901, type: 2}
