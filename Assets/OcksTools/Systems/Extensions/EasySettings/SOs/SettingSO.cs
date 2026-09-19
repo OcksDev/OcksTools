@@ -5,11 +5,20 @@ public abstract class SettingSO<T> : SettingData
     [AutoCompressField]
     public CoolSettingData<T> InspectorData;
     protected CoolSettingData<T> Data;
+    public SettingModifierSO<T> Modifier;
     public override void ResetToDefault() => Data.Value = Data.DefaultValue;
     public override void SaveCurrentToDefault() => Data.DefaultValue = Data.Value;
-    public virtual void SetValue(T v) => Data.Value = v;
-    public virtual T GetValue() => Data.Value;
-    public override Q GetValue<Q>() => Data.Value is Q q ? q : throw new System.Exception("wrong type bro");
+    public virtual void SetValue(T v)
+    {
+        if (Modifier != null) v = Modifier.ModifySet(v);
+        Data.Value = v;
+    }
+    public virtual T GetValue()
+    {
+        if (Modifier != null) return Modifier.ModifyGet(Data.Value);
+        return Data.Value;
+    }
+    public override Q GetValue<Q>() => GetValue() is Q q ? q : throw new System.Exception("wrong type bro");
     public override void SetValue<Q>(Q v) => SetValue(v);
     public override void DupeData()
     {
@@ -18,7 +27,14 @@ public abstract class SettingSO<T> : SettingData
             Value = InspectorData.Value,
             DefaultValue = InspectorData.DefaultValue
         };
+        if (Modifier != null)
+        {
+            T d = Modifier.GetDefault();
+            Data.Value = d;
+            Data.DefaultValue = d;
+        }
     }
+    public override string GetDisplayMod() => Modifier != null ? Modifier.ModifyDisplay(GetValue()) : null;
 }
 
 
@@ -32,6 +48,7 @@ public abstract class SettingData : ScriptableObject
     public abstract void SaveCurrentToDefault();
     public abstract void LoadFromString(string s);
     public abstract string SaveToString();
+    public abstract string GetDisplayMod();
     public abstract void DupeData();
     public enum SType
     {
@@ -49,4 +66,12 @@ public class CoolSettingData<T>
     public T Value;
     [HideInInspector]
     public T DefaultValue;
+}
+
+public abstract class SettingModifierSO<T> : ScriptableObject
+{
+    public virtual T GetDefault() => default;
+    public virtual T ModifyGet(T v) => v;
+    public virtual T ModifySet(T v) => v;
+    public virtual string ModifyDisplay(T v) => null;
 }

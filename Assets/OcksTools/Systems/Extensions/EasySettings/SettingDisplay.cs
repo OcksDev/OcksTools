@@ -11,7 +11,6 @@ public class SettingDisplay : MonoBehaviour
 
     public string Prepend;
     public string Postpend;
-    public float ValueMult = 1;
 
     private TextMeshProUGUI t;
     private void Start()
@@ -21,14 +20,16 @@ public class SettingDisplay : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        t.text = Prepend + GetText() + Postpend;
+        string s = sd.GetDisplayMod();
+        if (s == null) s = GetText();
+        t.text = Prepend + s + Postpend;
     }
     public string GetText()
     {
         switch (sd.Type)
         {
             case SettingData.SType.Toggle: return sd.GetValue<bool>() ? "Yes" : "No";
-            case SettingData.SType.Slider: return Mathf.RoundToInt(sd.GetValue<float>() * ValueMult).ToString();
+            case SettingData.SType.Slider: return Mathf.RoundToInt(sd.GetValue<float>()).ToString();
             case SettingData.SType.Switcher: return (sd as SettingSwitcherSO).Items[sd.GetValue<int>()];
             case SettingData.SType.Keybind:
                 var q = sd as SettingKeybindSO;

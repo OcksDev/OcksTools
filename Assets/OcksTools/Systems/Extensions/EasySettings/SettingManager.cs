@@ -3,13 +3,12 @@ using UnityEngine;
 public class SettingManager : SingleInstance<SettingManager>
 {
     public CompileableDictionaryAlt<string, SettingData> StoredData;
-
     public override void Awake2()
     {
         StoredData.Compile((x) =>
         {
-            x.SaveCurrentToDefault();
             x.DupeData();
+            x.SaveCurrentToDefault();
             return x.Name;
         });
         SaveSystem.SaveAllData.Append(SaveAll);
