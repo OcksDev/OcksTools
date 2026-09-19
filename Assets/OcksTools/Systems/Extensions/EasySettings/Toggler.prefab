@@ -59,7 +59,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c20af4e5a13dd94083713eaf75a61f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ToggleSetting
-  Setting: {fileID: 11400000, guid: 5e739c14ffa956948a1015443d0abd33, type: 2}
+  Setting: {fileID: 0}
   Renderer: {fileID: 1482394609938720169}
   images:
   - {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}

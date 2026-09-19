@@ -27,6 +27,12 @@ public abstract class BaseSettingInput<T> : BaseBaseSettingLol where T : Setting
         {
             Debug.LogWarning("Setting manager missing!");
         }
+        if (!SettingManager.HasCalledForLateData && Setting.HasLateDefault)
+        {
+            yield return null;
+            UpdateDisplay();
+            Init();
+        }
     }
 
     public abstract void UpdateDisplay();

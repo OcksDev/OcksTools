@@ -9,19 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d7eb6d4cfa35e674f835daf015c7b7e5, type: 3}
-  m_Name: Fullscreen
-  m_EditorClassIdentifier: Assembly-CSharp::SettingSwitcherSO
-  Name: Fullscreen
+  m_Script: {fileID: 11500000, guid: 0391ac64b614814418dd0f3f98936abb, type: 3}
+  m_Name: Keybind_Shoot
+  m_EditorClassIdentifier: Assembly-CSharp::SettingKeybindSO
+  Name: shoot
   InspectorData:
-    Value: -69
+    Value: 0
     DefaultValue: 0
   Data:
     Value: 0
     DefaultValue: 0
-  Modifier: {fileID: 11400000, guid: 016e449c4322aea46aa3a5147598196e, type: 2}
-  Items:
-  - Windowed
-  - Maximized
-  - Borderless
-  - Fullscreen
+  Modifier: {fileID: 11400000, guid: 05e3445c7fee990409a90c94abb4215e, type: 2}
+  CurrentlySelecting: 0

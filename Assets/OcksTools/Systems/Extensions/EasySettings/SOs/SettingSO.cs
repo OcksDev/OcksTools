@@ -40,6 +40,16 @@ public abstract class SettingSO<T> : SettingData
     }
     public override string GetDisplayMod() => Modifier != null ? Modifier.ModifyDisplay(GetValue()) : null;
     public override bool GetShouldSkip() => Modifier != null ? Modifier.DisableSaving : false;
+    public override void LateDataFind()
+    {
+        if (HasLateDefault)
+        {
+            T d = Modifier.GetDefaultLate(Data.Value);
+            Data.Value = d;
+            Data.DefaultValue = d;
+        }
+    }
+    public override bool HasLateDefault => Modifier != null ? Modifier.HasLateDefault : false;
 }
 
 
@@ -56,6 +66,8 @@ public abstract class SettingData : ScriptableObject
     public abstract string GetDisplayMod();
     public abstract bool GetShouldSkip();
     public abstract void DupeData();
+    public abstract void LateDataFind();
+    public virtual bool HasLateDefault => false;
     public enum SType
     {
         Toggle,
@@ -78,8 +90,10 @@ public abstract class SettingModifierSO<T> : ScriptableObject
 {
     public SettingSO<T> Setting;
     public virtual T GetDefault(T v) => v;
+    public virtual T GetDefaultLate(T v) => v;
     public virtual T ModifyGet(T v) => v;
     public virtual T ModifySet(T v) => v;
     public virtual string ModifyDisplay(T v) => null;
     public virtual bool DisableSaving => false;
+    public virtual bool HasLateDefault => false;
 }

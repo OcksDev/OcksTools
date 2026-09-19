@@ -9,19 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d7eb6d4cfa35e674f835daf015c7b7e5, type: 3}
-  m_Name: Fullscreen
-  m_EditorClassIdentifier: Assembly-CSharp::SettingSwitcherSO
-  Name: Fullscreen
+  m_Script: {fileID: 11500000, guid: 03758bcba1b9f914d8f56f883dc820ff, type: 3}
+  m_Name: MasterVolume
+  m_EditorClassIdentifier: Assembly-CSharp::SettingSliderSO
+  Name: Master
   InspectorData:
     Value: -69
     DefaultValue: 0
   Data:
     Value: 0
     DefaultValue: 0
-  Modifier: {fileID: 11400000, guid: 016e449c4322aea46aa3a5147598196e, type: 2}
-  Items:
-  - Windowed
-  - Maximized
-  - Borderless
-  - Fullscreen
+  Modifier: {fileID: 11400000, guid: 4eaafe74113c91e4c98a386d4b498bd6, type: 2}

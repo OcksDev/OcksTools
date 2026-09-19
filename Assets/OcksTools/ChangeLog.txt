@@ -2,8 +2,14 @@
 ------------
    v1.2.7
 - Easy Settings v2 (Completely rewrote from the ground up)
-  - Added default settings that can be easily added to any project
-  - Overhauled setting creation, now much more data driven and cool
+  - Added default settings that can be easily added/swapped into any project
+    - FPS Cap
+    - VSync
+    - Fullscreen Mode
+    - Window Size (X and Y)
+    - Volume Control
+    - Keybind Control
+  - Overhauled setting creation, now extendably designed to work for any project
   - Actually usable now lol
 - Misc
   - OXFile Add() methods updated to use Better Base Classes where possible

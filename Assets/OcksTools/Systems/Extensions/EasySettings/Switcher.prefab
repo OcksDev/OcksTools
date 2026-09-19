@@ -142,8 +142,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8460228231971407237}
   - component: {fileID: 8460228231971407257}
-  - component: {fileID: 8460228231971407256}
   - component: {fileID: 1120054763215006296}
+  - component: {fileID: 8460228231971407256}
   m_Layer: 5
   m_Name: Switcher
   m_TagString: Untagged
@@ -181,6 +181,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8460228231971407236}
   m_CullTransparentMesh: 1
+--- !u!114 &1120054763215006296
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8460228231971407236}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da0e5186139857b46af989be9c474bf7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SwitcherSetting
+  Setting: {fileID: 0}
 --- !u!114 &8460228231971407256
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -211,19 +224,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &1120054763215006296
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8460228231971407236}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: da0e5186139857b46af989be9c474bf7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SwitcherSetting
-  Setting: {fileID: 0}
 --- !u!1 &8460228232116601001
 GameObject:
   m_ObjectHideFlags: 0
@@ -377,7 +377,6 @@ MonoBehaviour:
   sd2: {fileID: 1120054763215006296}
   Prepend: 
   Postpend: 
-  ValueMult: 1
 --- !u!1 &8460228232952374686
 GameObject:
   m_ObjectHideFlags: 0
