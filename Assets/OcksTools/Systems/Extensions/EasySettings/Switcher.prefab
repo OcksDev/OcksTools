@@ -32,7 +32,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8460228231971407237}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
@@ -121,9 +120,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8460228231971407239}
-        m_TargetAssemblyTypeName: Switcher, Assembly-CSharp
-        m_MethodName: IndexUp
+      - m_Target: {fileID: 1120054763215006296}
+        m_TargetAssemblyTypeName: SwitcherSetting, Assembly-CSharp
+        m_MethodName: ValueUp
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -144,8 +143,7 @@ GameObject:
   - component: {fileID: 8460228231971407237}
   - component: {fileID: 8460228231971407257}
   - component: {fileID: 8460228231971407256}
-  - component: {fileID: 8460228231971407238}
-  - component: {fileID: 8460228231971407239}
+  - component: {fileID: 1120054763215006296}
   m_Layer: 5
   m_Name: Switcher
   m_TagString: Untagged
@@ -169,7 +167,6 @@ RectTransform:
   - {fileID: 8460228231183672580}
   - {fileID: 8460228232116601002}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -214,7 +211,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &8460228231971407238
+--- !u!114 &1120054763215006296
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -223,31 +220,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 8460228231971407236}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c3f9d3a67bef344780eba851ec5b401, type: 3}
+  m_Script: {fileID: 11500000, guid: da0e5186139857b46af989be9c474bf7, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
-  Type: TestSwitcher
-  color32s: []
-  fard: 0
---- !u!114 &8460228231971407239
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8460228231971407236}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7288e02c52a8efe4f84328894e590f46, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Items:
-  - Hello
-  - World
-  - I Am
-  - Banana
-  index: 0
-  SI: {fileID: 8460228231971407238}
+  m_EditorClassIdentifier: Assembly-CSharp::SwitcherSetting
+  Setting: {fileID: 0}
 --- !u!1 &8460228232116601001
 GameObject:
   m_ObjectHideFlags: 0
@@ -259,7 +235,7 @@ GameObject:
   - component: {fileID: 8460228232116601002}
   - component: {fileID: 8460228232116601005}
   - component: {fileID: 8460228232116601004}
-  - component: {fileID: 8460228232116601003}
+  - component: {fileID: 7965642468320210646}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -280,7 +256,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8460228231971407237}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -358,15 +333,17 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 0
+  m_TextWrappingMode: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
+  m_EmojiFallbackSupport: 1
   m_parseCtrlCharacters: 1
   m_isOrthographic: 1
   m_isCullingEnabled: 0
@@ -384,7 +361,7 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &8460228232116601003
+--- !u!114 &7965642468320210646
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -393,15 +370,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 8460228232116601001}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e928bc85b868e0a499a1234c6cdb78dc, type: 3}
+  m_Script: {fileID: 11500000, guid: 9401effe1f514724e913172530d4bf79, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
-  myself: {fileID: 0}
-  reference: {fileID: 8460228231971407238}
-  displayType: 2
-  displayDataType: 2
-  pre_text: 
-  post_text: 
+  m_EditorClassIdentifier: Assembly-CSharp::SettingDisplay
+  sd: {fileID: 0}
+  sd2: {fileID: 1120054763215006296}
+  Prepend: 
+  Postpend: 
+  ValueMult: 1
 --- !u!1 &8460228232952374686
 GameObject:
   m_ObjectHideFlags: 0
@@ -434,7 +410,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8460228231971407237}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
@@ -523,9 +498,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8460228231971407239}
-        m_TargetAssemblyTypeName: Switcher, Assembly-CSharp
-        m_MethodName: IndexDown
+      - m_Target: {fileID: 1120054763215006296}
+        m_TargetAssemblyTypeName: SwitcherSetting, Assembly-CSharp
+        m_MethodName: ValueDown
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

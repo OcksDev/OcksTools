@@ -25,6 +25,7 @@ public abstract class SettingSO<T> : SettingData
 public abstract class SettingData : ScriptableObject
 {
     public string Name;
+    public virtual SType Type => SType.Toggle;
     public abstract T GetValue<T>();
     public abstract void SetValue<T>(T v);
     public abstract void ResetToDefault();
@@ -32,6 +33,14 @@ public abstract class SettingData : ScriptableObject
     public abstract void LoadFromString(string s);
     public abstract string SaveToString();
     public abstract void DupeData();
+    public enum SType
+    {
+        Toggle,
+        Keybind,
+        Slider,
+        Switcher,
+        Text,
+    }
 }
 
 [System.Serializable]

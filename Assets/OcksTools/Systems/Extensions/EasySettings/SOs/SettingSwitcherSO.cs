@@ -11,4 +11,5 @@ public class SettingSwitcherSO : SettingSO<int>
     public override void LoadFromString(string s) => Data.Value = int.Parse(s);
 
     public override string SaveToString() => Data.Value.ToString();
+    public override SType Type => SType.Switcher;
 }

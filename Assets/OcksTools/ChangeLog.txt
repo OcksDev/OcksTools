@@ -1,7 +1,7 @@
 
 ------------
    v1.2.7
-- Easy Settings Overhaul
+- Easy Settings v2 (Completely rewrote from the ground up)
 - Misc
   - OXFile Add() methods updated to use Better Base Classes where possible
   - Added implcit conversion from HDRColor and FakeHDRColor into base Color

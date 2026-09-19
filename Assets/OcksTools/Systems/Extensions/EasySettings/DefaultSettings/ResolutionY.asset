@@ -10,8 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d7eb6d4cfa35e674f835daf015c7b7e5, type: 3}
-  m_Name: SettingSwitcherSO
+  m_Name: ResolutionY
   m_EditorClassIdentifier: Assembly-CSharp::SettingSwitcherSO
-  Name: 
-  Value: 0
-  Items: []
+  Name: ResY
+  InspectorData:
+    Value: -1
+    DefaultValue: 0
+  Items:
+  - 720
+  - 800
+  - 1080
+  - 1200
+  - 1440
+  - 1600
+  - 2160
+  - 2400
