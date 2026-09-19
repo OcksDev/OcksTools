@@ -30,6 +30,7 @@ public class SettingManager : SingleInstance<SettingManager>
     {
         foreach (var kvp in StoredData)
         {
+            if (kvp.Value.GetShouldSkip()) continue;
             dict.SetString(kvp.Key, kvp.Value.SaveToString());
         }
     }
@@ -37,6 +38,7 @@ public class SettingManager : SingleInstance<SettingManager>
     {
         foreach (var kvp in StoredData)
         {
+            if (kvp.Value.GetShouldSkip()) continue;
             string s = dict.GetString(kvp.Key, "-=-");
             if (s != "-=-")
             {

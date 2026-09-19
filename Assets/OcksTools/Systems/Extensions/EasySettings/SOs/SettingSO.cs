@@ -39,6 +39,7 @@ public abstract class SettingSO<T> : SettingData
         }
     }
     public override string GetDisplayMod() => Modifier != null ? Modifier.ModifyDisplay(GetValue()) : null;
+    public override bool GetShouldSkip() => Modifier != null ? Modifier.DisableSaving : false;
 }
 
 
@@ -53,6 +54,7 @@ public abstract class SettingData : ScriptableObject
     public abstract void LoadFromString(string s);
     public abstract string SaveToString();
     public abstract string GetDisplayMod();
+    public abstract bool GetShouldSkip();
     public abstract void DupeData();
     public enum SType
     {
@@ -79,4 +81,5 @@ public abstract class SettingModifierSO<T> : ScriptableObject
     public virtual T ModifyGet(T v) => v;
     public virtual T ModifySet(T v) => v;
     public virtual string ModifyDisplay(T v) => null;
+    public virtual bool DisableSaving => false;
 }
