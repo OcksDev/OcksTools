@@ -1,10 +1,13 @@
+using NaughtyAttributes;
 using UnityEngine;
 
 public abstract class SettingSO<T> : SettingData
 {
     [AutoCompressField]
     public CoolSettingData<T> InspectorData;
-    protected CoolSettingData<T> Data;
+    [NaughtyAttributes.ReadOnly]
+    [Label("Runtime Data (view only)")]
+    public CoolSettingData<T> Data;
     public SettingModifierSO<T> Modifier;
     public override void ResetToDefault() => Data.Value = Data.DefaultValue;
     public override void SaveCurrentToDefault() => Data.DefaultValue = Data.Value;
