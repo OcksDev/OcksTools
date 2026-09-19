@@ -150,6 +150,19 @@ public class Render
         var cam = Camera.main;
         return cam != null ? cam.GetUniversalAdditionalCameraData().antialiasing : AntialiasingMode.None;
     }
+
+    public static float GetRenderScale()
+    {
+        var urp = GetURPAsset();
+        return urp != null ? urp.renderScale : 1f;
+    }
+
+    public static void SetRenderScale(float scale)
+    {
+        var urp = GetURPAsset();
+        if (urp != null) urp.renderScale = Mathf.Clamp(scale, 0.1f, 2f);
+    }
+
 }
 
 public class _ConsoleRenderQueryererr
@@ -166,6 +179,7 @@ public class _ConsoleRenderQueryererr
                 .Append(new OXCommand("anistropic").Action(() => Console.Log(Render.GetAnisotropicFiltering())))
                 .Append(new OXCommand("antialiasing").Action(() => Console.Log(Render.GetAntiAliasing())))
                 .Append(new OXCommand("hz").Action(() => Console.Log(Render.GetMonitorRefreshRate())))
+                .Append(new OXCommand("renderscale").Action(() => Console.Log(Render.GetRenderScale())))
                 .Append(new OXCommand("monitor_size").Action(() => Console.Log(Render.GetMonitorSize())))
                 .Append(new OXCommand("window_size").Action(() => Console.Log(Render.GetWindowSize())))
                 .Append(new OXCommand("language").Action(() => Console.Log(Render.GetLanguage())))
@@ -174,6 +188,7 @@ public class _ConsoleRenderQueryererr
                 .Append(new OXCommand("fps").Append(new OXCommand(OXCommand.ExpectedInputType.Long).Action((r) => Render.SetTargetFramerate(int.Parse(r.com[2])))))
                 .Append(new OXCommand("vsync").Append(new OXCommand(OXCommand.ExpectedInputType.Long).Action((r) => Render.SetVSync(int.Parse(r.com[2]).IntToBool()))))
                 .Append(new OXCommand("fullscreen").Append(new OXCommand(OXCommand.ExpectedInputType.Long).Action((r) => Render.SetFullscreen(int.Parse(r.com[2]).IntToBool() ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed))))
+                .Append(new OXCommand("renderscale").Append(new OXCommand(OXCommand.ExpectedInputType.Long).Action((r) => Render.SetRenderScale(int.Parse(r.com[2]) / 100f))))
                 .Append(new OXCommand("anistropic").Append(new OXCommand(OXCommand.ExpectedInputType.Long).Action((r) => Render.SetAnisotropicFiltering(int.Parse(r.com[2]).IntToBool()))))
                 .Append(new OXCommand("antialiasing").Append(new OXCommand(OXCommand.ExpectedInputType.Long).Action((r) => Render.SetAntiAliasing(int.Parse(r.com[2])))))
                 .Append(new OXCommand("window_size").Append(new OXCommand(OXCommand.ExpectedInputType.Long).Append(new OXCommand(OXCommand.ExpectedInputType.Long).Action((r) =>

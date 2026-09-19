@@ -5,17 +5,22 @@
   - Added default settings that can be easily added/swapped into any project
     - FPS Cap
     - VSync
+    - Anti Aliasing
+    - Anisotropic Filtering
     - Fullscreen Mode
     - Window Size (X and Y)
-    - Volume Control
-    - Keybind Control
+    - Volume Control (default values include Master, SFX, Music, and Dialogue)
+    - Keybind Control (default values include all default keybinds in InputManager)
   - Overhauled setting creation, now extendably designed to work for any project
   - Actually usable now lol
+- Render Improvements
+  - Fixed Get/Set Anti Aliasing
+  - Added Get/Set for Renderscale.
+  - Render moved from Misc to Systems
 - Misc
   - OXFile Add() methods updated to use Better Base Classes where possible
   - Added implcit conversion from HDRColor and FakeHDRColor into base Color
   - All scriptable objects have been moved out of the default "Scriptable Objects" folder
-  - Render moved from Misc to Systems
 ------------
 
 ------------
