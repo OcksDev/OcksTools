@@ -1,5 +1,7 @@
 using System.Globalization;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 public class Render
 {
@@ -46,10 +48,6 @@ public class Render
     {
         return QualitySettings.anisotropicFiltering == AnisotropicFiltering.Enable || QualitySettings.anisotropicFiltering == AnisotropicFiltering.ForceEnable;
     }
-    public static int GetAntiAliasing()
-    {
-        return QualitySettings.antiAliasing;
-    }
     public static void SetFullscreen(FullScreenMode mode)
     {
         Screen.fullScreenMode = mode;
@@ -75,11 +73,82 @@ public class Render
     }
     public static void SetAnisotropicFiltering(bool enabled)
     {
-        QualitySettings.anisotropicFiltering = enabled ? AnisotropicFiltering.Enable : AnisotropicFiltering.Enable;
+        QualitySettings.anisotropicFiltering = enabled ? AnisotropicFiltering.Enable : AnisotropicFiltering.Disable;
     }
+    private static UniversalRenderPipelineAsset GetURPAsset()
+    {
+        // null if the project is using the built-in pipeline
+        return GraphicsSettings.currentRenderPipeline as UniversalRenderPipelineAsset;
+    }
+
+    /// <summary>
+    /// 0 = off, 1 = FXAA, 2+ = MSAA (2, 4, 8)
+    /// </summary>
+    public static int GetAntiAliasing()
+    {
+        // MSAA first, since it's the "higher" setting
+        int msaa = GetMSAA();
+        if (msaa > 1) return msaa;
+
+        if (GetAntiAliasingMode() == AntialiasingMode.FastApproximateAntialiasing) return 1;
+
+        return 0;
+    }
+
     public static void SetAntiAliasing(int amount)
     {
-        QualitySettings.antiAliasing = amount;
+        if (amount <= 0)
+        {
+            // everything off
+            SetAntiAliasingMode(AntialiasingMode.None);
+            SetMSAA(1);
+        }
+        else if (amount == 1)
+        {
+            // FXAA only
+            SetAntiAliasingMode(AntialiasingMode.FastApproximateAntialiasing);
+            SetMSAA(1);
+        }
+        else
+        {
+            // MSAA only
+            SetAntiAliasingMode(AntialiasingMode.None);
+            SetMSAA(amount);
+        }
+    }
+
+    private static int GetMSAA()
+    {
+        var urp = GetURPAsset();
+        if (urp != null) return urp.msaaSampleCount;
+
+        // legacy returns 0 for off, normalize to 1
+        return Mathf.Max(1, QualitySettings.antiAliasing);
+    }
+
+    private static void SetMSAA(int amount)
+    {
+        // URP only accepts 1, 2, 4 or 8
+        int samples = amount <= 1 ? 1 : Mathf.Clamp(Mathf.ClosestPowerOfTwo(amount), 2, 8);
+
+        var urp = GetURPAsset();
+        if (urp != null)
+            urp.msaaSampleCount = samples;
+        else
+            QualitySettings.antiAliasing = samples == 1 ? 0 : samples; // legacy fallback
+    }
+    public static void SetAntiAliasingMode(AntialiasingMode mode)
+    {
+        foreach (var cam in Camera.allCameras)
+        {
+            cam.GetUniversalAdditionalCameraData().antialiasing = mode;
+        }
+    }
+
+    public static AntialiasingMode GetAntiAliasingMode()
+    {
+        var cam = Camera.main;
+        return cam != null ? cam.GetUniversalAdditionalCameraData().antialiasing : AntialiasingMode.None;
     }
 }
 

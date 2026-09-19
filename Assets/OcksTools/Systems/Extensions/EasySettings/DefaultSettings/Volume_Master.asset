@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03758bcba1b9f914d8f56f883dc820ff, type: 3}
+  m_Name: Volume_Master
+  m_EditorClassIdentifier: Assembly-CSharp::SettingSliderSO
+  Name: Master
+  InspectorData:
+    Value: -69
+    DefaultValue: 0
+  Data:
+    Value: 0
+    DefaultValue: 0
+  Modifier: {fileID: 11400000, guid: 4eaafe74113c91e4c98a386d4b498bd6, type: 2}

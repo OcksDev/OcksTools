@@ -15,6 +15,7 @@
   - OXFile Add() methods updated to use Better Base Classes where possible
   - Added implcit conversion from HDRColor and FakeHDRColor into base Color
   - All scriptable objects have been moved out of the default "Scriptable Objects" folder
+  - Render moved from Misc to Systems
 ------------
 
 ------------
