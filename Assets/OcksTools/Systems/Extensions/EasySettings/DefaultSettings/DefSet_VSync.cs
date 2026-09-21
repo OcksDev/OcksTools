@@ -4,9 +4,8 @@ public class DefSet_VSync : SettingModifierSO<bool>
     {
         return Render.GetVSync();
     }
-    public override bool ModifySet(bool v)
+    public override void ApplyValue(bool v)
     {
         Render.SetVSync(v);
-        return base.ModifySet(v);
     }
 }

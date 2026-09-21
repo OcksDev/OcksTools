@@ -8,12 +8,11 @@ public class DefSet_ResX : SettingModifierSO<int>
         return base.GetDefault(v);
     }
 
-    public override int ModifySet(int v)
+    public override void ApplyValue(int v)
     {
         int sz = int.Parse((Setting as SettingSwitcherSO).Items[v]);
         var rsz = Render.GetWindowSize();
         rsz.x = sz;
         Render.SetWindowSize(rsz);
-        return base.ModifySet(v);
     }
 }

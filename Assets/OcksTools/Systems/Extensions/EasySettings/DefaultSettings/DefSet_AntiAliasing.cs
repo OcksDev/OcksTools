@@ -7,11 +7,10 @@ public class DefSet_AntiAliasing : SettingModifierSO<int>
         if (x == 8) return 4;
         return x;
     }
-    public override int ModifySet(int v)
+    public override void ApplyValue(int v)
     {
         if (v == 4) Render.SetAntiAliasing(8);
         else if (v == 3) Render.SetAntiAliasing(4);
         else Render.SetAntiAliasing(v);
-        return base.ModifySet(v);
     }
 }

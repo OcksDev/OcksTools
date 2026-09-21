@@ -7,12 +7,11 @@ public class DefSet_ResY : SettingModifierSO<int>
         if (i > -1) return i;
         return base.GetDefault(v);
     }
-    public override int ModifySet(int v)
+    public override void ApplyValue(int v)
     {
         int sz = int.Parse((Setting as SettingSwitcherSO).Items[v]);
         var rsz = Render.GetWindowSize();
         rsz.y = sz;
         Render.SetWindowSize(rsz);
-        return base.ModifySet(v);
     }
 }

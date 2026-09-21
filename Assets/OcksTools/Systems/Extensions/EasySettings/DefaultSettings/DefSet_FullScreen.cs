@@ -15,7 +15,7 @@ public class DefSet_FullScreen : SettingModifierSO<int>
         return base.GetDefault(v);
     }
 
-    public override int ModifySet(int v)
+    public override void ApplyValue(int v)
     {
         switch (v)
         {
@@ -24,6 +24,5 @@ public class DefSet_FullScreen : SettingModifierSO<int>
             case 2: Render.SetFullscreen(FullScreenMode.FullScreenWindow); break;
             case 3: Render.SetFullscreen(FullScreenMode.ExclusiveFullScreen); break;
         }
-        return base.ModifySet(v);
     }
 }

@@ -1178,18 +1178,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: SettingManager
       objectReference: {fileID: 0}
-    - target: {fileID: 8329696189594025436, guid: 122d178a7a2be144c99f610ed828bbe0, type: 3}
-      propertyPath: StoredData.List.Array.size
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 8329696189594025436, guid: 122d178a7a2be144c99f610ed828bbe0, type: 3}
-      propertyPath: 'StoredData.List.Array.data[5]'
-      value: 
-      objectReference: {fileID: 11400000, guid: e5992344e6f9bb0439872a73a913c3f6, type: 2}
-    - target: {fileID: 8329696189594025436, guid: 122d178a7a2be144c99f610ed828bbe0, type: 3}
-      propertyPath: 'StoredData.List.Array.data[6]'
-      value: 
-      objectReference: {fileID: 11400000, guid: 006d40120872f0247ae760ed44223b06, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

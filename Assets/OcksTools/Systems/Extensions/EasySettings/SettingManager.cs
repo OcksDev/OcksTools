@@ -54,6 +54,7 @@ public class SettingManager : SingleInstance<SettingManager>
             {
                 kvp.Value.LoadFromString(s);
             }
+            kvp.Value.ApplyModiferValue();
         }
     }
 }

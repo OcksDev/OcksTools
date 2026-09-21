@@ -4,9 +4,8 @@ public class DefSet_AnisotropicFiltering : SettingModifierSO<bool>
     {
         return Render.GetAnisotropicFiltering();
     }
-    public override bool ModifySet(bool v)
+    public override void ApplyValue(bool v)
     {
         Render.SetAnisotropicFiltering(v);
-        return base.ModifySet(v);
     }
 }
