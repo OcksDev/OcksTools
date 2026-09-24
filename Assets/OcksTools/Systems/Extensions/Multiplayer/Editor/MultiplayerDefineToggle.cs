@@ -11,8 +11,8 @@ public static class MultiplayerDefineToggle
     static MultiplayerDefineToggle()
     {
         var q = AppDomain.CurrentDomain.GetAssemblies();
-        bool hasNetcode = q.Any(a => a.GetName().Name.StartsWith("Unity.Netcode.Runtime");
-        bool hasServices = q.Any(a => a.GetName().Name.StartsWith("Unity.Services.Multiplayer");
+        bool hasNetcode = q.Any(a => a.GetName().Name.StartsWith("Unity.Netcode.Runtime"));
+        bool hasServices = q.Any(a => a.GetName().Name.StartsWith("Unity.Services.Multiplayer"));
         SetDefine(hasNetcode && hasServices);
     }
     private static void SetDefine(bool enabled)
