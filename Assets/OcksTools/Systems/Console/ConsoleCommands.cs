@@ -189,7 +189,6 @@ public class ConsoleCommands : MonoBehaviour
         var a = SpawnSystem.Spawn(new SpawnData("Circle")
             .Parent("Holder")
             .Data(new Dictionary<string, string>() { { "TestOB", "Circle" } })
-            .MultiplayerRelayShare()
             );
         if (r.com[2] == "p")
         {
