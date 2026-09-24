@@ -5,7 +5,6 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using WebSocketSharp;
 using static OXFileData;
 
 /*

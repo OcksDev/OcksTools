@@ -1,3 +1,4 @@
+#if OXTLS_MULTIPLAYER
 
 using Unity.Netcode.Components;
 
@@ -19,3 +20,4 @@ public class ClientNetworkTransform : NetworkTransform
         return false;
     }
 }
+#endif

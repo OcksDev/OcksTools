@@ -1,3 +1,4 @@
+#if OXTLS_MULTIPLAYER
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -30,3 +31,4 @@ public class OcksNetworkVarData
     public string Data;
     public List<OcksNetworkVar> OcksNetworkVars = new List<OcksNetworkVar>();
 }
+#endif

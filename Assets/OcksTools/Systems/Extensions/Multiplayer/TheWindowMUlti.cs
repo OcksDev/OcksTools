@@ -1,3 +1,4 @@
+#if OXTLS_MULTIPLAYER
 #if (UNITY_EDITOR)
 
 using UnityEditor;
@@ -46,4 +47,5 @@ public class MultiplayerWindow : EditorWindow
         }
     }
 }
+#endif
 #endif

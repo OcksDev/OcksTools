@@ -1,3 +1,4 @@
+#if OXTLS_MULTIPLAYER
 using System.Collections;
 using TMPro;
 using Unity.Netcode;
@@ -66,3 +67,4 @@ public class TestShitBall : MonoBehaviour
     }
 
 }
+#endif

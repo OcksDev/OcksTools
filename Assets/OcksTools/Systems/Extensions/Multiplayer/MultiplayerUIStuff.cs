@@ -1,3 +1,4 @@
+#if OXTLS_MULTIPLAYER
 using TMPro;
 using UnityEngine;
 
@@ -20,3 +21,4 @@ public class MultiplayerUIStuff : MonoBehaviour
     }
 
 }
+#endif

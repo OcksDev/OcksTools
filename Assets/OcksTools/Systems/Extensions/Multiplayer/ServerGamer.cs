@@ -1,3 +1,4 @@
+#if OXTLS_MULTIPLAYER
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -371,3 +372,4 @@ public struct OXNetworkRpcData : INetworkSerializable
     public static implicit operator OXNetworkRpcData(string ID) { return new OXNetworkRpcData(ID, "", false); }
     public static implicit operator string(OXNetworkRpcData nerd) { return nerd.ClientID.ToString(); }
 }
+#endif

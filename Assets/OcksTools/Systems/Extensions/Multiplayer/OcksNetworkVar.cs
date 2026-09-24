@@ -1,3 +1,4 @@
+#if OXTLS_MULTIPLAYER
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
@@ -96,3 +97,4 @@ public class OcksNetworkVar
     }
 
 }
+#endif

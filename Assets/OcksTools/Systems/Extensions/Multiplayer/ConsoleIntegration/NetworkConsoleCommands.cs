@@ -1,3 +1,4 @@
+#if OXTLS_MULTIPLAYER
 using System.Collections;
 using UnityEngine;
 
@@ -104,3 +105,4 @@ public class NetworkConsoleCommands : MonoBehaviour
         Server.Send("flush req", true).Message("Console", "Message 6");
     }
 }
+#endif

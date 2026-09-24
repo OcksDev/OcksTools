@@ -1,3 +1,4 @@
+#if OXTLS_MULTIPLAYER
 using UnityEngine;
 
 public class PositionInterpolator_Transform : MonoBehaviour
@@ -15,3 +16,4 @@ public class PositionInterpolator_Transform : MonoBehaviour
         transform.position = pos;
     }
 }
+#endif

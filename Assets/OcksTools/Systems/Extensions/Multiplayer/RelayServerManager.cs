@@ -1,3 +1,4 @@
+#if OXTLS_MULTIPLAYER
 using NaughtyAttributes;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -268,3 +269,4 @@ public class RelayServerManager : SingleInstance<RelayServerManager>
         return RandomFunctions.CompareTwoVersions(FileSystem.GameVer, theirversion) == RandomFunctions.CompareState.Equal;
     }
 }
+#endif

@@ -1,3 +1,4 @@
+#if OXTLS_MULTIPLAYER
 using System.Collections;
 using Unity.Collections;
 using Unity.Netcode;
@@ -38,3 +39,4 @@ public class IDSync_Client : NetworkBehaviour
         Server.Send().IDSync(Server.Instance.ClientID, OwnerClientId);
     }
 }
+#endif

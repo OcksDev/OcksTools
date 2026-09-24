@@ -1,3 +1,4 @@
+#if OXTLS_MULTIPLAYER
 using Unity.Netcode;
 using UnityEngine;
 
@@ -38,3 +39,4 @@ public class PlayerControllerMulti : NetworkBehaviour
         }
     }
 }
+#endif
