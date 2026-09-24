@@ -20,7 +20,7 @@
 - Big Ass Number Improvements
   - Added special values for Infinity, -Infinity, NaN, and 0
   - Added negation operation
-  - NumToRead with numbers larger than 9.99E999 is now nicer (the next value up would be 1.00E1.00K instead of 1.00E1000)
+  - NumToRead with numbers larger than 9.99E999 is now nicer
   - Removed small number optimization toggle (as it is now baked into default behavior)
 - Misc
   - OXFile Add() methods updated to use Better Base Classes where possible
