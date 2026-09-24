@@ -13,6 +13,8 @@
     - Keybind Control (default values include all default keybinds in InputManager)
   - Overhauled setting creation, now extendably designed to work for any project
   - Actually usable now lol
+- Multiplayer Improvements
+  - The assets no longer die in the editor if you dont have the packages!
 - Render Improvements
   - Fixed Get/Set Anti Aliasing
   - Added Get/Set for Renderscale.

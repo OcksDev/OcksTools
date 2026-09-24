@@ -97,7 +97,7 @@ public struct BigAssNumber : IComparable<BigAssNumber>
         if (double.IsNaN(num) || double.IsInfinity(num))
         {
             Mantissa = 0;
-            Exponent = num != num ? NaNExp : (num > 0 ? PosInfExp : NegInfExp);
+            Exponent = double.IsNaN(num) ? NaNExp : (num > 0 ? PosInfExp : NegInfExp);
             return this;
         }
         Exponent = (long)Math.Floor(Math.Log10(Math.Abs(num)));
@@ -424,7 +424,7 @@ public struct BigAssNumber : IComparable<BigAssNumber>
     /// <summary>Maps a double that is 0, +-Inf or NaN (or any double, by sign) to the special representation.</summary>
     private static BigAssNumber FromSpecialDouble(double d)
     {
-        if (d != d) return Special(NaNExp);
+        if (double.IsNaN(d)) return Special(NaNExp);
         if (d == 0) return default;
         return Special(d > 0 ? PosInfExp : NegInfExp);
     }
@@ -533,7 +533,7 @@ public static class BigAssNumberStuff
     private static BigAssNumber PowOutOfRange(BigAssNumber d, double amnt, double ex)
     {
         double m = Math.Pow(d.Mantissa, amnt); // gives the sign / NaN, and is the whole answer when Exponent == 0 and amnt is infinite
-        if (m != m) return BigAssNumber.NaN;
+        if (double.IsNaN(m)) return BigAssNumber.NaN;
         bool neg = m < 0 || (m == 0 && 1.0 / m < 0);
         if (ex >= TwoPow63) return BigAssNumber.FromOverflow(true, neg);
         if (ex <= -TwoPow63) return BigAssNumber.FromOverflow(false, neg);
