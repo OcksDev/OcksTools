@@ -47,6 +47,7 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
     {
         float x = 0f;
         float f = 1 / time;
+        method(x);
         while (x < 1)
         {
             yield return Get();
@@ -58,6 +59,7 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
     {
         float x = 0f;
         float f = 1 / time;
+        method(x);
         while (x < 1)
         {
             yield return Get();
@@ -76,6 +78,7 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
     {
         float x = 0f;
         float f = 1 / time;
+        method(x);
         while (true)
         {
             yield return Get();
@@ -87,6 +90,7 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
     {
         float x = 0f;
         float f = 1 / time;
+        method(x);
         while (true)
         {
             yield return Get();
@@ -106,6 +110,7 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
     {
         float x = 0f;
         float f = 1 / time;
+        method(x);
         while (true)
         {
             yield return Get();
@@ -117,6 +122,7 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
     {
         float x = 0f;
         float f = 1 / time;
+        method(x);
         while (true)
         {
             yield return Get();
@@ -137,6 +143,7 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
         float x = 0f;
         float f = 1 / time;
         int i = 0;
+        method(x);
         while (i < bounces)
         {
             while (x < 1)
@@ -164,6 +171,7 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
         float x = 0f;
         float f = 1 / time;
         int i = 0;
+        method(x);
         while (i < bounces)
         {
             while (x < 1)
@@ -200,6 +208,7 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
     {
         float x = 0f;
         float f = 1 / time;
+        method(x);
         while (true)
         {
             while (x < 1)
@@ -220,6 +229,7 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
     {
         float x = 0f;
         float f = 1 / time;
+        method(x);
         while (true)
         {
             while (x < 1)

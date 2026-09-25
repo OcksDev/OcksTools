@@ -15,6 +15,10 @@
   - Actually usable now lol
 - Multiplayer Improvements
   - The assets no longer die in the editor if you dont have the packages!
+  - Added events that make handling multiplayer connection/disconnection cleaner
+    - On Self Connect/Disconnect/FailedConnection
+    - On Other Client Connect/Disconnect
+    - On start as host
 - Render Improvements
   - Fixed Get/Set Anti Aliasing
   - Added Get/Set for Renderscale.
@@ -29,6 +33,7 @@
   - Reworked GlobalAttributeCollector to be much easier to create more attributes for
     - You still have to edit the file, which is annoying, but its way less effort to do so
   - OXFile Add() methods updated to use Better Base Classes where possible
+  - OXLerp changed to now call the input function with a value of 0 before it waits
   - Added implcit conversion from HDRColor and FakeHDRColor into base Color
   - All scriptable objects have been moved out of the default "Scriptable Objects" folder
 ------------

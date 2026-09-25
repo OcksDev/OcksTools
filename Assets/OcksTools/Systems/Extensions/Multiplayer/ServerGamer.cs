@@ -39,6 +39,13 @@ public static class Server
     public static OXEvent<OXNetworkRpcData, FixedString64Bytes, string> MessageEvent = new();
     public static OXEvent<FixedString64Bytes> ClientIDSynced = new();
 
+    public static OXEvent Connected = new(); // local client connects to match (host also triggers)
+    public static OXEvent Disconnected = new(); // local client disconnects (must be already connected)
+    public static OXEvent<string> ConnectionFailed = new(); // Failed to connect, passes a fail reason string
+    public static OXEvent HostStarted = new(); // fires when local starts as host
+    public static OXEvent<FixedString64Bytes> ClientConnected = new(); // when some other client connects, passes their string ID
+    public static OXEvent<FixedString64Bytes> ClientDisconnected = new(); // when some other client disconnects, passes their string ID
+
     public static void ObjectIDFunction(IDSync_Object o, FixedString64Bytes ID)
     {
         SpawnSystem.Spawn(new SpawnData("").ID(ID.ToString()).DontSpawn(o.gameObject));
@@ -67,18 +74,17 @@ public static class Server
 
 public class ServerGamer : NetworkBehaviour
 {
-    public override void OnDestroy()
-    {
-        Server.AllClients.Clear();
-        Server.BADAllClients.Clear();
-        base.OnDestroy();
-    }
     public FixedString64Bytes ClientID = "";
     // public NetworkVariable<int> PlayerNum = new NetworkVariable<int>(100, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     // FixedString128Bytes
 
     public Dictionary<FixedString64Bytes, Queue<Action>> MessageBacklog = new Dictionary<FixedString64Bytes, Queue<Action>>();
     public List<FixedString64Bytes> LockedBacklogs = new List<FixedString64Bytes>();
+
+    // Tracks whether *this* local client has ever reached a fully-connected state during
+    // the current connection attempt, so we can tell "failed to join" apart from "exited
+    // after being connected" when OnClientDisconnectCallback fires for us.
+    private bool _hasConnectedToMatch = false;
 
     private void Awake()
     {
@@ -88,8 +94,14 @@ public class ServerGamer : NetworkBehaviour
         SpawnSystem.SpawnShareMethod = Server.handjoib;
         SpawnSystem.SpawnNetworkMethod = Server.SpawnObect;
 
+        if (NetworkManager.Singleton != null)
+        {
+            NetworkManager.Singleton.OnClientConnectedCallback += HandleClientConnected;
+            NetworkManager.Singleton.OnClientDisconnectCallback += HandleClientDisconnected;
+            NetworkManager.Singleton.OnServerStarted += HandleServerStarted;
+            NetworkManager.Singleton.OnTransportFailure += HandleTransportFailure;
+        }
     }
-
     public void LockBacklog(FixedString64Bytes x)
     {
         if (x.ToString() == "") return; // "" can not be locked
@@ -347,6 +359,65 @@ public class ServerGamer : NetworkBehaviour
         {
             ONVManager.OcksVars[NetID].Add(Name, new OcksNetworkVarData());
         }
+    }
+
+
+    private void HandleClientConnected(ulong clientId)
+    {
+        if (NetworkManager.Singleton.LocalClientId == clientId)
+        {
+            // That's us - we've successfully joined the match.
+            _hasConnectedToMatch = true;
+            Server.Connected.Invoke();
+        }
+        else if (Server.BADAllClients.TryGetValue(clientId, out var sync))
+        {
+            Server.ClientConnected.Invoke(sync.MyID);
+        }
+    }
+
+    private void HandleClientDisconnected(ulong clientId)
+    {
+        if (NetworkManager.Singleton.LocalClientId == clientId)
+        {
+            if (_hasConnectedToMatch)
+            {
+                _hasConnectedToMatch = false;
+                Server.Disconnected.Invoke();
+            }
+            else
+            {
+                var reason = NetworkManager.Singleton.DisconnectReason;
+                Server.ConnectionFailed.Invoke(string.IsNullOrEmpty(reason) ? "Failed to join match" : reason);
+            }
+        }
+        else if (Server.BADAllClients.TryGetValue(clientId, out var sync))
+        {
+            Server.ClientDisconnected.Invoke(sync.MyID);
+        }
+    }
+
+    private void HandleServerStarted()
+    {
+        Server.HostStarted.Invoke();
+    }
+
+    private void HandleTransportFailure()
+    {
+        Server.ConnectionFailed.Invoke("Transport failure while attempting to join match");
+    }
+    public override void OnDestroy()
+    {
+        if (NetworkManager.Singleton != null)
+        {
+            NetworkManager.Singleton.OnClientConnectedCallback -= HandleClientConnected;
+            NetworkManager.Singleton.OnClientDisconnectCallback -= HandleClientDisconnected;
+            NetworkManager.Singleton.OnServerStarted -= HandleServerStarted;
+            NetworkManager.Singleton.OnTransportFailure -= HandleTransportFailure;
+        }
+        Server.AllClients.Clear();
+        Server.BADAllClients.Clear();
+        base.OnDestroy();
     }
 
 }
