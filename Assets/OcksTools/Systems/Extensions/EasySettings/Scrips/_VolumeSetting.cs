@@ -2,17 +2,17 @@ using UnityEngine;
 
 public class _VolumeSetting : SettingModifierSO<float>
 {
-    public override float GetDefaultLate(float v)
+    public override float GetDefaultLate(SettingSO<float> setting, float v)
     {
-        return SoundSystem.Instance.GetChannelVolume(Setting.Name);
+        return SoundSystem.Instance.GetChannelVolume(setting.Name);
     }
 
-    public override float ModifySet(float v)
+    public override float ModifySet(SettingSO<float> setting, float v)
     {
-        SoundSystem.Instance.SetChannelVolume(Setting.Name, v);
-        return base.ModifySet(v);
+        SoundSystem.Instance.SetChannelVolume(setting.Name, v);
+        return base.ModifySet(setting, v);
     }
-    public override string ModifyDisplay(float v)
+    public override string ModifyDisplay(SettingSO<float> setting, float v)
     {
         return Mathf.RoundToInt(v * 100).ToString();
     }

@@ -13,16 +13,27 @@ public abstract class SettingSO<T> : SettingData
     public override void SaveCurrentToDefault() => Data.DefaultValue = Data.Value;
     public virtual void SetValue(T v)
     {
-        if (Modifier != null) v = Modifier.ModifySet(v);
+        if (Modifier != null) v = Modifier.ModifySet(this, v);
         Data.Value = v;
     }
     public virtual T GetValue()
     {
-        if (Modifier != null) return Modifier.ModifyGet(Data.Value);
+        if (Modifier != null) return Modifier.ModifyGet(this, Data.Value);
         return Data.Value;
     }
-    public override Q GetValue<Q>() => GetValue() is Q q ? q : throw new System.Exception("wrong type bro");
-    public override void SetValue<Q>(Q v) => SetValue(v);
+    public override Q GetValue<Q>()
+    {
+        T value = GetValue();
+        if (value is Q q) return q;
+        throw new System.InvalidCastException(
+            $"Setting '{Name}' stores {typeof(T).Name}, but {typeof(Q).Name} was requested.");
+    }
+    public override void SetValue<Q>(Q v)
+    {
+        if (v is T t) SetValue(t);
+        else throw new System.InvalidCastException(
+            $"Setting '{Name}' stores {typeof(T).Name}, but a {typeof(Q).Name} was provided.");
+    }
     public override void DupeData()
     {
         Data = new()
@@ -32,20 +43,18 @@ public abstract class SettingSO<T> : SettingData
         };
         if (Modifier != null)
         {
-            Modifier.Setting = this;
-            T d = Modifier.GetDefault(Data.Value);
+            T d = Modifier.GetDefault(this, Data.Value);
             Data.Value = d;
             Data.DefaultValue = d;
         }
     }
-    public override string GetDisplayMod() => Modifier != null ? Modifier.ModifyDisplay(GetValue()) : null;
+    public override string GetDisplayMod() => Modifier != null ? Modifier.ModifyDisplay(this, GetValue()) : null;
     public override bool GetShouldSkip() => Modifier != null ? Modifier.DisableSaving : false;
     public override void LateDataFind()
     {
         if (HasLateDefault)
         {
-            Modifier.Setting = this;
-            T d = Modifier.GetDefaultLate(Data.Value);
+            T d = Modifier.GetDefaultLate(this, Data.Value);
             Data.Value = d;
             Data.DefaultValue = d;
         }
@@ -54,8 +63,7 @@ public abstract class SettingSO<T> : SettingData
     public override void ApplyModiferValue()
     {
         if (Modifier == null) return;
-        Modifier.Setting = this;
-        Modifier.ApplyValue(Data.Value);
+        Modifier.ApplyValue(this, Data.Value);
     }
 }
 
@@ -96,17 +104,16 @@ public class CoolSettingData<T>
 
 public abstract class SettingModifierSO<T> : ScriptableObject
 {
-    public SettingSO<T> Setting;
-    public virtual T GetDefault(T v) => v;
-    public virtual T GetDefaultLate(T v) => v;
-    public virtual T ModifyGet(T v) => v;
-    public virtual T ModifySet(T v)
+    public virtual T GetDefault(SettingSO<T> setting, T v) => v;
+    public virtual T GetDefaultLate(SettingSO<T> setting, T v) => v;
+    public virtual T ModifyGet(SettingSO<T> setting, T v) => v;
+    public virtual T ModifySet(SettingSO<T> setting, T v)
     {
-        ApplyValue(v);
+        ApplyValue(setting, v);
         return v;
     }
-    public virtual void ApplyValue(T v) { }
-    public virtual string ModifyDisplay(T v) => null;
+    public virtual void ApplyValue(SettingSO<T> setting, T v) { }
+    public virtual string ModifyDisplay(SettingSO<T> setting, T v) => null;
     public virtual bool DisableSaving => false;
     public virtual bool HasLateDefault => false;
 }

@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class DefSet_FullScreen : SettingModifierSO<int>
 {
-    public override int GetDefault(int v)
+    public override int GetDefault(SettingSO<int> setting, int v)
     {
         var a = Render.GetFullscreen();
         switch (a)
@@ -12,10 +12,10 @@ public class DefSet_FullScreen : SettingModifierSO<int>
             case FullScreenMode.FullScreenWindow: return 2;
             case FullScreenMode.ExclusiveFullScreen: return 3;
         }
-        return base.GetDefault(v);
+        return base.GetDefault(setting, v);
     }
 
-    public override void ApplyValue(int v)
+    public override void ApplyValue(SettingSO<int> setting, int v)
     {
         switch (v)
         {
