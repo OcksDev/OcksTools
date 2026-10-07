@@ -523,6 +523,8 @@ public class OXFileData
         set => DataOXFiles[index] = value;
     }
 
+    public bool TryGetValue(string name, out OXFileData dd) => DataOXFiles.TryGetValue(name, out dd);
+    public bool Contains(string name) => DataOXFiles.ContainsKey(name);
 
     public List<byte> ToByte(FileData fd)
     {

@@ -50,8 +50,9 @@ public static class Converter
                 case "Quaternion":
                     return (A)(object)data.StringToQuaternion();
                 case "Color":
-                case "Color32":
                     return (A)(object)data.StringToColor();
+                case "Color32":
+                    return (A)(object)data.StringToColor32();
                 default:
                     throw new Exception($"No conversion created for type \"{typeof(A).Name}\"");
             }
@@ -434,53 +435,53 @@ public static class Converter
         return arr;
     }
 
-
-
-    public static string ColorToString(this Color cc)
+    public static string ColorToString(this Color c)
+    {
+        return string.Join(",",
+            c.r.ToString("R", CultureInfo.InvariantCulture),
+            c.g.ToString("R", CultureInfo.InvariantCulture),
+            c.b.ToString("R", CultureInfo.InvariantCulture),
+            c.a.ToString("R", CultureInfo.InvariantCulture));
+    }
+    public static string Color32ToString(this Color32 cc) // lol
     {
         return ColorUtility.ToHtmlStringRGB(cc);
     }
 
-    public static string ColorToString(this Color32 cc) // lol
+    private static Color32 ParseHex(string hex)
     {
-        return ColorUtility.ToHtmlStringRGB(cc);
+        hex = hex.Replace("0x", "").Replace("#", "");
+        byte r = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+        byte g = byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
+        byte b = byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
+        byte a = hex.Length == 8
+            ? byte.Parse(hex.Substring(6, 2), System.Globalization.NumberStyles.HexNumber)
+            : (byte)255;
+        return new Color32(r, g, b, a);
     }
 
-    public static Color32 StringToColor(this string hex, string fallback = "FFFFFF")
+    public static Color32 StringToColor32(this string hex, string fallback = "FFFFFF")
     {
-        //color inputs should be in hex format
+        try { return ParseHex(hex); }
+        catch { return ParseHex(fallback); }
+    }
+    public static Color StringToColor(this string str, Color? fallback = null)
+    {
         try
         {
-            hex = hex.Replace("0x", "");//in case the string is formatted 0xFFFFFF
-            hex = hex.Replace("#", "");//in case the string is formatted #FFFFFF
-            byte a = 255;//assume fully visible unless specified in hex
-            byte r = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
-            byte g = byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
-            byte b = byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
-            //Only use alpha if the string has enough characters
-            if (hex.Length == 8)
-            {
-                a = byte.Parse(hex.Substring(6, 2), System.Globalization.NumberStyles.HexNumber);
-            }
-            return new Color32(r, g, b, a);
+            string[] p = str.Split(',');
+            return new Color(
+                float.Parse(p[0], CultureInfo.InvariantCulture),
+                float.Parse(p[1], CultureInfo.InvariantCulture),
+                float.Parse(p[2], CultureInfo.InvariantCulture),
+                p.Length > 3 ? float.Parse(p[3], CultureInfo.InvariantCulture) : 1f);
         }
         catch
         {
-            hex = fallback;
-            hex = hex.Replace("0x", "");//in case the string is formatted 0xFFFFFF
-            hex = hex.Replace("#", "");//in case the string is formatted #FFFFFF
-            byte a = 255;//assume fully visible unless specified in hex
-            byte r = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
-            byte g = byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
-            byte b = byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
-            //Only use alpha if the string has enough characters
-            if (hex.Length == 8)
-            {
-                a = byte.Parse(hex.Substring(6, 2), System.Globalization.NumberStyles.HexNumber);
-            }
-            return new Color32(r, g, b, a);
+            return fallback ?? Color.white;
         }
     }
+
     public static Sprite Texture2DToSprite(this Texture2D tex)
     {
         return Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), Mathf.Max(tex.width, tex.height));

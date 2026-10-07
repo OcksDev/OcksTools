@@ -38,22 +38,21 @@ public class SettingManager : SingleInstance<SettingManager>
 
     public void SaveAll(SaveProfile dict)
     {
+        dict = SaveSystem.GlobalProfile();
         foreach (var kvp in StoredData)
         {
             if (kvp.Value.GetShouldSkip()) continue;
-            dict.SetString(kvp.Key, kvp.Value.SaveToString());
+            kvp.Value.SaveToProfile(dict, kvp.Key);
         }
     }
     public void LoadAll(SaveProfile dict)
     {
+        dict = SaveSystem.GlobalProfile();
         foreach (var kvp in StoredData)
         {
             if (kvp.Value.GetShouldSkip()) continue;
-            string s = dict.GetString(kvp.Key, "-=-");
-            if (s != "-=-")
-            {
-                kvp.Value.LoadFromString(s);
-            }
+            // Each setting falls back to its current value if the key is missing.
+            kvp.Value.LoadFromProfile(dict, kvp.Key);
             kvp.Value.ApplyModiferValue();
         }
     }

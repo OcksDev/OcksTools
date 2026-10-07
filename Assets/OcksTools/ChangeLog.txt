@@ -13,6 +13,7 @@
     - Keybind Control (default values include all default keybinds in InputManager)
   - Overhauled setting creation, now extendably designed to work for any project
   - Actually usable now lol
+  - Now saves settings to GlobalData instead of to profile data
 - Multiplayer Improvements
   - The assets no longer die in the editor if you dont have the packages!
   - Added events that make handling multiplayer connection/disconnection cleaner
@@ -31,8 +32,13 @@
 - OXFile Improvements
   - Add() methods updated to use Better Base Classes where possible
   - Slopcoded some size optimizations for values representable in less bytes
+- Save System Improvements
+  - Added Get/Set functionality for the following types:
+    - Int, Long, Double, Bool, Vector2, Vector2Int, Vector3, Vector3Int, Quaterion, and Color
+  - InputManager and SoundSystem both now save to GlobalData
 - Misc
   - Finally fixed the warnings from GlobalAttributeCollector about creating monobehaviors
+  - Converter now distinguishes between Color and Color32
   - Reworked GlobalAttributeCollector to be much easier to create more attributes for
     - You still have to edit the file, which is annoying, but its way less effort to do so
   - OXLerp changed to now call the input function with a value of 0 before it waits

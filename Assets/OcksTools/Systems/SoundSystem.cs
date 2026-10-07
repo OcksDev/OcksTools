@@ -102,11 +102,13 @@ public class SoundSystem : SingleInstance<SoundSystem>
     }
     public void SaveVolumes(SaveProfile dict)
     {
+        dict = SaveSystem.GlobalProfile();
         dict.SetDict("Volumes", Volumes.ABToString());
     }
 
     public void LoadVolumes(SaveProfile dict)
     {
+        dict = SaveSystem.GlobalProfile();
         Volumes = dict.GetDict("Volumes", new()).StringToAB<string, float>();
     }
 

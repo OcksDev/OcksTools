@@ -8,9 +8,10 @@ public class SettingKeybindSO : SettingSO<KeyCode>
 {
     [HideInInspector]
     public bool CurrentlySelecting = false;
-    public override void LoadFromString(string s) => Data.Value = Enum.Parse<KeyCode>(s);
 
-    public override string SaveToString() => Data.Value.ToString();
+    public override void LoadFromProfile(SaveProfile dict, string key) => Data.Value = Enum.Parse<KeyCode>(dict.GetString(key, Data.Value.ToString()));
+
+    public override void SaveToProfile(SaveProfile dict, string key) => dict.SetString(key, Data.Value.ToString());
     public override void ResetToDefault()
     {
         base.ResetToDefault();

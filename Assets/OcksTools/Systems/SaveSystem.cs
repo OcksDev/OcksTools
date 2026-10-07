@@ -43,7 +43,7 @@ public class SaveSystem : SingleInstance<SaveSystem>
         GetDataFromFile(GlobalProfile());
         GetDataFromFile(prof);
 
-        dic = prof.GetDict("keybinds", new Dictionary<string, string>());
+        dic = GlobalProfile().GetDict("keybinds", new Dictionary<string, string>());
         List<KeyCode> shungite = new List<KeyCode>();
         if (dic.Count > 0)
         {
@@ -81,7 +81,7 @@ public class SaveSystem : SingleInstance<SaveSystem>
             }
             dic.Add(a.Key, Converter.ListToString(list));
         }
-        prof.SetDict("keybinds", dic);
+        GlobalProfile().SetDict("keybinds", dic);
         //PlayerPrefs.SetInt("UnitySelectMonitor", index); // sets the monitor that unity uses
 
 
@@ -437,4 +437,508 @@ public class SaveProfile
         return OXFile;
     }
 
+
+    public void SetInt(string key, int data)
+    {
+        switch (SaveMethod)
+        {
+            case SaveMethod.OXFile:
+                GetOX().Data.Add(key, data);
+                break;
+            case SaveMethod.TXTFile:
+                SavedData.AddOrUpdate(key, data.ToString());
+                break;
+            case SaveMethod.PlayerPrefs:
+                if (IsGlobal)
+                {
+                    PlayerPrefs.SetString($"_Global_{key}", data.ToString());
+                }
+                else
+                {
+                    PlayerPrefs.SetString($"={Name}_{key}", data.ToString());
+                }
+                break;
+        }
+    }
+    public int GetInt(string key, int def_data)
+    {
+        switch (SaveMethod)
+        {
+            case SaveMethod.OXFile:
+                return GetOX().Data.TryGetValue(key, out OXFileData d) ? d.DataInt : def_data;
+            case SaveMethod.TXTFile:
+                return SavedData.TryGetValue(key, out string d2) ? int.Parse(d2) : def_data;
+            case SaveMethod.PlayerPrefs:
+                string a = "";
+                if (IsGlobal)
+                {
+                    a = PlayerPrefs.GetString($"_Global_{key}", "!!!");
+                }
+                else
+                {
+                    a = PlayerPrefs.GetString($"={Name}_{key}", "!!!");
+                }
+                if (a == "!!!") return def_data;
+                return int.Parse(a);
+        }
+        return default; // this line never runs lol
+    }
+    public void SetLong(string key, long data)
+    {
+        switch (SaveMethod)
+        {
+            case SaveMethod.OXFile:
+                GetOX().Data.Add(key, data);
+                break;
+            case SaveMethod.TXTFile:
+                SavedData.AddOrUpdate(key, data.ToString());
+                break;
+            case SaveMethod.PlayerPrefs:
+                if (IsGlobal)
+                {
+                    PlayerPrefs.SetString($"_Global_{key}", data.ToString());
+                }
+                else
+                {
+                    PlayerPrefs.SetString($"={Name}_{key}", data.ToString());
+                }
+                break;
+        }
+    }
+
+    public long GetLong(string key, long def_data)
+    {
+        switch (SaveMethod)
+        {
+            case SaveMethod.OXFile:
+                return GetOX().Data.TryGetValue(key, out OXFileData d) ? d.DataLong : def_data;
+            case SaveMethod.TXTFile:
+                return SavedData.TryGetValue(key, out string d2) ? long.Parse(d2) : def_data;
+            case SaveMethod.PlayerPrefs:
+                string a = "";
+                if (IsGlobal)
+                {
+                    a = PlayerPrefs.GetString($"_Global_{key}", "!!!");
+                }
+                else
+                {
+                    a = PlayerPrefs.GetString($"={Name}_{key}", "!!!");
+                }
+                if (a == "!!!") return def_data;
+                return long.Parse(a);
+        }
+        return default; // this line never runs lol
+    }
+    public void SetBool(string key, bool data)
+    {
+        switch (SaveMethod)
+        {
+            case SaveMethod.OXFile:
+                GetOX().Data.Add(key, data);
+                break;
+            case SaveMethod.TXTFile:
+                SavedData.AddOrUpdate(key, data.ToString());
+                break;
+            case SaveMethod.PlayerPrefs:
+                if (IsGlobal)
+                {
+                    PlayerPrefs.SetString($"_Global_{key}", data.ToString());
+                }
+                else
+                {
+                    PlayerPrefs.SetString($"={Name}_{key}", data.ToString());
+                }
+                break;
+        }
+    }
+
+    public bool GetBool(string key, bool def_data)
+    {
+        switch (SaveMethod)
+        {
+            case SaveMethod.OXFile:
+                return GetOX().Data.TryGetValue(key, out OXFileData d) ? d.DataBool : def_data;
+            case SaveMethod.TXTFile:
+                return SavedData.TryGetValue(key, out string d2) ? bool.Parse(d2) : def_data;
+            case SaveMethod.PlayerPrefs:
+                string a = "";
+                if (IsGlobal)
+                {
+                    a = PlayerPrefs.GetString($"_Global_{key}", "!!!");
+                }
+                else
+                {
+                    a = PlayerPrefs.GetString($"={Name}_{key}", "!!!");
+                }
+                if (a == "!!!") return def_data;
+                return bool.Parse(a);
+        }
+        return default; // this line never runs lol
+    }
+
+    public void SetFloat(string key, float data)
+    {
+        switch (SaveMethod)
+        {
+            case SaveMethod.OXFile:
+                GetOX().Data.Add(key, data);
+                break;
+            case SaveMethod.TXTFile:
+                SavedData.AddOrUpdate(key, data.ToString());
+                break;
+            case SaveMethod.PlayerPrefs:
+                if (IsGlobal)
+                {
+                    PlayerPrefs.SetString($"_Global_{key}", data.ToString());
+                }
+                else
+                {
+                    PlayerPrefs.SetString($"={Name}_{key}", data.ToString());
+                }
+                break;
+        }
+    }
+    public float GetFloat(string key, float def_data)
+    {
+        switch (SaveMethod)
+        {
+            case SaveMethod.OXFile:
+                return GetOX().Data.TryGetValue(key, out OXFileData d) ? d.DataFloat : def_data;
+            case SaveMethod.TXTFile:
+                return SavedData.TryGetValue(key, out string d2) ? float.Parse(d2) : def_data;
+            case SaveMethod.PlayerPrefs:
+                string a = "";
+                if (IsGlobal)
+                {
+                    a = PlayerPrefs.GetString($"_Global_{key}", "!!!");
+                }
+                else
+                {
+                    a = PlayerPrefs.GetString($"={Name}_{key}", "!!!");
+                }
+                if (a == "!!!") return def_data;
+                return float.Parse(a);
+        }
+        return default; // this line never runs lol
+    }
+    public void SetDouble(string key, double data)
+    {
+        switch (SaveMethod)
+        {
+            case SaveMethod.OXFile:
+                GetOX().Data.Add(key, data);
+                break;
+            case SaveMethod.TXTFile:
+                SavedData.AddOrUpdate(key, data.ToString());
+                break;
+            case SaveMethod.PlayerPrefs:
+                if (IsGlobal)
+                {
+                    PlayerPrefs.SetString($"_Global_{key}", data.ToString());
+                }
+                else
+                {
+                    PlayerPrefs.SetString($"={Name}_{key}", data.ToString());
+                }
+                break;
+        }
+    }
+    public double GetDouble(string key, double def_data)
+    {
+        switch (SaveMethod)
+        {
+            case SaveMethod.OXFile:
+                return GetOX().Data.TryGetValue(key, out OXFileData d) ? d.DataDouble : def_data;
+            case SaveMethod.TXTFile:
+                return SavedData.TryGetValue(key, out string d2) ? double.Parse(d2) : def_data;
+            case SaveMethod.PlayerPrefs:
+                string a = "";
+                if (IsGlobal)
+                {
+                    a = PlayerPrefs.GetString($"_Global_{key}", "!!!");
+                }
+                else
+                {
+                    a = PlayerPrefs.GetString($"={Name}_{key}", "!!!");
+                }
+                if (a == "!!!") return def_data;
+                return double.Parse(a);
+        }
+        return default; // this line never runs lol
+    }
+    public void SetVector2(string key, Vector2 data)
+    {
+        switch (SaveMethod)
+        {
+            case SaveMethod.OXFile:
+                GetOX().Data.Add(key, data);
+                break;
+            case SaveMethod.TXTFile:
+                SavedData.AddOrUpdate(key, data.ToString());
+                break;
+            case SaveMethod.PlayerPrefs:
+                if (IsGlobal)
+                {
+                    PlayerPrefs.SetString($"_Global_{key}", data.ToString());
+                }
+                else
+                {
+                    PlayerPrefs.SetString($"={Name}_{key}", data.ToString());
+                }
+                break;
+        }
+    }
+    public Vector2 GetVector2(string key, Vector2 def_data)
+    {
+        switch (SaveMethod)
+        {
+            case SaveMethod.OXFile:
+                return GetOX().Data.TryGetValue(key, out OXFileData d) ? d.DataVector2 : def_data;
+            case SaveMethod.TXTFile:
+                return SavedData.TryGetValue(key, out string d2) ? d2.StringToVector2() : def_data;
+            case SaveMethod.PlayerPrefs:
+                string a = "";
+                if (IsGlobal)
+                {
+                    a = PlayerPrefs.GetString($"_Global_{key}", "!!!");
+                }
+                else
+                {
+                    a = PlayerPrefs.GetString($"={Name}_{key}", "!!!");
+                }
+                if (a == "!!!") return def_data;
+                return a.StringToVector2();
+        }
+        return default; // this line never runs lol
+    }
+    public void SetVector3(string key, Vector3 data)
+    {
+        switch (SaveMethod)
+        {
+            case SaveMethod.OXFile:
+                GetOX().Data.Add(key, data);
+                break;
+            case SaveMethod.TXTFile:
+                SavedData.AddOrUpdate(key, data.ToString());
+                break;
+            case SaveMethod.PlayerPrefs:
+                if (IsGlobal)
+                {
+                    PlayerPrefs.SetString($"_Global_{key}", data.ToString());
+                }
+                else
+                {
+                    PlayerPrefs.SetString($"={Name}_{key}", data.ToString());
+                }
+                break;
+        }
+    }
+
+    public Vector3 GetVector3(string key, Vector3 def_data)
+    {
+        switch (SaveMethod)
+        {
+            case SaveMethod.OXFile:
+                return GetOX().Data.TryGetValue(key, out OXFileData d) ? d.DataVector3 : def_data;
+            case SaveMethod.TXTFile:
+                return SavedData.TryGetValue(key, out string d2) ? d2.StringToVector3() : def_data;
+            case SaveMethod.PlayerPrefs:
+                string a = "";
+                if (IsGlobal)
+                {
+                    a = PlayerPrefs.GetString($"_Global_{key}", "!!!");
+                }
+                else
+                {
+                    a = PlayerPrefs.GetString($"={Name}_{key}", "!!!");
+                }
+                if (a == "!!!") return def_data;
+                return a.StringToVector3();
+        }
+        return default; // this line never runs lol
+    }
+    public void SetVector2Int(string key, Vector2Int data)
+    {
+        switch (SaveMethod)
+        {
+            case SaveMethod.OXFile:
+                GetOX().Data.Add(key, data);
+                break;
+            case SaveMethod.TXTFile:
+                SavedData.AddOrUpdate(key, data.ToString());
+                break;
+            case SaveMethod.PlayerPrefs:
+                if (IsGlobal)
+                {
+                    PlayerPrefs.SetString($"_Global_{key}", data.ToString());
+                }
+                else
+                {
+                    PlayerPrefs.SetString($"={Name}_{key}", data.ToString());
+                }
+                break;
+        }
+    }
+
+    public Vector2Int GetVector2Int(string key, Vector2Int def_data)
+    {
+        switch (SaveMethod)
+        {
+            case SaveMethod.OXFile:
+                return GetOX().Data.TryGetValue(key, out OXFileData d) ? d.DataVector2Int : def_data;
+            case SaveMethod.TXTFile:
+                return SavedData.TryGetValue(key, out string d2) ? d2.StringToVector2Int() : def_data;
+            case SaveMethod.PlayerPrefs:
+                string a = "";
+                if (IsGlobal)
+                {
+                    a = PlayerPrefs.GetString($"_Global_{key}", "!!!");
+                }
+                else
+                {
+                    a = PlayerPrefs.GetString($"={Name}_{key}", "!!!");
+                }
+                if (a == "!!!") return def_data;
+                return a.StringToVector2Int();
+        }
+        return default; // this line never runs lol
+    }
+    public void SetVector3Int(string key, Vector3Int data)
+    {
+        switch (SaveMethod)
+        {
+            case SaveMethod.OXFile:
+                GetOX().Data.Add(key, data);
+                break;
+            case SaveMethod.TXTFile:
+                SavedData.AddOrUpdate(key, data.ToString());
+                break;
+            case SaveMethod.PlayerPrefs:
+                if (IsGlobal)
+                {
+                    PlayerPrefs.SetString($"_Global_{key}", data.ToString());
+                }
+                else
+                {
+                    PlayerPrefs.SetString($"={Name}_{key}", data.ToString());
+                }
+                break;
+        }
+
+    }
+    public Vector3Int GetVector3Int(string key, Vector3Int def_data)
+    {
+        switch (SaveMethod)
+        {
+            case SaveMethod.OXFile:
+                return GetOX().Data.TryGetValue(key, out OXFileData d) ? d.DataVector3Int : def_data;
+            case SaveMethod.TXTFile:
+                return SavedData.TryGetValue(key, out string d2) ? d2.StringToVector3Int() : def_data;
+            case SaveMethod.PlayerPrefs:
+                string a = "";
+                if (IsGlobal)
+                {
+                    a = PlayerPrefs.GetString($"_Global_{key}", "!!!");
+                }
+                else
+                {
+                    a = PlayerPrefs.GetString($"={Name}_{key}", "!!!");
+                }
+                if (a == "!!!") return def_data;
+                return a.StringToVector3Int();
+        }
+        return default; // this line never runs lol
+    }
+    public void SetQuaternion(string key, Quaternion data)
+    {
+        switch (SaveMethod)
+        {
+            case SaveMethod.OXFile:
+                GetOX().Data.Add(key, data);
+                break;
+            case SaveMethod.TXTFile:
+                SavedData.AddOrUpdate(key, data.ToString());
+                break;
+            case SaveMethod.PlayerPrefs:
+                if (IsGlobal)
+                {
+                    PlayerPrefs.SetString($"_Global_{key}", data.ToString());
+                }
+                else
+                {
+                    PlayerPrefs.SetString($"={Name}_{key}", data.ToString());
+                }
+                break;
+        }
+
+    }
+    public Quaternion GetQuaternion(string key, Quaternion def_data)
+    {
+        switch (SaveMethod)
+        {
+            case SaveMethod.OXFile:
+                return GetOX().Data.TryGetValue(key, out OXFileData d) ? d.DataQuaternion : def_data;
+            case SaveMethod.TXTFile:
+                return SavedData.TryGetValue(key, out string d2) ? d2.StringToQuaternion() : def_data;
+            case SaveMethod.PlayerPrefs:
+                string a = "";
+                if (IsGlobal)
+                {
+                    a = PlayerPrefs.GetString($"_Global_{key}", "!!!");
+                }
+                else
+                {
+                    a = PlayerPrefs.GetString($"={Name}_{key}", "!!!");
+                }
+                if (a == "!!!") return def_data;
+                return a.StringToQuaternion();
+        }
+        return default; // this line never runs lol
+    }
+    public void SetColor(string key, Color data)
+    {
+        switch (SaveMethod)
+        {
+            case SaveMethod.OXFile:
+                GetOX().Data.Add(key, data);
+                break;
+            case SaveMethod.TXTFile:
+                SavedData.AddOrUpdate(key, data.ToString());
+                break;
+            case SaveMethod.PlayerPrefs:
+                if (IsGlobal)
+                {
+                    PlayerPrefs.SetString($"_Global_{key}", data.ToString());
+                }
+                else
+                {
+                    PlayerPrefs.SetString($"={Name}_{key}", data.ToString());
+                }
+                break;
+        }
+
+    }
+    public Color GetColor(string key, Color def_data)
+    {
+        switch (SaveMethod)
+        {
+            case SaveMethod.OXFile:
+                return GetOX().Data.TryGetValue(key, out OXFileData d) ? d.DataColor : def_data;
+            case SaveMethod.TXTFile:
+                return SavedData.TryGetValue(key, out string d2) ? d2.StringToColor() : def_data;
+            case SaveMethod.PlayerPrefs:
+                string a = "";
+                if (IsGlobal)
+                {
+                    a = PlayerPrefs.GetString($"_Global_{key}", "!!!");
+                }
+                else
+                {
+                    a = PlayerPrefs.GetString($"={Name}_{key}", "!!!");
+                }
+                if (a == "!!!") return def_data;
+                return a.StringToColor();
+        }
+        return default; // this line never runs lol
+    }
 }

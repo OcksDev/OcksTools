@@ -76,8 +76,10 @@ public abstract class SettingData : ScriptableObject
     public abstract void SetValue<T>(T v);
     public abstract void ResetToDefault();
     public abstract void SaveCurrentToDefault();
-    public abstract void LoadFromString(string s);
-    public abstract string SaveToString();
+    /// <summary>Reads this setting from the profile using the typed getter. Keeps the current value if the key is missing.</summary>
+    public abstract void LoadFromProfile(SaveProfile dict, string key);
+    /// <summary>Writes this setting to the profile using the typed setter.</summary>
+    public abstract void SaveToProfile(SaveProfile dict, string key);
     public abstract string GetDisplayMod();
     public abstract bool GetShouldSkip();
     public abstract void DupeData();
