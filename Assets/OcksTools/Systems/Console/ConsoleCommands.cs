@@ -113,6 +113,7 @@ public class ConsoleCommands : MonoBehaviour
             oxf.Data.Add("numbanana2", 5000);
             oxf.Data.Add("numbanana3", 123456789);
             oxf.Data.Add("numcum", 42067);
+            oxf.Data.Add("list", new List<string>() { "Hello", "World", "Text" });
             oxf.WriteFile(FileSystem.Instance.GameDirectory + "/Temp.ox", true);
 
             oxf.ResetAllFlags();
@@ -125,6 +126,7 @@ public class ConsoleCommands : MonoBehaviour
                 {"numbanana2", 3 },
                 {"numbanana3", 4 },
                 {"numcum", 5 },
+                {"list", 6 },
             }).WriteFile(FileSystem.Instance.GameDirectory + "/TempLinker.ox", true);
 
 
@@ -137,6 +139,7 @@ public class ConsoleCommands : MonoBehaviour
             Console.Log($"numcum: {oxf2.Data["numcum"].DataInt}");
             Console.Log($"coolnums: {oxf2.Data["coolnums"].DataCustom}");
             Console.Log($"name: {oxf2.Data["bigname"].DataString}");
+            Console.Log($"name: {oxf2.Data["list"].DataListString.ListToString()}");
 
             Dictionary<string, string> s = new()
             {
@@ -146,6 +149,7 @@ public class ConsoleCommands : MonoBehaviour
                 {"numcum", "42067"},
                 {"coolnums", new TestClass3(-1, 420).ToString()},
                 {"bigname", "Hello my name is balls"},
+                {"list", (new List<string>() { "Hello", "World", "Text" }).ListToString()},
             };
             System.IO.File.WriteAllText(FileSystem.Instance.GameDirectory + "/Temp2.txt", s.DictionaryToString(Environment.NewLine, ": "));
 

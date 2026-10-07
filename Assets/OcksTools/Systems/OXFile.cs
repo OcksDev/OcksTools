@@ -159,6 +159,7 @@ public class OXFile
         { OXFileType.Bool, 1 },
         { OXFileType.Int, 4 },
         { OXFileType.Int1, 1 },
+        { OXFileType.Long1, 1 },
         { OXFileType.Long, 8 },
         { OXFileType.Float, 4 },
         { OXFileType.Double, 8 },
@@ -169,6 +170,16 @@ public class OXFile
         { OXFileType.Vector2Int, 8 },
         { OXFileType.Vector3Int, 12 },
         { OXFileType.Color32, 4 },
+        // Disk-only compact variants (see OXFileData.EffectiveType)
+        { OXFileType.Float1, 1 },
+        { OXFileType.Double1, 1 },
+        { OXFileType.Vector2Int1, 2 },
+        { OXFileType.Vector3Int1, 3 },
+        { OXFileType.Vector2Whole1, 2 },
+        { OXFileType.Vector3Whole1, 3 },
+        { OXFileType.QuaternionWhole1, 4 },
+        { OXFileType.Color1, 4 },
+        { OXFileType.Color32Gray1, 1 },
     };
 }
 
@@ -327,20 +338,161 @@ public class OXFileData
         // Int1 is a disk-only type: any Int that fits in a signed byte (-128..127) is written as Int1
         // and turns back into a normal Int on load. Keep it LAST so existing enum values never shift.
         Int1,
+        // Same idea as Int1: a Long that fits in a signed byte is written as Long1 (1 byte instead of 8)
+        Long1,
+        // A ListString where every element is <= 255 UTF8 bytes is written with 1-byte lengths instead of 4-byte ones
+        ListString1,
+        // ---- More disk-only compact variants. Same rule: keep them LAST, never reorder. ----
+        // Float/Double that is a whole number in -128..127 (and not -0) -> 1 byte
+        Float1,
+        Double1,
+        // Vector2Int/Vector3Int where every component fits a signed byte -> 2 / 3 bytes
+        Vector2Int1,
+        Vector3Int1,
+        // Vector2/Vector3 where every component is a whole number in -128..127 -> 2 / 3 bytes
+        Vector2Whole1,
+        Vector3Whole1,
+        // Quaternion where every component is a whole number in -128..127 (identity is 0,0,0,1) -> 4 bytes instead of 16
+        QuaternionWhole1,
+        // Color where every channel is exactly n/255 -> 1 byte per channel (4 bytes instead of 16), lossless
+        Color1,
+        // Color32 that is opaque gray (r == g == b, a == 255) -> 1 byte
+        Color32Gray1,
+        // A DictStringString where every key and value is <= 255 UTF8 bytes -> 1-byte lengths instead of 4-byte ones
+        DictStringString1,
     }
 
-    // The type that actually gets written to disk (Int shrinks to Int1 when the value fits in 1 byte)
+    // The type that actually gets written to disk. Int/Long shrink to Int1/Long1 when the value fits
+    // in a signed byte, and ListString shrinks to ListString1 when every element is <= 255 bytes long.
     public OXFileType EffectiveType
     {
         get
         {
-            if (Type == OXFileType.Int)
+            switch (Type)
             {
-                int v = DataInt;
-                if (v >= sbyte.MinValue && v <= sbyte.MaxValue) return OXFileType.Int1;
+                case OXFileType.Int:
+                    {
+                        int v = DataInt;
+                        if (v >= sbyte.MinValue && v <= sbyte.MaxValue) return OXFileType.Int1;
+                        break;
+                    }
+                case OXFileType.Long:
+                    {
+                        long v = DataLong;
+                        if (v >= sbyte.MinValue && v <= sbyte.MaxValue) return OXFileType.Long1;
+                        break;
+                    }
+                case OXFileType.ListString:
+                    if (ListStringFitsOneByte(DataListString)) return OXFileType.ListString1;
+                    break;
+                case OXFileType.DictStringString:
+                    if (DictFitsOneByte(DataDictStringString)) return OXFileType.DictStringString1;
+                    break;
+                case OXFileType.Float:
+                    if (FitsWholeSByte(DataFloat)) return OXFileType.Float1;
+                    break;
+                case OXFileType.Double:
+                    if (FitsWholeSByte(DataDouble)) return OXFileType.Double1;
+                    break;
+                case OXFileType.Vector2Int:
+                    {
+                        var v = DataVector2Int;
+                        if (FitsSByte(v.x) && FitsSByte(v.y)) return OXFileType.Vector2Int1;
+                        break;
+                    }
+                case OXFileType.Vector3Int:
+                    {
+                        var v = DataVector3Int;
+                        if (FitsSByte(v.x) && FitsSByte(v.y) && FitsSByte(v.z)) return OXFileType.Vector3Int1;
+                        break;
+                    }
+                case OXFileType.Vector2:
+                    {
+                        var v = DataVector2;
+                        if (FitsWholeSByte(v.x) && FitsWholeSByte(v.y)) return OXFileType.Vector2Whole1;
+                        break;
+                    }
+                case OXFileType.Vector3:
+                    {
+                        var v = DataVector3;
+                        if (FitsWholeSByte(v.x) && FitsWholeSByte(v.y) && FitsWholeSByte(v.z)) return OXFileType.Vector3Whole1;
+                        break;
+                    }
+                case OXFileType.Quaternion:
+                    {
+                        var q = DataQuaternion;
+                        if (FitsWholeSByte(q.x) && FitsWholeSByte(q.y) && FitsWholeSByte(q.z) && FitsWholeSByte(q.w)) return OXFileType.QuaternionWhole1;
+                        break;
+                    }
+                case OXFileType.Color:
+                    {
+                        var c = DataColor;
+                        if (FloatIsByteFraction(c.r) && FloatIsByteFraction(c.g) && FloatIsByteFraction(c.b) && FloatIsByteFraction(c.a)) return OXFileType.Color1;
+                        break;
+                    }
+                case OXFileType.Color32:
+                    {
+                        var c = DataColor32;
+                        if (c.r == c.g && c.g == c.b && c.a == 255) return OXFileType.Color32Gray1;
+                        break;
+                    }
             }
             return Type;
         }
+    }
+
+    private static bool FitsSByte(int v) => v >= sbyte.MinValue && v <= sbyte.MaxValue;
+
+    // True only if the value is a whole number in -128..127 AND survives the round trip exactly
+    // (so -0, NaN, 0.5, 300 and friends are all rejected and keep their full-size encoding).
+    private static bool FitsWholeSByte(float v)
+    {
+        if (!(v >= -128f && v <= 127f)) return false;
+        sbyte s = (sbyte)v;
+        if ((float)s != v) return false;
+        if (s == 0 && 1f / v < 0f) return false; // negative zero
+        return true;
+    }
+    private static bool FitsWholeSByte(double v)
+    {
+        if (!(v >= -128.0 && v <= 127.0)) return false;
+        sbyte s = (sbyte)v;
+        if ((double)s != v) return false;
+        if (s == 0 && 1.0 / v < 0.0) return false; // negative zero
+        return true;
+    }
+
+    // True if the float is exactly n/255 for some byte n, so it can be stored as that byte losslessly.
+    private static bool FloatIsByteFraction(float c)
+    {
+        if (!(c >= 0f && c <= 1f)) return false;
+        int r = (int)Math.Round(c * 255f);
+        if (r < 0 || r > 255) return false;
+        return (r / 255f) == c;
+    }
+    private static byte FloatToByteFraction(float c) => (byte)(int)Math.Round(c * 255f);
+
+    private static bool DictFitsOneByte(Dictionary<string, string> dict)
+    {
+        if (dict == null) return false;
+        foreach (var kv in dict)
+        {
+            if (kv.Key.Length * 3 > 255 && Encoding.UTF8.GetByteCount(kv.Key) > 255) return false;
+            if (kv.Value.Length * 3 > 255 && Encoding.UTF8.GetByteCount(kv.Value) > 255) return false;
+        }
+        return true;
+    }
+
+    private static bool ListStringFitsOneByte(List<string> list)
+    {
+        if (list == null) return false;
+        foreach (var s in list)
+        {
+            // Fast path: a char is at most 3 UTF8 bytes, so short strings can skip the exact count
+            if (s.Length * 3 <= 255) continue;
+            if (Encoding.UTF8.GetByteCount(s) > 255) return false;
+        }
+        return true;
     }
 
     // The type exactly as it was read from the file (before Int1 turns back into Int). Used for repeat runs.
@@ -500,6 +652,56 @@ public class OXFileData
                 // Stored as 1 signed byte, becomes a normal Int again in memory
                 DataInt = (sbyte)DataRaw[0];
                 Type = OXFileType.Int;
+                break;
+            case OXFileType.Long1:
+                // Stored as 1 signed byte, becomes a normal Long again in memory
+                DataLong = (sbyte)DataRaw[0];
+                Type = OXFileType.Long;
+                break;
+            case OXFileType.ListString1:
+                // 1-byte element lengths on disk, becomes a normal ListString in memory
+                DataListString = Get_ListString1();
+                Type = OXFileType.ListString;
+                break;
+            case OXFileType.DictStringString1:
+                DataDictStringString = Get_DictStringString1();
+                Type = OXFileType.DictStringString;
+                break;
+            case OXFileType.Float1:
+                DataFloat = (sbyte)DataRaw[0];
+                Type = OXFileType.Float;
+                break;
+            case OXFileType.Double1:
+                DataDouble = (sbyte)DataRaw[0];
+                Type = OXFileType.Double;
+                break;
+            case OXFileType.Vector2Int1:
+                DataVector2Int = new Vector2Int((sbyte)DataRaw[0], (sbyte)DataRaw[1]);
+                Type = OXFileType.Vector2Int;
+                break;
+            case OXFileType.Vector3Int1:
+                DataVector3Int = new Vector3Int((sbyte)DataRaw[0], (sbyte)DataRaw[1], (sbyte)DataRaw[2]);
+                Type = OXFileType.Vector3Int;
+                break;
+            case OXFileType.Vector2Whole1:
+                DataVector2 = new Vector2((sbyte)DataRaw[0], (sbyte)DataRaw[1]);
+                Type = OXFileType.Vector2;
+                break;
+            case OXFileType.Vector3Whole1:
+                DataVector3 = new Vector3((sbyte)DataRaw[0], (sbyte)DataRaw[1], (sbyte)DataRaw[2]);
+                Type = OXFileType.Vector3;
+                break;
+            case OXFileType.QuaternionWhole1:
+                DataQuaternion = new Quaternion((sbyte)DataRaw[0], (sbyte)DataRaw[1], (sbyte)DataRaw[2], (sbyte)DataRaw[3]);
+                Type = OXFileType.Quaternion;
+                break;
+            case OXFileType.Color1:
+                DataColor = new Color(DataRaw[0] / 255f, DataRaw[1] / 255f, DataRaw[2] / 255f, DataRaw[3] / 255f);
+                Type = OXFileType.Color;
+                break;
+            case OXFileType.Color32Gray1:
+                DataColor32 = new Color32(DataRaw[0], DataRaw[0], DataRaw[0], 255);
+                Type = OXFileType.Color32;
                 break;
             case OXFileType.Long:
                 DataLong = Get_Long();
@@ -767,6 +969,67 @@ public class OXFileData
         {
             case OXFileType.Int1:
                 ret.Add((byte)(sbyte)DataInt);
+                break;
+            case OXFileType.Long1:
+                ret.Add((byte)(sbyte)DataLong);
+                break;
+            case OXFileType.ListString1:
+                foreach (var li in DataListString)
+                {
+                    var ccc = Encoding.UTF8.GetBytes(li);
+                    ret.Add((byte)ccc.Length);
+                    ret.AddRange(ccc);
+                }
+                break;
+            case OXFileType.DictStringString1:
+                foreach (var li in DataDictStringString)
+                {
+                    var kb = Encoding.UTF8.GetBytes(li.Key);
+                    var vb = Encoding.UTF8.GetBytes(li.Value);
+                    ret.Add((byte)kb.Length);
+                    ret.Add((byte)vb.Length);
+                    ret.AddRange(kb);
+                    ret.AddRange(vb);
+                }
+                break;
+            case OXFileType.Float1:
+                ret.Add((byte)(sbyte)DataFloat);
+                break;
+            case OXFileType.Double1:
+                ret.Add((byte)(sbyte)DataDouble);
+                break;
+            case OXFileType.Vector2Int1:
+                ret.Add((byte)(sbyte)DataVector2Int.x);
+                ret.Add((byte)(sbyte)DataVector2Int.y);
+                break;
+            case OXFileType.Vector3Int1:
+                ret.Add((byte)(sbyte)DataVector3Int.x);
+                ret.Add((byte)(sbyte)DataVector3Int.y);
+                ret.Add((byte)(sbyte)DataVector3Int.z);
+                break;
+            case OXFileType.Vector2Whole1:
+                ret.Add((byte)(sbyte)DataVector2.x);
+                ret.Add((byte)(sbyte)DataVector2.y);
+                break;
+            case OXFileType.Vector3Whole1:
+                ret.Add((byte)(sbyte)DataVector3.x);
+                ret.Add((byte)(sbyte)DataVector3.y);
+                ret.Add((byte)(sbyte)DataVector3.z);
+                break;
+            case OXFileType.QuaternionWhole1:
+                ret.Add((byte)(sbyte)DataQuaternion.x);
+                ret.Add((byte)(sbyte)DataQuaternion.y);
+                ret.Add((byte)(sbyte)DataQuaternion.z);
+                ret.Add((byte)(sbyte)DataQuaternion.w);
+                break;
+            case OXFileType.Color1:
+                ret.Add(FloatToByteFraction(DataColor.r));
+                ret.Add(FloatToByteFraction(DataColor.g));
+                ret.Add(FloatToByteFraction(DataColor.b));
+                ret.Add(FloatToByteFraction(DataColor.a));
+                break;
+            case OXFileType.Color32Gray1:
+                ret.Add(DataColor32.r);
                 break;
             case OXFileType.OXFileData:
                 var p = DataOXFiles.ToList();
@@ -1098,6 +1361,39 @@ public class OXFileData
             index += 4;
             ret.Add(Encoding.UTF8.GetString(WankFuckYou(DataRaw, index, length)));
             index += length;
+        }
+
+        return ret;
+    }
+
+    private List<string> Get_ListString1()
+    {
+        var ret = new List<string>();
+
+        int index = 0;
+        while (index < DataRaw.Length)
+        {
+            int length = DataRaw[index];
+            index++;
+            ret.Add(Encoding.UTF8.GetString(WankFuckYou(DataRaw, index, length)));
+            index += length;
+        }
+
+        return ret;
+    }
+
+    private Dictionary<string, string> Get_DictStringString1()
+    {
+        var ret = new Dictionary<string, string>();
+
+        int index = 0;
+        while (index + 1 < DataRaw.Length)
+        {
+            int length = DataRaw[index];
+            int length2 = DataRaw[index + 1];
+            index += 2;
+            ret.Add(Encoding.UTF8.GetString(WankFuckYou(DataRaw, index, length)), Encoding.UTF8.GetString(WankFuckYou(DataRaw, index + length, length2)));
+            index += length + length2;
         }
 
         return ret;
