@@ -355,7 +355,6 @@ public class OXFileData
         Quaternion,
         Color,
         Color32,
-        // ---- Disk-only compact variants. keep them LAST, never reorder. ----
         Int1,
         Long1,
         ListString1,
