@@ -286,6 +286,54 @@ public class SaveProfile
     {
         SetDict(key, data.ABToString());
     }
+    public void SetDict(string key, Dictionary<string, int> data)
+    {
+        if (SaveMethod == SaveMethod.OXFile)
+        {
+            GetOX().Data.Add(key, data);
+        }
+        else
+        {
+            // TXT / PlayerPrefs only store text, so go through the string version
+            SetDict(key, data.ABToString());
+        }
+    }
+    public void SetDict(string key, Dictionary<string, long> data)
+    {
+        if (SaveMethod == SaveMethod.OXFile)
+        {
+            GetOX().Data.Add(key, data);
+        }
+        else
+        {
+            // TXT / PlayerPrefs only store text, so go through the string version
+            SetDict(key, data.ABToString());
+        }
+    }
+    public void SetDict(string key, Dictionary<string, double> data)
+    {
+        if (SaveMethod == SaveMethod.OXFile)
+        {
+            GetOX().Data.Add(key, data);
+        }
+        else
+        {
+            // TXT / PlayerPrefs only store text, so go through the string version
+            SetDict(key, data.ABToString());
+        }
+    }
+    public void SetDict(string key, Dictionary<string, float> data)
+    {
+        if (SaveMethod == SaveMethod.OXFile)
+        {
+            GetOX().Data.Add(key, data);
+        }
+        else
+        {
+            // TXT / PlayerPrefs only store text, so go through the string version
+            SetDict(key, data.ABToString());
+        }
+    }
     public string GetString(string key, string defaul = "")
     {
         //use this method to properly query data 
@@ -423,6 +471,79 @@ public class SaveProfile
     {
         return GetDict(key, defaul.ABToString()).StringToAB<A, B>();
     }
+    // defaul is intentionally required here (no "= null"), so existing GetDict(key) calls don't become ambiguous
+    public Dictionary<string, int> GetDict(string key, Dictionary<string, int> defaul)
+    {
+        if (SaveMethod == SaveMethod.OXFile)
+        {
+            var ox = GetOX();
+            if (!ox.Data.ContainsKey(key)) return defaul;
+            var node = ox.Data[key];
+            if (node.Type == OXFileData.OXFileType.DictStringInt)
+            {
+                var x = node.DataDictStringInt;
+                return x != null && x.Count > 0 ? x : defaul;
+            }
+            // otherwise it was saved earlier as a DictStringString (old generic SetDict), so fall through and convert
+        }
+        var s = GetDict(key, (Dictionary<string, string>)null);
+        return s == null ? defaul : s.StringToAB<string, int>();
+    }
+    // defaul is intentionally required here (no "= null"), so existing GetDict(key) calls don't become ambiguous
+    public Dictionary<string, long> GetDict(string key, Dictionary<string, long> defaul)
+    {
+        if (SaveMethod == SaveMethod.OXFile)
+        {
+            var ox = GetOX();
+            if (!ox.Data.ContainsKey(key)) return defaul;
+            var node = ox.Data[key];
+            if (node.Type == OXFileData.OXFileType.DictStringLong)
+            {
+                var x = node.DataDictStringLong;
+                return x != null && x.Count > 0 ? x : defaul;
+            }
+            // otherwise it was saved earlier as a DictStringString (old generic SetDict), so fall through and convert
+        }
+        var s = GetDict(key, (Dictionary<string, string>)null);
+        return s == null ? defaul : s.StringToAB<string, long>();
+    }
+    // defaul is intentionally required here (no "= null"), so existing GetDict(key) calls don't become ambiguous
+    public Dictionary<string, double> GetDict(string key, Dictionary<string, double> defaul)
+    {
+        if (SaveMethod == SaveMethod.OXFile)
+        {
+            var ox = GetOX();
+            if (!ox.Data.ContainsKey(key)) return defaul;
+            var node = ox.Data[key];
+            if (node.Type == OXFileData.OXFileType.DictStringDouble)
+            {
+                var x = node.DataDictStringDouble;
+                return x != null && x.Count > 0 ? x : defaul;
+            }
+            // otherwise it was saved earlier as a DictStringString (old generic SetDict), so fall through and convert
+        }
+        var s = GetDict(key, (Dictionary<string, string>)null);
+        return s == null ? defaul : s.StringToAB<string, double>();
+    }
+    // defaul is intentionally required here (no "= null"), so existing GetDict(key) calls don't become ambiguous
+    public Dictionary<string, float> GetDict(string key, Dictionary<string, float> defaul)
+    {
+        if (SaveMethod == SaveMethod.OXFile)
+        {
+            var ox = GetOX();
+            if (!ox.Data.ContainsKey(key)) return defaul;
+            var node = ox.Data[key];
+            if (node.Type == OXFileData.OXFileType.DictStringFloat)
+            {
+                var x = node.DataDictStringFloat;
+                return x != null && x.Count > 0 ? x : defaul;
+            }
+            // otherwise it was saved earlier as a DictStringString (old generic SetDict), so fall through and convert
+        }
+        var s = GetDict(key, (Dictionary<string, string>)null);
+        return s == null ? defaul : s.StringToAB<string, float>();
+    }
+
 
 
 

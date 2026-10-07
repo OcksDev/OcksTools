@@ -103,13 +103,13 @@ public class SoundSystem : SingleInstance<SoundSystem>
     public void SaveVolumes(SaveProfile dict)
     {
         dict = SaveSystem.GlobalProfile();
-        dict.SetDict("Volumes", Volumes.ABToString());
+        dict.SetDict("Volumes", Volumes);
     }
 
     public void LoadVolumes(SaveProfile dict)
     {
         dict = SaveSystem.GlobalProfile();
-        Volumes = dict.GetDict("Volumes", new()).StringToAB<string, float>();
+        Volumes = dict.GetDict("Volumes", new Dictionary<string, float>());
     }
 
     private void Start()

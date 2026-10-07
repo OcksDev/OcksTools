@@ -205,6 +205,26 @@ public class OXFileData
         get => (Dictionary<string, string>)_value;
         set => _value = value;
     }
+    public Dictionary<string, int> DataDictStringInt
+    {
+        get => (Dictionary<string, int>)_value;
+        set => _value = value;
+    }
+    public Dictionary<string, long> DataDictStringLong
+    {
+        get => (Dictionary<string, long>)_value;
+        set => _value = value;
+    }
+    public Dictionary<string, double> DataDictStringDouble
+    {
+        get => (Dictionary<string, double>)_value;
+        set => _value = value;
+    }
+    public Dictionary<string, float> DataDictStringFloat
+    {
+        get => (Dictionary<string, float>)_value;
+        set => _value = value;
+    }
     public float DataFloat
     {
         get => _value is float f ? f : 0f;
@@ -335,31 +355,35 @@ public class OXFileData
         Quaternion,
         Color,
         Color32,
-        // Int1 is a disk-only type: any Int that fits in a signed byte (-128..127) is written as Int1
-        // and turns back into a normal Int on load. Keep it LAST so existing enum values never shift.
+        // ---- Disk-only compact variants. keep them LAST, never reorder. ----
         Int1,
-        // Same idea as Int1: a Long that fits in a signed byte is written as Long1 (1 byte instead of 8)
         Long1,
-        // A ListString where every element is <= 255 UTF8 bytes is written with 1-byte lengths instead of 4-byte ones
         ListString1,
-        // ---- More disk-only compact variants. Same rule: keep them LAST, never reorder. ----
-        // Float/Double that is a whole number in -128..127 (and not -0) -> 1 byte
         Float1,
         Double1,
-        // Vector2Int/Vector3Int where every component fits a signed byte -> 2 / 3 bytes
         Vector2Int1,
         Vector3Int1,
-        // Vector2/Vector3 where every component is a whole number in -128..127 -> 2 / 3 bytes
         Vector2Whole1,
         Vector3Whole1,
-        // Quaternion where every component is a whole number in -128..127 (identity is 0,0,0,1) -> 4 bytes instead of 16
         QuaternionWhole1,
         // Color where every channel is exactly n/255 -> 1 byte per channel (4 bytes instead of 16), lossless
         Color1,
         // Color32 that is opaque gray (r == g == b, a == 255) -> 1 byte
         Color32Gray1,
-        // A DictStringString where every key and value is <= 255 UTF8 bytes -> 1-byte lengths instead of 4-byte ones
         DictStringString1,
+        DictStringInt,
+        DictStringLong,
+        DictStringDouble,
+        DictStringFloat,
+        DictStringInt1,
+        DictStringLong1,
+        DictStringDouble1,
+        DictStringFloat1,
+        // Disk-only "11" versions: 1-byte key lengths AND 1-byte values.
+        DictStringInt11,
+        DictStringLong11,
+        DictStringDouble11,
+        DictStringFloat11,
     }
 
     // The type that actually gets written to disk. Int/Long shrink to Int1/Long1 when the value fits
@@ -387,6 +411,34 @@ public class OXFileData
                     break;
                 case OXFileType.DictStringString:
                     if (DictFitsOneByte(DataDictStringString)) return OXFileType.DictStringString1;
+                    break;
+                case OXFileType.DictStringInt:
+                    if (KeysFitOneByte(DataDictStringInt))
+                    {
+                        if (ValuesAll(DataDictStringInt, FitsSByte)) return OXFileType.DictStringInt11;
+                        return OXFileType.DictStringInt1;
+                    }
+                    break;
+                case OXFileType.DictStringLong:
+                    if (KeysFitOneByte(DataDictStringLong))
+                    {
+                        if (ValuesAll(DataDictStringLong, v => v >= sbyte.MinValue && v <= sbyte.MaxValue)) return OXFileType.DictStringLong11;
+                        return OXFileType.DictStringLong1;
+                    }
+                    break;
+                case OXFileType.DictStringDouble:
+                    if (KeysFitOneByte(DataDictStringDouble))
+                    {
+                        if (ValuesAll(DataDictStringDouble, FitsWholeSByte)) return OXFileType.DictStringDouble11;
+                        return OXFileType.DictStringDouble1;
+                    }
+                    break;
+                case OXFileType.DictStringFloat:
+                    if (KeysFitOneByte(DataDictStringFloat))
+                    {
+                        if (ValuesAll(DataDictStringFloat, FitsWholeSByte)) return OXFileType.DictStringFloat11;
+                        return OXFileType.DictStringFloat1;
+                    }
                     break;
                 case OXFileType.Float:
                     if (FitsWholeSByte(DataFloat)) return OXFileType.Float1;
@@ -481,6 +533,66 @@ public class OXFileData
             if (kv.Value.Length * 3 > 255 && Encoding.UTF8.GetByteCount(kv.Value) > 255) return false;
         }
         return true;
+    }
+
+    // True if every key of a string-keyed dictionary is <= 255 UTF8 bytes (so a 1-byte length is enough)
+    private static bool KeysFitOneByte<T>(Dictionary<string, T> dict)
+    {
+        if (dict == null) return false;
+        foreach (var kv in dict)
+        {
+            if (kv.Key.Length * 3 > 255 && Encoding.UTF8.GetByteCount(kv.Key) > 255) return false;
+        }
+        return true;
+    }
+
+    // True if every value of the dictionary satisfies the predicate (used to decide if "11" encoding is possible)
+    private static bool ValuesAll<T>(Dictionary<string, T> dict, Func<T, bool> fits)
+    {
+        foreach (var kv in dict)
+        {
+            if (!fits(kv.Value)) return false;
+        }
+        return true;
+    }
+
+    // Writes [key length][key UTF8][value] for every entry. oneByteLen picks 1-byte vs 4-byte key lengths.
+    private static void WriteDictStringFixed<T>(List<byte> ret, Dictionary<string, T> dict, Func<T, byte[]> valueToBytes, bool oneByteLen)
+    {
+        foreach (var kv in dict)
+        {
+            var kb = Encoding.UTF8.GetBytes(kv.Key);
+            if (oneByteLen) ret.Add((byte)kb.Length);
+            else ret.AddRange(BitConverter.GetBytes(kb.Length));
+            ret.AddRange(kb);
+            ret.AddRange(valueToBytes(kv.Value));
+        }
+    }
+
+    // Reads what WriteDictStringFixed wrote.
+    private static Dictionary<string, T> ReadDictStringFixed<T>(byte[] raw, int valueSize, Func<byte[], int, T> readValue, bool oneByteLen)
+    {
+        var ret = new Dictionary<string, T>();
+        int index = 0;
+        while (oneByteLen ? index < raw.Length : index + 3 < raw.Length)
+        {
+            int keyLength;
+            if (oneByteLen)
+            {
+                keyLength = raw[index];
+                index += 1;
+            }
+            else
+            {
+                keyLength = BitConverter.ToInt32(raw, index);
+                index += 4;
+            }
+            string key = Encoding.UTF8.GetString(raw, index, keyLength);
+            index += keyLength;
+            ret.Add(key, readValue(raw, index));
+            index += valueSize;
+        }
+        return ret;
     }
 
     private static bool ListStringFitsOneByte(List<string> list)
@@ -668,6 +780,50 @@ public class OXFileData
             case OXFileType.DictStringString1:
                 DataDictStringString = Get_DictStringString1();
                 Type = OXFileType.DictStringString;
+                break;
+            case OXFileType.DictStringInt1:
+                DataDictStringInt = ReadDictStringFixed(DataRaw, 4, BitConverter.ToInt32, true);
+                Type = OXFileType.DictStringInt;
+                break;
+            case OXFileType.DictStringLong1:
+                DataDictStringLong = ReadDictStringFixed(DataRaw, 8, BitConverter.ToInt64, true);
+                Type = OXFileType.DictStringLong;
+                break;
+            case OXFileType.DictStringDouble1:
+                DataDictStringDouble = ReadDictStringFixed(DataRaw, 8, BitConverter.ToDouble, true);
+                Type = OXFileType.DictStringDouble;
+                break;
+            case OXFileType.DictStringFloat1:
+                DataDictStringFloat = ReadDictStringFixed(DataRaw, 4, BitConverter.ToSingle, true);
+                Type = OXFileType.DictStringFloat;
+                break;
+            case OXFileType.DictStringInt11:
+                DataDictStringInt = ReadDictStringFixed(DataRaw, 1, (raw, i) => (int)(sbyte)raw[i], true);
+                Type = OXFileType.DictStringInt;
+                break;
+            case OXFileType.DictStringLong11:
+                DataDictStringLong = ReadDictStringFixed(DataRaw, 1, (raw, i) => (long)(sbyte)raw[i], true);
+                Type = OXFileType.DictStringLong;
+                break;
+            case OXFileType.DictStringDouble11:
+                DataDictStringDouble = ReadDictStringFixed(DataRaw, 1, (raw, i) => (double)(sbyte)raw[i], true);
+                Type = OXFileType.DictStringDouble;
+                break;
+            case OXFileType.DictStringFloat11:
+                DataDictStringFloat = ReadDictStringFixed(DataRaw, 1, (raw, i) => (float)(sbyte)raw[i], true);
+                Type = OXFileType.DictStringFloat;
+                break;
+            case OXFileType.DictStringInt:
+                DataDictStringInt = ReadDictStringFixed(DataRaw, 4, BitConverter.ToInt32, false);
+                break;
+            case OXFileType.DictStringLong:
+                DataDictStringLong = ReadDictStringFixed(DataRaw, 8, BitConverter.ToInt64, false);
+                break;
+            case OXFileType.DictStringDouble:
+                DataDictStringDouble = ReadDictStringFixed(DataRaw, 8, BitConverter.ToDouble, false);
+                break;
+            case OXFileType.DictStringFloat:
+                DataDictStringFloat = ReadDictStringFixed(DataRaw, 4, BitConverter.ToSingle, false);
                 break;
             case OXFileType.Float1:
                 DataFloat = (sbyte)DataRaw[0];
@@ -936,6 +1092,34 @@ public class OXFileData
         dat.DataDictStringString = DataIn;
         Add(Name, dat);
     }
+    public void Add(string Name, Dictionary<string, int> DataIn)
+    {
+        var dat = new OXFileData();
+        dat.Type = OXFileData.OXFileType.DictStringInt;
+        dat.DataDictStringInt = DataIn;
+        Add(Name, dat);
+    }
+    public void Add(string Name, Dictionary<string, long> DataIn)
+    {
+        var dat = new OXFileData();
+        dat.Type = OXFileData.OXFileType.DictStringLong;
+        dat.DataDictStringLong = DataIn;
+        Add(Name, dat);
+    }
+    public void Add(string Name, Dictionary<string, double> DataIn)
+    {
+        var dat = new OXFileData();
+        dat.Type = OXFileData.OXFileType.DictStringDouble;
+        dat.DataDictStringDouble = DataIn;
+        Add(Name, dat);
+    }
+    public void Add(string Name, Dictionary<string, float> DataIn)
+    {
+        var dat = new OXFileData();
+        dat.Type = OXFileData.OXFileType.DictStringFloat;
+        dat.DataDictStringFloat = DataIn;
+        Add(Name, dat);
+    }
     public void Add(string Name, OXFileData dat)
     {
         dat.Name = Name;
@@ -993,6 +1177,42 @@ public class OXFileData
                     ret.AddRange(kb);
                     ret.AddRange(vb);
                 }
+                break;
+            case OXFileType.DictStringInt1:
+                WriteDictStringFixed(ret, DataDictStringInt, BitConverter.GetBytes, true);
+                break;
+            case OXFileType.DictStringLong1:
+                WriteDictStringFixed(ret, DataDictStringLong, BitConverter.GetBytes, true);
+                break;
+            case OXFileType.DictStringDouble1:
+                WriteDictStringFixed(ret, DataDictStringDouble, BitConverter.GetBytes, true);
+                break;
+            case OXFileType.DictStringFloat1:
+                WriteDictStringFixed(ret, DataDictStringFloat, BitConverter.GetBytes, true);
+                break;
+            case OXFileType.DictStringInt11:
+                WriteDictStringFixed(ret, DataDictStringInt, v => new byte[] { (byte)(sbyte)v }, true);
+                break;
+            case OXFileType.DictStringLong11:
+                WriteDictStringFixed(ret, DataDictStringLong, v => new byte[] { (byte)(sbyte)v }, true);
+                break;
+            case OXFileType.DictStringDouble11:
+                WriteDictStringFixed(ret, DataDictStringDouble, v => new byte[] { (byte)(sbyte)v }, true);
+                break;
+            case OXFileType.DictStringFloat11:
+                WriteDictStringFixed(ret, DataDictStringFloat, v => new byte[] { (byte)(sbyte)v }, true);
+                break;
+            case OXFileType.DictStringInt:
+                WriteDictStringFixed(ret, DataDictStringInt, BitConverter.GetBytes, false);
+                break;
+            case OXFileType.DictStringLong:
+                WriteDictStringFixed(ret, DataDictStringLong, BitConverter.GetBytes, false);
+                break;
+            case OXFileType.DictStringDouble:
+                WriteDictStringFixed(ret, DataDictStringDouble, BitConverter.GetBytes, false);
+                break;
+            case OXFileType.DictStringFloat:
+                WriteDictStringFixed(ret, DataDictStringFloat, BitConverter.GetBytes, false);
                 break;
             case OXFileType.Float1:
                 ret.Add((byte)(sbyte)DataFloat);
@@ -1945,6 +2165,17 @@ public class OXFileData
             default: return DataOXFiles.Count;
         }
     }
+    private static string DictToDisplayString<T>(Dictionary<string, T> dict)
+    {
+        if (dict == null) return "";
+        var sb = new StringBuilder();
+        foreach (var kv in dict)
+        {
+            if (sb.Length > 0) sb.Append(", ");
+            sb.Append(kv.Key).Append(": ").Append(kv.Value);
+        }
+        return sb.ToString();
+    }
     public override string ToString()
     {
         switch (Type)
@@ -1957,6 +2188,10 @@ public class OXFileData
             case OXFileType.Bool: return DataBool.ToString();
             case OXFileType.ListString: return Converter.ListToString(DataListString);
             case OXFileType.DictStringString: return Converter.DictionaryToString(DataDictStringString);
+            case OXFileType.DictStringInt: return DictToDisplayString(DataDictStringInt);
+            case OXFileType.DictStringLong: return DictToDisplayString(DataDictStringLong);
+            case OXFileType.DictStringDouble: return DictToDisplayString(DataDictStringDouble);
+            case OXFileType.DictStringFloat: return DictToDisplayString(DataDictStringFloat);
             case OXFileType.Custom: return DataCustom.ToString();
             default: return "Error";
         }

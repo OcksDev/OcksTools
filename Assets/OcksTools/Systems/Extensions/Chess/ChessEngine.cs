@@ -50,7 +50,7 @@ public static class ChessEngine
     public static ChessBoard LoadBoard(SaveProfile dict, string key)
     {
         key = "Chess_" + key;
-        var data = dict.GetDict(key, new());
+        var data = dict.GetDict(key, new Dictionary<string, string>());
         Dictionary<string, string> defaults = new()
         {
             {"Board", "Default"},

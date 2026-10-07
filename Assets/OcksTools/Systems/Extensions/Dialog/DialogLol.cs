@@ -209,8 +209,8 @@ public class DialogLol : SingleInstance<DialogLol>
     public void Load(SaveProfile dict)
     {
         if (!SaveState) return;
-        variables = variables.MergeDictionary(dict.GetDict("DialogVars", new()));
-        starts_and_watches = dict.GetDict("DialogSWs", new()).ABToCD<string, string, string, (int, int)>(x => x, x =>
+        variables = variables.MergeDictionary(dict.GetDict("DialogVars", new Dictionary<string, string>()));
+        starts_and_watches = dict.GetDict("DialogSWs", new Dictionary<string, string>()).ABToCD<string, string, string, (int, int)>(x => x, x =>
         {
             var v = x.StringToVector2Int();
             return (v.x, v.y);
