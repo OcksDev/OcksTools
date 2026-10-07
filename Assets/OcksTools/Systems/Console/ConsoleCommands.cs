@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Profiling;
 using UnityEngine;
 
 public class ConsoleCommands : MonoBehaviour
@@ -159,6 +160,56 @@ public class ConsoleCommands : MonoBehaviour
             Console.LogError(e);
         }
     }
+    public static void Test_image_compression()
+    {
+        "Started".Log();
+        ConsoleLol.Instance.StartCoroutine(ImageGaming());
+    }
+    // put these as static fields in the same class as ImageGaming
+    private static readonly ProfilerMarker pmTotal = new ProfilerMarker("ImageGaming.Total");
+    private static readonly ProfilerMarker pmNormalAdd = new ProfilerMarker("ImageGaming.Normal.Add");
+    private static readonly ProfilerMarker pmNormalWrite = new ProfilerMarker("ImageGaming.Normal.WriteFile (PNG)");
+    private static readonly ProfilerMarker pmLossyAdd = new ProfilerMarker("ImageGaming.Lossy.Add");
+    private static readonly ProfilerMarker pmLossyWrite = new ProfilerMarker("ImageGaming.Lossy.WriteFile (JPEG)");
+
+    public static IEnumerator ImageGaming()
+    {
+        var q = FileSystem.Instance.LoadTexture(FileSystem.Instance.GameDirectory + "/img_base.png");
+        yield return q.Completion;
+        if (q.ErrorLol)
+        {
+            "Error loading file?".LogError();
+        }
+        else
+        {
+            // no yields inside these blocks, so each marker lands on a single frame
+            using (pmTotal.Auto())
+            {
+                OXFile file;
+
+                using (pmNormalAdd.Auto())
+                {
+                    file = new OXFile();
+                    file.Data.Add("i", (Texture2D)q.FileContent);
+                }
+                using (pmNormalWrite.Auto())
+                {
+                    _ = file.WriteFileAsync(FileSystem.Instance.GameDirectory + "/img_normal.ox", true);
+                }
+
+                using (pmLossyAdd.Auto())
+                {
+                    file = new OXFile();
+                    file.Data.Add("i", (Texture2D)q.FileContent, true);
+                }
+                using (pmLossyWrite.Auto())
+                {
+                    _ = file.WriteFileAsync(FileSystem.Instance.GameDirectory + "/img_lossy.ox", true);
+                }
+            }
+        }
+    }
+
     public static void Test_remap()
     {
         Console.Log(0.5.Remap(0, 1, 0, 10));

@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Unity.Profiling;
 using UnityEngine;
 using static OXFileData;
 
@@ -26,6 +30,16 @@ public class OXFile
     public OXFileData Data = new OXFileData(OXFileData.OXFileType.OXFileData);
     public Dictionary<string, byte> NameLinker = new();
     public Dictionary<byte, string> IndexLinker = new();
+
+    // Profiler markers, so you can see where read/write time goes
+    static readonly ProfilerMarker pmWriteBuild = new ProfilerMarker("OX.Write.BuildBytes");
+    static readonly ProfilerMarker pmWriteCompress = new ProfilerMarker("OX.Write.Compress");
+    static readonly ProfilerMarker pmWriteObfuscate = new ProfilerMarker("OX.Write.Obfuscate");
+    static readonly ProfilerMarker pmWriteDisk = new ProfilerMarker("OX.Write.Disk");
+    static readonly ProfilerMarker pmReadDisk = new ProfilerMarker("OX.Read.Disk");
+    static readonly ProfilerMarker pmReadDeobfuscate = new ProfilerMarker("OX.Read.Deobfuscate");
+    static readonly ProfilerMarker pmReadDecompress = new ProfilerMarker("OX.Read.Decompress");
+    static readonly ProfilerMarker pmReadParse = new ProfilerMarker("OX.Read.Parse");
 
     public OXFile LinkOptimizer(Dictionary<string, byte> n)
     {
@@ -58,18 +72,31 @@ public class OXFile
 
     public bool ReadFile(string str)
     {
-        var cd = File.ReadAllBytes(str);
+        byte[] cd;
+        using (pmReadDisk.Auto()) cd = File.ReadAllBytes(str);
         if (cd.Length < 4) return false;
-        int index = 0;
-        Flags = BitConverter.ToInt32(cd, index);
+        const int headerSize = 4;
+        int bodyLen = cd.Length - headerSize;
+        Flags = BitConverter.ToInt32(cd, 0);
         SetVersionFromFlag();
-        index += 4;
         Data = new OXFileData(OXFileData.OXFileType.OXFileData);
         Data.pVersion = ObservedFileVersion;
-        Data.DataRaw = WankFuckYou(cd, index, cd.Length - index);
-        if (!GetFlag(2)) DeObfuscate(Data.DataRaw);
-        if (GetFlag(1)) Data.DataRaw = Decompress(Data.DataRaw);
-        Data.DataOXFiles = Data.Get_OXFileData(GetFileData());
+
+        // We own the freshly read buffer, so de-obfuscate it in place (no slice copy first)
+        if (!GetFlag(2))
+        {
+            using (pmReadDeobfuscate.Auto()) DeObfuscate(cd, headerSize, bodyLen);
+        }
+        using (pmReadDecompress.Auto())
+        {
+            // Decompress straight out of the file buffer; only copy when there's nothing to decompress
+            if (GetFlag(1)) Data.DataRaw = Decompress(cd, headerSize, bodyLen);
+            else Data.DataRaw = WankFuckYou(cd, headerSize, bodyLen);
+        }
+        using (pmReadParse.Auto())
+        {
+            Data.DataOXFiles = Data.Get_OXFileData(GetFileData());
+        }
 
         return true;
     }
@@ -79,31 +106,226 @@ public class OXFile
         if (CanOverride || !File.Exists(FileName))
         {
             int oldflags = Flags;
-            byte[] wank = Data.BytesOfData(GetFileData(), 0).ToArray();
+            byte[] wank;
+            using (pmWriteBuild.Auto()) wank = Data.BytesOfData(GetFileData(), 0).ToArray();
+
+            // Only flag the file as compressed if we actually compressed it AND it got smaller.
+            // Already-compressed payloads (PNG/JPEG) are detected and skipped, gzip on those just burns time.
+            bool compressed = false;
             if (wank.Length >= 300 && !GetFlag(1))
             {
-                SetFlag(1);
-                wank = Compress(wank);
+                using (pmWriteCompress.Auto())
+                {
+                    byte[] packed = CompressIfWorthIt(wank);
+                    if (packed != null)
+                    {
+                        wank = packed;
+                        compressed = true;
+                    }
+                }
             }
-            else
-            {
-                SetFlag(1, false);
-            }
+            SetFlag(1, compressed);
+
             if (!GetFlag(2))
             {
-                wank = Obfuscate(wank);
+                using (pmWriteObfuscate.Auto()) wank = Obfuscate(wank);
             }
             SetVersionIntoFlag();
             var ver = BitConverter.GetBytes(Flags);
-            byte[] final = new byte[ver.Length + wank.Length];
-            Buffer.BlockCopy(ver, 0, final, 0, ver.Length);
-            Buffer.BlockCopy(wank, 0, final, ver.Length, wank.Length);
-            File.WriteAllBytes(FileName, final);
+            using (pmWriteDisk.Auto())
+            {
+                // Header and body written separately: no extra "final" buffer copy of the whole file
+                using (var fs = new FileStream(FileName, FileMode.Create, FileAccess.Write, FileShare.None, 1 << 16))
+                {
+                    fs.Write(ver, 0, ver.Length);
+                    fs.Write(wank, 0, wank.Length);
+                }
+            }
             Flags = oldflags;
             return true;
         }
         return false;
     }
+
+    // ---------------------------------------------------------------------------------------------
+    // Async versions of ReadFile / WriteFile.
+    //
+    // Await these from the Unity main thread. What runs where:
+    //   worker threads : disk I/O, gzip, XOR, parsing / serializing the tree, ADPCM + delta coding,
+    //                    mesh array parsing, PNG/JPEG encoding of textures (EncodeArrayToPNG is thread safe)
+    //   main thread    : only the calls Unity forces onto it - copying data out of / into Texture2D,
+    //                    AudioClip and Mesh objects, LoadImage (PNG/JPEG decode), and custom-format code.
+    //                    These are spread over frames: after frameBudgetMs of work the method yields
+    //                    and carries on next frame. One single huge asset can still take longer than the
+    //                    budget, since a single Unity call can't be interrupted.
+    //
+    // Don't touch Data / Flags or start another read/write on this OXFile while one is running.
+    // ---------------------------------------------------------------------------------------------
+
+    public async Task<bool> ReadFileAsync(string str, CancellationToken ct = default, float frameBudgetMs = 4f)
+    {
+        byte[] cd = await ReadAllBytesAsync(str, ct);
+        if (cd.Length < 4) return false;
+        const int headerSize = 4;
+        int bodyLen = cd.Length - headerSize;
+
+        int newFlags = BitConverter.ToInt32(cd, 0);
+        bool compressed = (newFlags & (1 << (1 + 16))) != 0;
+        bool plain = (newFlags & (1 << (2 + 16))) != 0; // flag 2 set = NOT obfuscated
+
+        // Parsing needs the new flags (linker flag etc.), so set them now and roll back if we fail / get cancelled
+        int prevFlags = Flags, prevVersion = ObservedFileVersion;
+        Flags = newFlags;
+        SetVersionFromFlag();
+        try
+        {
+            // Everything that doesn't need a Unity API, on a worker thread
+            var parsed = await Task.Run(() =>
+            {
+                if (!plain)
+                {
+                    using (pmReadDeobfuscate.Auto()) DeObfuscate(cd, headerSize, bodyLen);
+                }
+                byte[] raw;
+                using (pmReadDecompress.Auto())
+                {
+                    raw = compressed ? Decompress(cd, headerSize, bodyLen) : WankFuckYou(cd, headerSize, bodyLen);
+                }
+
+                var data = new OXFileData(OXFileData.OXFileType.OXFileData);
+                data.pVersion = ObservedFileVersion;
+                data.DataRaw = raw;
+
+                var fd = GetFileData();
+                fd.Deferred = true; // textures / sounds / meshes / custom formats are finished on the main thread below
+                using (pmReadParse.Auto()) data.DataOXFiles = data.Get_OXFileData(fd);
+                return (data: data, pending: fd.Pending);
+            }, ct);
+
+            // Main thread, one asset at a time, yielding to the frame loop when over budget
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            foreach (var finish in parsed.pending)
+            {
+                ct.ThrowIfCancellationRequested();
+                finish();
+                if (sw.Elapsed.TotalMilliseconds >= frameBudgetMs)
+                {
+                    await Task.Yield();
+                    sw.Restart();
+                }
+            }
+
+            Data = parsed.data; // only swap in the new tree once it's complete
+            return true;
+        }
+        catch
+        {
+            Flags = prevFlags;
+            ObservedFileVersion = prevVersion;
+            throw;
+        }
+    }
+
+    public async Task<bool> WriteFileAsync(string FileName, bool CanOverride, CancellationToken ct = default, float frameBudgetMs = 4f)
+    {
+        if (!CanOverride && File.Exists(FileName)) return false;
+
+        // Step 1 (main thread, spread over frames): for every texture / sound / mesh / custom node, copy what's
+        // needed out of the Unity object, then immediately hand the heavy encoding to a worker thread.
+        var targets = new List<OXFileData>();
+        OXFileData.CollectEncodeTargets(Data, targets, true);
+
+        var jobs = new List<Task<byte[]>>(targets.Count);
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        foreach (var node in targets)
+        {
+            ct.ThrowIfCancellationRequested();
+            Func<byte[]> work = node.BeginEncode();
+            jobs.Add(work == null ? Task.FromResult<byte[]>(null) : Task.Run(work, ct));
+            if (sw.Elapsed.TotalMilliseconds >= frameBudgetMs)
+            {
+                await Task.Yield();
+                sw.Restart();
+            }
+        }
+        byte[][] encoded = await Task.WhenAll(jobs);
+        for (int i = 0; i < targets.Count; i++)
+        {
+            // BytesOfData treats a node with DataRaw already set as "already encoded" and just wraps it
+            if (encoded[i] != null) targets[i].DataRaw = encoded[i];
+        }
+
+        // Step 2 (worker thread): serialize the tree, compress, obfuscate
+        bool noCompress = GetFlag(1);
+        bool noObfuscate = GetFlag(2);
+        var result = await Task.Run(() =>
+        {
+            byte[] body;
+            using (pmWriteBuild.Auto()) body = Data.BytesOfData(GetFileData(), 0).ToArray();
+
+            bool didCompress = false;
+            if (body.Length >= 300 && !noCompress)
+            {
+                using (pmWriteCompress.Auto())
+                {
+                    byte[] packed = CompressIfWorthIt(body);
+                    if (packed != null)
+                    {
+                        body = packed;
+                        didCompress = true;
+                    }
+                }
+            }
+            if (!noObfuscate)
+            {
+                using (pmWriteObfuscate.Auto()) body = Obfuscate(body);
+            }
+            return (body: body, compressed: didCompress);
+        }, ct);
+
+        // Flags are only touched here, with no await in between, so they're always restored
+        int oldflags = Flags;
+        byte[] ver;
+        try
+        {
+            SetFlag(1, result.compressed);
+            SetVersionIntoFlag();
+            ver = BitConverter.GetBytes(Flags);
+        }
+        finally
+        {
+            Flags = oldflags;
+        }
+
+        // Step 3: async disk write. Deliberately not cancellable, a cancel mid-write would leave a truncated file
+        using (var fs = new FileStream(FileName, FileMode.Create, FileAccess.Write, FileShare.None, 1 << 16, FileOptions.Asynchronous))
+        {
+            await fs.WriteAsync(ver, 0, ver.Length);
+            await fs.WriteAsync(result.body, 0, result.body.Length);
+            await fs.FlushAsync();
+        }
+        return true;
+    }
+
+    private static async Task<byte[]> ReadAllBytesAsync(string path, CancellationToken ct)
+    {
+        using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 1 << 16,
+                   FileOptions.Asynchronous | FileOptions.SequentialScan))
+        {
+            int len = checked((int)fs.Length);
+            byte[] buf = new byte[len];
+            int read = 0;
+            while (read < len)
+            {
+                int n = await fs.ReadAsync(buf, read, len - read, ct).ConfigureAwait(false);
+                if (n == 0) break; // file shrank underneath us
+                read += n;
+            }
+            if (read != len) Array.Resize(ref buf, read);
+            return buf;
+        }
+    }
+
     private byte[] WankFuckYou(byte[] array, int offset, int length)
     {
         byte[] result = new byte[length];
@@ -613,6 +835,10 @@ public class OXFileData
     public int pVersion = 0;
     // Only meaningful for OXFileType.Sound: true = lossless (delta+gzip), false = lossy (ADPCM). Defaults lossy for max space savings.
     public bool SoundLossless = false;
+    // Only meaningful for OXFileType.Texture: true = lossy (JPEG), false = lossless PNG (default, same as before).
+    public bool TextureLossy = false;
+    // JPEG quality 1..100 used when TextureLossy is true.
+    public int TextureQuality = 75;
     public OXFileData() { }
     public OXFileData(OXFileType tp)
     {
@@ -748,7 +974,7 @@ public class OXFileData
         }
         else
         {
-            Name = Encoding.UTF8.GetString(WankFuckYou(dat, index, length));
+            Name = Encoding.UTF8.GetString(dat, index, length);
             index += length;
         }
         DataRaw = WankFuckYou(dat, index, bodylength);
@@ -900,16 +1126,37 @@ public class OXFileData
                 DataDictStringString = Get_DictStringString();
                 break;
             case OXFileType.Texture:
-                DataTexture = Get_Texture();
+                if (fd.Deferred)
+                {
+                    var texPayload = PrepareTexturePayload(DataRaw); // pure managed (alpha plane gunzip)
+                    fd.Pending.Add(() => { DataTexture = BuildTexture(texPayload); });
+                }
+                else DataTexture = Get_Texture();
                 break;
             case OXFileType.Sound:
-                DataSound = Get_Sound();
+                if (fd.Deferred)
+                {
+                    var audio = DecodeAudioBytes(DataRaw); // pure managed (gunzip + ADPCM/delta decode)
+                    fd.Pending.Add(() => { DataSound = DecodedToAudioClip(audio); });
+                }
+                else DataSound = Get_Sound();
                 break;
             case OXFileType.Mesh:
-                DataMesh = Get_Mesh();
+                if (fd.Deferred)
+                {
+                    var parsedMesh = ParseMeshBytes(DataRaw); // pure managed
+                    fd.Pending.Add(() => { DataMesh = BuildMesh(parsedMesh); });
+                }
+                else DataMesh = Get_Mesh();
                 break;
             case OXFileType.Custom:
-                DataCustom = Get_Custom();
+                if (fd.Deferred)
+                {
+                    // Custom formats are user code that may touch Unity APIs, so link them on the main thread
+                    var customRaw = DataRaw;
+                    fd.Pending.Add(() => { DataCustom = LinkCustomBytes(customRaw); });
+                }
+                else DataCustom = Get_Custom();
                 break;
             case OXFileType.ListOXFileData:
                 DataListOXFiles = Get_ListOXFileData(fd);
@@ -1004,11 +1251,38 @@ public class OXFileData
         dat.DataTexture = DataIn;
         Add(Name, dat);
     }
+    public void Add(string Name, Texture2D DataIn, bool lossy, int quality = 75)
+    {
+        var dat = new OXFileData();
+        dat.Type = OXFileData.OXFileType.Texture;
+        dat.DataTexture = DataIn;
+        dat.TextureLossy = lossy;
+        dat.TextureQuality = quality;
+        Add(Name, dat);
+    }
+    // Adds an image that is ALREADY encoded (PNG/JPEG file bytes, e.g. straight from disk).
+    // Skips the decode + re-encode entirely, which is by far the fastest way to put an image in a file.
+    public void AddEncodedTexture(string Name, byte[] encodedImage)
+    {
+        var dat = new OXFileData();
+        dat.Type = OXFileData.OXFileType.Texture;
+        dat.DataRaw = encodedImage;
+        Add(Name, dat);
+    }
     public void Add(string Name, Sprite DataIn)
     {
         var dat = new OXFileData();
         dat.Type = OXFileData.OXFileType.Texture;
         dat.DataSprite = DataIn;
+        Add(Name, dat);
+    }
+    public void Add(string Name, Sprite DataIn, bool lossy, int quality = 75)
+    {
+        var dat = new OXFileData();
+        dat.Type = OXFileData.OXFileType.Texture;
+        dat.DataSprite = DataIn;
+        dat.TextureLossy = lossy;
+        dat.TextureQuality = quality;
         Add(Name, dat);
     }
     public void Add(string Name, AudioClip DataIn, bool lossless = false)
@@ -1384,7 +1658,7 @@ public class OXFileData
                 ret.Add(DataColor32.a);
                 break;
             case OXFileType.Texture:
-                bytez = DataTexture.EncodeToPNG();
+                bytez = TextureToBytes(DataTexture, TextureLossy, TextureQuality);
                 ret.AddRange(bytez);
                 break;
             case OXFileType.Sound:
@@ -1508,12 +1782,13 @@ public class OXFileData
 
     public static Dictionary<string, Func<byte[], _IOXFile>> CustomFormats = new();
 
-    private _IOXFile Get_Custom()
+    private _IOXFile Get_Custom() => LinkCustomBytes(DataRaw);
+    private static _IOXFile LinkCustomBytes(byte[] raw)
     {
-        byte length = DataRaw[0];
-        byte[] selection = DataRaw.SubArray(1, length);
+        byte length = raw[0];
+        byte[] selection = raw.SubArray(1, length);
         string id = Encoding.UTF8.GetString(selection);
-        return CustomFormats[id](DataRaw.SubArray(length + 1, DataRaw.Length - length - 1));
+        return CustomFormats[id](raw.SubArray(length + 1, raw.Length - length - 1));
     }
     private bool Get_Bool()
     {
@@ -1648,14 +1923,74 @@ public class OXFileData
         return output.ToArray();
     }
 
-    public static byte[] Decompress(byte[] compressedData)
+    // Payloads bigger than this use the fast gzip level (much quicker, slightly bigger output).
+    // Smaller ones keep the Optimal level. Touch away.
+    public static int CompressOptimalMaxBytes = 256 * 1024;
+
+    public static byte[] Compress(byte[] data, System.IO.Compression.CompressionLevel level)
+    {
+        using var output = new MemoryStream(Math.Max(256, data.Length / 2));
+        using (var gzip = new GZipStream(output, level, leaveOpen: true))
+        {
+            gzip.Write(data, 0, data.Length);
+        }
+        return output.ToArray();
+    }
+
+    // Quick compressibility probe: gzip a few small samples spread across a big payload.
+    // PNG/JPEG/ADPCM data barely shrinks, so compressing it again is wasted time.
+    public static bool LooksIncompressible(byte[] data)
+    {
+        const int chunk = 4096;
+        const int samples = 4;
+        if (data.Length < 64 * 1024) return false;
+
+        long inTotal = 0, outTotal = 0;
+        for (int s = 0; s < samples; s++)
+        {
+            int start = (int)((long)(data.Length - chunk) * s / (samples - 1));
+            using var ms = new MemoryStream(chunk + 64);
+            using (var gz = new GZipStream(ms, System.IO.Compression.CompressionLevel.Fastest, leaveOpen: true))
+            {
+                gz.Write(data, start, chunk);
+            }
+            inTotal += chunk;
+            outTotal += ms.Length;
+        }
+        return outTotal > inTotal * 95 / 100;
+    }
+
+    // Returns the gzip'd data, or null if it isn't worth it (looks incompressible, or didn't come out smaller).
+    public static byte[] CompressIfWorthIt(byte[] data)
+    {
+        if (LooksIncompressible(data)) return null;
+        var level = data.Length > CompressOptimalMaxBytes
+            ? System.IO.Compression.CompressionLevel.Fastest
+            : System.IO.Compression.CompressionLevel.Optimal;
+        byte[] packed = Compress(data, level);
+        return packed.Length < data.Length ? packed : null;
+    }
+
+    public static byte[] Decompress(byte[] compressedData) => Decompress(compressedData, 0, compressedData.Length);
+
+    // Decompresses a slice of an array without copying the slice out first. The gzip footer stores the
+    // original size, so the output buffer is allocated once at the right size (no growth copies, and no
+    // final ToArray copy when it matches).
+    public static byte[] Decompress(byte[] data, int offset, int count)
     {
         try
         {
-            using var input = new MemoryStream(compressedData);
+            int expected = 0;
+            if (count >= 18)
+            {
+                expected = BitConverter.ToInt32(data, offset + count - 4);
+                if (expected < 0 || expected > (1 << 30)) expected = 0;
+            }
+            using var input = new MemoryStream(data, offset, count, false);
             using var gzip = new GZipStream(input, CompressionMode.Decompress);
-            using var output = new MemoryStream();
-            gzip.CopyTo(output);
+            using var output = new MemoryStream(expected > 0 ? expected : Math.Max(256, count * 3));
+            gzip.CopyTo(output, 1 << 16);
+            if (output.Length == output.Capacity) return output.GetBuffer();
             return output.ToArray();
         }
         catch (Exception ex)
@@ -1667,17 +2002,57 @@ public class OXFileData
     private const string SuperSecretKey = "B!d&llp)897633G%^&*g576iyu";
     private static readonly byte[] SuperSecretKeyBytes = Encoding.UTF8.GetBytes(SuperSecretKey);
 
-    private static byte[] XorObfuscate(byte[] data)
+    // The per-byte key is (byte)((i + 100) ^ key[i % keyLen]), which repeats every lcm(256, keyLen) bytes
+    // (3328 for the current key). We build that repeating stream once and XOR 8 bytes at a time with it,
+    // instead of doing a modulo + xor per byte. Output is byte-for-byte identical to the old version.
+    private static readonly byte[] XorKeyStream = BuildXorKeyStream();
+
+    private static byte[] BuildXorKeyStream()
     {
         int bLen = SuperSecretKeyBytes.Length;
-        for (int i = 0; i < data.Length; i++)
+        int a = 256, b = bLen;
+        while (b != 0) { int t = a % b; a = b; b = t; }
+        int period = 256 / a * bLen; // lcm(256, bLen), always a multiple of 256 (so of 8)
+        var ks = new byte[period];
+        for (int i = 0; i < period; i++)
         {
-            data[i] ^= (byte)((i + 100) ^ SuperSecretKeyBytes[i % bLen]);
+            ks[i] = (byte)((i + 100) ^ SuperSecretKeyBytes[i % bLen]);
         }
+        return ks;
+    }
+
+    // XORs data[offset .. offset+length) in place, with the key stream starting at position 0 of that range
+    private static void XorRange(byte[] data, int offset, int length)
+    {
+        byte[] ks = XorKeyStream;
+        int period = ks.Length;
+        Span<ulong> ks64 = MemoryMarshal.Cast<byte, ulong>(ks.AsSpan());
+        int words = ks64.Length;
+
+        Span<byte> span = data.AsSpan(offset, length);
+        int whole = length & ~7;
+        Span<ulong> d64 = MemoryMarshal.Cast<byte, ulong>(span.Slice(0, whole));
+        int k = 0;
+        for (int i = 0; i < d64.Length; i++)
+        {
+            d64[i] ^= ks64[k];
+            if (++k == words) k = 0;
+        }
+        for (int i = whole; i < length; i++)
+        {
+            span[i] ^= ks[i % period];
+        }
+    }
+
+    private static byte[] XorObfuscate(byte[] data)
+    {
+        XorRange(data, 0, data.Length);
         return data;
     }
     public static byte[] Obfuscate(byte[] data) => XorObfuscate(data);
     public static byte[] DeObfuscate(byte[] data) => XorObfuscate(data);
+    // In-place on part of a bigger buffer (used by ReadFile to skip the slice copy)
+    public static void DeObfuscate(byte[] data, int offset, int length) => XorRange(data, offset, length);
 
     [Flags]
     private enum MeshDataFlags : byte
@@ -1690,13 +2065,49 @@ public class OXFileData
     }
 
     // Packs a Unity Mesh (positions, optional normals/uv/vertex colors/tangents, and all submeshes with their topology)
-    public static byte[] MeshToBytes(Mesh mesh)
+    // Everything MeshToBytes needs, copied out of the Unity Mesh. Capturing it is main-thread only,
+    // turning it into bytes (MeshSnapshotToBytes) is pure managed code and can run on any thread.
+    public sealed class MeshSnapshot
     {
-        Vector3[] vertices = mesh.vertices;
-        Vector3[] normals = mesh.normals;
-        Vector2[] uv = mesh.uv;
-        Color[] colors = mesh.colors;
-        Vector4[] tangents = mesh.tangents;
+        public Vector3[] Vertices;
+        public Vector3[] Normals;
+        public Vector2[] UV;
+        public Color[] Colors;
+        public Vector4[] Tangents;
+        public int[][] Indices;
+        public MeshTopology[] Topology;
+    }
+
+    public static MeshSnapshot CaptureMesh(Mesh mesh)
+    {
+        var snap = new MeshSnapshot
+        {
+            Vertices = mesh.vertices,
+            Normals = mesh.normals,
+            UV = mesh.uv,
+            Colors = mesh.colors,
+            Tangents = mesh.tangents,
+        };
+        int subMeshCount = mesh.subMeshCount;
+        snap.Indices = new int[subMeshCount][];
+        snap.Topology = new MeshTopology[subMeshCount];
+        for (int s = 0; s < subMeshCount; s++)
+        {
+            snap.Indices[s] = mesh.GetTriangles(s);
+            snap.Topology[s] = mesh.GetTopology(s);
+        }
+        return snap;
+    }
+
+    public static byte[] MeshToBytes(Mesh mesh) => MeshSnapshotToBytes(CaptureMesh(mesh));
+
+    public static byte[] MeshSnapshotToBytes(MeshSnapshot m)
+    {
+        Vector3[] vertices = m.Vertices;
+        Vector3[] normals = m.Normals;
+        Vector2[] uv = m.UV;
+        Color[] colors = m.Colors;
+        Vector4[] tangents = m.Tangents;
 
         MeshDataFlags flags = MeshDataFlags.None;
         if (normals != null && normals.Length == vertices.Length) flags |= MeshDataFlags.Normals;
@@ -1732,100 +2143,312 @@ public class OXFileData
                 foreach (var t in tangents) { writer.Write(t.x); writer.Write(t.y); writer.Write(t.z); writer.Write(t.w); }
             }
 
-            writer.Write(mesh.subMeshCount);
-            for (int s = 0; s < mesh.subMeshCount; s++)
+            writer.Write(m.Indices.Length);
+            for (int s = 0; s < m.Indices.Length; s++)
             {
-                int[] indices = mesh.GetTriangles(s);
-                writer.Write((byte)mesh.GetTopology(s));
+                int[] indices = m.Indices[s];
+                writer.Write((byte)m.Topology[s]);
                 writer.Write(indices.Length);
                 foreach (var idx in indices) writer.Write(idx);
             }
             return stream.ToArray();
         }
     }
-    public static Mesh BytesToMesh(byte[] raw, string meshName = "loadedMesh")
-    {
 
+    // Mesh bytes parsed into plain arrays (pure managed, any thread). BuildMesh turns it into a Mesh (main thread).
+    public sealed class ParsedMesh
+    {
+        public int VertexCount;
+        public Vector3[] Vertices;
+        public Vector3[] Normals;
+        public Vector2[] UV;
+        public Color[] Colors;
+        public Vector4[] Tangents;
+        public int[][] Indices;
+        public MeshTopology[] Topology;
+    }
+
+    public static ParsedMesh ParseMeshBytes(byte[] raw)
+    {
         using (MemoryStream stream = new MemoryStream(raw))
         using (BinaryReader reader = new BinaryReader(stream))
         {
+            var pm = new ParsedMesh();
             int vertexCount = reader.ReadInt32();
-            Vector3[] vertices = new Vector3[vertexCount];
+            pm.VertexCount = vertexCount;
+            pm.Vertices = new Vector3[vertexCount];
             for (int i = 0; i < vertexCount; i++)
             {
-                vertices[i] = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+                pm.Vertices[i] = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
             }
 
             MeshDataFlags flags = (MeshDataFlags)reader.ReadByte();
 
-            Vector3[] normals = null;
             if ((flags & MeshDataFlags.Normals) != 0)
             {
-                normals = new Vector3[vertexCount];
+                pm.Normals = new Vector3[vertexCount];
                 for (int i = 0; i < vertexCount; i++)
-                    normals[i] = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+                    pm.Normals[i] = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
             }
-
-            Vector2[] uv = null;
             if ((flags & MeshDataFlags.UV) != 0)
             {
-                uv = new Vector2[vertexCount];
+                pm.UV = new Vector2[vertexCount];
                 for (int i = 0; i < vertexCount; i++)
-                    uv[i] = new Vector2(reader.ReadSingle(), reader.ReadSingle());
+                    pm.UV[i] = new Vector2(reader.ReadSingle(), reader.ReadSingle());
             }
-
-            Color[] colors = null;
             if ((flags & MeshDataFlags.Colors) != 0)
             {
-                colors = new Color[vertexCount];
+                pm.Colors = new Color[vertexCount];
                 for (int i = 0; i < vertexCount; i++)
-                    colors[i] = new Color(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+                    pm.Colors[i] = new Color(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
             }
-
-            Vector4[] tangents = null;
             if ((flags & MeshDataFlags.Tangents) != 0)
             {
-                tangents = new Vector4[vertexCount];
+                pm.Tangents = new Vector4[vertexCount];
                 for (int i = 0; i < vertexCount; i++)
-                    tangents[i] = new Vector4(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+                    pm.Tangents[i] = new Vector4(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
             }
 
             int subMeshCount = reader.ReadInt32();
-
-            Mesh mesh = new Mesh();
-            mesh.name = meshName;
-            // Large meshes (>65535 verts) need a 32-bit index format nya
-            mesh.indexFormat = vertexCount > 65535
-                ? UnityEngine.Rendering.IndexFormat.UInt32
-                : UnityEngine.Rendering.IndexFormat.UInt16;
-
-            mesh.vertices = vertices;
-            if (normals != null) mesh.normals = normals;
-            if (uv != null) mesh.uv = uv;
-            if (colors != null) mesh.colors = colors;
-            if (tangents != null) mesh.tangents = tangents;
-
-            mesh.subMeshCount = subMeshCount;
+            pm.Indices = new int[subMeshCount][];
+            pm.Topology = new MeshTopology[subMeshCount];
             for (int s = 0; s < subMeshCount; s++)
             {
-                MeshTopology topology = (MeshTopology)reader.ReadByte();
+                pm.Topology[s] = (MeshTopology)reader.ReadByte();
                 int indexCount = reader.ReadInt32();
                 int[] indices = new int[indexCount];
                 for (int i = 0; i < indexCount; i++) indices[i] = reader.ReadInt32();
-                mesh.SetIndices(indices, topology, s);
+                pm.Indices[s] = indices;
             }
-
-            if (normals == null) mesh.RecalculateNormals();
-            mesh.RecalculateBounds();
-
-            return mesh;
+            return pm;
         }
     }
 
-    public static Texture2D BytesToTexture(byte[] bytes)
+    public static Mesh BuildMesh(ParsedMesh pm, string meshName = "loadedMesh")
     {
+        Mesh mesh = new Mesh();
+        mesh.name = meshName;
+        // Large meshes (>65535 verts) need a 32-bit index format nya
+        mesh.indexFormat = pm.VertexCount > 65535
+            ? UnityEngine.Rendering.IndexFormat.UInt32
+            : UnityEngine.Rendering.IndexFormat.UInt16;
+
+        mesh.vertices = pm.Vertices;
+        if (pm.Normals != null) mesh.normals = pm.Normals;
+        if (pm.UV != null) mesh.uv = pm.UV;
+        if (pm.Colors != null) mesh.colors = pm.Colors;
+        if (pm.Tangents != null) mesh.tangents = pm.Tangents;
+
+        mesh.subMeshCount = pm.Indices.Length;
+        for (int s = 0; s < pm.Indices.Length; s++)
+        {
+            mesh.SetIndices(pm.Indices[s], pm.Topology[s], s);
+        }
+
+        if (pm.Normals == null) mesh.RecalculateNormals();
+        mesh.RecalculateBounds();
+
+        return mesh;
+    }
+
+    public static Mesh BytesToMesh(byte[] raw, string meshName = "loadedMesh") => BuildMesh(ParseMeshBytes(raw), meshName);
+
+    // Texture container formats, told apart by the first byte so old files keep loading:
+    //   0x89 ... = PNG (lossless, what OX always wrote before)
+    //   0xFF 0xD8 = plain JPEG (lossy, no alpha)
+    //   0xAE = JPEG color + gzip'd lossless 8-bit alpha plane (lossy color, exact alpha)
+    private const byte TextureMagicJpegAlpha = 0xAE;
+
+    static readonly ProfilerMarker pmPngEncode = new ProfilerMarker("OX.Texture.EncodePNG");
+    static readonly ProfilerMarker pmJpgEncode = new ProfilerMarker("OX.Texture.EncodeJPG");
+    static readonly ProfilerMarker pmPixelScan = new ProfilerMarker("OX.Texture.PixelScan");
+    static readonly ProfilerMarker pmTexDecode = new ProfilerMarker("OX.Texture.Decode");
+
+    // One pass over the pixels: does anything have transparency, and are there only a few distinct colors
+    // (flat art / pixel art, where PNG can beat JPEG)? Stops early once both questions are answered.
+    private static void ScanPixels(Color32[] px, out bool hasAlpha, out bool fewColors)
+    {
+        hasAlpha = false;
+        var seen = new HashSet<uint>();
+        bool counting = true;
+        uint last = 0;
+        bool haveLast = false;
+        for (int i = 0; i < px.Length; i++)
+        {
+            Color32 c = px[i];
+            if (c.a != 255) hasAlpha = true;
+            if (counting)
+            {
+                uint key = (uint)c.r | ((uint)c.g << 8) | ((uint)c.b << 16) | ((uint)c.a << 24);
+                if (!haveLast || key != last) // runs of the same color are free
+                {
+                    seen.Add(key);
+                    last = key;
+                    haveLast = true;
+                    if (seen.Count > 256) counting = false;
+                }
+            }
+            if (hasAlpha && !counting) break;
+        }
+        fewColors = counting;
+    }
+
+    private static void DestroyTemp(UnityEngine.Object o)
+    {
+        if (o == null) return;
+        if (Application.isPlaying) UnityEngine.Object.Destroy(o);
+        else UnityEngine.Object.DestroyImmediate(o);
+    }
+
+    // Encodes a texture. lossy = false -> PNG exactly like before.
+    // lossy = true -> JPEG at the given quality (1..100). If the texture has any transparency,
+    // the alpha is kept losslessly in a side plane. If PNG would somehow be smaller than the
+    // lossy result (flat colors / pixel art), PNG is used instead since it's smaller AND exact nya.
+    public static byte[] TextureToBytes(Texture2D tex, bool lossy = false, int quality = 75)
+    {
+        // PNG encoding is by far the slowest step here, so lossy mode only runs it when PNG can plausibly win
+        // (few distinct colors, or the JPEG came out big, which means sharp edges that JPEG handles badly).
+        if (!lossy)
+        {
+            using (pmPngEncode.Auto()) return tex.EncodeToPNG();
+        }
+
+        quality = Mathf.Clamp(quality, 1, 100);
+
+        Color32[] px;
+        bool hasAlpha, fewColors;
+        using (pmPixelScan.Auto())
+        {
+            px = tex.GetPixels32();
+            ScanPixels(px, out hasAlpha, out fewColors);
+        }
+
+        byte[] jpg;
+        using (pmJpgEncode.Auto()) jpg = tex.EncodeToJPG(quality);
+
+        byte[] result = jpg;
+        if (hasAlpha)
+        {
+            byte[] alpha = new byte[px.Length];
+            for (int i = 0; i < px.Length; i++) alpha[i] = px[i].a;
+            byte[] alphaCompressed = Compress(alpha, System.IO.Compression.CompressionLevel.Fastest);
+
+            result = new byte[1 + 4 + jpg.Length + alphaCompressed.Length];
+            result[0] = TextureMagicJpegAlpha;
+            BitConverter.GetBytes(jpg.Length).CopyTo(result, 1);
+            jpg.CopyTo(result, 5);
+            alphaCompressed.CopyTo(result, 5 + jpg.Length);
+        }
+
+        bool bigForJpeg = (long)result.Length * 8 > (long)px.Length * 5 / 2; // more than ~2.5 bits per pixel
+        if (fewColors || bigForJpeg)
+        {
+            byte[] png;
+            using (pmPngEncode.Auto()) png = tex.EncodeToPNG();
+            if (png.Length <= result.Length) return png;
+        }
+        return result;
+    }
+
+    // Same result as the lossy half of TextureToBytes, but starting from pixels that were already copied
+    // out of the texture, so it only uses thread-safe APIs and can run on a worker thread.
+    // (ImageConversion.EncodeArrayToPNG is documented as thread safe by Unity.)
+    private static byte[] EncodeLossyFromPixels(Color32[] px, int w, int h, int quality)
+    {
+        const UnityEngine.Experimental.Rendering.GraphicsFormat rgba = UnityEngine.Experimental.Rendering.GraphicsFormat.R8G8B8A8_UNorm;
+        quality = Math.Clamp(quality, 1, 100);
+
+        bool hasAlpha, fewColors;
+        using (pmPixelScan.Auto()) ScanPixels(px, out hasAlpha, out fewColors);
+
+        byte[] rgbaBytes = MemoryMarshal.Cast<Color32, byte>(px.AsSpan()).ToArray();
+
+        byte[] jpg;
+        using (pmJpgEncode.Auto()) jpg = ImageConversion.EncodeArrayToJPG(rgbaBytes, rgba, (uint)w, (uint)h, 0u, quality);
+
+        byte[] result = jpg;
+        if (hasAlpha)
+        {
+            byte[] alpha = new byte[px.Length];
+            for (int i = 0; i < px.Length; i++) alpha[i] = px[i].a;
+            byte[] alphaCompressed = Compress(alpha, System.IO.Compression.CompressionLevel.Fastest);
+
+            result = new byte[1 + 4 + jpg.Length + alphaCompressed.Length];
+            result[0] = TextureMagicJpegAlpha;
+            BitConverter.GetBytes(jpg.Length).CopyTo(result, 1);
+            jpg.CopyTo(result, 5);
+            alphaCompressed.CopyTo(result, 5 + jpg.Length);
+        }
+
+        bool bigForJpeg = (long)result.Length * 8 > (long)px.Length * 5 / 2; // more than ~2.5 bits per pixel
+        if (fewColors || bigForJpeg)
+        {
+            byte[] png;
+            using (pmPngEncode.Auto()) png = ImageConversion.EncodeArrayToPNG(rgbaBytes, rgba, (uint)w, (uint)h, 0u);
+            if (png.Length <= result.Length) return png;
+        }
+        return result;
+    }
+
+    // Texture bytes split into the part that needs no Unity API (PrepareTexturePayload: slicing the JPEG out and
+    // gunzipping the alpha plane, any thread) and the part that does (BuildTexture, main thread only).
+    public sealed class TexturePayload
+    {
+        public byte[] Jpg;   // set for the JPEG + alpha plane container
+        public byte[] Alpha;
+        public byte[] Plain; // PNG or plain JPEG, LoadImage sniffs it itself
+    }
+
+    public static TexturePayload PrepareTexturePayload(byte[] bytes)
+    {
+        if (bytes.Length > 5 && bytes[0] == TextureMagicJpegAlpha)
+        {
+            int jpgLength = BitConverter.ToInt32(bytes, 1);
+            byte[] jpg = new byte[jpgLength];
+            Buffer.BlockCopy(bytes, 5, jpg, 0, jpgLength);
+            // decompress the alpha plane straight out of the buffer, no slice copy
+            byte[] alpha = Decompress(bytes, 5 + jpgLength, bytes.Length - 5 - jpgLength);
+            return new TexturePayload { Jpg = jpg, Alpha = alpha };
+        }
+        return new TexturePayload { Plain = bytes };
+    }
+
+    public static Texture2D BuildTexture(TexturePayload payload)
+    {
+        // JPEG + separate alpha plane container
+        if (payload.Jpg != null)
+        {
+            using (pmTexDecode.Auto())
+            {
+                // LoadImage turns a JPEG texture into RGB24 (no alpha channel), so decode into a scratch
+                // texture and build the final RGBA32 one from it with the alpha plane filled back in.
+                var rgb = new Texture2D(2, 2, TextureFormat.RGB24, false);
+                if (!rgb.LoadImage(payload.Jpg))
+                {
+                    DestroyTemp(rgb);
+                    Debug.LogError("BytesToTexture: failed to load lossy image data!");
+                    return null;
+                }
+
+                Color32[] px = rgb.GetPixels32();
+                int w = rgb.width, h = rgb.height;
+                DestroyTemp(rgb);
+
+                byte[] alpha = payload.Alpha;
+                int n = Math.Min(px.Length, alpha.Length);
+                for (int i = 0; i < n; i++) px[i].a = alpha[i];
+
+                var tex = new Texture2D(w, h, TextureFormat.RGBA32, false);
+                tex.SetPixels32(px);
+                tex.Apply();
+                return tex;
+            }
+        }
+
+        // PNG or plain JPEG, LoadImage sniffs it itself
         Texture2D texture = new Texture2D(1, 1, TextureFormat.RGBA32, false);
-        bool success = texture.LoadImage(bytes);
+        bool success;
+        using (pmTexDecode.Auto()) success = texture.LoadImage(payload.Plain);
 
         if (!success)
         {
@@ -1835,6 +2458,8 @@ public class OXFileData
 
         return texture;
     }
+
+    public static Texture2D BytesToTexture(byte[] bytes) => BuildTexture(PrepareTexturePayload(bytes));
 
 
     // Marker bytes identifying OX's own sound containers. Both are distinct from any
@@ -1856,10 +2481,16 @@ public class OXFileData
     // a small, usually inaudible amount of quality loss.
     public static byte[] AudioClipToBytes(AudioClip clip, bool lossless = false)
     {
-        // Grab raw float samples from the clip
+        // Grab raw float samples from the clip (main thread only)
         float[] samples = new float[clip.samples * clip.channels];
         clip.GetData(samples, 0);
         int channels = Mathf.Max(1, clip.channels);
+        return AudioSamplesToBytes(samples, channels, clip.frequency, lossless);
+    }
+
+    // The pure managed half of AudioClipToBytes (PCM conversion, ADPCM / delta encode, gzip). Any thread.
+    public static byte[] AudioSamplesToBytes(float[] samples, int channels, int frequency, bool lossless)
+    {
 
         // Convert float samples (-1f to 1f) into 16-bit PCM shorts
         const float rescaleFactor = 32767f; // to convert float to Int16
@@ -1877,7 +2508,7 @@ public class OXFileData
             byte[] lossyResult = new byte[17 + adpcmCompressed.Length];
             lossyResult[0] = SoundMagicLossy;
             BitConverter.GetBytes(channels).CopyTo(lossyResult, 1);
-            BitConverter.GetBytes(clip.frequency).CopyTo(lossyResult, 5);
+            BitConverter.GetBytes(frequency).CopyTo(lossyResult, 5);
             BitConverter.GetBytes(pcm.Length).CopyTo(lossyResult, 9);
             BitConverter.GetBytes(adpcm.Length).CopyTo(lossyResult, 13);
             adpcmCompressed.CopyTo(lossyResult, 17);
@@ -1904,7 +2535,7 @@ public class OXFileData
         }
 
         // Build the WAV file header + delta data, then gzip the whole thing
-        byte[] wav = WriteWavHeader(deltaBytes, channels, clip.frequency);
+        byte[] wav = WriteWavHeader(deltaBytes, channels, frequency);
         byte[] compressed = Compress(wav);
 
         byte[] result = new byte[5 + compressed.Length];
@@ -1917,7 +2548,7 @@ public class OXFileData
     // Convert a byte array back into an AudioClip nya~
     // Handles the lossless delta+gzip container, the lossy ADPCM container, and legacy
     // raw WAV bytes (anything saved before compression existed), so old .ox files keep working.
-    public static AudioClip BytesToAudioClip(byte[] wavBytes, string clipName = "loadedClip")
+    public static DecodedAudio DecodeAudioBytes(byte[] wavBytes)
     {
         if (wavBytes.Length > 17 && wavBytes[0] == SoundMagicLossy)
         {
@@ -1941,9 +2572,7 @@ public class OXFileData
                 lossySamples[i] = pcm[i] / 32767f;
             }
 
-            AudioClip lossyClip = AudioClip.Create(clipName, pcm.Length / channels, channels, frequency, false);
-            lossyClip.SetData(lossySamples, 0);
-            return lossyClip;
+            return new DecodedAudio { Samples = lossySamples, Channels = channels, Frequency = frequency };
         }
 
         bool deltaEncoded = wavBytes.Length > 5 && wavBytes[0] == SoundMagicLossless;
@@ -2005,11 +2634,27 @@ public class OXFileData
             }
         }
 
-        AudioClip clip = AudioClip.Create(clipName, sampleCount / wavChannels, wavChannels, wavFrequency, false);
-        clip.SetData(samples, 0);
+        return new DecodedAudio { Samples = samples, Channels = wavChannels, Frequency = wavFrequency };
+    }
 
+    // Decoded float samples, ready to hand to AudioClip.Create (main thread only)
+    public static AudioClip DecodedToAudioClip(DecodedAudio audio, string clipName = "loadedClip")
+    {
+        if (audio == null) return null;
+        AudioClip clip = AudioClip.Create(clipName, audio.Samples.Length / audio.Channels, audio.Channels, audio.Frequency, false);
+        clip.SetData(audio.Samples, 0);
         return clip;
     }
+
+    public static AudioClip BytesToAudioClip(byte[] wavBytes, string clipName = "loadedClip") => DecodedToAudioClip(DecodeAudioBytes(wavBytes), clipName);
+
+    public sealed class DecodedAudio
+    {
+        public float[] Samples;
+        public int Channels;
+        public int Frequency;
+    }
+
 
     // Encodes interleaved 16-bit PCM into 4-bit-per-sample IMA ADPCM, one predictor/step
     // pair per channel so multi-channel audio doesn't bleed state between channels.
@@ -2151,6 +2796,83 @@ public class OXFileData
         Array.Copy(array, offset, result, 0, length);
         return result;
     }
+    // ---- async write support -------------------------------------------------------------------
+    // Finds the nodes whose bytes are expensive or touch Unity objects and have nothing cached yet.
+    internal static void CollectEncodeTargets(OXFileData node, List<OXFileData> into, bool isRoot)
+    {
+        if (node == null) return;
+        bool cached = node.DataRaw != null && node.DataRaw.Length > 0;
+        switch (node.Type)
+        {
+            case OXFileType.OXFileData:
+                if (cached && !isRoot) return;
+                if (node.DataOXFiles != null)
+                    foreach (var kv in node.DataOXFiles) CollectEncodeTargets(kv.Value, into, false);
+                break;
+            case OXFileType.ListOXFileData:
+                if (cached) return;
+                if (node.DataListOXFiles != null)
+                    foreach (var c in node.DataListOXFiles) CollectEncodeTargets(c, into, false);
+                break;
+            case OXFileType.Texture:
+            case OXFileType.Sound:
+            case OXFileType.Mesh:
+            case OXFileType.Custom:
+                if (!cached) into.Add(node);
+                break;
+        }
+    }
+
+    // MAIN THREAD part of encoding this node: copies what's needed out of the Unity object (or runs the
+    // user's custom GetBytes). Returns the remaining work as a function that only uses thread-safe code,
+    // so the caller can run it on a worker. Returns null when there's nothing to pre-encode.
+    internal Func<byte[]> BeginEncode()
+    {
+        switch (Type)
+        {
+            case OXFileType.Texture:
+                {
+                    Texture2D tex = DataTexture;
+                    if (tex == null) return null;
+                    int w = tex.width, h = tex.height;
+                    if (!TextureLossy)
+                    {
+                        var fmt = tex.graphicsFormat;
+                        byte[] rawPixels = tex.GetRawTextureData();
+                        return () => ImageConversion.EncodeArrayToPNG(rawPixels, fmt, (uint)w, (uint)h, 0u);
+                    }
+                    Color32[] px = tex.GetPixels32();
+                    int quality = TextureQuality;
+                    return () => EncodeLossyFromPixels(px, w, h, quality);
+                }
+            case OXFileType.Sound:
+                {
+                    AudioClip clip = DataSound;
+                    if (clip == null) return null;
+                    float[] samples = new float[clip.samples * clip.channels];
+                    clip.GetData(samples, 0);
+                    int channels = Mathf.Max(1, clip.channels);
+                    int frequency = clip.frequency;
+                    bool lossless = SoundLossless;
+                    return () => AudioSamplesToBytes(samples, channels, frequency, lossless);
+                }
+            case OXFileType.Mesh:
+                {
+                    Mesh mesh = DataMesh;
+                    if (mesh == null) return null;
+                    MeshSnapshot snap = CaptureMesh(mesh);
+                    return () => MeshSnapshotToBytes(snap);
+                }
+            case OXFileType.Custom:
+                {
+                    if (DataCustom == null) return null;
+                    byte[] bytes = DataCustom.GetBytes().ToArray(); // user code, keep it on the main thread
+                    return () => bytes;
+                }
+        }
+        return null;
+    }
+
     public bool ContainsKey(string name)
     {
         if (Type != OXFileType.OXFileData) return false;
@@ -2201,6 +2923,12 @@ public class FileData
 {
     public OXFile File;
     public int CurrentStep = 0;
+
+    // Async read support: when Deferred is true, Parse() does all the pure-managed work right away
+    // but pushes anything that needs a Unity main-thread API (Texture2D / AudioClip / Mesh creation,
+    // custom formats) into Pending as a closure, to be run later on the main thread.
+    internal bool Deferred = false;
+    internal List<Action> Pending = new List<Action>();
 }
 
 public static class OXFileLoader

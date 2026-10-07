@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,6 +11,34 @@ public class InputManager : SingleInstance<InputManager>
     public static Dictionary<string, List<KeyCode>> gamekeys = new Dictionary<string, List<KeyCode>>();
     public static Dictionary<string, List<KeyCode>> defaultgamekeys = new Dictionary<string, List<KeyCode>>();
     public static OXEvent CollectInputAllocs = new OXEvent();
+
+
+    [RuntimeInitializeOnLoadMethod]
+    public static void Gaming()
+    {
+        SaveSystem.SaveAllData.Append(SaveInput);
+        SaveSystem.LoadAllData.Append(LoadInput);
+    }
+
+    private static void SaveInput(SaveProfile dict)
+    {
+        Dictionary<string, string> dic = gamekeys.ABToCD(x => x, y => y.AToB(x => keynames[x]).ListToString(","));
+        SaveSystem.GlobalProfile().SetDict("keybinds", dic);
+    }
+
+    private static void LoadInput(SaveProfile dict)
+    {
+        dict = SaveSystem.GlobalProfile();
+        var dic = dict.GetDict("keybinds", new Dictionary<string, string>());
+        List<KeyCode> shungite = new List<KeyCode>();
+        if (dic.Count > 0)
+        {
+            foreach (var a in dic)
+            {
+                InputManager.gamekeys[a.Key] = a.Value.StringToList(",").AToB((x) => namekeys[x]);
+            }
+        }
+    }
 
 
     // Start is called before the first frame update

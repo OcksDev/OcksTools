@@ -1040,7 +1040,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e079614b067d2db4faf31eb5e5f87b5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SaveMethod_: 0
+  SaveMethod_: 1
   test: 0
   TestBool: 0
   testkeybind: 0

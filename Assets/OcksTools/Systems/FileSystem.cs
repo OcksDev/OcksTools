@@ -219,14 +219,12 @@ public class FileSystem : SingleInstance<FileSystem>
     }
 
 }
-
 public class DownloadDataHandler<T>
 {
     public bool ErrorLol = false;
     public Reactable<bool> CompletedDownload = new Reactable<bool>(false);
     public T FileContent;
-    public IEnumerator WaitForDownload()
-    {
-        yield return new WaitUntil(() => CompletedDownload.GetValue());
-    }
+
+    private WaitUntil _completion;
+    public WaitUntil Completion => _completion ??= new WaitUntil(() => CompletedDownload);
 }

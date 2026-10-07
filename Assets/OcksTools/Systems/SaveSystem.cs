@@ -7,9 +7,6 @@ using static SaveSystem;
 public class SaveSystem : SingleInstance<SaveSystem>
 {
     public SaveMethod SaveMethod_ = SaveMethod.TXTFile;
-    public int test = 0;
-    public bool TestBool = false;
-    public KeyCode testkeybind = 0;
     public static OXEventLayered<SaveProfile> SaveAllData = new OXEventLayered<SaveProfile>();
     public static OXEventLayered<SaveProfile> LoadAllData = new OXEventLayered<SaveProfile>();
 
@@ -36,58 +33,15 @@ public class SaveSystem : SingleInstance<SaveSystem>
         ActiveProf = prof;
 
         InputManager.AssembleTheCodes();
-        List<string> list = new List<string>();
-        Dictionary<string, string> dic = new Dictionary<string, string>();
-
 
         GetDataFromFile(GlobalProfile());
         GetDataFromFile(prof);
 
-        dic = GlobalProfile().GetDict("keybinds", new Dictionary<string, string>());
-        List<KeyCode> shungite = new List<KeyCode>();
-        if (dic.Count > 0)
-        {
-            foreach (var a in dic)
-            {
-                list = Converter.StringToList(a.Value);
-                shungite.Clear();
-                foreach (var key in list)
-                {
-                    shungite.Add(InputManager.namekeys[key]);
-                }
-                InputManager.gamekeys[a.Key] = new List<KeyCode>(shungite);
-            }
-        }
-
-        test = int.Parse(prof.GetString("test_num", "0"));
-        TestBool = bool.Parse(prof.GetString("test_bool", "False"));
-        testkeybind = InputManager.namekeys[prof.GetString("test_keybind", "NONE")];
-        //ConsoleLol.Instance.ConsoleLog(Prefix(i) + "test_num");
         LoadAllData.Invoke(prof);
     }
     public void SaveGame(string dict = "Profile1")
     {
         var prof = Profile(dict);
-        List<string> list = new List<string>();
-        Dictionary<string, string> dic = new Dictionary<string, string>();
-
-        dic.Clear();
-        foreach (var a in InputManager.gamekeys)
-        {
-            list.Clear();
-            foreach (var b in a.Value)
-            {
-                list.Add(InputManager.keynames[b]);
-            }
-            dic.Add(a.Key, Converter.ListToString(list));
-        }
-        GlobalProfile().SetDict("keybinds", dic);
-        //PlayerPrefs.SetInt("UnitySelectMonitor", index); // sets the monitor that unity uses
-
-
-        prof.SetString("test_num", test.ToString());
-        prof.SetString("test_bool", TestBool.ToString());
-        prof.SetString("test_keybind", InputManager.keynames[testkeybind]);
 
         SaveAllData.Invoke(prof);
 

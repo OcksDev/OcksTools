@@ -32,11 +32,14 @@
 - OXFile Improvements
   - Add() methods updated to use Better Base Classes where possible
   - Slopcoded some size optimizations for values representable in less bytes
+  - Slopcoded some speed optimizations and async capabilities
 - Save System Improvements
   - Added Get/Set functionality for the following types:
     - Int, Long, Double, Bool, Vector2, Vector2Int, Vector3, Vector3Int, Quaterion, and Color
   - InputManager and SoundSystem both now save to GlobalData
-- Misc
+  - InputManager now finally saves its stuff in its own class instead of existing in the save system
+  - Removed test variables from Profiles so it no longer stores junk data
+- Misc 
   - Finally fixed the warnings from GlobalAttributeCollector about creating monobehaviors
   - Converter now distinguishes between Color and Color32
   - Reworked GlobalAttributeCollector to be much easier to create more attributes for
@@ -44,6 +47,7 @@
   - OXLerp changed to now call the input function with a value of 0 before it waits
   - Added implcit conversion from HDRColor and FakeHDRColor into base Color
   - All scriptable objects have been moved out of the default "Scriptable Objects" folder
+  - Added an alternate syntax to waiting on File System Load handlers, just cleans up code a bit
 ------------
 
 ------------
