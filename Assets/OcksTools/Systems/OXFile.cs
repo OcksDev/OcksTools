@@ -158,6 +158,7 @@ public class OXFile
     {
         { OXFileType.Bool, 1 },
         { OXFileType.Int, 4 },
+        { OXFileType.Int1, 1 },
         { OXFileType.Long, 8 },
         { OXFileType.Float, 4 },
         { OXFileType.Double, 8 },
@@ -323,7 +324,27 @@ public class OXFileData
         Quaternion,
         Color,
         Color32,
+        // Int1 is a disk-only type: any Int that fits in a signed byte (-128..127) is written as Int1
+        // and turns back into a normal Int on load. Keep it LAST so existing enum values never shift.
+        Int1,
     }
+
+    // The type that actually gets written to disk (Int shrinks to Int1 when the value fits in 1 byte)
+    public OXFileType EffectiveType
+    {
+        get
+        {
+            if (Type == OXFileType.Int)
+            {
+                int v = DataInt;
+                if (v >= sbyte.MinValue && v <= sbyte.MaxValue) return OXFileType.Int1;
+            }
+            return Type;
+        }
+    }
+
+    // The type exactly as it was read from the file (before Int1 turns back into Int). Used for repeat runs.
+    public OXFileType WireType;
 
     public int LengthOffset;
     public int pVersion = 0;
@@ -362,13 +383,14 @@ public class OXFileData
             return 1;
         };
 
+        OXFileType wt = EffectiveType;
         byte[] data_size = new byte[1];
         byte l = (byte)w.Length;
         if (fd.File.GetFlag(0)) l = fd.File.NameLinker[Name];
         l &= 127;
-        if (OXFile.DefinedLengths.ContainsKey(Type))
+        if (OXFile.DefinedLengths.ContainsKey(wt))
         {
-            data_size = new byte[1] { OXFile.DefinedLengths[Type] };
+            data_size = new byte[1] { OXFile.DefinedLengths[wt] };
         }
         else if (w2.Length < 256)
         {
@@ -398,8 +420,8 @@ public class OXFileData
         {
             AppendAll(new byte[2] { (byte)OXFileType.Repeat, (byte)RepeatRun });
         }
-        if (!ExcludeCuzRepeated) AppendAll(new byte[1] { (byte)Type });
-        if (!OXFile.DefinedLengths.ContainsKey(Type)) AppendAll(data_size);
+        if (!ExcludeCuzRepeated) AppendAll(new byte[1] { (byte)wt });
+        if (!OXFile.DefinedLengths.ContainsKey(wt)) AppendAll(data_size);
         if (!fd.File.GetFlag(0)) AppendAll(w);
         AppendAll(w2);
         return ret;
@@ -438,6 +460,7 @@ public class OXFileData
                 Type = (OXFileType)dat[index];
                 break;
         }
+        WireType = Type;
         if (OXFile.DefinedLengths.ContainsKey(Type))
         {
             bodylength = OXFile.DefinedLengths[Type];
@@ -472,6 +495,11 @@ public class OXFileData
                 break;
             case OXFileType.Int:
                 DataInt = Get_Int();
+                break;
+            case OXFileType.Int1:
+                // Stored as 1 signed byte, becomes a normal Int again in memory
+                DataInt = (sbyte)DataRaw[0];
+                Type = OXFileType.Int;
                 break;
             case OXFileType.Long:
                 DataLong = Get_Long();
@@ -735,13 +763,16 @@ public class OXFileData
         List<byte> ret = new List<byte>();
         List<byte> bytes = new List<byte>();
         byte[] bytez;
-        switch (Type)
+        switch (EffectiveType)
         {
+            case OXFileType.Int1:
+                ret.Add((byte)(sbyte)DataInt);
+                break;
             case OXFileType.OXFileData:
                 var p = DataOXFiles.ToList();
                 if (p.Count == 0) break;
-                p.Sort((a, b) => a.Value.Type.CompareTo(b.Value.Type));
-                OXFileType c = p[0].Value.Type;
+                p.Sort((a, b) => a.Value.EffectiveType.CompareTo(b.Value.EffectiveType));
+                OXFileType c = p[0].Value.EffectiveType;
                 int same = 0;
                 int index = 0;
                 Action forwardupdate = () =>
@@ -768,14 +799,14 @@ public class OXFileData
                 {
                     a.Value.RepeatRun = 0;
                     a.Value.ExcludeCuzRepeated = false;
-                    if (a.Value.Type == c && same <= 253 + repeatmax)
+                    if (a.Value.EffectiveType == c && same <= 253 + repeatmax)
                     {
                         same++;
                     }
                     else
                     {
                         fard();
-                        c = a.Value.Type;
+                        c = a.Value.EffectiveType;
                         same = 1;
                     }
                     index++;
@@ -1028,13 +1059,13 @@ public class OXFileData
             {
                 reps = cd.RepeatRun;
                 reps += (repeatmax - 2);
-                stored = cd.Type;
+                stored = cd.WireType; // wire type, since Int1 turns into Int after parsing
             }
             else if (cd.RepeatRun < 0)
             {
                 reps = -cd.RepeatRun;
                 reps--;
-                stored = cd.Type;
+                stored = cd.WireType;
             }
         }
 
