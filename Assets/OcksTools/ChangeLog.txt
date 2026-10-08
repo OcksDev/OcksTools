@@ -39,7 +39,10 @@
   - InputManager and SoundSystem both now save to GlobalData
   - InputManager now finally saves its stuff in its own class instead of existing in the save system
   - Removed test variables from Profiles so it no longer stores junk data
+- New Experimental System: Keyframe Animator
+  - a very WIP system to animate things using keyframes
 - Misc 
+  - New LerpU varients of all extension lerp functions, gives them unclamped bevahior
   - Finally fixed the warnings from GlobalAttributeCollector about creating monobehaviors
   - Converter now distinguishes between Color and Color32
   - Reworked GlobalAttributeCollector to be much easier to create more attributes for
@@ -48,6 +51,7 @@
   - Added implcit conversion from HDRColor and FakeHDRColor into base Color
   - All scriptable objects have been moved out of the default "Scriptable Objects" folder
   - Added an alternate syntax to waiting on File System Load handlers, just cleans up code a bit
+  - Fixed default value of rotation to now be identity in OXTransform
 ------------
 
 ------------

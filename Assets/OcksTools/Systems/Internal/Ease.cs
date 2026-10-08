@@ -28,7 +28,7 @@ public static class Ease
         return -Mathf.Pow(1 - Mathf.Pow(perc, pow), 1 / pow) + 1;
     }
 
-    public static float CircIn(float perc, float pow)
+    public static float CircIn(float perc, float pow = 2)
     {
         return Mathf.Pow(1 - Mathf.Pow(-perc + 1, pow), 1 / pow);
     }

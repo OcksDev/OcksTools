@@ -4,7 +4,7 @@ using UnityEngine;
 public class OXTransform
 {
     public Vector3 Position;
-    public Quaternion Rotation;
+    public Quaternion Rotation = Quaternion.identity;
 }
 [System.Serializable]
 public class OXTransformWithScale : OXTransform
@@ -105,6 +105,12 @@ public static class _ApplyTransforms
         val.position = val.position.Lerp(target.Position, perc);
         val.rotation = val.rotation.Slerp(target.Rotation, perc);
     }
+
+    public static void LerpU(this Transform val, OXTransform target, float perc)
+    {
+        val.position = val.position.LerpU(target.Position, perc);
+        val.rotation = val.rotation.SlerpU(target.Rotation, perc);
+    }
     public static void LerpT(this Transform val, OXTransform target, float perc)
     {
         val.position = val.position.LerpT(target.Position, perc);
@@ -116,6 +122,13 @@ public static class _ApplyTransforms
         val.position = val.position.Lerp(target.Position, perc);
         val.rotation = val.rotation.Slerp(target.Rotation, perc);
         val.localScale = val.localScale.Lerp(target.Scale, perc);
+    }
+
+    public static void LerpU(this Transform val, OXTransformWithScale target, float perc)
+    {
+        val.position = val.position.LerpU(target.Position, perc);
+        val.rotation = val.rotation.SlerpU(target.Rotation, perc);
+        val.localScale = val.localScale.LerpU(target.Scale, perc);
     }
     public static void LerpT(this Transform val, OXTransformWithScale target, float perc)
     {
@@ -129,6 +142,12 @@ public static class _ApplyTransforms
         target.Position = target.Position.Lerp(val.position, perc);
         target.Rotation = target.Rotation.Slerp(val.rotation, perc);
     }
+
+    public static void LerpU(this OXTransform target, Transform val, float perc)
+    {
+        target.Position = target.Position.LerpU(val.position, perc);
+        target.Rotation = target.Rotation.SlerpU(val.rotation, perc);
+    }
     public static void LerpT(this OXTransform target, Transform val, float perc)
     {
         target.Position = target.Position.LerpT(val.position, perc);
@@ -140,6 +159,13 @@ public static class _ApplyTransforms
         target.Position = target.Position.Lerp(val.position, perc);
         target.Rotation = target.Rotation.Slerp(val.rotation, perc);
         target.Scale = target.Scale.Lerp(val.localScale, perc);
+    }
+
+    public static void LerpU(this OXTransformWithScale target, Transform val, float perc)
+    {
+        target.Position = target.Position.LerpU(val.position, perc);
+        target.Rotation = target.Rotation.LerpU(val.rotation, perc);
+        target.Scale = target.Scale.LerpU(val.localScale, perc);
     }
     public static void LerpT(this OXTransformWithScale target, Transform val, float perc)
     {
