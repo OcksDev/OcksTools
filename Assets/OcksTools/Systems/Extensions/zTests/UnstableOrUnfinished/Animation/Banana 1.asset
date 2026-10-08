@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827f1bf1e2df1914ab0ea8189d68652e, type: 3}
   m_Name: Banana 1
   m_EditorClassIdentifier: Assembly-CSharp::OXKeyframeAnimation
+  ResetAfterFinish: 1
+  OverrideData: 0
   Keyframes:
   - Time: 0
     InterpMode: 0
@@ -52,6 +54,6 @@ MonoBehaviour:
     Data:
     - ObjectIndex: 0
       Transform:
-        Position: {x: 0, y: 0, z: 0}
+        Position: {x: 5, y: 0, z: 0}
         Rotation: {x: 0, y: 0, z: 0, w: 1}
         Scale: {x: 1, y: 1, z: 1}

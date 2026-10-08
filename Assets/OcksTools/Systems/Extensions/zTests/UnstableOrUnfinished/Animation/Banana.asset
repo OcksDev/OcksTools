@@ -12,9 +12,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827f1bf1e2df1914ab0ea8189d68652e, type: 3}
   m_Name: Banana
   m_EditorClassIdentifier: Assembly-CSharp::OXKeyframeAnimation
+  ResetAfterFinish: 1
+  OverrideData: 0
   Keyframes:
   - Time: 0
-    InterpMode: 0
+    Position:
+      Enabled: 0
+      InterpMode: 0
+      Power: 3
+      CircPower: 2
+      Bounces: 4
+      BouncePower: 5
+      Oscillations: 3
+      Magnification: 2
+      OvershootPower: 2
+    Rotation:
+      Enabled: 0
+      InterpMode: 0
+      Power: 3
+      CircPower: 2
+      Bounces: 4
+      BouncePower: 5
+      Oscillations: 3
+      Magnification: 2
+      OvershootPower: 2
+    Scale:
+      Enabled: 0
+      InterpMode: 0
+      Power: 3
+      CircPower: 2
+      Bounces: 4
+      BouncePower: 5
+      Oscillations: 3
+      Magnification: 2
+      OvershootPower: 2
     Data:
     - ObjectIndex: 0
       Transform:
@@ -31,3 +62,151 @@ MonoBehaviour:
         Position: {x: 0, y: 0, z: 0}
         Rotation: {x: 0, y: 0, z: 0, w: 0}
         Scale: {x: 0, y: 0, z: 0}
+  - Time: 0
+    Position:
+      Enabled: 0
+      InterpMode: 0
+      Power: 3
+      CircPower: 2
+      Bounces: 4
+      BouncePower: 5
+      Oscillations: 3
+      Magnification: 2
+      OvershootPower: 2
+    Rotation:
+      Enabled: 0
+      InterpMode: 0
+      Power: 3
+      CircPower: 2
+      Bounces: 4
+      BouncePower: 5
+      Oscillations: 3
+      Magnification: 2
+      OvershootPower: 2
+    Scale:
+      Enabled: 0
+      InterpMode: 0
+      Power: 3
+      CircPower: 2
+      Bounces: 4
+      BouncePower: 5
+      Oscillations: 3
+      Magnification: 2
+      OvershootPower: 2
+    Data:
+    - ObjectIndex: 0
+      Transform:
+        Position: {x: 0, y: 0, z: 0}
+        Rotation: {x: 0, y: 0, z: 0, w: 1}
+        Scale: {x: 1, y: 1, z: 1}
+  - Time: 1
+    Position:
+      Enabled: 1
+      InterpMode: 2
+      Power: 2.5
+      CircPower: 2
+      Bounces: 4
+      BouncePower: 5
+      Oscillations: 3
+      Magnification: 2
+      OvershootPower: 2
+    Rotation:
+      Enabled: 0
+      InterpMode: 0
+      Power: 3
+      CircPower: 2
+      Bounces: 4
+      BouncePower: 5
+      Oscillations: 3
+      Magnification: 2
+      OvershootPower: 2
+    Scale:
+      Enabled: 1
+      InterpMode: 2
+      Power: 2.5
+      CircPower: 2
+      Bounces: 4
+      BouncePower: 5
+      Oscillations: 3
+      Magnification: 2
+      OvershootPower: 2
+    Data:
+    - ObjectIndex: 0
+      Transform:
+        Position: {x: 0, y: 2, z: 0}
+        Rotation: {x: 0, y: 0, z: 0, w: 1}
+        Scale: {x: 3.62, y: 1.55, z: 1}
+  - Time: 1.4
+    Position:
+      Enabled: 1
+      InterpMode: 1
+      Power: 3
+      CircPower: 2
+      Bounces: 4
+      BouncePower: 5
+      Oscillations: 3
+      Magnification: 2
+      OvershootPower: 2
+    Rotation:
+      Enabled: 0
+      InterpMode: 0
+      Power: 3
+      CircPower: 2
+      Bounces: 4
+      BouncePower: 5
+      Oscillations: 3
+      Magnification: 2
+      OvershootPower: 2
+    Scale:
+      Enabled: 0
+      InterpMode: 1
+      Power: 3
+      CircPower: 2
+      Bounces: 4
+      BouncePower: 5
+      Oscillations: 3
+      Magnification: 2
+      OvershootPower: 2
+    Data:
+    - ObjectIndex: 0
+      Transform:
+        Position: {x: 0, y: 0, z: 0}
+        Rotation: {x: 0, y: 0, z: 0, w: 1}
+        Scale: {x: 1, y: 1, z: 1}
+  - Time: 1.6
+    Position:
+      Enabled: 0
+      InterpMode: 0
+      Power: 3
+      CircPower: 2
+      Bounces: 4
+      BouncePower: 5
+      Oscillations: 3
+      Magnification: 2
+      OvershootPower: 2
+    Rotation:
+      Enabled: 0
+      InterpMode: 0
+      Power: 3
+      CircPower: 2
+      Bounces: 4
+      BouncePower: 5
+      Oscillations: 3
+      Magnification: 2
+      OvershootPower: 2
+    Scale:
+      Enabled: 1
+      InterpMode: 1
+      Power: 3
+      CircPower: 2
+      Bounces: 4
+      BouncePower: 5
+      Oscillations: 3
+      Magnification: 2
+      OvershootPower: 2
+    Data:
+    - ObjectIndex: 0
+      Transform:
+        Position: {x: 0, y: 0, z: 0}
+        Rotation: {x: 0, y: 0, z: 0, w: 1}
+        Scale: {x: 1, y: 1, z: 1}
