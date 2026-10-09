@@ -26,7 +26,9 @@ public class OXKeyframeTimelineWindow : EditorWindow
 {
     private const float LabelW = 92f;
     private const float RulerH = 22f;
-    private const float LaneH = 26f;
+    private const float MinLaneH = 20f;
+    private const float MaxLaneH = 80f;
+    private float LaneH { get { return laneH; } }
     private const float MarkerR = 7f;
     private const int LaneCount = 4; // 0 = all keyframes, 1 = position, 2 = rotation, 3 = scale
 
@@ -46,6 +48,8 @@ public class OXKeyframeTimelineWindow : EditorWindow
     [SerializeField] private float pxPerSec = 160f;
     [SerializeField] private float viewStart = -0.1f;
     [SerializeField] private float playhead;
+    [SerializeField] private float laneH = 26f;      // height of one lane; dragging the timeline/details divider changes it
+    [SerializeField] private float splitFrac = 0.5f; // fraction of the width given to the left (channels) half of the details
 
     private readonly List<int> selected = new List<int>();
     private int primary = -1;
@@ -456,7 +460,93 @@ public class OXKeyframeTimelineWindow : EditorWindow
         ValidateSelection();
         HandleKeyboard();
         DrawTimeline();
+        DrawTimelineSplitter();
         DrawInspector();
+    }
+
+    // ------------------------------------------------------------------ splitters
+
+    private float splitStartMouse;
+    private float splitStartValue;
+
+    /// <summary>Draggable bar under the timeline. Dragging it makes the timeline lanes taller or shorter.</summary>
+    private void DrawTimelineSplitter()
+    {
+        Rect r = GUILayoutUtility.GetRect(10f, 6f, GUILayout.ExpandWidth(true), GUILayout.Height(6f));
+        int id = GUIUtility.GetControlID(FocusType.Passive);
+        var e = Event.current;
+        EditorGUIUtility.AddCursorRect(r, MouseCursor.ResizeVertical);
+
+        switch (e.GetTypeForControl(id))
+        {
+            case EventType.Repaint:
+                EditorGUI.DrawRect(new Rect(r.x, r.center.y - 0.5f, r.width, 1f), new Color(0f, 0f, 0f, 0.45f));
+                break;
+            case EventType.MouseDown:
+                if (e.button == 0 && r.Contains(e.mousePosition))
+                {
+                    GUIUtility.hotControl = id;
+                    splitStartMouse = e.mousePosition.y;
+                    splitStartValue = laneH;
+                    e.Use();
+                }
+                break;
+            case EventType.MouseDrag:
+                if (GUIUtility.hotControl == id)
+                {
+                    laneH = Mathf.Clamp(splitStartValue + (e.mousePosition.y - splitStartMouse) / LaneCount, MinLaneH, MaxLaneH);
+                    e.Use();
+                    Repaint();
+                }
+                break;
+            case EventType.MouseUp:
+                if (GUIUtility.hotControl == id)
+                {
+                    GUIUtility.hotControl = 0;
+                    e.Use();
+                }
+                break;
+        }
+    }
+
+    /// <summary>Draggable divider between the channel settings (left) and the object states (right).</summary>
+    private void DrawDetailsSplitter()
+    {
+        Rect r = GUILayoutUtility.GetRect(6f, 6f, GUILayout.Width(6f), GUILayout.ExpandHeight(true));
+        int id = GUIUtility.GetControlID(FocusType.Passive);
+        var e = Event.current;
+        EditorGUIUtility.AddCursorRect(r, MouseCursor.ResizeHorizontal);
+
+        switch (e.GetTypeForControl(id))
+        {
+            case EventType.Repaint:
+                EditorGUI.DrawRect(new Rect(r.center.x - 0.5f, r.y, 1f, r.height), new Color(0f, 0f, 0f, 0.45f));
+                break;
+            case EventType.MouseDown:
+                if (e.button == 0 && r.Contains(e.mousePosition))
+                {
+                    GUIUtility.hotControl = id;
+                    splitStartMouse = e.mousePosition.x;
+                    splitStartValue = splitFrac;
+                    e.Use();
+                }
+                break;
+            case EventType.MouseDrag:
+                if (GUIUtility.hotControl == id)
+                {
+                    splitFrac = Mathf.Clamp(splitStartValue + (e.mousePosition.x - splitStartMouse) / Mathf.Max(1f, position.width), 0.2f, 0.8f);
+                    e.Use();
+                    Repaint();
+                }
+                break;
+            case EventType.MouseUp:
+                if (GUIUtility.hotControl == id)
+                {
+                    GUIUtility.hotControl = 0;
+                    e.Use();
+                }
+                break;
+        }
     }
 
     private void HandleKeyboard()
@@ -527,6 +617,8 @@ public class OXKeyframeTimelineWindow : EditorWindow
     {
         GUILayout.BeginHorizontal(EditorStyles.toolbar);
 
+        GUILayout.FlexibleSpace(); // pushes the main buttons toward the center
+
         EditorGUI.BeginChangeCheck();
         var picked = (OXKeyframeAnimation)EditorGUILayout.ObjectField(asset, typeof(OXKeyframeAnimation), false, GUILayout.Width(220));
         if (EditorGUI.EndChangeCheck())
@@ -536,10 +628,22 @@ public class OXKeyframeTimelineWindow : EditorWindow
             Mutated();
         }
 
-        locked = GUILayout.Toggle(locked, "Lock", EditorStyles.toolbarButton, GUILayout.Width(40));
+        locked = GUILayout.Toggle(locked,
+            new GUIContent("Lock", "When on, the window keeps showing this animation even if you click a different asset in the Project window."),
+            EditorStyles.toolbarButton, GUILayout.Width(40));
 
         if (asset != null)
         {
+            // Save: only enabled when the asset has unsaved changes.
+            bool dirty = EditorUtility.IsDirty(asset);
+            EditorGUI.BeginDisabledGroup(!dirty);
+            if (GUILayout.Button(new GUIContent(dirty ? "Save*" : "Save", "Write this animation asset to disk"),
+                    EditorStyles.toolbarButton, GUILayout.Width(44)))
+            {
+                AssetDatabase.SaveAssetIfDirty(asset);
+            }
+            EditorGUI.EndDisabledGroup();
+
             GUILayout.Space(6);
             if (GUILayout.Button("+ Key", EditorStyles.toolbarButton, GUILayout.Width(46)))
             {
@@ -1172,14 +1276,16 @@ public class OXKeyframeTimelineWindow : EditorWindow
         if (kf.Scale == null) kf.Scale = new OXKeyframeChannel();
 
         int pendingRemove = -1;
+        int pendingDuplicate = -1;
         float oldLabelWidth = EditorGUIUtility.labelWidth;
         EditorGUIUtility.labelWidth = 95f;
-        float half = Mathf.Floor(position.width * 0.5f) - 6f;
+        float leftW = Mathf.Max(120f, Mathf.Floor(position.width * splitFrac) - 6f);
+        float rightW = Mathf.Max(120f, position.width - 16f - leftW);
 
         EditorGUILayout.BeginHorizontal();
 
         // ---------------- LEFT HALF: time + enabled channels and their interpolation ----------------
-        EditorGUILayout.BeginVertical(GUILayout.Width(half));
+        EditorGUILayout.BeginVertical(GUILayout.Width(leftW));
         leftScroll = EditorGUILayout.BeginScrollView(leftScroll);
 
         string header = "Keyframe #" + primary;
@@ -1200,12 +1306,11 @@ public class OXKeyframeTimelineWindow : EditorWindow
         EditorGUILayout.EndScrollView();
         EditorGUILayout.EndVertical();
 
-        // divider
-        var div = GUILayoutUtility.GetRect(1f, 1f, GUILayout.Width(1f), GUILayout.ExpandHeight(true));
-        EditorGUI.DrawRect(div, new Color(0f, 0f, 0f, 0.35f));
+        // draggable divider
+        DrawDetailsSplitter();
 
         // ---------------- RIGHT HALF: object states ----------------
-        EditorGUILayout.BeginVertical(GUILayout.Width(half));
+        EditorGUILayout.BeginVertical(GUILayout.Width(rightW));
         rightScroll = EditorGUILayout.BeginScrollView(rightScroll);
 
         EditorGUILayout.LabelField("Object States", EditorStyles.boldLabel);
@@ -1225,29 +1330,56 @@ public class OXKeyframeTimelineWindow : EditorWindow
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             EditorGUILayout.BeginHorizontal();
 
-            EditorGUI.BeginChangeCheck();
-            int oi = EditorGUILayout.IntField("Object Index", d.ObjectIndex);
-            if (EditorGUI.EndChangeCheck()) Edit("Change Object Index", () => d.ObjectIndex = Mathf.Max(0, oi));
+            // left column: which object this state belongs to (+ remove)
+            EditorGUILayout.BeginVertical(GUILayout.Width(110f));
 
-            if (GUILayout.Button("X", GUILayout.Width(22))) pendingRemove = i;
+            // label and number side by side
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label("Object", GUILayout.Width(44f));
+            EditorGUI.BeginChangeCheck();
+            int oi = EditorGUILayout.IntField(d.ObjectIndex);
+            if (EditorGUI.EndChangeCheck()) Edit("Change Object Index", () => d.ObjectIndex = Mathf.Max(0, oi));
             EditorGUILayout.EndHorizontal();
 
+            if (GUILayout.Button(new GUIContent("Duplicate", "Copy this object state onto the next free object index")))
+                pendingDuplicate = i;
+            if (GUILayout.Button(new GUIContent("Delete", "Remove this object state")))
+                pendingRemove = i;
+            EditorGUILayout.EndVertical();
+
+            // right column: the enabled channel values for that object
+            EditorGUILayout.BeginVertical();
             var tr = d.Transform;
 
-            EditorGUI.BeginChangeCheck();
-            Vector3 p = Vector3Row("Position", tr.Position, LaneColors[1], kf.Position.Enabled);
-            if (EditorGUI.EndChangeCheck()) Edit("Change Position", () => tr.Position = p);
+            // Only channels enabled on this keyframe are shown; disabled ones can't be edited.
+            if (kf.Position.Enabled)
+            {
+                EditorGUI.BeginChangeCheck();
+                Vector3 p = Vector3Row("Position", tr.Position, LaneColors[1]);
+                if (EditorGUI.EndChangeCheck()) Edit("Change Position", () => tr.Position = p);
+            }
 
-            EditorGUI.BeginChangeCheck();
-            Quaternion q = IsZeroQuat(tr.Rotation) ? Quaternion.identity : tr.Rotation;
-            Vector3 eul = Vector3Row("Rotation", q.eulerAngles, LaneColors[2], kf.Rotation.Enabled);
-            if (EditorGUI.EndChangeCheck()) Edit("Change Rotation", () => tr.Rotation = Quaternion.Euler(eul));
+            if (kf.Rotation.Enabled)
+            {
+                EditorGUI.BeginChangeCheck();
+                Quaternion q = IsZeroQuat(tr.Rotation) ? Quaternion.identity : tr.Rotation;
+                Vector3 eul = Vector3Row("Rotation", q.eulerAngles, LaneColors[2]);
+                if (EditorGUI.EndChangeCheck()) Edit("Change Rotation", () => tr.Rotation = Quaternion.Euler(eul));
+            }
 
-            EditorGUI.BeginChangeCheck();
-            Vector3 s = Vector3Row("Scale", tr.Scale, LaneColors[3], kf.Scale.Enabled);
-            if (EditorGUI.EndChangeCheck()) Edit("Change Scale", () => tr.Scale = s);
+            if (kf.Scale.Enabled)
+            {
+                EditorGUI.BeginChangeCheck();
+                Vector3 s = Vector3Row("Scale", tr.Scale, LaneColors[3]);
+                if (EditorGUI.EndChangeCheck()) Edit("Change Scale", () => tr.Scale = s);
+            }
 
-            EditorGUILayout.EndVertical();
+            if (!kf.Position.Enabled && !kf.Rotation.Enabled && !kf.Scale.Enabled)
+                EditorGUILayout.LabelField("No channels enabled on this keyframe.", EditorStyles.miniLabel);
+
+            EditorGUILayout.EndVertical(); // channel rows
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.EndVertical(); // help box
         }
 
         if (GUILayout.Button("+ Add Object State"))
@@ -1267,6 +1399,28 @@ public class OXKeyframeTimelineWindow : EditorWindow
 
         EditorGUILayout.EndHorizontal();
         EditorGUIUtility.labelWidth = oldLabelWidth;
+
+        if (pendingDuplicate >= 0 && pendingDuplicate < kf.Data.Count)
+        {
+            int src = pendingDuplicate;
+            Edit("Duplicate Object State", () =>
+            {
+                var from = kf.Data[src];
+                int next = 0;
+                foreach (var d in kf.Data)
+                    if (d != null && d.ObjectIndex >= next) next = d.ObjectIndex + 1;
+
+                var copy = new OXKeyframeObjectState { ObjectIndex = next };
+                copy.Transform = new OXTransformWithScale
+                {
+                    Position = from.Transform.Position,
+                    Rotation = IsZeroQuat(from.Transform.Rotation) ? Quaternion.identity : from.Transform.Rotation,
+                    Scale = from.Transform.Scale,
+                };
+                kf.Data.Insert(src + 1, copy);
+            });
+            Mutated();
+        }
 
         if (pendingRemove >= 0)
         {
@@ -1324,10 +1478,21 @@ public class OXKeyframeTimelineWindow : EditorWindow
         EditorGUI.DrawRect(bar, color);
         EditorGUI.BeginChangeCheck();
         bool en = EditorGUILayout.ToggleLeft(label, ch.Enabled, EditorStyles.boldLabel);
-        if (EditorGUI.EndChangeCheck()) Edit("Toggle " + label, () => ch.Enabled = en);
+        bool toggled = EditorGUI.EndChangeCheck();
+        if (toggled) Edit("Toggle " + label, () => ch.Enabled = en);
         EditorGUILayout.EndHorizontal();
+        if (toggled)
+        {
+            EditorGUILayout.EndVertical();
+            Mutated(); // the Object States panel now shows/hides this channel, so restart the layout pass
+        }
 
-        EditorGUI.BeginDisabledGroup(!ch.Enabled);
+        // Disabled channel: nothing but the checkbox (no interpolation settings, no graph).
+        if (!ch.Enabled)
+        {
+            EditorGUILayout.EndVertical();
+            return;
+        }
 
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.BeginVertical();
@@ -1337,7 +1502,6 @@ public class OXKeyframeTimelineWindow : EditorWindow
         if (EditorGUI.EndChangeCheck())
         {
             Edit("Change Interpolation", () => ch.InterpMode = mode);
-            EditorGUI.EndDisabledGroup();
             EditorGUILayout.EndVertical();
             Mutated(); // the set of parameter fields below depends on the mode
         }
@@ -1370,24 +1534,31 @@ public class OXKeyframeTimelineWindow : EditorWindow
         DrawEasePreview(ch, color);
         EditorGUILayout.EndHorizontal();
 
-        EditorGUI.EndDisabledGroup();
         EditorGUILayout.EndVertical();
     }
 
-    /// <summary>A Vector3 field with the channel's color as a side bar and a faint tint (dimmed if that channel is off for this key).</summary>
-    private static Vector3 Vector3Row(string label, Vector3 value, Color color, bool channelOn)
+    /// <summary>A label with its X/Y/Z fields on the same row, plus the channel's color as a side bar and a faint tint.</summary>
+    private static Vector3 Vector3Row(string label, Vector3 value, Color color)
     {
-        float a = channelOn ? 1f : 0.3f;
         Rect row = EditorGUILayout.BeginHorizontal();
         if (Event.current.type == EventType.Repaint)
-            EditorGUI.DrawRect(row, new Color(color.r, color.g, color.b, 0.10f * a));
+            EditorGUI.DrawRect(row, new Color(color.r, color.g, color.b, 0.10f));
 
         var bar = GUILayoutUtility.GetRect(4f, 18f, GUILayout.Width(4f), GUILayout.ExpandHeight(true));
-        EditorGUI.DrawRect(bar, new Color(color.r, color.g, color.b, a));
+        EditorGUI.DrawRect(bar, color);
 
-        Vector3 result = EditorGUILayout.Vector3Field(label, value);
+        GUILayout.Label(label, GUILayout.Width(56f));
+
+        // Three separate fields so the layout never wraps the values onto a second line under the label.
+        float oldLabelWidth = EditorGUIUtility.labelWidth;
+        EditorGUIUtility.labelWidth = 12f;
+        value.x = EditorGUILayout.FloatField("X", value.x);
+        value.y = EditorGUILayout.FloatField("Y", value.y);
+        value.z = EditorGUILayout.FloatField("Z", value.z);
+        EditorGUIUtility.labelWidth = oldLabelWidth;
+
         EditorGUILayout.EndHorizontal();
-        return result;
+        return value;
     }
 
     private void FloatProp(string label, float value, Action<float> set)
