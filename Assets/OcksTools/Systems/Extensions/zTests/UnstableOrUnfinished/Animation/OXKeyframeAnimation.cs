@@ -18,6 +18,15 @@ public class OXKeyframeAnimation : ScriptableObject
     /// runtime.Append("Name", callback) on the runtime returned by Play().
     /// </summary>
     public List<OXEventKeyframe> Events = new List<OXEventKeyframe>();
+
+#if UNITY_EDITOR
+    /// <summary>
+    /// Editor-only: the objects that make up this animation's preview scene. Saved with the asset so the
+    /// scene comes back the same every time. Compiled out of builds, so prefabs referenced here are never pulled in.
+    /// </summary>
+    public List<OXPreviewObject> PreviewObjects = new List<OXPreviewObject>();
+#endif
+
     public List<OXKeyframe> GetSortedKeyframes()
     {
         return Keyframes.OrderBy(k => k.Time).ToList();
@@ -90,6 +99,44 @@ public class OXKeyframeChannel
     public float Magnification = 2f;
     [Tooltip("Overshoot (shouldn't be less than 2)")]
     public float OvershootPower = 2f;
+
+    // Per-axis opt-out. Stored inverted (Disable*, default false) so every existing asset and clipboard entry
+    // keeps animating all three axes with no migration. A disabled axis is left completely untouched by
+    // this channel: it contributes no keys to that axis and the object keeps whatever value that axis has.
+    // Position/Scale: X, Y, Z. Rotation: the Euler X, Y, Z components of the key's rotation.
+    [Tooltip("Stop this channel from animating the X axis")]
+    public bool DisableX = false;
+    [Tooltip("Stop this channel from animating the Y axis")]
+    public bool DisableY = false;
+    [Tooltip("Stop this channel from animating the Z axis")]
+    public bool DisableZ = false;
+
+    /// <summary>True if this channel animates the given axis (0 = X, 1 = Y, 2 = Z).</summary>
+    public bool AxisEnabled(int axis)
+    {
+        switch (axis)
+        {
+            case 0: return !DisableX;
+            case 1: return !DisableY;
+            default: return !DisableZ;
+        }
+    }
+
+    public void SetAxisEnabled(int axis, bool enabled)
+    {
+        switch (axis)
+        {
+            case 0: DisableX = !enabled; break;
+            case 1: DisableY = !enabled; break;
+            default: DisableZ = !enabled; break;
+        }
+    }
+
+    /// <summary>True when at least one axis is still animated (Enabled is checked separately).</summary>
+    public bool AnyAxisEnabled { get { return !DisableX || !DisableY || !DisableZ; } }
+
+    /// <summary>True when every axis is animated, i.e. no masking is in effect.</summary>
+    public bool AllAxesEnabled { get { return !DisableX && !DisableY && !DisableZ; } }
 
     public OXKeyframeChannel() { }
 
@@ -166,6 +213,26 @@ public class OXKeyframe
         return this;
     }
 }
+
+#if UNITY_EDITOR
+public enum OXPreviewObjectKind { Empty, Cube, Sphere, Capsule, Cylinder, Plane, Quad, Prefab }
+
+/// <summary>
+/// One object in the editor preview scene. ObjectIndex is the index keyframes use in their Object States
+/// (-1 = scenery that is shown but never animated). Transform is the REST pose the animation is applied on top of.
+/// </summary>
+[Serializable]
+public class OXPreviewObject
+{
+    public int ObjectIndex = -1;
+    public string Name = "Object";
+    public OXPreviewObjectKind Kind = OXPreviewObjectKind.Empty;
+    public GameObject Prefab;
+    public Vector3 Position = Vector3.zero;
+    public Quaternion Rotation = Quaternion.identity;
+    public Vector3 Scale = Vector3.one;
+}
+#endif
 
 /// <summary>A named point in time. When playback reaches Time, the callback(s) registered under Name run.</summary>
 [Serializable]

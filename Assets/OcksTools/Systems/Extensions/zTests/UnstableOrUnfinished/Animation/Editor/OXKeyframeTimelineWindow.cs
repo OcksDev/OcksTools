@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 /// <summary>
@@ -57,6 +58,22 @@ public class OXKeyframeTimelineWindow : EditorWindow
     [SerializeField] private float playhead;
     [SerializeField] private float laneH = 26f;      // height of one lane; dragging the timeline/details divider changes it
     [SerializeField] private float splitFrac = 0.5f; // fraction of the width given to the left (channels) half of the details
+
+    // Preview scene hookup.
+    [SerializeField] private bool posePreview = true;        // scrubbing poses the preview objects
+    [SerializeField] private bool showPreviewPanel = true;
+    // Space-bar playback (shown as a yellow playhead). The red playhead stays put as the start/return point.
+    private bool playing;
+    private double playStartReal;
+    private float playStartTime;
+    private float playTime;
+    private float PoseTime { get { return playing ? playTime : playhead; } }
+    private int lastPoseDirty = -1;
+    private float lastPoseTime = -1f;
+    private bool lastPoseOn;
+    private OXKeyframePreviewStage lastPoseStage;
+    private int lastPoseVersion = -1;
+    private double nextSyncAt;
 
     private readonly List<int> selected = new List<int>();
     private int primary = -1;
@@ -172,7 +189,8 @@ public class OXKeyframeTimelineWindow : EditorWindow
         return tabIcon;
     }
 
-    /// <summary>Double-clicking an OXKeyframeAnimation asset (or "Open" in its context menu) opens this window on it.</summary>
+    /// <summary>Double-clicking an OXKeyframeAnimation asset (or "Open" in its context menu) opens this window on it
+    /// and switches the Scene view to an editor-only preview scene (see OXKeyframePreviewStage).</summary>
     [UnityEditor.Callbacks.OnOpenAsset(1)]
     public static bool OnOpenAsset(int instanceID, int line)
     {
@@ -186,19 +204,118 @@ public class OXKeyframeTimelineWindow : EditorWindow
         w.Focus();
         w.SetAsset(a);
         w.Repaint();
+
+        // Also switch the Scene view to the editor-only preview scene for this animation.
+        OXKeyframePreviewStage.Open(a);
         return true;
     }
 
     private void OnEnable()
     {
         ApplyTitle();
-        Undo.undoRedoPerformed += Repaint;
+        Undo.undoRedoPerformed += OnUndoRedo;
+        EditorApplication.update += EditorTick;
+        SceneView.duringSceneGui += OnSceneGUI;
         if (asset == null) PickFromSelection();
     }
 
     private void OnDisable()
     {
-        Undo.undoRedoPerformed -= Repaint;
+        Undo.undoRedoPerformed -= OnUndoRedo;
+        EditorApplication.update -= EditorTick;
+        SceneView.duringSceneGui -= OnSceneGUI;
+        playing = false;
+        // Leave the preview objects at their rest pose rather than frozen mid-animation.
+        var stage = OXKeyframePreviewStage.Current(asset);
+        if (stage != null && stage.Posed) stage.Unpose();
+    }
+
+    /// <summary>Time of the last enabled keyframe or event (0 if there is nothing to play).</summary>
+    private float AnimationDuration()
+    {
+        float d = 0f;
+        foreach (var k in asset.Keyframes)
+            if (k != null && AnyEnabled(k) && k.Time > d) d = k.Time;
+        if (asset.Events != null)
+            foreach (var ev in asset.Events)
+                if (ev != null && ev.Time > d) d = ev.Time;
+        return d;
+    }
+
+    private void TogglePlay()
+    {
+        if (playing) { playing = false; Repaint(); return; }
+        if (asset == null) return;
+        float dur = AnimationDuration();
+        if (dur <= 0.0001f) return;
+        posePreview = true;
+        playStartTime = playhead >= dur - 0.0001f ? 0f : playhead; // at the end already: start over
+        playStartReal = EditorApplication.timeSinceStartup;
+        playTime = playStartTime;
+        playing = true;
+        Repaint();
+    }
+
+    /// <summary>Space in the preview Scene view plays/stops too.</summary>
+    private void OnSceneGUI(SceneView sv)
+    {
+        if (asset == null) return;
+        var e = Event.current;
+        if (e.type != EventType.KeyDown || e.keyCode != KeyCode.Space) return;
+        if (e.alt || e.control || e.command || e.shift) return;
+        if (OXKeyframePreviewStage.Current(asset) == null || !(StageUtility.GetCurrentStage() is OXKeyframePreviewStage)) return;
+        TogglePlay();
+        e.Use();
+    }
+
+    private void OnUndoRedo()
+    {
+        var stage = OXKeyframePreviewStage.Current(asset);
+        if (stage != null) stage.Reconcile();
+        lastPoseDirty = -1; // force a re-pose
+        Repaint();
+    }
+
+    /// <summary>Runs every editor update: keeps the saved preview list in sync with the scene and poses it at the playhead.</summary>
+    private void EditorTick()
+    {
+        if (asset == null) return;
+
+        if (playing)
+        {
+            float dur = AnimationDuration();
+            playTime = playStartTime + (float)(EditorApplication.timeSinceStartup - playStartReal);
+            if (playTime >= dur) playing = false; // finished: the pose returns to the red playhead
+            Repaint();
+        }
+
+        var stage = OXKeyframePreviewStage.Current(asset);
+        if (stage == null) return;
+
+        if (EditorApplication.timeSinceStartup >= nextSyncAt)
+        {
+            nextSyncAt = EditorApplication.timeSinceStartup + 0.2;
+            if (stage.Sync()) Repaint(); // adopted / removed / moved something
+        }
+        UpdatePreview(stage);
+    }
+
+    /// <summary>Re-poses the preview objects only when something that affects the pose actually changed.</summary>
+    private void UpdatePreview(OXKeyframePreviewStage stage)
+    {
+        int dirty = EditorUtility.GetDirtyCount(asset);
+        if (stage == lastPoseStage && dirty == lastPoseDirty && posePreview == lastPoseOn &&
+            stage.Version == lastPoseVersion && Mathf.Approximately(PoseTime, lastPoseTime)) return;
+
+        lastPoseStage = stage;
+        lastPoseVersion = stage.Version;
+        lastPoseDirty = dirty;
+        lastPoseOn = posePreview;
+        lastPoseTime = PoseTime;
+
+        if (posePreview) stage.Pose(PoseTime);
+        else if (stage.Posed) stage.Unpose();
+        SceneView.RepaintAll();
     }
 
     private void OnSelectionChange()
@@ -632,6 +749,169 @@ public class OXKeyframeTimelineWindow : EditorWindow
         DrawInspector();
     }
 
+    // ------------------------------------------------------------------ preview objects panel
+
+    private static readonly OXPreviewObjectKind[] AddableKinds =
+    {
+        OXPreviewObjectKind.Empty, OXPreviewObjectKind.Cube, OXPreviewObjectKind.Sphere,
+        OXPreviewObjectKind.Capsule, OXPreviewObjectKind.Cylinder, OXPreviewObjectKind.Plane, OXPreviewObjectKind.Quad,
+    };
+
+    /// <summary>
+    /// Collapsible strip above the timeline: every object in the preview scene with the object index it is hooked to.
+    /// The index is the "Object" number used by the keyframes' Object States, so object #0 here is what an
+    /// Object State with Object = 0 animates while you scrub.
+    /// </summary>
+    private void DrawPreviewPanel()
+    {
+        if (asset.PreviewObjects == null) asset.PreviewObjects = new List<OXPreviewObject>();
+        var entries = asset.PreviewObjects;
+        var stage = OXKeyframePreviewStage.Current(asset);
+
+        // Actions are queued and run after the layout groups are closed (see Mutated()).
+        Action pending = null;
+
+        EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+        EditorGUILayout.BeginHorizontal();
+        showPreviewPanel = EditorGUILayout.Foldout(showPreviewPanel, "Preview Objects (" + entries.Count + ")", true);
+        GUILayout.FlexibleSpace();
+
+        if (stage == null)
+        {
+            if (GUILayout.Button("Open Preview Scene", EditorStyles.miniButton, GUILayout.Width(130f)))
+                pending = () => OXKeyframePreviewStage.Open(asset);
+        }
+        else
+        {
+            if (GUILayout.Button(new GUIContent("+ Add", "Add a primitive or empty to the preview scene"), EditorStyles.miniButton, GUILayout.Width(50f)))
+            {
+                var menu = new GenericMenu();
+                foreach (var kind in AddableKinds)
+                {
+                    var k = kind;
+                    menu.AddItem(new GUIContent(k.ToString()), false, () => { stage.Add(k); lastPoseDirty = -1; Repaint(); });
+                }
+                menu.ShowAsContext();
+            }
+
+            // Drop a prefab asset here to add it.
+            var dropped = (GameObject)EditorGUILayout.ObjectField(GUIContent.none, null, typeof(GameObject), false, GUILayout.Width(110f));
+            if (dropped != null)
+                pending = () => { stage.Add(OXPreviewObjectKind.Prefab, dropped); lastPoseDirty = -1; };
+
+            var sel = Selection.activeGameObject;
+            bool canHook = sel != null && sel.scene == stage.scene;
+            EditorGUI.BeginDisabledGroup(!canHook);
+            if (GUILayout.Button(new GUIContent("Hook Selection", "Give the object selected in the Scene view the next free object index"),
+                    EditorStyles.miniButton, GUILayout.Width(96f)))
+                pending = () => { stage.Hook(sel); lastPoseDirty = -1; };
+            EditorGUI.EndDisabledGroup();
+        }
+        EditorGUILayout.EndHorizontal();
+
+        if (showPreviewPanel)
+        {
+            if (stage == null)
+            {
+                EditorGUILayout.LabelField("Open the preview scene to add objects. They are saved with this animation.", EditorStyles.miniLabel);
+            }
+            else if (entries.Count == 0)
+            {
+                EditorGUILayout.LabelField("Empty. Use + Add, drop a prefab in the field above, or drag prefabs into the Scene view.", EditorStyles.miniLabel);
+            }
+            else
+            {
+                if (stage.Posed)
+                    EditorGUILayout.LabelField("Posed: turn Pose off (toolbar) to move objects in the Scene view (moves while posed are not saved).", EditorStyles.miniLabel);
+                else
+                    EditorGUILayout.LabelField("Index = the Object number in keyframe Object States. -1 = scenery (never animated).", EditorStyles.miniLabel);
+
+                // Diagnostics: which object indices do the keyframes animate that no preview object is hooked to?
+                var hooked = new HashSet<int>();
+                foreach (var en in entries)
+                    if (en != null && en.ObjectIndex >= 0) hooked.Add(en.ObjectIndex);
+                var missing = new SortedSet<int>();
+                foreach (var k in asset.Keyframes)
+                    if (k != null && k.Data != null && (LaneHas(k, 1) || LaneHas(k, 2) || LaneHas(k, 3)))
+                        foreach (var d in k.Data)
+                            if (d != null && !hooked.Contains(d.ObjectIndex)) missing.Add(d.ObjectIndex);
+                if (missing.Count > 0)
+                    EditorGUILayout.HelpBox("Keyframes animate object index " + string.Join(", ", missing.Select(m => m.ToString()).ToArray()) +
+                                            ", but no preview object has that index, so nothing moves for it. Set an object's Index to match.",
+                        MessageType.Warning);
+
+                var counts = new Dictionary<int, int>();
+                foreach (var en in entries)
+                    if (en != null && en.ObjectIndex >= 0)
+                    {
+                        int c;
+                        counts.TryGetValue(en.ObjectIndex, out c);
+                        counts[en.ObjectIndex] = c + 1;
+                    }
+
+                float oldLW = EditorGUIUtility.labelWidth;
+                for (int i = 0; i < entries.Count; i++)
+                {
+                    var en = entries[i];
+                    if (en == null) continue;
+                    int row = i;
+
+                    EditorGUILayout.BeginHorizontal();
+
+                    bool dup = en.ObjectIndex >= 0 && counts[en.ObjectIndex] > 1;
+                    var oldColor = GUI.color;
+                    if (dup) GUI.color = new Color(1f, 0.55f, 0.55f);
+                    EditorGUIUtility.labelWidth = 38f;
+                    EditorGUI.BeginChangeCheck();
+                    int ni = EditorGUILayout.IntField(new GUIContent("Index", dup ? "Another object already uses this index; only the first one is animated." : "Object index used by keyframe Object States"), en.ObjectIndex, GUILayout.Width(88f));
+                    if (EditorGUI.EndChangeCheck()) pending = () => stage.SetIndex(row, ni);
+                    GUI.color = oldColor;
+
+                    EditorGUI.BeginChangeCheck();
+                    string nn = EditorGUILayout.TextField(en.Name ?? "", GUILayout.MinWidth(70f));
+                    if (EditorGUI.EndChangeCheck()) pending = () => stage.SetName(row, nn);
+
+                    if (en.Kind == OXPreviewObjectKind.Prefab)
+                    {
+                        EditorGUI.BeginChangeCheck();
+                        var np = (GameObject)EditorGUILayout.ObjectField(en.Prefab, typeof(GameObject), false, GUILayout.Width(120f));
+                        if (EditorGUI.EndChangeCheck() && np != null)
+                            pending = () =>
+                            {
+                                Undo.RecordObject(asset, "Change Preview Prefab");
+                                en.Prefab = np;
+                                EditorUtility.SetDirty(asset);
+                                stage.Respawn(row);
+                                lastPoseDirty = -1;
+                            };
+                    }
+                    else
+                    {
+                        GUILayout.Label(en.Kind.ToString(), EditorStyles.miniLabel, GUILayout.Width(120f));
+                    }
+
+                    if (GUILayout.Button("Select", EditorStyles.miniButton, GUILayout.Width(48f)))
+                    {
+                        var go = stage.GetLive(row);
+                        if (go != null) Selection.activeGameObject = go;
+                    }
+                    if (GUILayout.Button("X", EditorStyles.miniButton, GUILayout.Width(22f)))
+                        pending = () => { stage.RemoveAt(row); lastPoseDirty = -1; };
+
+                    EditorGUILayout.EndHorizontal();
+                }
+                EditorGUIUtility.labelWidth = oldLW;
+            }
+        }
+        EditorGUILayout.EndVertical();
+
+        if (pending != null)
+        {
+            pending();
+            Mutated();
+        }
+    }
+
     // ------------------------------------------------------------------ splitters
 
     private float splitStartMouse;
@@ -771,6 +1051,12 @@ public class OXKeyframeTimelineWindow : EditorWindow
             e.Use();
             Mutated();
         }
+        else if (e.keyCode == KeyCode.Space && GUIUtility.keyboardControl == 0 && !e.alt && !e.control && !e.command && !e.shift)
+        {
+            TogglePlay();
+            e.Use();
+            Repaint();
+        }
         else if (e.keyCode == KeyCode.F && GUIUtility.keyboardControl == 0)
         {
             FrameAll();
@@ -847,6 +1133,12 @@ public class OXKeyframeTimelineWindow : EditorWindow
 
             GUILayout.Label("Playhead", EditorStyles.miniLabel, GUILayout.Width(50));
             playhead = Mathf.Max(0f, EditorGUILayout.FloatField(playhead, EditorStyles.toolbarTextField, GUILayout.Width(50)));
+
+            bool wantPlay = GUILayout.Toggle(playing, new GUIContent("\u25B6", "Play in the preview scene (Space)"), EditorStyles.toolbarButton, GUILayout.Width(24));
+            if (wantPlay != playing) TogglePlay();
+            posePreview = GUILayout.Toggle(posePreview,
+                new GUIContent("Pose", "On: scrubbing and keyframe edits pose the preview objects. Off: objects sit at their rest pose so you can move them in the Scene view."),
+                EditorStyles.toolbarButton, GUILayout.Width(40));
 
             GUILayout.FlexibleSpace();
 
@@ -1063,6 +1355,14 @@ public class OXKeyframeTimelineWindow : EditorWindow
         {
             var red = new Color(1f, 0.25f, 0.25f);
             EditorGUI.DrawRect(new Rect(px - 0.5f, area.y, 2f, area.height), red);
+        }
+
+        // yellow playhead: where Space-bar playback currently is
+        if (playing)
+        {
+            float yx = TimeToX(playTime);
+            if (yx >= content.x && yx <= content.xMax)
+                EditorGUI.DrawRect(new Rect(yx - 0.5f, area.y, 2f, area.height), new Color(1f, 0.9f, 0.15f));
         }
     }
 
@@ -1664,6 +1964,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
                 "Double-click a lane to add one (or toggle that channel on an existing key), right-click for more options.\n" +
                 "Double-click the purple Events lane to add a named event.",
                 MessageType.None);
+            DrawPreviewPanel(); // preview scene objects only show while nothing is selected
             EditorGUILayout.EndScrollView();
             return;
         }
@@ -1772,7 +2073,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
             if (kf.Position.Enabled)
             {
                 EditorGUI.BeginChangeCheck();
-                Vector3 p = Vector3Row("Position", tr.Position, LaneColors[1]);
+                Vector3 p = Vector3Row("Position", tr.Position, LaneColors[1], kf.Position);
                 if (EditorGUI.EndChangeCheck()) Edit("Change Position", () => tr.Position = p);
             }
 
@@ -1780,14 +2081,14 @@ public class OXKeyframeTimelineWindow : EditorWindow
             {
                 EditorGUI.BeginChangeCheck();
                 Quaternion q = IsZeroQuat(tr.Rotation) ? Quaternion.identity : tr.Rotation;
-                Vector3 eul = Vector3Row("Rotation", q.eulerAngles, LaneColors[2]);
+                Vector3 eul = Vector3Row("Rotation", q.eulerAngles, LaneColors[2], kf.Rotation);
                 if (EditorGUI.EndChangeCheck()) Edit("Change Rotation", () => tr.Rotation = Quaternion.Euler(eul));
             }
 
             if (kf.Scale.Enabled)
             {
                 EditorGUI.BeginChangeCheck();
-                Vector3 s = Vector3Row("Scale", tr.Scale, LaneColors[3]);
+                Vector3 s = Vector3Row("Scale", tr.Scale, LaneColors[3], kf.Scale);
                 if (EditorGUI.EndChangeCheck()) Edit("Change Scale", () => tr.Scale = s);
             }
 
@@ -1965,6 +2266,26 @@ public class OXKeyframeTimelineWindow : EditorWindow
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.BeginVertical();
 
+        // Axis mask: untick an axis to leave it untouched by this channel (e.g. only animate Z).
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.PrefixLabel(new GUIContent("Axes", "Untick an axis to stop this channel from animating it. Unticked axes keep their current value."));
+        string[] axisNames = { "X", "Y", "Z" };
+        float oldLW = EditorGUIUtility.labelWidth;
+        EditorGUIUtility.labelWidth = 14f;
+        for (int axis = 0; axis < 3; axis++)
+        {
+            EditorGUI.BeginChangeCheck();
+            bool on = EditorGUILayout.Toggle(axisNames[axis], ch.AxisEnabled(axis), GUILayout.Width(34f));
+            if (EditorGUI.EndChangeCheck())
+            {
+                int ax = axis;
+                Edit("Toggle " + label + " " + axisNames[axis], () => ch.SetAxisEnabled(ax, on));
+            }
+        }
+        EditorGUIUtility.labelWidth = oldLW;
+        GUILayout.FlexibleSpace();
+        EditorGUILayout.EndHorizontal();
+
         EditorGUI.BeginChangeCheck();
         bool rel = EditorGUILayout.Toggle(
             new GUIContent("Relative To Self", "On: this key's value is applied on top of the previous key's result on this channel (so repeated keys accumulate). Off: applied on top of the starting pose."),
@@ -2012,7 +2333,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
     }
 
     /// <summary>A label with its X/Y/Z fields on the same row, plus the channel's color as a side bar and a faint tint.</summary>
-    private static Vector3 Vector3Row(string label, Vector3 value, Color color)
+    private static Vector3 Vector3Row(string label, Vector3 value, Color color, OXKeyframeChannel mask = null)
     {
         Rect row = EditorGUILayout.BeginHorizontal();
         if (Event.current.type == EventType.Repaint)
@@ -2026,9 +2347,16 @@ public class OXKeyframeTimelineWindow : EditorWindow
         // Three separate fields so the layout never wraps the values onto a second line under the label.
         float oldLabelWidth = EditorGUIUtility.labelWidth;
         EditorGUIUtility.labelWidth = 12f;
+        // Axes the channel has switched off are greyed out: they aren't animated, so their value is ignored.
+        EditorGUI.BeginDisabledGroup(mask != null && !mask.AxisEnabled(0));
         value.x = EditorGUILayout.FloatField("X", value.x);
+        EditorGUI.EndDisabledGroup();
+        EditorGUI.BeginDisabledGroup(mask != null && !mask.AxisEnabled(1));
         value.y = EditorGUILayout.FloatField("Y", value.y);
+        EditorGUI.EndDisabledGroup();
+        EditorGUI.BeginDisabledGroup(mask != null && !mask.AxisEnabled(2));
         value.z = EditorGUILayout.FloatField("Z", value.z);
+        EditorGUI.EndDisabledGroup();
         EditorGUIUtility.labelWidth = oldLabelWidth;
 
         EditorGUILayout.EndHorizontal();

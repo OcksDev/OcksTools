@@ -21,9 +21,16 @@ public class OXKeyframeAnimationRuntime
         public OXTransformWithScale Start = new OXTransformWithScale();
 
         // One independent timeline per channel. Empty list = this animation never touches that channel.
-        public readonly List<Key<Vector3>> PosKeys = new List<Key<Vector3>>();
+        // Position and scale are split further into one timeline per axis (0 = X, 1 = Y, 2 = Z), so a key
+        // that disables an axis simply doesn't appear on that axis' timeline and the axis is left alone.
+        public readonly List<Key<float>>[] PosKeys = NewAxisTracks();
         public readonly List<Key<Quaternion>> RotKeys = new List<Key<Quaternion>>();
-        public readonly List<Key<Vector3>> ScaleKeys = new List<Key<Vector3>>();
+        public readonly List<Key<float>>[] ScaleKeys = NewAxisTracks();
+
+        private static List<Key<float>>[] NewAxisTracks()
+        {
+            return new[] { new List<Key<float>>(), new List<Key<float>>(), new List<Key<float>>() };
+        }
     }
 
     public readonly OXKeyframeAnimation Asset;
@@ -112,14 +119,29 @@ public class OXKeyframeAnimationRuntime
                 if (kf.Position != null && kf.Position.Enabled)
                 {
                     var pos = d.Transform.Position;
-                    if (kf.Position.RelativeToSelf && t.PosKeys.Count > 0)
-                        pos = t.PosKeys[t.PosKeys.Count - 1].Value + pos;
-                    t.PosKeys.Add(new Key<Vector3> { Time = kf.Time, Value = pos, Channel = kf.Position });
-                    used = true;
+                    for (int a = 0; a < 3; a++)
+                    {
+                        if (!kf.Position.AxisEnabled(a)) continue;
+                        var track = t.PosKeys[a];
+                        float v = pos[a];
+                        if (kf.Position.RelativeToSelf && track.Count > 0)
+                            v = track[track.Count - 1].Value + v;
+                        track.Add(new Key<float> { Time = kf.Time, Value = v, Channel = kf.Position });
+                        used = true;
+                    }
                 }
-                if (kf.Rotation != null && kf.Rotation.Enabled)
+                if (kf.Rotation != null && kf.Rotation.Enabled && kf.Rotation.AnyAxisEnabled)
                 {
                     var rot = IsZeroQuat(d.Transform.Rotation) ? Quaternion.identity : d.Transform.Rotation;
+                    if (!kf.Rotation.AllAxesEnabled)
+                    {
+                        // Disabled Euler axes contribute no rotation, so that axis stays at the starting pose.
+                        var e = rot.eulerAngles;
+                        if (!kf.Rotation.AxisEnabled(0)) e.x = 0f;
+                        if (!kf.Rotation.AxisEnabled(1)) e.y = 0f;
+                        if (!kf.Rotation.AxisEnabled(2)) e.z = 0f;
+                        rot = Quaternion.Euler(e);
+                    }
                     if (kf.Rotation.RelativeToSelf && t.RotKeys.Count > 0)
                         rot = t.RotKeys[t.RotKeys.Count - 1].Value * rot;
                     t.RotKeys.Add(new Key<Quaternion> { Time = kf.Time, Value = rot, Channel = kf.Rotation });
@@ -128,10 +150,16 @@ public class OXKeyframeAnimationRuntime
                 if (kf.Scale != null && kf.Scale.Enabled)
                 {
                     var scl = d.Transform.Scale;
-                    if (kf.Scale.RelativeToSelf && t.ScaleKeys.Count > 0)
-                        scl = Vector3.Scale(t.ScaleKeys[t.ScaleKeys.Count - 1].Value, scl);
-                    t.ScaleKeys.Add(new Key<Vector3> { Time = kf.Time, Value = scl, Channel = kf.Scale });
-                    used = true;
+                    for (int a = 0; a < 3; a++)
+                    {
+                        if (!kf.Scale.AxisEnabled(a)) continue;
+                        var track = t.ScaleKeys[a];
+                        float v = scl[a];
+                        if (kf.Scale.RelativeToSelf && track.Count > 0)
+                            v *= track[track.Count - 1].Value;
+                        track.Add(new Key<float> { Time = kf.Time, Value = v, Channel = kf.Scale });
+                        used = true;
+                    }
                 }
 
                 if (used)
@@ -191,9 +219,17 @@ public class OXKeyframeAnimationRuntime
         foreach (var t in targets)
         {
             if (t.Go == null) continue;
-            if (t.PosKeys.Count > 0) t.Go.transform.localPosition = t.Original.Position;
+            // Only axes this animation actually animated are restored; masked-off axes were never touched.
+            var p = t.Go.transform.localPosition;
+            var s = t.Go.transform.localScale;
+            for (int a = 0; a < 3; a++)
+            {
+                if (t.PosKeys[a].Count > 0) p[a] = t.Original.Position[a];
+                if (t.ScaleKeys[a].Count > 0) s[a] = t.Original.Scale[a];
+            }
+            t.Go.transform.localPosition = p;
+            t.Go.transform.localScale = s;
             if (t.RotKeys.Count > 0) t.Go.transform.localRotation = t.Original.Rotation;
-            if (t.ScaleKeys.Count > 0) t.Go.transform.localScale = t.Original.Scale;
         }
     }
 
@@ -255,12 +291,12 @@ public class OXKeyframeAnimationRuntime
         return keys[i].Channel.Evaluate(x);
     }
 
-    private static Vector3 EvalVector(List<Key<Vector3>> keys, float t, Vector3 identity)
+    private static float EvalFloat(List<Key<float>> keys, float t, float identity)
     {
         int i = NextKeyIndex(keys, t);
         if (i >= keys.Count) return keys[keys.Count - 1].Value; // hold last value
-        Vector3 prev = i == 0 ? identity : keys[i - 1].Value;
-        return prev.LerpU(keys[i].Value, SegmentX(keys, i, t));
+        float prev = i == 0 ? identity : keys[i - 1].Value;
+        return Mathf.LerpUnclamped(prev, keys[i].Value, SegmentX(keys, i, t));
     }
 
     private static Quaternion EvalRotation(List<Key<Quaternion>> keys, float t)
@@ -279,18 +315,25 @@ public class OXKeyframeAnimationRuntime
             if (tar.Go == null) continue;
             var tr = tar.Go.transform;
 
-            if (tar.PosKeys.Count > 0)
-                tr.localPosition = tar.Start.Position + EvalVector(tar.PosKeys, t, Vector3.zero);
+            // Position / scale: write only the axes that have a timeline, leave the rest as they are.
+            if (tar.PosKeys[0].Count > 0 || tar.PosKeys[1].Count > 0 || tar.PosKeys[2].Count > 0)
+            {
+                var p = tr.localPosition;
+                for (int a = 0; a < 3; a++)
+                    if (tar.PosKeys[a].Count > 0)
+                        p[a] = tar.Start.Position[a] + EvalFloat(tar.PosKeys[a], t, 0f);
+                tr.localPosition = p;
+            }
 
             if (tar.RotKeys.Count > 0)
                 tr.localRotation = tar.Start.Rotation * EvalRotation(tar.RotKeys, t);
 
-            if (tar.ScaleKeys.Count > 0)
+            if (tar.ScaleKeys[0].Count > 0 || tar.ScaleKeys[1].Count > 0 || tar.ScaleKeys[2].Count > 0)
             {
-                var s = EvalVector(tar.ScaleKeys, t, Vector3.one);
-                s.x *= tar.Start.Scale.x;
-                s.y *= tar.Start.Scale.y;
-                s.z *= tar.Start.Scale.z;
+                var s = tr.localScale;
+                for (int a = 0; a < 3; a++)
+                    if (tar.ScaleKeys[a].Count > 0)
+                        s[a] = EvalFloat(tar.ScaleKeys[a], t, 1f) * tar.Start.Scale[a];
                 tr.localScale = s;
             }
         }
