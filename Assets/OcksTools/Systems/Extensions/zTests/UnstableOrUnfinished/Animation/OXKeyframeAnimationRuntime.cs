@@ -35,6 +35,35 @@ public class OXKeyframeAnimationRuntime
     private float totalDuration;
     private bool hasAnyTrack;
 
+    // Events from the asset, snapshotted and sorted by time when this runtime was created.
+    private readonly List<OXEventKeyframe> eventList = new List<OXEventKeyframe>();
+    private int nextEvent;
+
+    /// <summary>
+    /// Callbacks by event name. An event keyframe in the asset with a matching Name invokes the
+    /// callback(s) registered here when playback reaches its time.
+    /// </summary>
+    public Dictionary<string, OXEvent> Events = new();
+
+    /// <summary>Registers an OXEvent under this name (replaces any OXEvent already registered under it).</summary>
+    public void Append(string a, OXEvent b) => Events[a] = b;
+
+    /// <summary>Registers a callback under this name. Calling it again with the same name adds another callback.</summary>
+    public void Append(string a, System.Action b)
+    {
+        if (!Events.TryGetValue(a, out var o) || o == null)
+        {
+            o = new OXEvent();
+            Events[a] = o;
+        }
+        o.Append(b);
+    }
+
+    public void Invoke(string a)
+    {
+        if (Events.TryGetValue(a, out var e) && e != null) e.Invoke();
+    }
+
     public OXKeyframeAnimationRuntime(OXKeyframeAnimation asset, OXKeyframeAnimator animator, IList<GameObject> objects)
     {
         Asset = asset;
@@ -63,6 +92,7 @@ public class OXKeyframeAnimationRuntime
     /// <summary>
     /// Splits the shared keyframe timeline into one track per object per channel.
     /// A keyframe only contributes a key to a channel if that object's state opted into it.
+    /// Also snapshots the event keyframes (they extend the duration, so late events still fire).
     /// </summary>
     private void BuildTracks()
     {
@@ -103,14 +133,23 @@ public class OXKeyframeAnimationRuntime
                 }
             }
         }
+
+        eventList.Clear();
+        foreach (var ev in Asset.GetSortedEventKeyframes()) // already sorted by time
+        {
+            if (ev == null) continue;
+            eventList.Add(ev);
+            if (ev.Time > totalDuration) totalDuration = ev.Time;
+        }
+        nextEvent = 0;
     }
 
-    /// <summary>Time of the last key that animates anything (0 if nothing is animated).</summary>
+    /// <summary>Time of the last key or event that does anything (0 if the animation is empty).</summary>
     public float Duration { get { return totalDuration; } }
 
     /// <summary>
     /// Poses the objects as they would be at animation time t, without playing.
-    /// Used for scrubbing and the editor preview; works without an animator.
+    /// Used for scrubbing and the editor preview; works without an animator. Never fires events.
     /// </summary>
     public void Sample(float t)
     {
@@ -122,6 +161,7 @@ public class OXKeyframeAnimationRuntime
     {
         if (IsPlaying) return;
         IsPlaying = true;
+        nextEvent = 0;
         routine = animator.StartCoroutine(Animation());
     }
 
@@ -248,24 +288,52 @@ public class OXKeyframeAnimationRuntime
         }
     }
 
+    /// <summary>
+    /// Fires (in time order) every event whose time has been reached and hasn't fired yet.
+    /// A throwing callback is logged and does not stop the animation or the remaining events.
+    /// </summary>
+    private void FireEventsUpTo(float t)
+    {
+        while (nextEvent < eventList.Count && eventList[nextEvent].Time <= t)
+        {
+            var ev = eventList[nextEvent];
+            nextEvent++; // advance first so a callback that re-enters can't fire it twice
+            if (string.IsNullOrEmpty(ev.Name)) continue;
+            try { Invoke(ev.Name); }
+            catch (System.Exception ex) { Debug.LogException(ex); }
+        }
+    }
+
     private IEnumerator Animation()
     {
-        // Nothing opted into any channel, so there is nothing to play.
-        if (!hasAnyTrack)
+        bool hasEvents = eventList.Count > 0;
+
+        // Nothing opted into any channel and no events, so there is nothing to play.
+        if (!hasAnyTrack && !hasEvents)
         {
             Stop();
             yield break;
         }
 
+        // Callbacks are registered after Play() returns, but StartCoroutine runs this method up to its
+        // first yield immediately. If an event sits at the very start, wait a frame so it can be heard.
+        if (hasEvents && eventList[0].Time <= 0.0001f) yield return null;
+
         if (totalDuration > 0f)
         {
             // One continuous pass over the whole timeline; every channel samples its own track.
             float duration = totalDuration;
-            yield return OXLerp.Frame.Linear((float x) => Apply(x * duration), duration);
+            yield return OXLerp.Frame.Linear((float x) =>
+            {
+                float t = x * duration;
+                if (hasAnyTrack) Apply(t);
+                FireEventsUpTo(t);
+            }, duration);
         }
 
-        // Make sure we land exactly on the final values.
-        Apply(totalDuration);
+        // Make sure we land exactly on the final values, and nothing is skipped by a long frame.
+        if (hasAnyTrack) Apply(totalDuration);
+        FireEventsUpTo(float.PositiveInfinity);
 
         // Finished naturally.
         routine = null;

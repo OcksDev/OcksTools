@@ -13,9 +13,18 @@ public class OXKeyframeAnimation : ScriptableObject
     public bool ResetAfterFinish = false;
     public bool OverrideData = false;
     public List<OXKeyframe> Keyframes = new List<OXKeyframe>();
+    /// <summary>
+    /// Named events fired during playback when their time is reached. Hook them up from code with
+    /// runtime.Append("Name", callback) on the runtime returned by Play().
+    /// </summary>
+    public List<OXEventKeyframe> Events = new List<OXEventKeyframe>();
     public List<OXKeyframe> GetSortedKeyframes()
     {
         return Keyframes.OrderBy(k => k.Time).ToList();
+    }
+    public List<OXEventKeyframe> GetSortedEventKeyframes()
+    {
+        return Events.OrderBy(k => k.Time).ToList();
     }
     public OXKeyframeAnimationRuntime Play(BetterList<GameObject> objects)
     {
@@ -148,4 +157,12 @@ public class OXKeyframe
         Scale = new OXKeyframeChannel(true, mode);
         return this;
     }
+}
+
+/// <summary>A named point in time. When playback reaches Time, the callback(s) registered under Name run.</summary>
+[Serializable]
+public class OXEventKeyframe
+{
+    public float Time;
+    public string Name = "Event";
 }
