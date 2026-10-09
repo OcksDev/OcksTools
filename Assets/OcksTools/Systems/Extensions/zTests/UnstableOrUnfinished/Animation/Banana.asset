@@ -19,6 +19,7 @@ MonoBehaviour:
     Position:
       Enabled: 1
       InterpMode: 2
+      RelativeToSelf: 0
       Power: 2.5
       CircPower: 2
       Bounces: 4
@@ -29,6 +30,7 @@ MonoBehaviour:
     Rotation:
       Enabled: 0
       InterpMode: 0
+      RelativeToSelf: 0
       Power: 3
       CircPower: 2
       Bounces: 4
@@ -39,6 +41,7 @@ MonoBehaviour:
     Scale:
       Enabled: 1
       InterpMode: 2
+      RelativeToSelf: 0
       Power: 2.5
       CircPower: 2
       Bounces: 4
@@ -56,6 +59,7 @@ MonoBehaviour:
     Position:
       Enabled: 1
       InterpMode: 1
+      RelativeToSelf: 0
       Power: 3
       CircPower: 2
       Bounces: 4
@@ -66,6 +70,7 @@ MonoBehaviour:
     Rotation:
       Enabled: 0
       InterpMode: 0
+      RelativeToSelf: 0
       Power: 3
       CircPower: 2
       Bounces: 4
@@ -76,6 +81,7 @@ MonoBehaviour:
     Scale:
       Enabled: 0
       InterpMode: 1
+      RelativeToSelf: 0
       Power: 3
       CircPower: 2
       Bounces: 4
@@ -93,6 +99,7 @@ MonoBehaviour:
     Position:
       Enabled: 0
       InterpMode: 1
+      RelativeToSelf: 0
       Power: 3
       CircPower: 2
       Bounces: 4
@@ -103,6 +110,7 @@ MonoBehaviour:
     Rotation:
       Enabled: 0
       InterpMode: 0
+      RelativeToSelf: 0
       Power: 3
       CircPower: 2
       Bounces: 4
@@ -113,6 +121,7 @@ MonoBehaviour:
     Scale:
       Enabled: 1
       InterpMode: 1
+      RelativeToSelf: 0
       Power: 3
       CircPower: 2
       Bounces: 4

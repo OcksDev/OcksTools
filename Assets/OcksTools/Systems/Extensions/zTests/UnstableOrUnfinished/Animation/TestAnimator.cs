@@ -7,7 +7,7 @@ public class TestAnimator : MonoBehaviour
     {
         if (InputManager.IsKeyDown(KeyCode.Space))
         {
-            anim.Play(gameObject);
+            var pp = anim.Play(gameObject);
         }
     }
 }

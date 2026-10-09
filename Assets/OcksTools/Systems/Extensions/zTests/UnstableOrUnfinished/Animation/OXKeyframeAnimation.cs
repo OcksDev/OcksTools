@@ -60,6 +60,14 @@ public class OXKeyframeChannel
     /// <summary>How the channel eases from its previous key into this one.</summary>
     public OXKeyframeInterpolationMode InterpMode = OXKeyframeInterpolationMode.Linear;
 
+    /// <summary>
+    /// When true, this key's value is applied on top of the previous key's resulting value on this channel
+    /// (position adds, scale multiplies, rotation composes) instead of on top of the starting pose.
+    /// Repeated keys with Y = 5 therefore keep climbing. The first key of a channel has no previous key,
+    /// so it behaves the same either way.
+    /// </summary>
+    public bool RelativeToSelf = false;
+
     // Easing parameters. Each group is only read by the modes listed, and the defaults match
     // the defaults in Ease, so leaving them alone gives the same result as before.
     // They are kept separate (rather than one shared "power") so switching modes never loses a value.

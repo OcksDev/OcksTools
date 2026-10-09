@@ -111,18 +111,26 @@ public class OXKeyframeAnimationRuntime
                 bool used = false;
                 if (kf.Position != null && kf.Position.Enabled)
                 {
-                    t.PosKeys.Add(new Key<Vector3> { Time = kf.Time, Value = d.Transform.Position, Channel = kf.Position });
+                    var pos = d.Transform.Position;
+                    if (kf.Position.RelativeToSelf && t.PosKeys.Count > 0)
+                        pos = t.PosKeys[t.PosKeys.Count - 1].Value + pos;
+                    t.PosKeys.Add(new Key<Vector3> { Time = kf.Time, Value = pos, Channel = kf.Position });
                     used = true;
                 }
                 if (kf.Rotation != null && kf.Rotation.Enabled)
                 {
                     var rot = IsZeroQuat(d.Transform.Rotation) ? Quaternion.identity : d.Transform.Rotation;
+                    if (kf.Rotation.RelativeToSelf && t.RotKeys.Count > 0)
+                        rot = t.RotKeys[t.RotKeys.Count - 1].Value * rot;
                     t.RotKeys.Add(new Key<Quaternion> { Time = kf.Time, Value = rot, Channel = kf.Rotation });
                     used = true;
                 }
                 if (kf.Scale != null && kf.Scale.Enabled)
                 {
-                    t.ScaleKeys.Add(new Key<Vector3> { Time = kf.Time, Value = d.Transform.Scale, Channel = kf.Scale });
+                    var scl = d.Transform.Scale;
+                    if (kf.Scale.RelativeToSelf && t.ScaleKeys.Count > 0)
+                        scl = Vector3.Scale(t.ScaleKeys[t.ScaleKeys.Count - 1].Value, scl);
+                    t.ScaleKeys.Add(new Key<Vector3> { Time = kf.Time, Value = scl, Channel = kf.Scale });
                     used = true;
                 }
 

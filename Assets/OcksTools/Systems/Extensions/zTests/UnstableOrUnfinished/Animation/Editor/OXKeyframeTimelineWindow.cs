@@ -31,7 +31,10 @@ public class OXKeyframeTimelineWindow : EditorWindow
     private const float MinLaneH = 20f;
     private const float MaxLaneH = 80f;
     private float LaneH { get { return laneH; } }
-    private const float MarkerR = 7f;
+    // Marker size follows the lane height (7px at the default 26px lane), so keys scale up/down with the timeline.
+    private float MarkerR { get { return LaneH * 0.27f; } }
+    private float StackOffset { get { return MarkerR * 0.43f; } }          // vertical offset between stacked diamonds
+    private float LineScale { get { return Mathf.Clamp(LaneH / 26f, 0.8f, 2f); } } // outline thickness
     private const int KeyLaneCount = 4; // lanes 0..3 hold keyframes
     private const int EventLane = 4;    // lane 4 holds event keyframes
     private const int LaneCount = 5;    // 0 = all keyframes, 1 = position, 2 = rotation, 3 = scale, 4 = events
@@ -47,7 +50,6 @@ public class OXKeyframeTimelineWindow : EditorWindow
     };
 
     [SerializeField] private OXKeyframeAnimation asset;
-    [SerializeField] private bool locked;
     [SerializeField] private bool snap = true;
     [SerializeField] private float snapStep = 0.05f;
     [SerializeField] private float pxPerSec = 160f;
@@ -104,12 +106,70 @@ public class OXKeyframeTimelineWindow : EditorWindow
         w.Show();
     }
 
-    /// <summary>Sets the tab title and Unity's built-in monochrome (theme-aware) keyframe diamond icon.</summary>
+    private static Texture2D tabIcon;
+    private static bool tabIconPro;
+
+    /// <summary>Sets the tab title and a monochrome (light on dark skin, dark on light skin) "group of keyframes" icon.</summary>
     private void ApplyTitle()
     {
-        var icon = EditorGUIUtility.IconContent("AnimationKeyframe").image;
-        if (icon == null) icon = EditorGUIUtility.IconContent("Animation.AddKeyframe").image;
-        titleContent = new GUIContent("Keyframe Timeline", icon);
+        titleContent = new GUIContent("Keyframe Timeline", GetTabIcon());
+    }
+
+    /// <summary>Draws a keyframe diamond above a timeline ruler into a small texture - no image asset needed.</summary>
+    private static Texture2D GetTabIcon()
+    {
+        bool pro = EditorGUIUtility.isProSkin;
+        if (tabIcon != null && tabIconPro == pro) return tabIcon;
+        if (tabIcon != null) DestroyImmediate(tabIcon);
+
+        const int S = 32;      // texture size (shown at 16x16 points, so it stays sharp on high-DPI screens)
+        const int SS = 4;      // supersampling per axis for smooth edges
+        const float R = 4.2f;  // diamond radius in 16x16 icon space
+        float scale = S / 16f;
+        var centers = new[] { new Vector2(8f, 6.8f) }; // one keyframe sitting above a timeline ruler
+        Color ink = pro ? new Color(0.82f, 0.82f, 0.82f) : new Color(0.18f, 0.18f, 0.18f);
+
+        var pixels = new Color[S * S];
+        for (int y = 0; y < S; y++)
+        {
+            for (int x = 0; x < S; x++)
+            {
+                int hit = 0;
+                for (int sy = 0; sy < SS; sy++)
+                {
+                    for (int sx = 0; sx < SS; sx++)
+                    {
+                        float px = (x + (sx + 0.5f) / SS) / scale;
+                        float py = 16f - (y + (sy + 0.5f) / SS) / scale; // texture row 0 is the bottom
+                        bool inside = false;
+                        for (int c = 0; c < centers.Length && !inside; c++)
+                            inside = Mathf.Abs(px - centers[c].x) + Mathf.Abs(py - centers[c].y) <= R;
+
+                        // timeline: a horizontal line with tick marks hanging below it
+                        if (!inside && px >= 0.5f && px <= 15.5f && py >= 12.0f && py <= 13.4f) inside = true;
+                        if (!inside && py > 13.4f && py <= 15.4f)
+                        {
+                            float rel = (px - 1.75f) % 4f; // ticks at x = 2, 6, 10, 14 (0.9 wide)
+                            if (px >= 1.5f && px <= 14.5f && rel >= 0f && rel <= 0.9f) inside = true;
+                        }
+                        if (inside) hit++;
+                    }
+                }
+                pixels[y * S + x] = new Color(ink.r, ink.g, ink.b, hit / (float)(SS * SS));
+            }
+        }
+
+        tabIcon = new Texture2D(S, S, TextureFormat.RGBA32, false)
+        {
+            name = "OXKeyframeTimelineIcon",
+            hideFlags = HideFlags.HideAndDontSave,
+            filterMode = FilterMode.Bilinear,
+            wrapMode = TextureWrapMode.Clamp
+        };
+        tabIcon.SetPixels(pixels);
+        tabIcon.Apply();
+        tabIconPro = pro;
+        return tabIcon;
     }
 
     /// <summary>Double-clicking an OXKeyframeAnimation asset (or "Open" in its context menu) opens this window on it.</summary>
@@ -124,7 +184,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
         w.minSize = new Vector2(560f, 380f);
         w.Show();
         w.Focus();
-        w.SetAsset(a); // explicit open overrides the Lock toggle
+        w.SetAsset(a);
         w.Repaint();
         return true;
     }
@@ -143,7 +203,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
 
     private void OnSelectionChange()
     {
-        if (!locked) PickFromSelection();
+        PickFromSelection();
     }
 
     private void PickFromSelection()
@@ -736,10 +796,6 @@ public class OXKeyframeTimelineWindow : EditorWindow
             Mutated();
         }
 
-        locked = GUILayout.Toggle(locked,
-            new GUIContent("Lock", "When on, the window keeps showing this animation even if you click a different asset in the Project window."),
-            EditorStyles.toolbarButton, GUILayout.Width(40));
-
         if (asset != null)
         {
             // Save: only enabled when the asset has unsaved changes.
@@ -864,7 +920,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
         Handles.color = fill;
         Handles.DrawAAConvexPolygon(pts);
         Handles.color = outline;
-        Handles.DrawAAPolyLine(lineWidth, pts[0], pts[1], pts[2], pts[3], pts[0]);
+        Handles.DrawAAPolyLine(lineWidth * LineScale, pts[0], pts[1], pts[2], pts[3], pts[0]);
         Handles.color = Color.white;
     }
 
@@ -965,14 +1021,14 @@ public class OXKeyframeTimelineWindow : EditorWindow
                     if (l == 0 && !AnyEnabled(kf)) fill = new Color(0.45f, 0.45f, 0.45f);
                     if (layer > 0) fill = Color.Lerp(fill, Color.black, 0.3f * layer);
                     Color outline = sel ? new Color(1f, 0.95f, 0.3f) : new Color(0f, 0f, 0f, 0.8f);
-                    var c = new Vector2(TimeToX(kf.Time), laneCenter - layer * 3f);
-                    DrawDiamond(c, sel ? MarkerR + 1f : MarkerR, fill, outline, sel ? 2.5f : 1.5f);
+                    var c = new Vector2(TimeToX(kf.Time), laneCenter - layer * StackOffset);
+                    DrawDiamond(c, sel ? MarkerR * 1.15f : MarkerR, fill, outline, sel ? 2.5f : 1.5f);
                 }
 
                 if (n > 1)
                 {
                     float topX = TimeToX(asset.Keyframes[cluster[n - 1]].Time);
-                    var badge = new Rect(topX + 6f, lanes.y + l * LaneH + 1f, n >= 10 ? 18f : 13f, 11f);
+                    var badge = new Rect(topX + MarkerR * 0.85f, lanes.y + l * LaneH + 1f, n >= 10 ? 18f : 13f, 11f);
                     EditorGUI.DrawRect(badge, new Color(0.05f, 0.05f, 0.05f, 0.9f));
                     GUI.Label(badge, n.ToString(), badgeLabel);
                 }
@@ -1047,15 +1103,15 @@ public class OXKeyframeTimelineWindow : EditorWindow
                 Color fill = LaneColors[EventLane];
                 if (layer > 0) fill = Color.Lerp(fill, Color.black, 0.3f * layer);
                 Color outline = sel ? new Color(1f, 0.95f, 0.3f) : new Color(0f, 0f, 0f, 0.8f);
-                var c = new Vector2(TimeToX(asset.Events[i].Time), laneCenter - layer * 3f);
-                DrawDiamond(c, sel ? MarkerR + 1f : MarkerR, fill, outline, sel ? 2.5f : 1.5f);
+                var c = new Vector2(TimeToX(asset.Events[i].Time), laneCenter - layer * StackOffset);
+                DrawDiamond(c, sel ? MarkerR * 1.15f : MarkerR, fill, outline, sel ? 2.5f : 1.5f);
             }
 
             float topX = TimeToX(asset.Events[cluster[n - 1]].Time);
             float labelX = topX + MarkerR + 4f;
             if (n > 1)
             {
-                var badge = new Rect(topX + 6f, laneTop + 1f, n >= 10 ? 18f : 13f, 11f);
+                var badge = new Rect(topX + MarkerR * 0.85f, laneTop + 1f, n >= 10 ? 18f : 13f, 11f);
                 EditorGUI.DrawRect(badge, new Color(0.05f, 0.05f, 0.05f, 0.9f));
                 GUI.Label(badge, n.ToString(), badgeLabel);
                 labelX = badge.xMax + 3f;
@@ -1653,11 +1709,30 @@ public class OXKeyframeTimelineWindow : EditorWindow
 
         // ---------------- RIGHT HALF: object states ----------------
         EditorGUILayout.BeginVertical(GUILayout.Width(rightW));
-        rightScroll = EditorGUILayout.BeginScrollView(rightScroll);
 
-        EditorGUILayout.LabelField("Object States", EditorStyles.boldLabel);
+        // Header row stays pinned above the scrolling list: title on the left, "+ Add Object State" at the top-right.
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.Label("Object States", EditorStyles.boldLabel);
+        GUILayout.FlexibleSpace();
+        bool addObjectState = GUILayout.Button("+ Add Object State", GUILayout.Width(130f));
+        EditorGUILayout.EndHorizontal();
+
+        if (addObjectState)
+        {
+            Edit("Add Object State", () =>
+            {
+                int next = 0;
+                foreach (var d in kf.Data)
+                    if (d != null && d.ObjectIndex >= next) next = d.ObjectIndex + 1;
+                kf.Data.Add(MakeState(next, kf.Time, kf));
+            });
+            Mutated();
+        }
+
         if (!asset.OverrideData)
             EditorGUILayout.LabelField("Relative to each object's starting pose (position offset, scale multiplier).", EditorStyles.miniLabel);
+
+        rightScroll = EditorGUILayout.BeginScrollView(rightScroll);
 
         for (int i = 0; i < kf.Data.Count; i++)
         {
@@ -1722,18 +1797,6 @@ public class OXKeyframeTimelineWindow : EditorWindow
             EditorGUILayout.EndVertical(); // channel rows
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.EndVertical(); // help box
-        }
-
-        if (GUILayout.Button("+ Add Object State"))
-        {
-            Edit("Add Object State", () =>
-            {
-                int next = 0;
-                foreach (var d in kf.Data)
-                    if (d != null && d.ObjectIndex >= next) next = d.ObjectIndex + 1;
-                kf.Data.Add(MakeState(next, kf.Time, kf));
-            });
-            Mutated();
         }
 
         EditorGUILayout.EndScrollView();
@@ -1901,6 +1964,12 @@ public class OXKeyframeTimelineWindow : EditorWindow
 
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.BeginVertical();
+
+        EditorGUI.BeginChangeCheck();
+        bool rel = EditorGUILayout.Toggle(
+            new GUIContent("Relative To Self", "On: this key's value is applied on top of the previous key's result on this channel (so repeated keys accumulate). Off: applied on top of the starting pose."),
+            ch.RelativeToSelf);
+        if (EditorGUI.EndChangeCheck()) Edit("Toggle Relative To Self", () => ch.RelativeToSelf = rel);
 
         EditorGUI.BeginChangeCheck();
         var mode = (OXKeyframeInterpolationMode)EditorGUILayout.EnumPopup("Interpolation", ch.InterpMode);
