@@ -105,6 +105,19 @@ public class OXKeyframeAnimationRuntime
         }
     }
 
+    /// <summary>Time of the last key that animates anything (0 if nothing is animated).</summary>
+    public float Duration { get { return totalDuration; } }
+
+    /// <summary>
+    /// Poses the objects as they would be at animation time t, without playing.
+    /// Used for scrubbing and the editor preview; works without an animator.
+    /// </summary>
+    public void Sample(float t)
+    {
+        if (!hasAnyTrack) return;
+        Apply(t);
+    }
+
     public void Play()
     {
         if (IsPlaying) return;

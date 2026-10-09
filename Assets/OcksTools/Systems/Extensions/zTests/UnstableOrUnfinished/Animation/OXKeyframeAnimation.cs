@@ -42,10 +42,6 @@ public enum OXKeyframeInterpolationMode
     Overshoot,
 }
 
-/// <summary>
-/// Per-channel settings for one keyframe. Add any other channel-specific attributes here
-/// and every channel (position, rotation, scale) picks them up.
-/// </summary>
 [Serializable]
 public class OXKeyframeChannel
 {

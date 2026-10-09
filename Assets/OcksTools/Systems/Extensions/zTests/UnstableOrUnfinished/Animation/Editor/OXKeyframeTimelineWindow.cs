@@ -80,12 +80,39 @@ public class OXKeyframeTimelineWindow : EditorWindow
     public static void Open()
     {
         var w = GetWindow<OXKeyframeTimelineWindow>("Keyframe Timeline");
+        w.ApplyTitle();
         w.minSize = new Vector2(560f, 380f);
         w.Show();
     }
 
+    /// <summary>Sets the tab title and Unity's built-in monochrome (theme-aware) keyframe diamond icon.</summary>
+    private void ApplyTitle()
+    {
+        var icon = EditorGUIUtility.IconContent("AnimationKeyframe").image;
+        if (icon == null) icon = EditorGUIUtility.IconContent("Animation.AddKeyframe").image;
+        titleContent = new GUIContent("Keyframe Timeline", icon);
+    }
+
+    /// <summary>Double-clicking an OXKeyframeAnimation asset (or "Open" in its context menu) opens this window on it.</summary>
+    [UnityEditor.Callbacks.OnOpenAsset(1)]
+    public static bool OnOpenAsset(int instanceID, int line)
+    {
+        var a = EditorUtility.InstanceIDToObject(instanceID) as OXKeyframeAnimation;
+        if (a == null) return false; // not ours, let Unity handle it
+
+        var w = GetWindow<OXKeyframeTimelineWindow>("Keyframe Timeline");
+        w.ApplyTitle();
+        w.minSize = new Vector2(560f, 380f);
+        w.Show();
+        w.Focus();
+        w.SetAsset(a); // explicit open overrides the Lock toggle
+        w.Repaint();
+        return true;
+    }
+
     private void OnEnable()
     {
+        ApplyTitle();
         Undo.undoRedoPerformed += Repaint;
         if (asset == null) PickFromSelection();
     }
