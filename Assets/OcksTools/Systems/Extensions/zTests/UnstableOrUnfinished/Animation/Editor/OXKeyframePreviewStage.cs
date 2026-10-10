@@ -13,8 +13,9 @@ using UnityEngine.SceneManagement;
 /// object index / rest transform) and respawned the next time the stage opens.
 ///
 /// What goes in the scene:
-///   - Use the timeline window's "+ Add" menu / prefab field, or drag prefabs into the Scene view.
-///     Prefab instances, built-in primitives and bare empty GameObjects are picked up automatically.
+///   - Use the timeline window's "+ Add" menu / drop field, or drag prefabs into the Scene view, or use the
+///     Hierarchy's right-click Create menu (3D and 2D). Prefab instances, built-in primitives, sprites and bare
+///     empty GameObjects are picked up automatically.
 ///   - Root objects only (children of those are part of the prefab, not tracked individually).
 ///
 /// Object index:
@@ -155,6 +156,18 @@ public class OXKeyframePreviewStage : PreviewSceneStage
                 break;
             case OXPreviewObjectKind.Empty:
                 break;
+            case OXPreviewObjectKind.Sprite:
+            case OXPreviewObjectKind.Square2D:
+            case OXPreviewObjectKind.Circle2D:
+            case OXPreviewObjectKind.Triangle2D:
+            case OXPreviewObjectKind.Capsule2D:
+            case OXPreviewObjectKind.Diamond2D:
+            case OXPreviewObjectKind.Hexagon2D:
+                go = new GameObject();
+                var sr = go.AddComponent<SpriteRenderer>();
+                sr.sprite = p.Kind == OXPreviewObjectKind.Sprite ? p.Sprite : OXPreviewSprites.Get(p.Kind);
+                sr.color = p.Color == default(Color) ? Color.white : p.Color;
+                break;
             default:
                 go = GameObject.CreatePrimitive(ToPrimitive(p.Kind));
                 break;
@@ -188,17 +201,21 @@ public class OXKeyframePreviewStage : PreviewSceneStage
     // ------------------------------------------------------------------ editing the list (from the window)
 
     /// <summary>Adds a primitive / empty / prefab to the scene and the saved list. Gets the next free object index.</summary>
-    public int Add(OXPreviewObjectKind kind, GameObject prefab = null)
+    public int Add(OXPreviewObjectKind kind, GameObject prefab = null, Sprite sprite = null)
     {
         if (asset == null || !scene.IsValid()) return -1;
         if (kind == OXPreviewObjectKind.Prefab && prefab == null) return -1;
+        if (kind == OXPreviewObjectKind.Sprite && sprite == null) return -1;
 
         Undo.RecordObject(asset, "Add Preview Object");
         var p = new OXPreviewObject
         {
             Kind = kind,
             Prefab = kind == OXPreviewObjectKind.Prefab ? prefab : null,
-            Name = kind == OXPreviewObjectKind.Prefab ? prefab.name : kind.ToString(),
+            Sprite = kind == OXPreviewObjectKind.Sprite ? sprite : null,
+            Name = kind == OXPreviewObjectKind.Prefab ? prefab.name
+                 : kind == OXPreviewObjectKind.Sprite ? sprite.name
+                 : kind.ToString().Replace("2D", " (2D)"),
             ObjectIndex = NextFreeIndex(),
         };
         Entries.Add(p);
@@ -263,7 +280,7 @@ public class OXKeyframePreviewStage : PreviewSceneStage
             if (!Describe(go, out var p))
             {
                 Debug.LogWarning("[Keyframe Preview] '" + go.name + "' can't be saved with the animation. " +
-                                 "Use a prefab instance, a built-in primitive or an empty GameObject.", go);
+                                 "Use a prefab instance, a built-in primitive, a sprite or an empty GameObject.", go);
                 return -1;
             }
             Undo.RecordObject(asset, "Hook Preview Object");
@@ -279,15 +296,9 @@ public class OXKeyframePreviewStage : PreviewSceneStage
         return Entries[i].ObjectIndex;
     }
 
-    /// <summary>
-    /// The index a new object should get: the lowest index that keyframes already use but no object is hooked to,
-    /// otherwise the lowest unused index.
-    /// </summary>
+    /// <summary>The index a new object should get: the lowest unused index, so new objects count 0, 1, 2, ...</summary>
     public int NextFreeIndex()
     {
-        int unhooked = NextUnhookedKeyIndex();
-        if (unhooked >= 0) return unhooked;
-
         var taken = new HashSet<int>(Entries.Where(e => e != null && e.ObjectIndex >= 0).Select(e => e.ObjectIndex));
         int n = 0;
         while (taken.Contains(n)) n++;
@@ -343,11 +354,11 @@ public class OXKeyframePreviewStage : PreviewSceneStage
             {
                 if (warned.Add(root.GetInstanceID()))
                     Debug.LogWarning("[Keyframe Preview] '" + root.name + "' won't be saved with the animation " +
-                                     "(only prefab instances, built-in primitives and empty GameObjects are).", root);
+                                     "(only prefab instances, built-in primitives, sprites and empty GameObjects are).", root);
                 continue;
             }
-            // Objects dragged in are hooked to an index the keyframes use but nothing owns yet; otherwise they are scenery.
-            p.ObjectIndex = NextUnhookedKeyIndex();
+            // Objects that appear in the scene (dragged in, or made with the Hierarchy's Create menu) get the next free index: 0, 1, 2, ...
+            p.ObjectIndex = NextFreeIndex();
             entries.Add(p);
             live.Add(root);
             changed = true;
@@ -377,6 +388,18 @@ public class OXKeyframePreviewStage : PreviewSceneStage
                 ReadTransform(go, p);
                 return true;
             }
+        }
+
+        // 2D: anything with a SpriteRenderer (Create > 2D Object > Sprites > ...). Extra components such as 2D colliders
+        // or a Rigidbody2D are ignored; they don't matter for the preview and aren't respawned.
+        var sr = go.GetComponent<SpriteRenderer>();
+        if (sr != null)
+        {
+            if (OXPreviewSprites.TryGetKind(sr.sprite, out var shape)) p.Kind = shape;
+            else { p.Kind = OXPreviewObjectKind.Sprite; p.Sprite = sr.sprite; }
+            p.Color = sr.color;
+            ReadTransform(go, p);
+            return true;
         }
 
         var mf = go.GetComponent<MeshFilter>();
@@ -433,7 +456,13 @@ public class OXKeyframePreviewStage : PreviewSceneStage
             if (go == null) continue;
             var p = entries[i];
             var t = go.transform;
-            bool diff =
+            bool colorDiff = false;
+            if (p.Kind >= OXPreviewObjectKind.Sprite)
+            {
+                var sr = go.GetComponent<SpriteRenderer>();
+                colorDiff = sr != null && sr.color != p.Color;
+            }
+            bool diff = colorDiff ||
                 (t.localPosition - p.Position).sqrMagnitude > Eps * Eps ||
                 (t.localScale - p.Scale).sqrMagnitude > Eps * Eps ||
                 Quaternion.Angle(t.localRotation, IsZeroQuat(p.Rotation) ? Quaternion.identity : p.Rotation) > 0.01f ||
@@ -441,6 +470,7 @@ public class OXKeyframePreviewStage : PreviewSceneStage
             if (!diff) continue;
             ReadTransform(go, p);
             p.Name = go.name;
+            if (colorDiff) p.Color = go.GetComponent<SpriteRenderer>().color;
             changed = true;
         }
         if (changed) EditorUtility.SetDirty(asset);
@@ -476,7 +506,7 @@ public class OXKeyframePreviewStage : PreviewSceneStage
     /// Shows the animation at time t: rest pose first, then the runtime's own Sample, with each object
     /// handed over at its object index. Objects with index -1 (scenery) or a duplicate index are left at rest.
     /// </summary>
-    public void Pose(float t)
+    public void Pose(float t, bool wrapped = false)
     {
         if (asset == null || !scene.IsValid()) return;
         if (!Posed) CaptureRest(); // don't lose a move made just before posing
@@ -494,7 +524,89 @@ public class OXKeyframePreviewStage : PreviewSceneStage
         }
 
         if (list.Count > 0)
-            new OXKeyframeAnimationRuntime(asset, null, list).Sample(t); // snapshots rest, then poses
+            new OXKeyframeAnimationRuntime(asset, null, list).Sample(t, wrapped); // snapshots rest, then poses
         Posed = true;
+    }
+}
+
+
+/// <summary>Generates the built-in 2D shape sprites (1 unit across, white so the tint colour shows) on demand.</summary>
+public static class OXPreviewSprites
+{
+    private const int Size = 64;
+    private const string Prefix = "OX2D_";
+    private static readonly Dictionary<OXPreviewObjectKind, Sprite> cache = new Dictionary<OXPreviewObjectKind, Sprite>();
+
+    public static bool IsShape(OXPreviewObjectKind k)
+    {
+        return k >= OXPreviewObjectKind.Square2D && k <= OXPreviewObjectKind.Hexagon2D;
+    }
+
+    /// <summary>Maps a generated sprite back to its kind (so a shape the user duplicated or moved is still recognised).</summary>
+    public static bool TryGetKind(Sprite s, out OXPreviewObjectKind kind)
+    {
+        kind = OXPreviewObjectKind.Empty;
+        if (s == null || !s.name.StartsWith(Prefix)) return false;
+        try { kind = (OXPreviewObjectKind)System.Enum.Parse(typeof(OXPreviewObjectKind), s.name.Substring(Prefix.Length)); }
+        catch { return false; }
+        return IsShape(kind);
+    }
+
+    public static Sprite Get(OXPreviewObjectKind k)
+    {
+        if (!IsShape(k)) return null;
+        Sprite sprite;
+        if (cache.TryGetValue(k, out sprite) && sprite != null) return sprite;
+
+        var tex = new Texture2D(Size, Size, TextureFormat.RGBA32, false)
+        {
+            name = Prefix + k,
+            filterMode = FilterMode.Bilinear,
+            wrapMode = TextureWrapMode.Clamp,
+            hideFlags = HideFlags.HideAndDontSave,
+        };
+        const int SS = 4; // supersampling for smooth edges
+        var px = new Color32[Size * Size];
+        for (int y = 0; y < Size; y++)
+        {
+            for (int x = 0; x < Size; x++)
+            {
+                int hit = 0;
+                for (int sy = 0; sy < SS; sy++)
+                    for (int sx = 0; sx < SS; sx++)
+                    {
+                        float u = (x + (sx + 0.5f) / SS) / Size * 2f - 1f;
+                        float v = (y + (sy + 0.5f) / SS) / Size * 2f - 1f;
+                        if (Inside(k, u, v)) hit++;
+                    }
+                px[y * Size + x] = new Color32(255, 255, 255, (byte)(255 * hit / (SS * SS)));
+            }
+        }
+        tex.SetPixels32(px);
+        tex.Apply(false, false);
+
+        sprite = Sprite.Create(tex, new Rect(0, 0, Size, Size), new Vector2(0.5f, 0.5f), Size);
+        sprite.name = Prefix + k;
+        sprite.hideFlags = HideFlags.HideAndDontSave;
+        cache[k] = sprite;
+        return sprite;
+    }
+
+    // u, v in -1..1 across the texture.
+    private static bool Inside(OXPreviewObjectKind k, float u, float v)
+    {
+        float au = Mathf.Abs(u), av = Mathf.Abs(v);
+        switch (k)
+        {
+            case OXPreviewObjectKind.Circle2D: return u * u + v * v <= 1f;
+            case OXPreviewObjectKind.Triangle2D: return v >= -1f && au <= (1f - v) * 0.5f;
+            case OXPreviewObjectKind.Diamond2D: return au + av <= 1f;
+            case OXPreviewObjectKind.Hexagon2D: return au <= 0.8660254f && av + au / 1.7320508f <= 1f;
+            case OXPreviewObjectKind.Capsule2D:
+                if (au > 0.5f) return false;
+                if (av <= 0.5f) return true;
+                return au * au + (av - 0.5f) * (av - 0.5f) <= 0.25f;
+            default: return true; // Square2D
+        }
     }
 }

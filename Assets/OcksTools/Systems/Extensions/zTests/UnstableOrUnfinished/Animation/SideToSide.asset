@@ -1,0 +1,177 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 827f1bf1e2df1914ab0ea8189d68652e, type: 3}
+  m_Name: SideToSide
+  m_EditorClassIdentifier: Assembly-CSharp::OXKeyframeAnimation
+  ResetAfterFinish: 0
+  OverrideData: 0
+  Loop: 1
+  StartLast: 1
+  Keyframes:
+  - Time: 0.5
+    Position:
+      Enabled: 1
+      InterpMode: 4
+      RelativeToSelf: 0
+      Power: 3
+      CircPower: 2
+      Bounces: 4
+      BouncePower: 5
+      Oscillations: 3
+      Magnification: 2
+      OvershootPower: 2
+      DisableX: 0
+      DisableY: 0
+      DisableZ: 0
+    Rotation:
+      Enabled: 0
+      InterpMode: 0
+      RelativeToSelf: 0
+      Power: 3
+      CircPower: 2
+      Bounces: 4
+      BouncePower: 5
+      Oscillations: 3
+      Magnification: 2
+      OvershootPower: 2
+      DisableX: 0
+      DisableY: 0
+      DisableZ: 0
+    Scale:
+      Enabled: 0
+      InterpMode: 0
+      RelativeToSelf: 0
+      Power: 3
+      CircPower: 2
+      Bounces: 4
+      BouncePower: 5
+      Oscillations: 3
+      Magnification: 2
+      OvershootPower: 2
+      DisableX: 0
+      DisableY: 0
+      DisableZ: 0
+    Data:
+    - ObjectIndex: 0
+      Transform:
+        Position: {x: 5, y: 0, z: 0}
+        Rotation: {x: 0, y: 0, z: 0, w: 1}
+        Scale: {x: 1, y: 1, z: 1}
+  - Time: 1.5
+    Position:
+      Enabled: 1
+      InterpMode: 4
+      RelativeToSelf: 1
+      Power: 3
+      CircPower: 2
+      Bounces: 4
+      BouncePower: 5
+      Oscillations: 3
+      Magnification: 2
+      OvershootPower: 2
+      DisableX: 0
+      DisableY: 0
+      DisableZ: 0
+    Rotation:
+      Enabled: 0
+      InterpMode: 0
+      RelativeToSelf: 0
+      Power: 3
+      CircPower: 2
+      Bounces: 4
+      BouncePower: 5
+      Oscillations: 3
+      Magnification: 2
+      OvershootPower: 2
+      DisableX: 0
+      DisableY: 0
+      DisableZ: 0
+    Scale:
+      Enabled: 0
+      InterpMode: 0
+      RelativeToSelf: 0
+      Power: 3
+      CircPower: 2
+      Bounces: 4
+      BouncePower: 5
+      Oscillations: 3
+      Magnification: 2
+      OvershootPower: 2
+      DisableX: 0
+      DisableY: 0
+      DisableZ: 0
+    Data:
+    - ObjectIndex: 0
+      Transform:
+        Position: {x: -10, y: 0, z: 0}
+        Rotation: {x: 0, y: 0, z: 0, w: 1}
+        Scale: {x: 1, y: 1, z: 1}
+  - Time: 2
+    Position:
+      Enabled: 0
+      InterpMode: 0
+      RelativeToSelf: 0
+      Power: 3
+      CircPower: 2
+      Bounces: 4
+      BouncePower: 5
+      Oscillations: 3
+      Magnification: 2
+      OvershootPower: 2
+      DisableX: 0
+      DisableY: 0
+      DisableZ: 0
+    Rotation:
+      Enabled: 0
+      InterpMode: 0
+      RelativeToSelf: 0
+      Power: 3
+      CircPower: 2
+      Bounces: 4
+      BouncePower: 5
+      Oscillations: 3
+      Magnification: 2
+      OvershootPower: 2
+      DisableX: 0
+      DisableY: 0
+      DisableZ: 0
+    Scale:
+      Enabled: 0
+      InterpMode: 0
+      RelativeToSelf: 0
+      Power: 3
+      CircPower: 2
+      Bounces: 4
+      BouncePower: 5
+      Oscillations: 3
+      Magnification: 2
+      OvershootPower: 2
+      DisableX: 0
+      DisableY: 0
+      DisableZ: 0
+    Data:
+    - ObjectIndex: 0
+      Transform:
+        Position: {x: 0, y: 0, z: 0}
+        Rotation: {x: 0, y: 0, z: 0, w: 1}
+        Scale: {x: 1, y: 1, z: 1}
+  Events: []
+  PreviewObjects:
+  - ObjectIndex: 0
+    Name: RoomTest 4
+    Kind: 7
+    Prefab: {fileID: 7492567958466505728, guid: 65ada62d7668b3a49bbc32f578455e1b, type: 3}
+    Sprite: {fileID: 0}
+    Color: {r: 1, g: 1, b: 1, a: 1}
+    Position: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 1}
+    Scale: {x: 1, y: 1, z: 1}

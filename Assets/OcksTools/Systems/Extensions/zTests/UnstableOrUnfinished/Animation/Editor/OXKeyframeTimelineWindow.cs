@@ -24,6 +24,7 @@ using UnityEngine;
 ///   Events lane (purple) . double-click empty space to add a named event; click/drag/box-select/copy/paste/
 ///                          duplicate/delete work the same as keys; name it in the inspector below
 ///   Delete / Backspace ... delete selected keys/events, F = frame all
+///   Ctrl+S ............... save the animation asset (also works from the preview Scene view)
 /// </summary>
 public class OXKeyframeTimelineWindow : EditorWindow
 {
@@ -67,10 +68,14 @@ public class OXKeyframeTimelineWindow : EditorWindow
     private double playStartReal;
     private float playStartTime;
     private float playTime;
+    private bool playWrapped;   // true once playback has looped back around (later passes of a seamless loop)
+    // Start Last makes even the first pass (and the resting scrub pose) start part-way along the return from the last real key.
+    private bool PoseWrapped { get { return asset != null && (asset.StartLast || (playing && playWrapped)); } }
     private float PoseTime { get { return playing ? playTime : playhead; } }
     private int lastPoseDirty = -1;
     private float lastPoseTime = -1f;
     private bool lastPoseOn;
+    private bool lastPoseWrapped;
     private OXKeyframePreviewStage lastPoseStage;
     private int lastPoseVersion = -1;
     private double nextSyncAt;
@@ -252,6 +257,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
         playStartTime = playhead >= dur - 0.0001f ? 0f : playhead; // at the end already: start over
         playStartReal = EditorApplication.timeSinceStartup;
         playTime = playStartTime;
+        playWrapped = false;
         playing = true;
         Repaint();
     }
@@ -261,11 +267,27 @@ public class OXKeyframeTimelineWindow : EditorWindow
     {
         if (asset == null) return;
         var e = Event.current;
+        if (e.type == EventType.KeyDown && e.keyCode == KeyCode.S && EditorGUI.actionKey && !e.alt && !e.shift &&
+            OXKeyframePreviewStage.Current(asset) != null && StageUtility.GetCurrentStage() is OXKeyframePreviewStage)
+        {
+            SaveAnimation();
+            e.Use();
+            return;
+        }
         if (e.type != EventType.KeyDown || e.keyCode != KeyCode.Space) return;
         if (e.alt || e.control || e.command || e.shift) return;
         if (OXKeyframePreviewStage.Current(asset) == null || !(StageUtility.GetCurrentStage() is OXKeyframePreviewStage)) return;
         TogglePlay();
         e.Use();
+    }
+
+    /// <summary>Ctrl+S (Cmd+S on Mac) and the Save button: writes the animation, including the preview scene, to disk.</summary>
+    private void SaveAnimation()
+    {
+        if (asset == null) return;
+        var stage = OXKeyframePreviewStage.Current(asset);
+        if (stage != null) stage.Sync(); // picks up any move/rename/new object the sync tick hasn't seen yet
+        AssetDatabase.SaveAssetIfDirty(asset);
     }
 
     private void OnUndoRedo()
@@ -294,6 +316,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
                     playStartTime = 0f;
                     playStartReal = EditorApplication.timeSinceStartup - t;
                     playTime = t;
+                    playWrapped = true;
                 }
                 else playing = false; // finished: the pose returns to the red playhead
             }
@@ -316,15 +339,16 @@ public class OXKeyframeTimelineWindow : EditorWindow
     {
         int dirty = EditorUtility.GetDirtyCount(asset);
         if (stage == lastPoseStage && dirty == lastPoseDirty && posePreview == lastPoseOn &&
-            stage.Version == lastPoseVersion && Mathf.Approximately(PoseTime, lastPoseTime)) return;
+            stage.Version == lastPoseVersion && PoseWrapped == lastPoseWrapped && Mathf.Approximately(PoseTime, lastPoseTime)) return;
 
         lastPoseStage = stage;
         lastPoseVersion = stage.Version;
         lastPoseDirty = dirty;
         lastPoseOn = posePreview;
         lastPoseTime = PoseTime;
+        lastPoseWrapped = PoseWrapped;
 
-        if (posePreview) stage.Pose(PoseTime);
+        if (posePreview) stage.Pose(PoseTime, PoseWrapped);
         else if (stage.Posed) stage.Unpose();
         SceneView.RepaintAll();
     }
@@ -762,11 +786,26 @@ public class OXKeyframeTimelineWindow : EditorWindow
 
     // ------------------------------------------------------------------ preview objects panel
 
-    private static readonly OXPreviewObjectKind[] AddableKinds =
+    private static readonly OXPreviewObjectKind[] Kinds3D =
     {
-        OXPreviewObjectKind.Empty, OXPreviewObjectKind.Cube, OXPreviewObjectKind.Sphere,
+        OXPreviewObjectKind.Cube, OXPreviewObjectKind.Sphere,
         OXPreviewObjectKind.Capsule, OXPreviewObjectKind.Cylinder, OXPreviewObjectKind.Plane, OXPreviewObjectKind.Quad,
     };
+
+    private static readonly OXPreviewObjectKind[] Kinds2D =
+    {
+        OXPreviewObjectKind.Square2D, OXPreviewObjectKind.Circle2D, OXPreviewObjectKind.Triangle2D,
+        OXPreviewObjectKind.Capsule2D, OXPreviewObjectKind.Diamond2D, OXPreviewObjectKind.Hexagon2D,
+    };
+
+    /// <summary>A Sprite for a dropped Sprite or Texture asset (the first sprite in the texture), or null.</summary>
+    private static Sprite ToSprite(UnityEngine.Object o)
+    {
+        if (o is Sprite s) return s;
+        if (o is Texture2D)
+            return AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GetAssetPath(o)).OfType<Sprite>().FirstOrDefault();
+        return null;
+    }
 
     /// <summary>
     /// Collapsible strip above the timeline: every object in the preview scene with the object index it is hooked to.
@@ -797,18 +836,30 @@ public class OXKeyframeTimelineWindow : EditorWindow
             if (GUILayout.Button(new GUIContent("+ Add", "Add a primitive or empty to the preview scene"), EditorStyles.miniButton, GUILayout.Width(50f)))
             {
                 var menu = new GenericMenu();
-                foreach (var kind in AddableKinds)
+                menu.AddItem(new GUIContent("Empty"), false, () => { stage.Add(OXPreviewObjectKind.Empty); lastPoseDirty = -1; Repaint(); });
+                foreach (var kind in Kinds3D)
                 {
                     var k = kind;
-                    menu.AddItem(new GUIContent(k.ToString()), false, () => { stage.Add(k); lastPoseDirty = -1; Repaint(); });
+                    menu.AddItem(new GUIContent("3D Object/" + k), false, () => { stage.Add(k); lastPoseDirty = -1; Repaint(); });
+                }
+                foreach (var kind in Kinds2D)
+                {
+                    var k = kind;
+                    menu.AddItem(new GUIContent("2D Object/" + k.ToString().Replace("2D", "")), false, () => { stage.Add(k); lastPoseDirty = -1; Repaint(); });
                 }
                 menu.ShowAsContext();
             }
 
-            // Drop a prefab asset here to add it.
-            var dropped = (GameObject)EditorGUILayout.ObjectField(GUIContent.none, null, typeof(GameObject), false, GUILayout.Width(110f));
+            // Drop a prefab, Sprite or Texture asset here to add it.
+            var dropped = EditorGUILayout.ObjectField(
+                new GUIContent("", "Drop a prefab, Sprite or Texture asset to add it"), null, typeof(UnityEngine.Object), false, GUILayout.Width(110f));
             if (dropped != null)
-                pending = () => { stage.Add(OXPreviewObjectKind.Prefab, dropped); lastPoseDirty = -1; };
+            {
+                var droppedGo = dropped as GameObject;
+                var droppedSprite = droppedGo == null ? ToSprite(dropped) : null;
+                if (droppedGo != null) pending = () => { stage.Add(OXPreviewObjectKind.Prefab, droppedGo); lastPoseDirty = -1; };
+                else if (droppedSprite != null) pending = () => { stage.Add(OXPreviewObjectKind.Sprite, null, droppedSprite); lastPoseDirty = -1; };
+            }
 
             var sel = Selection.activeGameObject;
             bool canHook = sel != null && sel.scene == stage.scene;
@@ -828,7 +879,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
             }
             else if (entries.Count == 0)
             {
-                EditorGUILayout.LabelField("Empty. Use + Add, drop a prefab in the field above, or drag prefabs into the Scene view.", EditorStyles.miniLabel);
+                EditorGUILayout.LabelField("Empty. Use + Add, drop a prefab or sprite in the field above, drag prefabs into the Scene view, or right-click > Create in the Hierarchy.", EditorStyles.miniLabel);
             }
             else
             {
@@ -896,9 +947,23 @@ public class OXKeyframeTimelineWindow : EditorWindow
                                 lastPoseDirty = -1;
                             };
                     }
+                    else if (en.Kind == OXPreviewObjectKind.Sprite)
+                    {
+                        EditorGUI.BeginChangeCheck();
+                        var ns = (Sprite)EditorGUILayout.ObjectField(en.Sprite, typeof(Sprite), false, GUILayout.Width(120f));
+                        if (EditorGUI.EndChangeCheck() && ns != null)
+                            pending = () =>
+                            {
+                                Undo.RecordObject(asset, "Change Preview Sprite");
+                                en.Sprite = ns;
+                                EditorUtility.SetDirty(asset);
+                                stage.Respawn(row);
+                                lastPoseDirty = -1;
+                            };
+                    }
                     else
                     {
-                        GUILayout.Label(en.Kind.ToString(), EditorStyles.miniLabel, GUILayout.Width(120f));
+                        GUILayout.Label(en.Kind.ToString().Replace("2D", " (2D)"), EditorStyles.miniLabel, GUILayout.Width(120f));
                     }
 
                     if (GUILayout.Button("Select", EditorStyles.miniButton, GUILayout.Width(48f)))
@@ -1011,6 +1076,15 @@ public class OXKeyframeTimelineWindow : EditorWindow
     private void HandleKeyboard()
     {
         var e = Event.current;
+
+        // Ctrl+S / Cmd+S saves, even while typing in a text field.
+        if (e.type == EventType.KeyDown && e.keyCode == KeyCode.S && EditorGUI.actionKey && !e.alt && !e.shift)
+        {
+            SaveAnimation();
+            e.Use();
+            return;
+        }
+
         if (EditorGUIUtility.editingTextField) return; // let text fields use Backspace normally
 
         // Editor "Delete" / "SoftDelete" commands (this is how Backspace arrives on some platforms).
@@ -1098,10 +1172,10 @@ public class OXKeyframeTimelineWindow : EditorWindow
             // Save: only enabled when the asset has unsaved changes.
             bool dirty = EditorUtility.IsDirty(asset);
             EditorGUI.BeginDisabledGroup(!dirty);
-            if (GUILayout.Button(new GUIContent(dirty ? "Save*" : "Save", "Write this animation asset to disk"),
+            if (GUILayout.Button(new GUIContent(dirty ? "Save*" : "Save", "Write this animation asset to disk (Ctrl+S)"),
                     EditorStyles.toolbarButton, GUILayout.Width(44)))
             {
-                AssetDatabase.SaveAssetIfDirty(asset);
+                SaveAnimation();
             }
             EditorGUI.EndDisabledGroup();
 
@@ -1155,10 +1229,13 @@ public class OXKeyframeTimelineWindow : EditorWindow
 
             EditorGUI.BeginChangeCheck();
             bool loop = GUILayout.Toggle(asset.Loop, new GUIContent("Loop", "Repeat the animation until it is stopped"), EditorStyles.toolbarButton);
+            bool startLast = GUILayout.Toggle(asset.StartLast,
+                new GUIContent("Start Last", "Start as if already transitioning from the last real keyframe toward the first (empty keyframes are ignored), instead of easing out of the current pose."),
+                EditorStyles.toolbarButton);
             bool reset = GUILayout.Toggle(asset.ResetAfterFinish, "Reset After Finish", EditorStyles.toolbarButton);
             bool over = GUILayout.Toggle(asset.OverrideData, "Override Data", EditorStyles.toolbarButton);
             if (EditorGUI.EndChangeCheck())
-                Edit("Change Animation Settings", () => { asset.Loop = loop; asset.ResetAfterFinish = reset; asset.OverrideData = over; });
+                Edit("Change Animation Settings", () => { asset.Loop = loop; asset.StartLast = startLast; asset.ResetAfterFinish = reset; asset.OverrideData = over; });
         }
         else
         {

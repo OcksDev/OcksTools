@@ -10,6 +10,16 @@ public class OXKeyframeAnimationRuntime
         public T Value;
         /// <summary>The keyframe's channel settings for this key; owns the easing mode and its parameters.</summary>
         public OXKeyframeChannel Channel;
+        /// <summary>
+        /// True for the synthetic key added at the end of a looping animation that finishes on an empty keyframe.
+        /// It carries the first key's value, so the last real pose eases back into the first pose during the tail.
+        /// </summary>
+        public bool Closing;
+        /// <summary>
+        /// Closing key of a non-looping animation: it only describes how the start eases in from the last real key
+        /// (Start Last). Normal evaluation ignores it so the animation still ends on the last real keyframe.
+        /// </summary>
+        public bool Virtual;
     }
 
     private class Target
@@ -106,10 +116,13 @@ public class OXKeyframeAnimationRuntime
         var keyframes = Asset.GetSortedKeyframes(); // already sorted by time
         totalDuration = 0f;
         hasAnyTrack = false;
+        float lastKeyTime = 0f;    // time of the last keyframe of any kind (empty ones included)
+        float lastUsedTime = -1f;  // time of the last real keyframe: one that changes a track's value (spacer/empty keys don't count)
 
         foreach (var kf in keyframes)
         {
             if (kf == null) continue;
+            if (kf.Time > lastKeyTime) lastKeyTime = kf.Time;
             // Every keyframe counts toward the duration, even one with no channels enabled or no object data.
             // That lets an empty key act as "keep playing until here" after the last real motion.
             if (kf.Time > totalDuration) totalDuration = kf.Time;
@@ -120,6 +133,7 @@ public class OXKeyframeAnimationRuntime
                 if (d.Transform == null) continue;
 
                 bool used = false;
+                bool changed = false; // did this keyframe change any track's value (or start a track)?
                 if (kf.Position != null && kf.Position.Enabled)
                 {
                     var pos = d.Transform.Position;
@@ -130,6 +144,7 @@ public class OXKeyframeAnimationRuntime
                         float v = pos[a];
                         if (kf.Position.RelativeToSelf && track.Count > 0)
                             v = track[track.Count - 1].Value + v;
+                        if (track.Count == 0 || Mathf.Abs(v - track[track.Count - 1].Value) > 1e-5f) changed = true;
                         track.Add(new Key<float> { Time = kf.Time, Value = v, Channel = kf.Position });
                         used = true;
                     }
@@ -148,6 +163,7 @@ public class OXKeyframeAnimationRuntime
                     }
                     if (kf.Rotation.RelativeToSelf && t.RotKeys.Count > 0)
                         rot = t.RotKeys[t.RotKeys.Count - 1].Value * rot;
+                    if (t.RotKeys.Count == 0 || Quaternion.Angle(rot, t.RotKeys[t.RotKeys.Count - 1].Value) > 0.001f) changed = true;
                     t.RotKeys.Add(new Key<Quaternion> { Time = kf.Time, Value = rot, Channel = kf.Rotation });
                     used = true;
                 }
@@ -161,6 +177,7 @@ public class OXKeyframeAnimationRuntime
                         float v = scl[a];
                         if (kf.Scale.RelativeToSelf && track.Count > 0)
                             v *= track[track.Count - 1].Value;
+                        if (track.Count == 0 || Mathf.Abs(v - track[track.Count - 1].Value) > 1e-5f) changed = true;
                         track.Add(new Key<float> { Time = kf.Time, Value = v, Channel = kf.Scale });
                         used = true;
                     }
@@ -170,6 +187,28 @@ public class OXKeyframeAnimationRuntime
                 {
                     hasAnyTrack = true;
                     if (kf.Time > totalDuration) totalDuration = kf.Time;
+                    // A key that only repeats the previous value is a spacer, not a "real" key (see the loop seam below).
+                    if (changed && kf.Time > lastUsedTime) lastUsedTime = kf.Time;
+                }
+            }
+        }
+
+        // Looping animation that ends on empty keyframe(s) (no channels, or keys that only repeat the previous value):
+        // the last keyframe is where the loop closes. Empty keys are ignored, and the pose eases from the last REAL
+        // key to the first real key, arriving exactly at the closing time, so there is no pause and no snap.
+        // Start Last needs the same structure (even with no empty tail, or with Loop off) so the first pass can begin
+        // part-way along the return from the last real key.
+        bool hasTail = lastKeyTime > lastUsedTime + 0.0001f;
+        if (hasAnyTrack && lastUsedTime >= 0f && ((Asset.Loop && hasTail) || Asset.StartLast))
+        {
+            bool isVirtual = !Asset.Loop;
+            foreach (var tar in targets)
+            {
+                SealLoop(tar.RotKeys, lastUsedTime, lastKeyTime, isVirtual);
+                for (int a = 0; a < 3; a++)
+                {
+                    SealLoop(tar.PosKeys[a], lastUsedTime, lastKeyTime, isVirtual);
+                    SealLoop(tar.ScaleKeys[a], lastUsedTime, lastKeyTime, isVirtual);
                 }
             }
         }
@@ -184,17 +223,37 @@ public class OXKeyframeAnimationRuntime
         nextEvent = 0;
     }
 
+    /// <summary>
+    /// Makes one track loop back on itself: drops trailing spacer keys after the last real key, makes sure the track
+    /// holds its last value until the last real key's time (so every track starts returning at the same moment),
+    /// then adds a closing key holding the first key's value. The loop is cyclic: the next pass reaches the first key
+    /// at (closeTime + the first key's time), so that is where the closing key sits. At closeTime (the end of the
+    /// pass) the track is therefore only part-way back, and the next pass carries on from exactly that pose
+    /// (see WrapX). The return is eased with the first key's own interpolation settings.
+    /// </summary>
+    private static void SealLoop<T>(List<Key<T>> keys, float lastRealTime, float closeTime, bool isVirtual)
+    {
+        if (keys.Count == 0) return;
+        while (keys.Count > 1 && keys[keys.Count - 1].Time > lastRealTime + 0.0001f) keys.RemoveAt(keys.Count - 1);
+        var last = keys[keys.Count - 1];
+        if (last.Time < lastRealTime - 0.0001f)
+            keys.Add(new Key<T> { Time = lastRealTime, Value = last.Value, Channel = last.Channel });
+        var first = keys[0];
+        keys.Add(new Key<T> { Time = closeTime + first.Time, Value = first.Value, Channel = first.Channel, Closing = true, Virtual = isVirtual });
+    }
+
     /// <summary>Time of the last keyframe (empty ones included) or event (0 if the animation has none).</summary>
     public float Duration { get { return totalDuration; } }
 
     /// <summary>
     /// Poses the objects as they would be at animation time t, without playing.
     /// Used for scrubbing and the editor preview; works without an animator. Never fires events.
+    /// Pass wrapped = true to show a later pass of a looping animation (see Apply).
     /// </summary>
-    public void Sample(float t)
+    public void Sample(float t, bool wrapped = false)
     {
         if (!hasAnyTrack) return;
-        Apply(t);
+        Apply(t, wrapped);
     }
 
     public void Play()
@@ -275,11 +334,18 @@ public class OXKeyframeAnimationRuntime
     /// <summary>
     /// Index of the first key strictly after time t, or keys.Count if t is at/after the last key.
     /// </summary>
-    private static int NextKeyIndex<T>(List<Key<T>> keys, float t)
+    private static int NextKeyIndex<T>(List<Key<T>> keys, float t, int count)
     {
-        for (int i = 0; i < keys.Count; i++)
+        for (int i = 0; i < count; i++)
             if (keys[i].Time > t) return i;
-        return keys.Count;
+        return count;
+    }
+
+    /// <summary>Number of keys normal evaluation uses: a virtual closing key (Start Last without Loop) is left out.</summary>
+    private static int UsedCount<T>(List<Key<T>> keys)
+    {
+        int n = keys.Count;
+        return n > 0 && keys[n - 1].Closing && keys[n - 1].Virtual ? n - 1 : n;
     }
 
     /// <summary>
@@ -295,24 +361,49 @@ public class OXKeyframeAnimationRuntime
         return keys[i].Channel.Evaluate(x);
     }
 
-    private static float EvalFloat(List<Key<float>> keys, float t, float identity)
+    /// <summary>
+    /// Eased progress of the return segment while a later pass of a seamless loop approaches its first key.
+    /// The segment runs from the last real key (one loop length earlier) to the first key, the same segment the
+    /// previous pass was in the middle of when it ended, so the pose carries on without a jump or a pause.
+    /// </summary>
+    private static float WrapX<T>(List<Key<T>> keys, float t)
     {
-        int i = NextKeyIndex(keys, t);
-        if (i >= keys.Count) return keys[keys.Count - 1].Value; // hold last value
+        float loopLength = keys[keys.Count - 1].Time - keys[0].Time;
+        float fromTime = keys[keys.Count - 2].Time - loopLength;
+        float dt = keys[0].Time - fromTime;
+        float x = dt <= 0.0001f ? 1f : Mathf.Clamp01((t - fromTime) / dt);
+        return keys[0].Channel.Evaluate(x);
+    }
+
+    private static float EvalFloat(List<Key<float>> keys, float t, float identity, bool wrapped)
+    {
+        int n = UsedCount(keys);
+        int i = NextKeyIndex(keys, t, n);
+        if (i >= n) return keys[n - 1].Value; // hold last value
+        // On a later pass of a seamless loop the first key is approached from where the last pass ended, not from the start pose.
+        if (i == 0 && wrapped && keys[keys.Count - 1].Closing)
+            return Mathf.LerpUnclamped(keys[keys.Count - 2].Value, keys[0].Value, WrapX(keys, t));
         float prev = i == 0 ? identity : keys[i - 1].Value;
         return Mathf.LerpUnclamped(prev, keys[i].Value, SegmentX(keys, i, t));
     }
 
-    private static Quaternion EvalRotation(List<Key<Quaternion>> keys, float t)
+    private static Quaternion EvalRotation(List<Key<Quaternion>> keys, float t, bool wrapped)
     {
-        int i = NextKeyIndex(keys, t);
-        if (i >= keys.Count) return keys[keys.Count - 1].Value;
+        int n = UsedCount(keys);
+        int i = NextKeyIndex(keys, t, n);
+        if (i >= n) return keys[n - 1].Value;
+        if (i == 0 && wrapped && keys[keys.Count - 1].Closing)
+            return keys[keys.Count - 2].Value.SlerpU(keys[0].Value, WrapX(keys, t));
         Quaternion prev = i == 0 ? Quaternion.identity : keys[i - 1].Value;
         return prev.SlerpU(keys[i].Value, SegmentX(keys, i, t));
     }
 
-    /// <summary>Evaluates every channel track at animation time t and writes it to the objects.</summary>
-    private void Apply(float t)
+    /// <summary>
+    /// Evaluates every channel track at animation time t and writes it to the objects.
+    /// wrapped = this is a repeat pass of a loop, or the first pass with Start Last. It only matters for tracks with a
+    /// closing key, which start the pass part-way along the return from the last real key so there is no snap.
+    /// </summary>
+    private void Apply(float t, bool wrapped)
     {
         foreach (var tar in targets)
         {
@@ -325,19 +416,19 @@ public class OXKeyframeAnimationRuntime
                 var p = tr.localPosition;
                 for (int a = 0; a < 3; a++)
                     if (tar.PosKeys[a].Count > 0)
-                        p[a] = tar.Start.Position[a] + EvalFloat(tar.PosKeys[a], t, 0f);
+                        p[a] = tar.Start.Position[a] + EvalFloat(tar.PosKeys[a], t, 0f, wrapped);
                 tr.localPosition = p;
             }
 
             if (tar.RotKeys.Count > 0)
-                tr.localRotation = tar.Start.Rotation * EvalRotation(tar.RotKeys, t);
+                tr.localRotation = tar.Start.Rotation * EvalRotation(tar.RotKeys, t, wrapped);
 
             if (tar.ScaleKeys[0].Count > 0 || tar.ScaleKeys[1].Count > 0 || tar.ScaleKeys[2].Count > 0)
             {
                 var s = tr.localScale;
                 for (int a = 0; a < 3; a++)
                     if (tar.ScaleKeys[a].Count > 0)
-                        s[a] = EvalFloat(tar.ScaleKeys[a], t, 1f) * tar.Start.Scale[a];
+                        s[a] = EvalFloat(tar.ScaleKeys[a], t, 1f, wrapped) * tar.Start.Scale[a];
                 tr.localScale = s;
             }
         }
@@ -377,9 +468,12 @@ public class OXKeyframeAnimationRuntime
         // A zero-length animation can't loop (it would spin without ever advancing time).
         bool loop = Asset.Loop && totalDuration > 0.0001f;
 
+        int pass = 0;
         do
         {
             nextEvent = 0; // every pass re-fires the events
+            // Start Last: even the first pass begins part-way along the return from the last real key.
+            bool wrapped = pass > 0 || Asset.StartLast;
 
             if (totalDuration > 0f)
             {
@@ -388,17 +482,18 @@ public class OXKeyframeAnimationRuntime
                 yield return OXLerp.Frame.Linear((float x) =>
                 {
                     float t = x * duration;
-                    if (hasAnyTrack) Apply(t);
+                    if (hasAnyTrack) Apply(t, wrapped);
                     FireEventsUpTo(t);
                 }, duration);
             }
 
             // Make sure we land exactly on the final values, and nothing is skipped by a long frame.
-            if (hasAnyTrack) Apply(totalDuration);
+            if (hasAnyTrack) Apply(totalDuration, wrapped);
             FireEventsUpTo(float.PositiveInfinity);
 
             // Looping only ends through Stop(); always give a frame back before starting the next pass.
             if (loop) yield return null;
+            pass++;
         } while (loop);
 
         // Finished naturally.

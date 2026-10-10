@@ -15,9 +15,21 @@ public class OXKeyframeAnimation : ScriptableObject
     /// <summary>
     /// Repeat the animation forever once it reaches its last key/event (until Stop() is called).
     /// Each pass starts from the pose the objects had when Play() was called and re-fires the events.
+    /// If the animation ends on empty keyframe(s) (no channels enabled, or keys that just repeat the previous value),
+    /// the last one marks the loop length: empty keys are ignored, and the objects ease from the last real key to the
+    /// first real key of the NEXT pass (using the first key's interpolation), so the return keeps the same rhythm as
+    /// the rest of the animation. At the end of a pass the objects are only part-way back, and the next pass carries
+    /// on from exactly that pose, so there is no pause and no snap.
     /// Ignored for animations with zero duration.
     /// </summary>
     public bool Loop = false;
+    /// <summary>
+    /// Start the animation as if it were already transitioning from the last real keyframe (empty keyframes are
+    /// ignored) toward the first one, instead of easing out of the objects' current pose. With Loop on, this is
+    /// exactly the pose every later pass starts from, so even the first pass matches the loop. Without Loop, the
+    /// animation starts partway along that transition and ends on the last real keyframe as usual.
+    /// </summary>
+    public bool StartLast = false;
     public List<OXKeyframe> Keyframes = new List<OXKeyframe>();
     /// <summary>
     /// Named events fired during playback when their time is reached. Hook them up from code with
@@ -221,7 +233,15 @@ public class OXKeyframe
 }
 
 #if UNITY_EDITOR
-public enum OXPreviewObjectKind { Empty, Cube, Sphere, Capsule, Cylinder, Plane, Quad, Prefab }
+// Append only: these are serialized as ints.
+public enum OXPreviewObjectKind
+{
+    Empty, Cube, Sphere, Capsule, Cylinder, Plane, Quad, Prefab,
+    /// <summary>A SpriteRenderer showing the Sprite asset in OXPreviewObject.Sprite.</summary>
+    Sprite,
+    // Built-in 2D shapes (generated, no asset needed). Keep Square2D first and Hexagon2D last.
+    Square2D, Circle2D, Triangle2D, Capsule2D, Diamond2D, Hexagon2D,
+}
 
 /// <summary>
 /// One object in the editor preview scene. ObjectIndex is the index keyframes use in their Object States
@@ -234,6 +254,10 @@ public class OXPreviewObject
     public string Name = "Object";
     public OXPreviewObjectKind Kind = OXPreviewObjectKind.Empty;
     public GameObject Prefab;
+    /// <summary>For Kind = Sprite: the sprite to show.</summary>
+    public Sprite Sprite;
+    /// <summary>Tint for the 2D kinds (SpriteRenderer.color).</summary>
+    public Color Color = Color.white;
     public Vector3 Position = Vector3.zero;
     public Quaternion Rotation = Quaternion.identity;
     public Vector3 Scale = Vector3.one;
