@@ -12,6 +12,12 @@ public class OXKeyframeAnimation : ScriptableObject
 {
     public bool ResetAfterFinish = false;
     public bool OverrideData = false;
+    /// <summary>
+    /// Repeat the animation forever once it reaches its last key/event (until Stop() is called).
+    /// Each pass starts from the pose the objects had when Play() was called and re-fires the events.
+    /// Ignored for animations with zero duration.
+    /// </summary>
+    public bool Loop = false;
     public List<OXKeyframe> Keyframes = new List<OXKeyframe>();
     /// <summary>
     /// Named events fired during playback when their time is reached. Hook them up from code with

@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::OXKeyframeAnimation
   ResetAfterFinish: 1
   OverrideData: 0
+  Loop: 1
   Keyframes:
   - Time: 1
     Position:
@@ -162,11 +163,60 @@ MonoBehaviour:
         Position: {x: 0, y: 0, z: 0}
         Rotation: {x: 0, y: 0, z: 0, w: 1}
         Scale: {x: 1, y: 1, z: 1}
+  - Time: 2.3500001
+    Position:
+      Enabled: 0
+      InterpMode: 0
+      RelativeToSelf: 0
+      Power: 3
+      CircPower: 2
+      Bounces: 4
+      BouncePower: 5
+      Oscillations: 3
+      Magnification: 2
+      OvershootPower: 2
+      DisableX: 0
+      DisableY: 0
+      DisableZ: 0
+    Rotation:
+      Enabled: 0
+      InterpMode: 0
+      RelativeToSelf: 0
+      Power: 3
+      CircPower: 2
+      Bounces: 4
+      BouncePower: 5
+      Oscillations: 3
+      Magnification: 2
+      OvershootPower: 2
+      DisableX: 0
+      DisableY: 0
+      DisableZ: 0
+    Scale:
+      Enabled: 0
+      InterpMode: 0
+      RelativeToSelf: 0
+      Power: 3
+      CircPower: 2
+      Bounces: 4
+      BouncePower: 5
+      Oscillations: 3
+      Magnification: 2
+      OvershootPower: 2
+      DisableX: 0
+      DisableY: 0
+      DisableZ: 0
+    Data:
+    - ObjectIndex: 0
+      Transform:
+        Position: {x: 0, y: 0, z: 0}
+        Rotation: {x: 0, y: 0, z: 0, w: 1}
+        Scale: {x: 1, y: 1, z: 1}
   Events:
   - Time: 1
     Name: Peak
   PreviewObjects:
-  - ObjectIndex: 1
+  - ObjectIndex: 0
     Name: Agent
     Kind: 7
     Prefab: {fileID: 2744004212875093652, guid: 9a05e99d01807e64eb95263b0497d018, type: 3}

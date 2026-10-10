@@ -109,7 +109,11 @@ public class OXKeyframeAnimationRuntime
 
         foreach (var kf in keyframes)
         {
-            if (kf == null || kf.Data == null) continue;
+            if (kf == null) continue;
+            // Every keyframe counts toward the duration, even one with no channels enabled or no object data.
+            // That lets an empty key act as "keep playing until here" after the last real motion.
+            if (kf.Time > totalDuration) totalDuration = kf.Time;
+            if (kf.Data == null) continue;
             foreach (var d in kf.Data)
             {
                 if (!TryGetTarget(d, out var t)) continue;
@@ -180,7 +184,7 @@ public class OXKeyframeAnimationRuntime
         nextEvent = 0;
     }
 
-    /// <summary>Time of the last key or event that does anything (0 if the animation is empty).</summary>
+    /// <summary>Time of the last keyframe (empty ones included) or event (0 if the animation has none).</summary>
     public float Duration { get { return totalDuration; } }
 
     /// <summary>
@@ -360,7 +364,7 @@ public class OXKeyframeAnimationRuntime
         bool hasEvents = eventList.Count > 0;
 
         // Nothing opted into any channel and no events, so there is nothing to play.
-        if (!hasAnyTrack && !hasEvents)
+        if (!hasAnyTrack && !hasEvents && totalDuration <= 0f)
         {
             Stop();
             yield break;
@@ -370,21 +374,32 @@ public class OXKeyframeAnimationRuntime
         // first yield immediately. If an event sits at the very start, wait a frame so it can be heard.
         if (hasEvents && eventList[0].Time <= 0.0001f) yield return null;
 
-        if (totalDuration > 0f)
-        {
-            // One continuous pass over the whole timeline; every channel samples its own track.
-            float duration = totalDuration;
-            yield return OXLerp.Frame.Linear((float x) =>
-            {
-                float t = x * duration;
-                if (hasAnyTrack) Apply(t);
-                FireEventsUpTo(t);
-            }, duration);
-        }
+        // A zero-length animation can't loop (it would spin without ever advancing time).
+        bool loop = Asset.Loop && totalDuration > 0.0001f;
 
-        // Make sure we land exactly on the final values, and nothing is skipped by a long frame.
-        if (hasAnyTrack) Apply(totalDuration);
-        FireEventsUpTo(float.PositiveInfinity);
+        do
+        {
+            nextEvent = 0; // every pass re-fires the events
+
+            if (totalDuration > 0f)
+            {
+                // One continuous pass over the whole timeline; every channel samples its own track.
+                float duration = totalDuration;
+                yield return OXLerp.Frame.Linear((float x) =>
+                {
+                    float t = x * duration;
+                    if (hasAnyTrack) Apply(t);
+                    FireEventsUpTo(t);
+                }, duration);
+            }
+
+            // Make sure we land exactly on the final values, and nothing is skipped by a long frame.
+            if (hasAnyTrack) Apply(totalDuration);
+            FireEventsUpTo(float.PositiveInfinity);
+
+            // Looping only ends through Stop(); always give a frame back before starting the next pass.
+            if (loop) yield return null;
+        } while (loop);
 
         // Finished naturally.
         routine = null;

@@ -230,12 +230,12 @@ public class OXKeyframeTimelineWindow : EditorWindow
         if (stage != null && stage.Posed) stage.Unpose();
     }
 
-    /// <summary>Time of the last enabled keyframe or event (0 if there is nothing to play).</summary>
+    /// <summary>Time of the last keyframe (empty ones included) or event (0 if there is nothing to play).</summary>
     private float AnimationDuration()
     {
         float d = 0f;
         foreach (var k in asset.Keyframes)
-            if (k != null && AnyEnabled(k) && k.Time > d) d = k.Time;
+            if (k != null && k.Time > d) d = k.Time; // empty keys count too: they extend the animation
         if (asset.Events != null)
             foreach (var ev in asset.Events)
                 if (ev != null && ev.Time > d) d = ev.Time;
@@ -285,7 +285,18 @@ public class OXKeyframeTimelineWindow : EditorWindow
         {
             float dur = AnimationDuration();
             playTime = playStartTime + (float)(EditorApplication.timeSinceStartup - playStartReal);
-            if (playTime >= dur) playing = false; // finished: the pose returns to the red playhead
+            if (playTime >= dur)
+            {
+                if (asset.Loop && dur > 0.0001f)
+                {
+                    // wrap around; later passes start from 0 just like the runtime
+                    float t = Mathf.Repeat(playTime, dur);
+                    playStartTime = 0f;
+                    playStartReal = EditorApplication.timeSinceStartup - t;
+                    playTime = t;
+                }
+                else playing = false; // finished: the pose returns to the red playhead
+            }
             Repaint();
         }
 
@@ -1143,10 +1154,11 @@ public class OXKeyframeTimelineWindow : EditorWindow
             GUILayout.FlexibleSpace();
 
             EditorGUI.BeginChangeCheck();
+            bool loop = GUILayout.Toggle(asset.Loop, new GUIContent("Loop", "Repeat the animation until it is stopped"), EditorStyles.toolbarButton);
             bool reset = GUILayout.Toggle(asset.ResetAfterFinish, "Reset After Finish", EditorStyles.toolbarButton);
             bool over = GUILayout.Toggle(asset.OverrideData, "Override Data", EditorStyles.toolbarButton);
             if (EditorGUI.EndChangeCheck())
-                Edit("Change Animation Settings", () => { asset.ResetAfterFinish = reset; asset.OverrideData = over; });
+                Edit("Change Animation Settings", () => { asset.Loop = loop; asset.ResetAfterFinish = reset; asset.OverrideData = over; });
         }
         else
         {
