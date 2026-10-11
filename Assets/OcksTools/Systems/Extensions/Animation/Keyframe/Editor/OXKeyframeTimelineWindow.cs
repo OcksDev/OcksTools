@@ -8,23 +8,15 @@ using UnityEngine;
 
 /// <summary>
 /// Timeline editor for OXKeyframeAnimation assets.
-///
-/// Controls:
-///   Click key ............ select (Ctrl/Shift = add/remove from selection)
-///   Drag key ............. move selected keys in time (snaps if Snap is on)
-///   Stacked keys ......... shown as layered diamonds with a count badge; click an already-selected key
-///                          again to cycle through the stack; right-click for Select All / Merge
-///   Drag empty space ..... box select
-///   Double-click a lane .. add keyframe (Keyframes lane = all channels, other lanes = just that channel)
-///   Right-click .......... context menu (add / delete / duplicate / toggle channels)
-///   Click empty timeline . move the playhead (click/drag the ruler works too); used by "+ Key" and paste
-///   Mouse wheel .......... zoom, Shift+wheel = pan, Middle-drag or Alt+drag = pan
-///   Ctrl+C / Ctrl+X / Ctrl+V  copy / cut / paste keys (paste lands at the playhead, spacing is kept)
-///   Ctrl+D ............... duplicate selected keys
-///   Events lane (purple) . double-click empty space to add a named event; click/drag/box-select/copy/paste/
-///                          duplicate/delete work the same as keys; name it in the inspector below
-///   Delete / Backspace ... delete selected keys/events, F = frame all
-///   Ctrl+S ............... save the animation asset (also works from the preview Scene view)
+///   Click key ............ select (Ctrl/Shift = add/remove); click a selected stacked key again to cycle the stack
+///   Drag key ............. move selection in time (snaps if Snap is on)
+///   Drag empty space ..... box select; a plain click moves the playhead
+///   Double-click a lane .. add keyframe (Keyframes lane = all channels) or toggle that channel on an existing key
+///   Events lane (purple) . double-click empty space to add a named event
+///   Right-click .......... context menu
+///   Wheel = zoom, Shift+wheel / middle-drag / Alt+drag = pan, F = frame all
+///   Ctrl+C / X / V / D ... copy / cut / paste at playhead / duplicate
+///   Delete / Backspace ... delete selection;  Space = play;  Ctrl+S = save
 /// </summary>
 public class OXKeyframeTimelineWindow : EditorWindow
 {
@@ -32,14 +24,15 @@ public class OXKeyframeTimelineWindow : EditorWindow
     private const float RulerH = 22f;
     private const float MinLaneH = 20f;
     private const float MaxLaneH = 80f;
-    private float LaneH { get { return laneH; } }
-    // Marker size follows the lane height (7px at the default 26px lane), so keys scale up/down with the timeline.
-    private float MarkerR { get { return LaneH * 0.27f; } }
-    private float StackOffset { get { return MarkerR * 0.43f; } }          // vertical offset between stacked diamonds
-    private float LineScale { get { return Mathf.Clamp(LaneH / 26f, 0.8f, 2f); } } // outline thickness
-    private const int KeyLaneCount = 4; // lanes 0..3 hold keyframes
-    private const int EventLane = 4;    // lane 4 holds event keyframes
-    private const int LaneCount = 5;    // 0 = all keyframes, 1 = position, 2 = rotation, 3 = scale, 4 = events
+    private const float SameTimeEpsilon = 0.0005f;
+    private const int KeyLaneCount = 4; // lanes 0..3 hold keyframes (0 = all, 1 = position, 2 = rotation, 3 = scale)
+    private const int EventLane = 4;
+    private const int LaneCount = 5;
+
+    private float LaneH => laneH;
+    private float MarkerR => LaneH * 0.27f;
+    private float StackOffset => MarkerR * 0.43f;
+    private float LineScale => Mathf.Clamp(LaneH / 26f, 0.8f, 2f);
 
     private static readonly string[] LaneNames = { "Keyframes", "Position", "Rotation", "Scale", "Events" };
     private static readonly Color[] LaneColors =
@@ -48,8 +41,10 @@ public class OXKeyframeTimelineWindow : EditorWindow
         new Color(0.35f, 0.70f, 1.00f),
         new Color(0.45f, 0.90f, 0.50f),
         new Color(1.00f, 0.72f, 0.30f),
-        new Color(0.70f, 0.40f, 1.00f), // events: purple
+        new Color(0.70f, 0.40f, 1.00f),
     };
+    private static readonly Color SelectedOutline = new Color(1f, 0.95f, 0.3f);
+    private static readonly Color NormalOutline = new Color(0f, 0f, 0f, 0.8f);
 
     [SerializeField] private OXKeyframeAnimation asset;
     [SerializeField] private bool snap = true;
@@ -57,21 +52,20 @@ public class OXKeyframeTimelineWindow : EditorWindow
     [SerializeField] private float pxPerSec = 160f;
     [SerializeField] private float viewStart = -0.1f;
     [SerializeField] private float playhead;
-    [SerializeField] private float laneH = 26f;      // height of one lane; dragging the timeline/details divider changes it
-    [SerializeField] private float splitFrac = 0.5f; // fraction of the width given to the left (channels) half of the details
-
-    // Preview scene hookup.
-    [SerializeField] private bool posePreview = true;        // scrubbing poses the preview objects
+    [SerializeField] private float laneH = 26f;
+    [SerializeField] private float splitFrac = 0.5f;
+    [SerializeField] private bool posePreview = true;
     [SerializeField] private bool showPreviewPanel = true;
-    // Space-bar playback (shown as a yellow playhead). The red playhead stays put as the start/return point.
+
+    // Space-bar playback (yellow playhead); the red playhead stays as the start/return point.
     private bool playing;
     private double playStartReal;
     private float playStartTime;
     private float playTime;
-    private bool playWrapped;   // true once playback has looped back around (later passes of a seamless loop)
-    // Start Last makes even the first pass (and the resting scrub pose) start part-way along the return from the last real key.
-    private bool PoseWrapped { get { return asset != null && (asset.StartLast || (playing && playWrapped)); } }
-    private float PoseTime { get { return playing ? playTime : playhead; } }
+    private bool playWrapped;
+    private bool PoseWrapped => asset != null && (asset.StartLast || (playing && playWrapped));
+    private float PoseTime => playing ? playTime : playhead;
+
     private int lastPoseDirty = -1;
     private float lastPoseTime = -1f;
     private bool lastPoseOn;
@@ -82,18 +76,15 @@ public class OXKeyframeTimelineWindow : EditorWindow
 
     private readonly List<int> selected = new List<int>();
     private int primary = -1;
-
-    // Event keyframes have their own selection (indices into asset.Events).
     private readonly List<int> selectedEv = new List<int>();
     private int primaryEv = -1;
-    private bool eventFocus; // true when the inspector should show the primary event instead of the primary keyframe
+    private bool eventFocus; // inspector shows the primary event instead of the primary keyframe
 
-    private Vector2 inspectorScroll;
+    private Vector2 inspectorScroll, leftScroll, rightScroll;
 
     private enum DragMode { None, Keys, Playhead, Pan, Box }
     private DragMode drag = DragMode.None;
-    private float dragStartX;
-    private float dragStartView;
+    private float dragStartX, dragStartView;
     private bool dragUndoRecorded;
     private readonly Dictionary<int, float> dragOrigin = new Dictionary<int, float>();
     private readonly Dictionary<int, float> dragOriginEv = new Dictionary<int, float>();
@@ -103,52 +94,53 @@ public class OXKeyframeTimelineWindow : EditorWindow
 
     private float timelineX;
 
-    // Stacked-key handling: click an already-selected key to cycle through the keys under the cursor.
+    // Clicking an already-selected key cycles through the stack under the cursor.
     private List<int> cycleStack;
     private bool cycleArmed;
     private int preCyclePrimary = -1;
     private double cycledAt = -10;
 
-    // Keyframe clipboard (static, so you can copy in one animation and paste into another).
+    // Static clipboard so keys can be copied between animations.
     private static readonly List<string> clipJson = new List<string>();
     private static readonly List<string> clipEventJson = new List<string>();
     private static float clipBaseTime;
-    private static GUIStyle laneLabel;
-    private static GUIStyle badgeLabel;
-    private static GUIStyle eventLabel;
+    private static GUIStyle laneLabel, badgeLabel, eventLabel;
+
+    private float splitStartMouse, splitStartValue;
 
     // ------------------------------------------------------------------ window plumbing
 
     [MenuItem("OcksTools/Keyframe Timeline")]
     public static void Open()
     {
+        ShowWindow();
+    }
+
+    private static OXKeyframeTimelineWindow ShowWindow()
+    {
         var w = GetWindow<OXKeyframeTimelineWindow>("Keyframe Timeline");
         w.ApplyTitle();
         w.minSize = new Vector2(560f, 380f);
         w.Show();
+        return w;
     }
 
     private static Texture2D tabIcon;
     private static bool tabIconPro;
 
-    /// <summary>Sets the tab title and a monochrome (light on dark skin, dark on light skin) "group of keyframes" icon.</summary>
-    private void ApplyTitle()
-    {
-        titleContent = new GUIContent("Keyframe Timeline", GetTabIcon());
-    }
+    private void ApplyTitle() => titleContent = new GUIContent("Keyframe Timeline", GetTabIcon());
 
-    /// <summary>Draws a keyframe diamond above a timeline ruler into a small texture - no image asset needed.</summary>
+    /// <summary>Draws a keyframe diamond above a timeline ruler into a small texture, so no image asset is needed.</summary>
     private static Texture2D GetTabIcon()
     {
         bool pro = EditorGUIUtility.isProSkin;
         if (tabIcon != null && tabIconPro == pro) return tabIcon;
         if (tabIcon != null) DestroyImmediate(tabIcon);
 
-        const int S = 32;      // texture size (shown at 16x16 points, so it stays sharp on high-DPI screens)
-        const int SS = 4;      // supersampling per axis for smooth edges
-        const float R = 4.2f;  // diamond radius in 16x16 icon space
+        const int S = 32, SS = 4;
+        const float R = 4.2f;
         float scale = S / 16f;
-        var centers = new[] { new Vector2(8f, 6.8f) }; // one keyframe sitting above a timeline ruler
+        var center = new Vector2(8f, 6.8f);
         Color ink = pro ? new Color(0.82f, 0.82f, 0.82f) : new Color(0.18f, 0.18f, 0.18f);
 
         var pixels = new Color[S * S];
@@ -162,16 +154,12 @@ public class OXKeyframeTimelineWindow : EditorWindow
                     for (int sx = 0; sx < SS; sx++)
                     {
                         float px = (x + (sx + 0.5f) / SS) / scale;
-                        float py = 16f - (y + (sy + 0.5f) / SS) / scale; // texture row 0 is the bottom
-                        bool inside = false;
-                        for (int c = 0; c < centers.Length && !inside; c++)
-                            inside = Mathf.Abs(px - centers[c].x) + Mathf.Abs(py - centers[c].y) <= R;
-
-                        // timeline: a horizontal line with tick marks hanging below it
-                        if (!inside && px >= 0.5f && px <= 15.5f && py >= 12.0f && py <= 13.4f) inside = true;
+                        float py = 16f - (y + (sy + 0.5f) / SS) / scale;
+                        bool inside = Mathf.Abs(px - center.x) + Mathf.Abs(py - center.y) <= R;
+                        if (!inside && px >= 0.5f && px <= 15.5f && py >= 12.0f && py <= 13.4f) inside = true; // ruler line
                         if (!inside && py > 13.4f && py <= 15.4f)
                         {
-                            float rel = (px - 1.75f) % 4f; // ticks at x = 2, 6, 10, 14 (0.9 wide)
+                            float rel = (px - 1.75f) % 4f; // ticks
                             if (px >= 1.5f && px <= 14.5f && rel >= 0f && rel <= 0.9f) inside = true;
                         }
                         if (inside) hit++;
@@ -194,23 +182,17 @@ public class OXKeyframeTimelineWindow : EditorWindow
         return tabIcon;
     }
 
-    /// <summary>Double-clicking an OXKeyframeAnimation asset (or "Open" in its context menu) opens this window on it
-    /// and switches the Scene view to an editor-only preview scene (see OXKeyframePreviewStage).</summary>
+    /// <summary>Double-clicking an OXKeyframeAnimation opens this window and its preview scene.</summary>
     [UnityEditor.Callbacks.OnOpenAsset(1)]
     public static bool OnOpenAsset(int instanceID, int line)
     {
         var a = EditorUtility.InstanceIDToObject(instanceID) as OXKeyframeAnimation;
-        if (a == null) return false; // not ours, let Unity handle it
+        if (a == null) return false;
 
-        var w = GetWindow<OXKeyframeTimelineWindow>("Keyframe Timeline");
-        w.ApplyTitle();
-        w.minSize = new Vector2(560f, 380f);
-        w.Show();
+        var w = ShowWindow();
         w.Focus();
         w.SetAsset(a);
         w.Repaint();
-
-        // Also switch the Scene view to the editor-only preview scene for this animation.
         OXKeyframePreviewStage.Open(a);
         return true;
     }
@@ -230,17 +212,16 @@ public class OXKeyframeTimelineWindow : EditorWindow
         EditorApplication.update -= EditorTick;
         SceneView.duringSceneGui -= OnSceneGUI;
         playing = false;
-        // Leave the preview objects at their rest pose rather than frozen mid-animation.
         var stage = OXKeyframePreviewStage.Current(asset);
         if (stage != null && stage.Posed) stage.Unpose();
     }
 
-    /// <summary>Time of the last keyframe (empty ones included) or event (0 if there is nothing to play).</summary>
+    /// <summary>Time of the last keyframe (empty ones included) or event.</summary>
     private float AnimationDuration()
     {
         float d = 0f;
         foreach (var k in asset.Keyframes)
-            if (k != null && k.Time > d) d = k.Time; // empty keys count too: they extend the animation
+            if (k != null && k.Time > d) d = k.Time;
         if (asset.Events != null)
             foreach (var ev in asset.Events)
                 if (ev != null && ev.Time > d) d = ev.Time;
@@ -254,7 +235,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
         float dur = AnimationDuration();
         if (dur <= 0.0001f) return;
         posePreview = true;
-        playStartTime = playhead >= dur - 0.0001f ? 0f : playhead; // at the end already: start over
+        playStartTime = playhead >= dur - 0.0001f ? 0f : playhead;
         playStartReal = EditorApplication.timeSinceStartup;
         playTime = playStartTime;
         playWrapped = false;
@@ -262,43 +243,46 @@ public class OXKeyframeTimelineWindow : EditorWindow
         Repaint();
     }
 
-    /// <summary>Space in the preview Scene view plays/stops too.</summary>
+    private static bool InPreviewStage(OXKeyframeAnimation a)
+    {
+        return OXKeyframePreviewStage.Current(a) != null && StageUtility.GetCurrentStage() is OXKeyframePreviewStage;
+    }
+
+    /// <summary>Space plays/stops and Ctrl+S saves from the preview Scene view too.</summary>
     private void OnSceneGUI(SceneView sv)
     {
         if (asset == null) return;
         var e = Event.current;
-        if (e.type == EventType.KeyDown && e.keyCode == KeyCode.S && EditorGUI.actionKey && !e.alt && !e.shift &&
-            OXKeyframePreviewStage.Current(asset) != null && StageUtility.GetCurrentStage() is OXKeyframePreviewStage)
+        if (e.type != EventType.KeyDown) return;
+
+        if (e.keyCode == KeyCode.S && EditorGUI.actionKey && !e.alt && !e.shift && InPreviewStage(asset))
         {
             SaveAnimation();
             e.Use();
-            return;
         }
-        if (e.type != EventType.KeyDown || e.keyCode != KeyCode.Space) return;
-        if (e.alt || e.control || e.command || e.shift) return;
-        if (OXKeyframePreviewStage.Current(asset) == null || !(StageUtility.GetCurrentStage() is OXKeyframePreviewStage)) return;
-        TogglePlay();
-        e.Use();
+        else if (e.keyCode == KeyCode.Space && !e.alt && !e.control && !e.command && !e.shift && InPreviewStage(asset))
+        {
+            TogglePlay();
+            e.Use();
+        }
     }
 
-    /// <summary>Ctrl+S (Cmd+S on Mac) and the Save button: writes the animation, including the preview scene, to disk.</summary>
+    /// <summary>Writes the animation, including the preview scene, to disk.</summary>
     private void SaveAnimation()
     {
         if (asset == null) return;
-        var stage = OXKeyframePreviewStage.Current(asset);
-        if (stage != null) stage.Sync(); // picks up any move/rename/new object the sync tick hasn't seen yet
+        OXKeyframePreviewStage.Current(asset)?.Sync();
         AssetDatabase.SaveAssetIfDirty(asset);
     }
 
     private void OnUndoRedo()
     {
-        var stage = OXKeyframePreviewStage.Current(asset);
-        if (stage != null) stage.Reconcile();
-        lastPoseDirty = -1; // force a re-pose
+        OXKeyframePreviewStage.Current(asset)?.Reconcile();
+        lastPoseDirty = -1;
         Repaint();
     }
 
-    /// <summary>Runs every editor update: keeps the saved preview list in sync with the scene and poses it at the playhead.</summary>
+    /// <summary>Every editor update: advances playback, syncs the saved preview list with the scene, and re-poses.</summary>
     private void EditorTick()
     {
         if (asset == null) return;
@@ -311,14 +295,13 @@ public class OXKeyframeTimelineWindow : EditorWindow
             {
                 if (asset.Loop && dur > 0.0001f)
                 {
-                    // wrap around; later passes start from 0 just like the runtime
                     float t = Mathf.Repeat(playTime, dur);
                     playStartTime = 0f;
                     playStartReal = EditorApplication.timeSinceStartup - t;
                     playTime = t;
                     playWrapped = true;
                 }
-                else playing = false; // finished: the pose returns to the red playhead
+                else playing = false;
             }
             Repaint();
         }
@@ -329,12 +312,12 @@ public class OXKeyframeTimelineWindow : EditorWindow
         if (EditorApplication.timeSinceStartup >= nextSyncAt)
         {
             nextSyncAt = EditorApplication.timeSinceStartup + 0.2;
-            if (stage.Sync()) Repaint(); // adopted / removed / moved something
+            if (stage.Sync()) Repaint();
         }
         UpdatePreview(stage);
     }
 
-    /// <summary>Re-poses the preview objects only when something that affects the pose actually changed.</summary>
+    /// <summary>Re-poses only when something that affects the pose changed.</summary>
     private void UpdatePreview(OXKeyframePreviewStage stage)
     {
         int dirty = EditorUtility.GetDirtyCount(asset);
@@ -353,10 +336,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
         SceneView.RepaintAll();
     }
 
-    private void OnSelectionChange()
-    {
-        PickFromSelection();
-    }
+    private void OnSelectionChange() => PickFromSelection();
 
     private void PickFromSelection()
     {
@@ -380,12 +360,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
     private void FrameAll()
     {
         float maxT = 0f;
-        if (asset != null)
-            foreach (var k in asset.Keyframes)
-                if (k != null && k.Time > maxT) maxT = k.Time;
-        if (asset != null && asset.Events != null)
-            foreach (var ev in asset.Events)
-                if (ev != null && ev.Time > maxT) maxT = ev.Time;
+        if (asset != null) maxT = AnimationDuration();
         maxT = Mathf.Max(maxT, 0.1f);
         float w = Mathf.Max(100f, position.width - LabelW - 60f);
         pxPerSec = Mathf.Clamp(w / maxT, 10f, 3000f);
@@ -394,8 +369,8 @@ public class OXKeyframeTimelineWindow : EditorWindow
 
     // ------------------------------------------------------------------ helpers
 
-    private float TimeToX(float t) { return timelineX + (t - viewStart) * pxPerSec; }
-    private float XToTime(float x) { return (x - timelineX) / pxPerSec + viewStart; }
+    private float TimeToX(float t) => timelineX + (t - viewStart) * pxPerSec;
+    private float XToTime(float x) => (x - timelineX) / pxPerSec + viewStart;
 
     private float Snap(float t)
     {
@@ -403,9 +378,9 @@ public class OXKeyframeTimelineWindow : EditorWindow
         return Mathf.Max(0f, t);
     }
 
-    private void ClampView() { viewStart = Mathf.Max(viewStart, -30f / pxPerSec); }
+    private void ClampView() => viewStart = Mathf.Max(viewStart, -30f / pxPerSec);
 
-    /// <summary>Structural change in the middle of a GUI event: abort this pass so layout stays consistent.</summary>
+    /// <summary>Structural change mid-GUI-event: abort this pass so layout stays consistent.</summary>
     private void Mutated()
     {
         Repaint();
@@ -419,6 +394,8 @@ public class OXKeyframeTimelineWindow : EditorWindow
         EditorUtility.SetDirty(asset);
         Repaint();
     }
+
+    private static int Last(List<int> l) => l.Count > 0 ? l[l.Count - 1] : -1;
 
     private static OXKeyframeChannel GetChannel(OXKeyframe kf, int lane)
     {
@@ -439,12 +416,12 @@ public class OXKeyframeTimelineWindow : EditorWindow
         return c != null && c.Enabled;
     }
 
-    private static bool AnyEnabled(OXKeyframe kf) { return LaneHas(kf, 1) || LaneHas(kf, 2) || LaneHas(kf, 3); }
+    private static bool AnyEnabled(OXKeyframe kf) => LaneHas(kf, 1) || LaneHas(kf, 2) || LaneHas(kf, 3);
 
-    private static bool IsZeroQuat(Quaternion q) { return q.x == 0f && q.y == 0f && q.z == 0f && q.w == 0f; }
+    private static bool IsZeroQuat(Quaternion q) => q.x == 0f && q.y == 0f && q.z == 0f && q.w == 0f;
 
-    private bool HasSelection { get { return selected.Count > 0 || selectedEv.Count > 0; } }
-    private static bool ClipHasData { get { return clipJson.Count > 0 || clipEventJson.Count > 0; } }
+    private bool HasSelection => selected.Count > 0 || selectedEv.Count > 0;
+    private static bool ClipHasData => clipJson.Count > 0 || clipEventJson.Count > 0;
 
     private void ClearEventSelection()
     {
@@ -453,29 +430,50 @@ public class OXKeyframeTimelineWindow : EditorWindow
         eventFocus = false;
     }
 
+    private void SelectOnlyKey(int i)
+    {
+        selected.Clear();
+        selected.Add(i);
+        primary = i;
+    }
+
+    private void SelectOnlyEvent(int i)
+    {
+        selected.Clear();
+        primary = -1;
+        selectedEv.Clear();
+        selectedEv.Add(i);
+        primaryEv = i;
+    }
+
     private void ValidateSelection()
     {
         if (asset.Events == null) asset.Events = new List<OXEventKeyframe>();
 
         int n = asset.Keyframes.Count;
         selected.RemoveAll(i => i < 0 || i >= n || asset.Keyframes[i] == null);
-        if (primary < 0 || primary >= n || asset.Keyframes[primary] == null)
-            primary = selected.Count > 0 ? selected[selected.Count - 1] : -1;
+        if (primary < 0 || primary >= n || asset.Keyframes[primary] == null) primary = Last(selected);
 
         int en = asset.Events.Count;
         selectedEv.RemoveAll(i => i < 0 || i >= en || asset.Events[i] == null);
-        if (primaryEv < 0 || primaryEv >= en || asset.Events[primaryEv] == null)
-            primaryEv = selectedEv.Count > 0 ? selectedEv[selectedEv.Count - 1] : -1;
+        if (primaryEv < 0 || primaryEv >= en || asset.Events[primaryEv] == null) primaryEv = Last(selectedEv);
 
         if (primaryEv < 0) eventFocus = false;
         else if (primary < 0) eventFocus = true;
     }
 
+    private void RefreshPrimaries()
+    {
+        primary = Last(selected);
+        primaryEv = Last(selectedEv);
+        eventFocus = selected.Count == 0 && selectedEv.Count > 0;
+    }
+
     // ------------------------------------------------------------------ data operations
 
+    /// <summary>A state for this object seeded from the nearest earlier key's pose, so a new key holds the previous value.</summary>
     private OXKeyframeObjectState MakeState(int objectIndex, float time, OXKeyframe exclude)
     {
-        // Start from the nearest earlier keyframe's pose for this object, so a new key "holds" the previous value.
         OXKeyframe best = null;
         OXKeyframeObjectState bestState = null;
         foreach (var k in asset.Keyframes)
@@ -501,6 +499,14 @@ public class OXKeyframeTimelineWindow : EditorWindow
         return state;
     }
 
+    private int NextObjectIndex(OXKeyframe kf)
+    {
+        int next = 0;
+        foreach (var d in kf.Data)
+            if (d != null && d.ObjectIndex >= next) next = d.ObjectIndex + 1;
+        return next;
+    }
+
     private int AddKeyframe(float time, bool pos, bool rot, bool scl)
     {
         Undo.RecordObject(asset, "Add Keyframe");
@@ -524,9 +530,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
         EditorUtility.SetDirty(asset);
 
         int newIndex = asset.Keyframes.Count - 1;
-        selected.Clear();
-        selected.Add(newIndex);
-        primary = newIndex;
+        SelectOnlyKey(newIndex);
         ClearEventSelection();
         return newIndex;
     }
@@ -538,11 +542,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
         EditorUtility.SetDirty(asset);
 
         int idx = asset.Events.Count - 1;
-        selected.Clear();
-        primary = -1;
-        selectedEv.Clear();
-        selectedEv.Add(idx);
-        primaryEv = idx;
+        SelectOnlyEvent(idx);
         eventFocus = true;
         return idx;
     }
@@ -573,9 +573,8 @@ public class OXKeyframeTimelineWindow : EditorWindow
 
         foreach (var i in keySources)
         {
-            if (i < 0 || i >= asset.Keyframes.Count) continue;
+            if (i < 0 || i >= asset.Keyframes.Count || asset.Keyframes[i] == null) continue;
             var src = asset.Keyframes[i];
-            if (src == null) continue;
             var copy = JsonUtility.FromJson<OXKeyframe>(JsonUtility.ToJson(src));
             copy.Time = src.Time + offset;
             asset.Keyframes.Add(copy);
@@ -583,17 +582,14 @@ public class OXKeyframeTimelineWindow : EditorWindow
         }
         foreach (var i in evSources)
         {
-            if (i < 0 || i >= asset.Events.Count) continue;
+            if (i < 0 || i >= asset.Events.Count || asset.Events[i] == null) continue;
             var src = asset.Events[i];
-            if (src == null) continue;
             var copy = JsonUtility.FromJson<OXEventKeyframe>(JsonUtility.ToJson(src));
             copy.Time = src.Time + offset;
             asset.Events.Add(copy);
             selectedEv.Add(asset.Events.Count - 1);
         }
-        primary = selected.Count > 0 ? selected[selected.Count - 1] : -1;
-        primaryEv = selectedEv.Count > 0 ? selectedEv[selectedEv.Count - 1] : -1;
-        eventFocus = selected.Count == 0 && selectedEv.Count > 0;
+        RefreshPrimaries();
         EditorUtility.SetDirty(asset);
     }
 
@@ -601,12 +597,10 @@ public class OXKeyframeTimelineWindow : EditorWindow
     {
         var validKeys = selected.Distinct()
             .Where(i => i >= 0 && i < asset.Keyframes.Count && asset.Keyframes[i] != null)
-            .OrderBy(i => asset.Keyframes[i].Time)
-            .ToList();
+            .OrderBy(i => asset.Keyframes[i].Time).ToList();
         var validEvents = selectedEv.Distinct()
             .Where(i => i >= 0 && i < asset.Events.Count && asset.Events[i] != null)
-            .OrderBy(i => asset.Events[i].Time)
-            .ToList();
+            .OrderBy(i => asset.Events[i].Time).ToList();
         if (validKeys.Count == 0 && validEvents.Count == 0) return;
 
         clipJson.Clear();
@@ -620,7 +614,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
         foreach (var i in validEvents) clipEventJson.Add(JsonUtility.ToJson(asset.Events[i]));
     }
 
-    /// <summary>Pastes the clipboard so the earliest copied key/event lands on 'time'; relative spacing is preserved.</summary>
+    /// <summary>Pastes so the earliest copied key/event lands on 'time', keeping relative spacing.</summary>
     private void PasteAt(float time)
     {
         if (!ClipHasData) return;
@@ -641,9 +635,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
             asset.Events.Add(ev);
             selectedEv.Add(asset.Events.Count - 1);
         }
-        primary = selected.Count > 0 ? selected[selected.Count - 1] : -1;
-        primaryEv = selectedEv.Count > 0 ? selectedEv[selectedEv.Count - 1] : -1;
-        eventFocus = selected.Count == 0 && selectedEv.Count > 0;
+        RefreshPrimaries();
         EditorUtility.SetDirty(asset);
     }
 
@@ -655,11 +647,9 @@ public class OXKeyframeTimelineWindow : EditorWindow
         for (int i = 0; i < asset.Events.Count; i++)
             if (asset.Events[i] != null && Mathf.Abs(asset.Events[i].Time - time) < SameTimeEpsilon)
                 selectedEv.Add(i);
-        primaryEv = selectedEv.Count > 0 ? selectedEv[selectedEv.Count - 1] : -1;
+        primaryEv = Last(selectedEv);
         eventFocus = primaryEv >= 0;
     }
-
-    private const float SameTimeEpsilon = 0.0005f;
 
     private void SelectAtTime(float time)
     {
@@ -667,13 +657,12 @@ public class OXKeyframeTimelineWindow : EditorWindow
         for (int i = 0; i < asset.Keyframes.Count; i++)
             if (asset.Keyframes[i] != null && Mathf.Abs(asset.Keyframes[i].Time - time) < SameTimeEpsilon)
                 selected.Add(i);
-        primary = selected.Count > 0 ? selected[selected.Count - 1] : -1;
+        primary = Last(selected);
     }
 
     /// <summary>
-    /// Folds several keyframes into the lowest-numbered one: every channel a later key enables
-    /// (settings + the values for each object) is copied over, then the later keys are removed.
-    /// If two keys enable the same channel, the later key wins.
+    /// Folds several keyframes into the lowest-numbered one: every channel a later key enables (settings and per-object values)
+    /// is copied over, then the later keys are removed. Later keys win when two enable the same channel.
     /// </summary>
     private void MergeKeys(List<int> indices)
     {
@@ -718,9 +707,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
 
         for (int n = list.Count - 1; n >= 1; n--) asset.Keyframes.RemoveAt(list[n]);
         EditorUtility.SetDirty(asset);
-        selected.Clear();
-        selected.Add(list[0]);
-        primary = list[0];
+        SelectOnlyKey(list[0]);
     }
 
     private static void SetChannel(OXKeyframe kf, int lane, bool value)
@@ -748,7 +735,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
         });
     }
 
-    /// <summary>Index of the keyframe sitting at this x position (any lane), or -1.</summary>
+    /// <summary>Index of the keyframe at this x position (any lane), or -1.</summary>
     private int FindKeyAtX(float x)
     {
         if (primary >= 0 && primary < asset.Keyframes.Count && asset.Keyframes[primary] != null &&
@@ -798,7 +785,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
         OXPreviewObjectKind.Capsule2D, OXPreviewObjectKind.Diamond2D, OXPreviewObjectKind.Hexagon2D,
     };
 
-    /// <summary>A Sprite for a dropped Sprite or Texture asset (the first sprite in the texture), or null.</summary>
+    /// <summary>A Sprite for a dropped Sprite or Texture asset (first sprite in the texture), or null.</summary>
     private static Sprite ToSprite(UnityEngine.Object o)
     {
         if (o is Sprite s) return s;
@@ -807,10 +794,16 @@ public class OXKeyframeTimelineWindow : EditorWindow
         return null;
     }
 
+    private void AddPreview(OXKeyframePreviewStage stage, OXPreviewObjectKind kind, GameObject prefab = null, Sprite sprite = null)
+    {
+        stage.Add(kind, prefab, sprite);
+        lastPoseDirty = -1;
+        Repaint();
+    }
+
     /// <summary>
-    /// Collapsible strip above the timeline: every object in the preview scene with the object index it is hooked to.
-    /// The index is the "Object" number used by the keyframes' Object States, so object #0 here is what an
-    /// Object State with Object = 0 animates while you scrub.
+    /// Collapsible strip listing every preview object with the object index it is hooked to (the "Object" number in
+    /// keyframe Object States).
     /// </summary>
     private void DrawPreviewPanel()
     {
@@ -818,7 +811,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
         var entries = asset.PreviewObjects;
         var stage = OXKeyframePreviewStage.Current(asset);
 
-        // Actions are queued and run after the layout groups are closed (see Mutated()).
+        // Actions are queued and run after the layout groups close (see Mutated()).
         Action pending = null;
 
         EditorGUILayout.BeginVertical(EditorStyles.helpBox);
@@ -836,21 +829,20 @@ public class OXKeyframeTimelineWindow : EditorWindow
             if (GUILayout.Button(new GUIContent("+ Add", "Add a primitive or empty to the preview scene"), EditorStyles.miniButton, GUILayout.Width(50f)))
             {
                 var menu = new GenericMenu();
-                menu.AddItem(new GUIContent("Empty"), false, () => { stage.Add(OXPreviewObjectKind.Empty); lastPoseDirty = -1; Repaint(); });
+                menu.AddItem(new GUIContent("Empty"), false, () => AddPreview(stage, OXPreviewObjectKind.Empty));
                 foreach (var kind in Kinds3D)
                 {
                     var k = kind;
-                    menu.AddItem(new GUIContent("3D Object/" + k), false, () => { stage.Add(k); lastPoseDirty = -1; Repaint(); });
+                    menu.AddItem(new GUIContent("3D Object/" + k), false, () => AddPreview(stage, k));
                 }
                 foreach (var kind in Kinds2D)
                 {
                     var k = kind;
-                    menu.AddItem(new GUIContent("2D Object/" + k.ToString().Replace("2D", "")), false, () => { stage.Add(k); lastPoseDirty = -1; Repaint(); });
+                    menu.AddItem(new GUIContent("2D Object/" + k.ToString().Replace("2D", "")), false, () => AddPreview(stage, k));
                 }
                 menu.ShowAsContext();
             }
 
-            // Drop a prefab, Sprite or Texture asset here to add it.
             var dropped = EditorGUILayout.ObjectField(
                 new GUIContent("", "Drop a prefab, Sprite or Texture asset to add it"), null, typeof(UnityEngine.Object), false, GUILayout.Width(110f));
             if (dropped != null)
@@ -862,8 +854,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
             }
 
             var sel = Selection.activeGameObject;
-            bool canHook = sel != null && sel.scene == stage.scene;
-            EditorGUI.BeginDisabledGroup(!canHook);
+            EditorGUI.BeginDisabledGroup(sel == null || sel.scene != stage.scene);
             if (GUILayout.Button(new GUIContent("Hook Selection", "Give the object selected in the Scene view the next free object index"),
                     EditorStyles.miniButton, GUILayout.Width(96f)))
                 pending = () => { stage.Hook(sel); lastPoseDirty = -1; };
@@ -883,33 +874,30 @@ public class OXKeyframeTimelineWindow : EditorWindow
             }
             else
             {
-                if (stage.Posed)
-                    EditorGUILayout.LabelField("Posed: turn Pose off (toolbar) to move objects in the Scene view (moves while posed are not saved).", EditorStyles.miniLabel);
-                else
-                    EditorGUILayout.LabelField("Index = the Object number in keyframe Object States. -1 = scenery (never animated).", EditorStyles.miniLabel);
+                EditorGUILayout.LabelField(stage.Posed
+                    ? "Posed: turn Pose off (toolbar) to move objects in the Scene view (moves while posed are not saved)."
+                    : "Index = the Object number in keyframe Object States. -1 = scenery (never animated).", EditorStyles.miniLabel);
 
-                // Diagnostics: which object indices do the keyframes animate that no preview object is hooked to?
                 var hooked = new HashSet<int>();
+                var counts = new Dictionary<int, int>();
                 foreach (var en in entries)
-                    if (en != null && en.ObjectIndex >= 0) hooked.Add(en.ObjectIndex);
+                {
+                    if (en == null || en.ObjectIndex < 0) continue;
+                    hooked.Add(en.ObjectIndex);
+                    counts.TryGetValue(en.ObjectIndex, out int c);
+                    counts[en.ObjectIndex] = c + 1;
+                }
+
+                // Object indices the keyframes animate that no preview object is hooked to.
                 var missing = new SortedSet<int>();
                 foreach (var k in asset.Keyframes)
-                    if (k != null && k.Data != null && (LaneHas(k, 1) || LaneHas(k, 2) || LaneHas(k, 3)))
+                    if (k != null && k.Data != null && AnyEnabled(k))
                         foreach (var d in k.Data)
                             if (d != null && !hooked.Contains(d.ObjectIndex)) missing.Add(d.ObjectIndex);
                 if (missing.Count > 0)
                     EditorGUILayout.HelpBox("Keyframes animate object index " + string.Join(", ", missing.Select(m => m.ToString()).ToArray()) +
                                             ", but no preview object has that index, so nothing moves for it. Set an object's Index to match.",
                         MessageType.Warning);
-
-                var counts = new Dictionary<int, int>();
-                foreach (var en in entries)
-                    if (en != null && en.ObjectIndex >= 0)
-                    {
-                        int c;
-                        counts.TryGetValue(en.ObjectIndex, out c);
-                        counts[en.ObjectIndex] = c + 1;
-                    }
 
                 float oldLW = EditorGUIUtility.labelWidth;
                 for (int i = 0; i < entries.Count; i++)
@@ -990,87 +978,65 @@ public class OXKeyframeTimelineWindow : EditorWindow
 
     // ------------------------------------------------------------------ splitters
 
-    private float splitStartMouse;
-    private float splitStartValue;
+    /// <summary>
+    /// Draggable divider. Vertical = a horizontal bar that changes a height; otherwise a vertical bar that changes a width fraction.
+    /// The mouse delta is divided by 'scale' and added to 'value', which is clamped to [min, max].
+    /// </summary>
+    private float DrawSplitter(Rect r, bool vertical, float value, float scale, float min, float max)
+    {
+        int id = GUIUtility.GetControlID(FocusType.Passive);
+        var e = Event.current;
+        EditorGUIUtility.AddCursorRect(r, vertical ? MouseCursor.ResizeVertical : MouseCursor.ResizeHorizontal);
+        float mouse = vertical ? e.mousePosition.y : e.mousePosition.x;
 
-    /// <summary>Draggable bar under the timeline. Dragging it makes the timeline lanes taller or shorter.</summary>
+        switch (e.GetTypeForControl(id))
+        {
+            case EventType.Repaint:
+                var line = vertical
+                    ? new Rect(r.x, r.center.y - 0.5f, r.width, 1f)
+                    : new Rect(r.center.x - 0.5f, r.y, 1f, r.height);
+                EditorGUI.DrawRect(line, new Color(0f, 0f, 0f, 0.45f));
+                break;
+            case EventType.MouseDown:
+                if (e.button == 0 && r.Contains(e.mousePosition))
+                {
+                    GUIUtility.hotControl = id;
+                    splitStartMouse = mouse;
+                    splitStartValue = value;
+                    e.Use();
+                }
+                break;
+            case EventType.MouseDrag:
+                if (GUIUtility.hotControl == id)
+                {
+                    value = Mathf.Clamp(splitStartValue + (mouse - splitStartMouse) / scale, min, max);
+                    e.Use();
+                    Repaint();
+                }
+                break;
+            case EventType.MouseUp:
+                if (GUIUtility.hotControl == id)
+                {
+                    GUIUtility.hotControl = 0;
+                    e.Use();
+                }
+                break;
+        }
+        return value;
+    }
+
+    /// <summary>Bar under the timeline; dragging it changes the lane height.</summary>
     private void DrawTimelineSplitter()
     {
         Rect r = GUILayoutUtility.GetRect(10f, 6f, GUILayout.ExpandWidth(true), GUILayout.Height(6f));
-        int id = GUIUtility.GetControlID(FocusType.Passive);
-        var e = Event.current;
-        EditorGUIUtility.AddCursorRect(r, MouseCursor.ResizeVertical);
-
-        switch (e.GetTypeForControl(id))
-        {
-            case EventType.Repaint:
-                EditorGUI.DrawRect(new Rect(r.x, r.center.y - 0.5f, r.width, 1f), new Color(0f, 0f, 0f, 0.45f));
-                break;
-            case EventType.MouseDown:
-                if (e.button == 0 && r.Contains(e.mousePosition))
-                {
-                    GUIUtility.hotControl = id;
-                    splitStartMouse = e.mousePosition.y;
-                    splitStartValue = laneH;
-                    e.Use();
-                }
-                break;
-            case EventType.MouseDrag:
-                if (GUIUtility.hotControl == id)
-                {
-                    laneH = Mathf.Clamp(splitStartValue + (e.mousePosition.y - splitStartMouse) / LaneCount, MinLaneH, MaxLaneH);
-                    e.Use();
-                    Repaint();
-                }
-                break;
-            case EventType.MouseUp:
-                if (GUIUtility.hotControl == id)
-                {
-                    GUIUtility.hotControl = 0;
-                    e.Use();
-                }
-                break;
-        }
+        laneH = DrawSplitter(r, true, laneH, LaneCount, MinLaneH, MaxLaneH);
     }
 
-    /// <summary>Draggable divider between the channel settings (left) and the object states (right).</summary>
+    /// <summary>Divider between the channel settings (left) and the object states (right).</summary>
     private void DrawDetailsSplitter()
     {
         Rect r = GUILayoutUtility.GetRect(6f, 6f, GUILayout.Width(6f), GUILayout.ExpandHeight(true));
-        int id = GUIUtility.GetControlID(FocusType.Passive);
-        var e = Event.current;
-        EditorGUIUtility.AddCursorRect(r, MouseCursor.ResizeHorizontal);
-
-        switch (e.GetTypeForControl(id))
-        {
-            case EventType.Repaint:
-                EditorGUI.DrawRect(new Rect(r.center.x - 0.5f, r.y, 1f, r.height), new Color(0f, 0f, 0f, 0.45f));
-                break;
-            case EventType.MouseDown:
-                if (e.button == 0 && r.Contains(e.mousePosition))
-                {
-                    GUIUtility.hotControl = id;
-                    splitStartMouse = e.mousePosition.x;
-                    splitStartValue = splitFrac;
-                    e.Use();
-                }
-                break;
-            case EventType.MouseDrag:
-                if (GUIUtility.hotControl == id)
-                {
-                    splitFrac = Mathf.Clamp(splitStartValue + (e.mousePosition.x - splitStartMouse) / Mathf.Max(1f, position.width), 0.2f, 0.8f);
-                    e.Use();
-                    Repaint();
-                }
-                break;
-            case EventType.MouseUp:
-                if (GUIUtility.hotControl == id)
-                {
-                    GUIUtility.hotControl = 0;
-                    e.Use();
-                }
-                break;
-        }
+        splitFrac = DrawSplitter(r, false, splitFrac, Mathf.Max(1f, position.width), 0.2f, 0.8f);
     }
 
     private void HandleKeyboard()
@@ -1085,9 +1051,8 @@ public class OXKeyframeTimelineWindow : EditorWindow
             return;
         }
 
-        if (EditorGUIUtility.editingTextField) return; // let text fields use Backspace normally
+        if (EditorGUIUtility.editingTextField) return;
 
-        // Editor "Delete" / "SoftDelete" commands (this is how Backspace arrives on some platforms).
         if (e.type == EventType.ValidateCommand || e.type == EventType.ExecuteCommand)
         {
             bool execute = e.type == EventType.ExecuteCommand;
@@ -1152,98 +1117,81 @@ public class OXKeyframeTimelineWindow : EditorWindow
 
     // ------------------------------------------------------------------ toolbar
 
+    /// <summary>Runs an action that restructures data, then ends the toolbar row and aborts the GUI pass.</summary>
+    private void ToolbarMutate(Action action)
+    {
+        action();
+        GUILayout.EndHorizontal();
+        Mutated();
+    }
+
     private void DrawToolbar()
     {
         GUILayout.BeginHorizontal(EditorStyles.toolbar);
-
-        GUILayout.FlexibleSpace(); // pushes the main buttons toward the center
+        GUILayout.FlexibleSpace();
 
         EditorGUI.BeginChangeCheck();
         var picked = (OXKeyframeAnimation)EditorGUILayout.ObjectField(asset, typeof(OXKeyframeAnimation), false, GUILayout.Width(220));
-        if (EditorGUI.EndChangeCheck())
+        if (EditorGUI.EndChangeCheck()) ToolbarMutate(() => SetAsset(picked));
+
+        if (asset == null)
         {
-            SetAsset(picked);
+            GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
-            Mutated();
+            return;
         }
 
-        if (asset != null)
-        {
-            // Save: only enabled when the asset has unsaved changes.
-            bool dirty = EditorUtility.IsDirty(asset);
-            EditorGUI.BeginDisabledGroup(!dirty);
-            if (GUILayout.Button(new GUIContent(dirty ? "Save*" : "Save", "Write this animation asset to disk (Ctrl+S)"),
-                    EditorStyles.toolbarButton, GUILayout.Width(44)))
-            {
-                SaveAnimation();
-            }
-            EditorGUI.EndDisabledGroup();
+        bool dirty = EditorUtility.IsDirty(asset);
+        EditorGUI.BeginDisabledGroup(!dirty);
+        if (GUILayout.Button(new GUIContent(dirty ? "Save*" : "Save", "Write this animation asset to disk (Ctrl+S)"),
+                EditorStyles.toolbarButton, GUILayout.Width(44)))
+            SaveAnimation();
+        EditorGUI.EndDisabledGroup();
 
-            GUILayout.Space(6);
-            if (GUILayout.Button("+ Key", EditorStyles.toolbarButton, GUILayout.Width(46)))
-            {
-                AddKeyframe(playhead, true, true, true);
-                GUILayout.EndHorizontal();
-                Mutated();
-            }
-            if (GUILayout.Button(new GUIContent("+ Event", "Add a named event at the playhead"), EditorStyles.toolbarButton, GUILayout.Width(54)))
-            {
-                AddEvent(playhead, "Event");
-                GUILayout.EndHorizontal();
-                Mutated();
-            }
+        GUILayout.Space(6);
+        if (GUILayout.Button("+ Key", EditorStyles.toolbarButton, GUILayout.Width(46)))
+            ToolbarMutate(() => AddKeyframe(playhead, true, true, true));
+        if (GUILayout.Button(new GUIContent("+ Event", "Add a named event at the playhead"), EditorStyles.toolbarButton, GUILayout.Width(54)))
+            ToolbarMutate(() => AddEvent(playhead, "Event"));
 
-            EditorGUI.BeginDisabledGroup(!HasSelection);
-            if (GUILayout.Button("Duplicate", EditorStyles.toolbarButton, GUILayout.Width(62)))
-            {
-                DuplicateSelected();
-                GUILayout.EndHorizontal();
-                Mutated();
-            }
-            if (GUILayout.Button("Delete", EditorStyles.toolbarButton, GUILayout.Width(48)))
-            {
-                DeleteSelected();
-                GUILayout.EndHorizontal();
-                Mutated();
-            }
-            EditorGUI.EndDisabledGroup();
+        EditorGUI.BeginDisabledGroup(!HasSelection);
+        if (GUILayout.Button("Duplicate", EditorStyles.toolbarButton, GUILayout.Width(62)))
+            ToolbarMutate(DuplicateSelected);
+        if (GUILayout.Button("Delete", EditorStyles.toolbarButton, GUILayout.Width(48)))
+            ToolbarMutate(DeleteSelected);
+        EditorGUI.EndDisabledGroup();
 
-            GUILayout.Space(6);
-            snap = GUILayout.Toggle(snap, "Snap", EditorStyles.toolbarButton, GUILayout.Width(42));
-            EditorGUI.BeginDisabledGroup(!snap);
-            snapStep = Mathf.Max(0.001f, EditorGUILayout.FloatField(snapStep, EditorStyles.toolbarTextField, GUILayout.Width(44)));
-            EditorGUI.EndDisabledGroup();
+        GUILayout.Space(6);
+        snap = GUILayout.Toggle(snap, "Snap", EditorStyles.toolbarButton, GUILayout.Width(42));
+        EditorGUI.BeginDisabledGroup(!snap);
+        snapStep = Mathf.Max(0.001f, EditorGUILayout.FloatField(snapStep, EditorStyles.toolbarTextField, GUILayout.Width(44)));
+        EditorGUI.EndDisabledGroup();
 
-            if (GUILayout.Button("Frame All", EditorStyles.toolbarButton, GUILayout.Width(62))) FrameAll();
+        if (GUILayout.Button("Frame All", EditorStyles.toolbarButton, GUILayout.Width(62))) FrameAll();
 
-            GUILayout.Label("Playhead", EditorStyles.miniLabel, GUILayout.Width(50));
-            playhead = Mathf.Max(0f, EditorGUILayout.FloatField(playhead, EditorStyles.toolbarTextField, GUILayout.Width(50)));
+        GUILayout.Label("Playhead", EditorStyles.miniLabel, GUILayout.Width(50));
+        playhead = Mathf.Max(0f, EditorGUILayout.FloatField(playhead, EditorStyles.toolbarTextField, GUILayout.Width(50)));
 
-            bool wantPlay = GUILayout.Toggle(playing, new GUIContent("\u25B6", "Play in the preview scene (Space)"), EditorStyles.toolbarButton, GUILayout.Width(24));
-            if (wantPlay != playing) TogglePlay();
-            posePreview = GUILayout.Toggle(posePreview,
-                new GUIContent("Pose", "On: scrubbing and keyframe edits pose the preview objects. Off: objects sit at their rest pose so you can move them in the Scene view."),
-                EditorStyles.toolbarButton, GUILayout.Width(40));
+        bool wantPlay = GUILayout.Toggle(playing, new GUIContent("▶", "Play in the preview scene (Space)"), EditorStyles.toolbarButton, GUILayout.Width(24));
+        if (wantPlay != playing) TogglePlay();
+        posePreview = GUILayout.Toggle(posePreview,
+            new GUIContent("Pose", "On: scrubbing and keyframe edits pose the preview objects. Off: objects sit at their rest pose so you can move them in the Scene view."),
+            EditorStyles.toolbarButton, GUILayout.Width(40));
 
-            GUILayout.FlexibleSpace();
+        GUILayout.FlexibleSpace();
 
-            EditorGUI.BeginChangeCheck();
-            GUILayout.Label(new GUIContent("Fade", "Seconds to crossfade from the animation already playing on the same animator when this one starts (0 = cut straight over)."),
-                EditorStyles.miniLabel, GUILayout.Width(28));
-            float fade = Mathf.Max(0f, EditorGUILayout.FloatField(asset.FadeTime, EditorStyles.toolbarTextField, GUILayout.Width(40)));
-            bool loop = GUILayout.Toggle(asset.Loop, new GUIContent("Loop", "Repeat the animation until it is stopped"), EditorStyles.toolbarButton);
-            bool startLast = GUILayout.Toggle(asset.StartLast,
-                new GUIContent("Start Last", "Start as if already transitioning from the last real keyframe toward the first (empty keyframes are ignored), instead of easing out of the current pose."),
-                EditorStyles.toolbarButton);
-            bool reset = GUILayout.Toggle(asset.ResetAfterFinish, "Reset After Finish", EditorStyles.toolbarButton);
-            bool over = GUILayout.Toggle(asset.OverrideData, "Override Data", EditorStyles.toolbarButton);
-            if (EditorGUI.EndChangeCheck())
-                Edit("Change Animation Settings", () => { asset.FadeTime = fade; asset.Loop = loop; asset.StartLast = startLast; asset.ResetAfterFinish = reset; asset.OverrideData = over; });
-        }
-        else
-        {
-            GUILayout.FlexibleSpace();
-        }
+        EditorGUI.BeginChangeCheck();
+        GUILayout.Label(new GUIContent("Fade", "Seconds to crossfade from the animation already playing on the same animator when this one starts (0 = cut straight over)."),
+            EditorStyles.miniLabel, GUILayout.Width(28));
+        float fade = Mathf.Max(0f, EditorGUILayout.FloatField(asset.FadeTime, EditorStyles.toolbarTextField, GUILayout.Width(40)));
+        bool loop = GUILayout.Toggle(asset.Loop, new GUIContent("Loop", "Repeat the animation until it is stopped"), EditorStyles.toolbarButton);
+        bool startLast = GUILayout.Toggle(asset.StartLast,
+            new GUIContent("Start Last", "Start as if already transitioning from the last real keyframe toward the first (empty keyframes are ignored), instead of easing out of the current pose."),
+            EditorStyles.toolbarButton);
+        bool reset = GUILayout.Toggle(asset.ResetAfterFinish, "Reset After Finish", EditorStyles.toolbarButton);
+        bool over = GUILayout.Toggle(asset.OverrideData, "Override Data", EditorStyles.toolbarButton);
+        if (EditorGUI.EndChangeCheck())
+            Edit("Change Animation Settings", () => { asset.FadeTime = fade; asset.Loop = loop; asset.StartLast = startLast; asset.ResetAfterFinish = reset; asset.OverrideData = over; });
 
         GUILayout.EndHorizontal();
     }
@@ -1292,7 +1240,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
         return 60f;
     }
 
-    private static string FormatTime(float t) { return t.ToString("0.###") + "s"; }
+    private static string FormatTime(float t) => t.ToString("0.###") + "s";
 
     private void DrawDiamond(Vector2 c, float r, Color fill, Color outline, float lineWidth)
     {
@@ -1308,6 +1256,54 @@ public class OXKeyframeTimelineWindow : EditorWindow
         Handles.color = Color.white;
     }
 
+    /// <summary>Groups time-sorted markers whose screen positions are within 4px into stacks.</summary>
+    private List<List<int>> Cluster(List<int> sorted, Func<int, float> timeOf)
+    {
+        var result = new List<List<int>>();
+        int start = 0;
+        while (start < sorted.Count)
+        {
+            int end = start + 1;
+            while (end < sorted.Count && TimeToX(timeOf(sorted[end])) - TimeToX(timeOf(sorted[end - 1])) <= 4f) end++;
+            result.Add(sorted.GetRange(start, end - start));
+            start = end;
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Draws one stack of diamonds (selected ones on top) plus a count badge when stacked.
+    /// Returns the x where a label may start.
+    /// </summary>
+    private float DrawStack(List<int> cluster, float laneTop, Func<int, float> timeOf, Func<int, bool> isSel, Func<int, Color> baseFill)
+    {
+        var ordered = cluster.OrderBy(i => isSel(i) ? 1 : 0).ThenBy(i => i).ToList();
+        int n = ordered.Count;
+        float laneCenter = laneTop + LaneH * 0.5f;
+
+        for (int j = 0; j < n; j++)
+        {
+            int i = ordered[j];
+            bool sel = isSel(i);
+            int layer = Mathf.Min(n - 1 - j, 2); // 0 = top of the stack
+            Color fill = baseFill(i);
+            if (layer > 0) fill = Color.Lerp(fill, Color.black, 0.3f * layer);
+            var c = new Vector2(TimeToX(timeOf(i)), laneCenter - layer * StackOffset);
+            DrawDiamond(c, sel ? MarkerR * 1.15f : MarkerR, fill, sel ? SelectedOutline : NormalOutline, sel ? 2.5f : 1.5f);
+        }
+
+        float topX = TimeToX(timeOf(ordered[n - 1]));
+        float labelX = topX + MarkerR + 4f;
+        if (n > 1)
+        {
+            var badge = new Rect(topX + MarkerR * 0.85f, laneTop + 1f, n >= 10 ? 18f : 13f, 11f);
+            EditorGUI.DrawRect(badge, new Color(0.05f, 0.05f, 0.05f, 0.9f));
+            GUI.Label(badge, n.ToString(), badgeLabel);
+            labelX = badge.xMax + 3f;
+        }
+        return labelX;
+    }
+
     private void DrawTimelineVisuals(Rect area, Rect content, Rect ruler, Rect lanes)
     {
         bool pro = EditorGUIUtility.isProSkin;
@@ -1319,7 +1315,6 @@ public class OXKeyframeTimelineWindow : EditorWindow
 
         EditorGUI.DrawRect(area, bg);
 
-        // lane backgrounds + labels
         for (int l = 0; l < LaneCount; l++)
         {
             float y = lanes.y + l * LaneH;
@@ -1360,14 +1355,14 @@ public class OXKeyframeTimelineWindow : EditorWindow
         }
         EditorGUI.DrawRect(new Rect(content.x, ruler.yMax - 1f, content.width, 1f), tick);
 
-        // keys (keys that sit on top of each other in a lane are drawn as a stack with a count badge)
-        bool anyKey = asset.Keyframes.Any(k => k != null);
-        List<int> preview = drag == DragMode.Box ? BoxHits(lanes, MakeBoxRect()) : null;
+        // Selection state, including the live box-select preview.
+        Rect box = drag == DragMode.Box ? MakeBoxRect() : default;
+        List<int> preview = drag == DragMode.Box ? BoxHits(lanes, box) : null;
+        List<int> previewEv = drag == DragMode.Box ? EventBoxHits(lanes, box) : null;
         Func<int, bool> isSel = i => selected.Contains(i) || (preview != null && preview.Contains(i));
-        bool anyEvent = asset.Events.Any(ev => ev != null);
-        List<int> previewEv = drag == DragMode.Box ? EventBoxHits(lanes, MakeBoxRect()) : null;
         Func<int, bool> isSelEv = i => selectedEv.Contains(i) || (previewEv != null && previewEv.Contains(i));
 
+        Func<int, float> keyTime = i => asset.Keyframes[i].Time;
         for (int l = 0; l < KeyLaneCount; l++)
         {
             var inLane = new List<int>();
@@ -1376,80 +1371,38 @@ public class OXKeyframeTimelineWindow : EditorWindow
                 var kf = asset.Keyframes[i];
                 if (!LaneHas(kf, l)) continue;
                 float x = TimeToX(kf.Time);
-                if (x < content.x || x > content.xMax) continue;
-                inLane.Add(i);
+                if (x >= content.x && x <= content.xMax) inLane.Add(i);
             }
-            inLane.Sort((p1, p2) => asset.Keyframes[p1].Time.CompareTo(asset.Keyframes[p2].Time));
+            inLane.Sort((p1, p2) => keyTime(p1).CompareTo(keyTime(p2)));
 
-            int start = 0;
-            while (start < inLane.Count)
-            {
-                int end = start + 1;
-                while (end < inLane.Count &&
-                       TimeToX(asset.Keyframes[inLane[end]].Time) - TimeToX(asset.Keyframes[inLane[end - 1]].Time) <= 4f)
-                    end++;
-
-                // selected keys are drawn last so they sit on top of the stack
-                var cluster = inLane.GetRange(start, end - start)
-                    .OrderBy(i => isSel(i) ? 1 : 0).ThenBy(i => i).ToList();
-                int n = cluster.Count;
-                float laneCenter = lanes.y + l * LaneH + LaneH * 0.5f;
-
-                for (int j = 0; j < n; j++)
-                {
-                    int i = cluster[j];
-                    var kf = asset.Keyframes[i];
-                    bool sel = isSel(i);
-                    int layer = Mathf.Min(n - 1 - j, 2); // 0 = top of the stack
-                    Color fill = LaneColors[l];
-                    if (l == 0 && !AnyEnabled(kf)) fill = new Color(0.45f, 0.45f, 0.45f);
-                    if (layer > 0) fill = Color.Lerp(fill, Color.black, 0.3f * layer);
-                    Color outline = sel ? new Color(1f, 0.95f, 0.3f) : new Color(0f, 0f, 0f, 0.8f);
-                    var c = new Vector2(TimeToX(kf.Time), laneCenter - layer * StackOffset);
-                    DrawDiamond(c, sel ? MarkerR * 1.15f : MarkerR, fill, outline, sel ? 2.5f : 1.5f);
-                }
-
-                if (n > 1)
-                {
-                    float topX = TimeToX(asset.Keyframes[cluster[n - 1]].Time);
-                    var badge = new Rect(topX + MarkerR * 0.85f, lanes.y + l * LaneH + 1f, n >= 10 ? 18f : 13f, 11f);
-                    EditorGUI.DrawRect(badge, new Color(0.05f, 0.05f, 0.05f, 0.9f));
-                    GUI.Label(badge, n.ToString(), badgeLabel);
-                }
-
-                start = end;
-            }
+            int lane = l;
+            Func<int, Color> fillOf = i =>
+                lane == 0 && !AnyEnabled(asset.Keyframes[i]) ? new Color(0.45f, 0.45f, 0.45f) : LaneColors[lane];
+            float laneTop = lanes.y + l * LaneH;
+            foreach (var cluster in Cluster(inLane, keyTime))
+                DrawStack(cluster, laneTop, keyTime, isSel, fillOf);
         }
 
         DrawEventLane(lanes, content, isSelEv);
 
-        if (!anyKey && !anyEvent)
-        {
-            var style = new GUIStyle(EditorStyles.centeredGreyMiniLabel);
-            GUI.Label(lanes, "Double-click a lane to add a keyframe (Events lane = event)", style);
-        }
+        if (!asset.Keyframes.Any(k => k != null) && !asset.Events.Any(ev => ev != null))
+            GUI.Label(lanes, "Double-click a lane to add a keyframe (Events lane = event)", new GUIStyle(EditorStyles.centeredGreyMiniLabel));
 
-        // box select
         if (drag == DragMode.Box)
         {
-            var r = MakeBoxRect();
-            EditorGUI.DrawRect(r, new Color(0.3f, 0.6f, 1f, 0.15f));
+            EditorGUI.DrawRect(box, new Color(0.3f, 0.6f, 1f, 0.15f));
             Handles.color = new Color(0.4f, 0.7f, 1f, 0.9f);
             Handles.DrawAAPolyLine(1.5f,
-                new Vector3(r.xMin, r.yMin), new Vector3(r.xMax, r.yMin), new Vector3(r.xMax, r.yMax),
-                new Vector3(r.xMin, r.yMax), new Vector3(r.xMin, r.yMin));
+                new Vector3(box.xMin, box.yMin), new Vector3(box.xMax, box.yMin), new Vector3(box.xMax, box.yMax),
+                new Vector3(box.xMin, box.yMax), new Vector3(box.xMin, box.yMin));
             Handles.color = Color.white;
         }
 
-        // playhead
+        // red playhead, then the yellow playback head
         float px = TimeToX(playhead);
         if (px >= content.x && px <= content.xMax)
-        {
-            var red = new Color(1f, 0.25f, 0.25f);
-            EditorGUI.DrawRect(new Rect(px - 0.5f, area.y, 2f, area.height), red);
-        }
+            EditorGUI.DrawRect(new Rect(px - 0.5f, area.y, 2f, area.height), new Color(1f, 0.25f, 0.25f));
 
-        // yellow playhead: where Space-bar playback currently is
         if (playing)
         {
             float yx = TimeToX(playTime);
@@ -1458,11 +1411,11 @@ public class OXKeyframeTimelineWindow : EditorWindow
         }
     }
 
-    /// <summary>Draws the purple Events lane: one diamond per event with its name, stacked when they overlap.</summary>
+    /// <summary>Draws the purple Events lane: stacked diamonds with the name of the top event.</summary>
     private void DrawEventLane(Rect lanes, Rect content, Func<int, bool> isSel)
     {
         float laneTop = lanes.y + EventLane * LaneH;
-        float laneCenter = laneTop + LaneH * 0.5f;
+        Func<int, float> evTime = i => asset.Events[i].Time;
 
         var inLane = new List<int>();
         for (int i = 0; i < asset.Events.Count; i++)
@@ -1470,56 +1423,26 @@ public class OXKeyframeTimelineWindow : EditorWindow
             var ev = asset.Events[i];
             if (ev == null) continue;
             float x = TimeToX(ev.Time);
-            if (x < content.x || x > content.xMax) continue;
-            inLane.Add(i);
+            if (x >= content.x && x <= content.xMax) inLane.Add(i);
         }
-        inLane.Sort((p1, p2) => asset.Events[p1].Time.CompareTo(asset.Events[p2].Time));
+        inLane.Sort((p1, p2) => evTime(p1).CompareTo(evTime(p2)));
 
-        int start = 0;
-        while (start < inLane.Count)
+        var clusters = Cluster(inLane, evTime);
+        for (int c = 0; c < clusters.Count; c++)
         {
-            int end = start + 1;
-            while (end < inLane.Count &&
-                   TimeToX(asset.Events[inLane[end]].Time) - TimeToX(asset.Events[inLane[end - 1]].Time) <= 4f)
-                end++;
+            var cluster = clusters[c];
+            float labelX = DrawStack(cluster, laneTop, evTime, isSel, _ => LaneColors[EventLane]);
 
-            var cluster = inLane.GetRange(start, end - start)
-                .OrderBy(i => isSel(i) ? 1 : 0).ThenBy(i => i).ToList();
-            int n = cluster.Count;
-
-            for (int j = 0; j < n; j++)
-            {
-                int i = cluster[j];
-                bool sel = isSel(i);
-                int layer = Mathf.Min(n - 1 - j, 2); // 0 = top of the stack
-                Color fill = LaneColors[EventLane];
-                if (layer > 0) fill = Color.Lerp(fill, Color.black, 0.3f * layer);
-                Color outline = sel ? new Color(1f, 0.95f, 0.3f) : new Color(0f, 0f, 0f, 0.8f);
-                var c = new Vector2(TimeToX(asset.Events[i].Time), laneCenter - layer * StackOffset);
-                DrawDiamond(c, sel ? MarkerR * 1.15f : MarkerR, fill, outline, sel ? 2.5f : 1.5f);
-            }
-
-            float topX = TimeToX(asset.Events[cluster[n - 1]].Time);
-            float labelX = topX + MarkerR + 4f;
-            if (n > 1)
-            {
-                var badge = new Rect(topX + MarkerR * 0.85f, laneTop + 1f, n >= 10 ? 18f : 13f, 11f);
-                EditorGUI.DrawRect(badge, new Color(0.05f, 0.05f, 0.05f, 0.9f));
-                GUI.Label(badge, n.ToString(), badgeLabel);
-                labelX = badge.xMax + 3f;
-            }
-
-            // Name label, cut off before the next cluster / the edge of the timeline.
+            // Name label of the top event, cut off before the next stack or the timeline edge.
             float limit = content.xMax;
-            if (end < inLane.Count) limit = Mathf.Min(limit, TimeToX(asset.Events[inLane[end]].Time) - MarkerR - 2f);
+            if (c + 1 < clusters.Count) limit = Mathf.Min(limit, TimeToX(evTime(clusters[c + 1][0])) - MarkerR - 2f);
             if (limit - labelX > 12f)
             {
-                string label = asset.Events[cluster[n - 1]].Name;
+                var top = cluster.OrderBy(i => isSel(i) ? 1 : 0).ThenBy(i => i).Last();
+                string label = asset.Events[top].Name;
                 if (string.IsNullOrEmpty(label)) label = "(no name)";
                 GUI.Label(new Rect(labelX, laneTop, limit - labelX, LaneH), label, eventLabel);
             }
-
-            start = end;
         }
     }
 
@@ -1530,8 +1453,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
         for (int i = 0; i < asset.Events.Count; i++)
         {
             var ev = asset.Events[i];
-            if (ev == null) continue;
-            if (box.Contains(new Vector2(TimeToX(ev.Time), cy))) hits.Add(i);
+            if (ev != null && box.Contains(new Vector2(TimeToX(ev.Time), cy))) hits.Add(i);
         }
         return hits;
     }
@@ -1593,8 +1515,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
         for (int i = asset.Keyframes.Count - 1; i >= 0; i--)
         {
             var kf = asset.Keyframes[i];
-            if (kf == null) continue;
-            if (Mathf.Abs(m.x - TimeToX(kf.Time)) > MarkerR + 1f) continue;
+            if (kf == null || Mathf.Abs(m.x - TimeToX(kf.Time)) > MarkerR + 1f) continue;
             for (int l = 0; l < KeyLaneCount; l++)
             {
                 if (!LaneHas(kf, l)) continue;
@@ -1609,13 +1530,25 @@ public class OXKeyframeTimelineWindow : EditorWindow
         return hits;
     }
 
-    /// <summary>Of the stacked keys under the cursor, prefer one that is already selected (so dragging a selection works).</summary>
+    /// <summary>Of the stacked keys under the cursor, prefer an already-selected one so dragging a selection works.</summary>
     private int PickFromStack(List<int> hits)
     {
         if (primary >= 0 && selected.Contains(primary) && hits.Contains(primary)) return primary;
         foreach (var h in hits)
             if (selected.Contains(h)) return h;
         return hits[0];
+    }
+
+    private void BeginKeyDrag(int id, float mouseX)
+    {
+        drag = DragMode.Keys;
+        dragStartX = mouseX;
+        dragUndoRecorded = false;
+        dragOrigin.Clear();
+        dragOriginEv.Clear();
+        foreach (var i in selected) dragOrigin[i] = asset.Keyframes[i].Time;
+        foreach (var i in selectedEv) dragOriginEv[i] = asset.Events[i].Time;
+        GUIUtility.hotControl = id;
     }
 
     private void HandleTimelineInput(EventType type, int id, Event e, Rect area, Rect content, Rect ruler, Rect lanes)
@@ -1644,10 +1577,9 @@ public class OXKeyframeTimelineWindow : EditorWindow
             case EventType.MouseDown:
                 if (!content.Contains(m)) break;
 
-                // Drop focus from any inspector field so Backspace/Delete reach the timeline.
+                // Drop focus from inspector fields so Backspace/Delete reach the timeline.
                 GUI.FocusControl(null);
 
-                // pan
                 if (e.button == 2 || (e.button == 0 && e.alt))
                 {
                     drag = DragMode.Pan;
@@ -1658,7 +1590,6 @@ public class OXKeyframeTimelineWindow : EditorWindow
                     break;
                 }
 
-                // playhead
                 if (e.button == 0 && ruler.Contains(m))
                 {
                     drag = DragMode.Playhead;
@@ -1671,211 +1602,8 @@ public class OXKeyframeTimelineWindow : EditorWindow
 
                 if (!lanes.Contains(m)) break;
 
-                if (e.button == 0)
-                {
-                    List<int> stackHits = null;
-                    List<int> evHits = null;
-                    int clickLane = Mathf.Clamp(Mathf.FloorToInt((m.y - lanes.y) / LaneH), 0, LaneCount - 1);
-                    if (e.clickCount == 2 && clickLane == EventLane)
-                    {
-                        // Double-click empty space in the Events lane adds an event (on an existing one it does nothing).
-                        if (GetEventHits(m, lanes).Count == 0)
-                            AddEvent(Snap(XToTime(m.x)), "Event");
-                        e.Use();
-                        Mutated();
-                    }
-                    else if (e.clickCount == 2)
-                    {
-                        int lane = clickLane;
-
-                        // If the first click of this double-click cycled the stack, go back to the key that was selected.
-                        if (EditorApplication.timeSinceStartup - cycledAt < 0.6 &&
-                            preCyclePrimary >= 0 && preCyclePrimary < asset.Keyframes.Count)
-                        {
-                            selected.Clear();
-                            selected.Add(preCyclePrimary);
-                            primary = preCyclePrimary;
-                        }
-                        cycledAt = -10;
-
-                        int existing = FindKeyAtX(m.x);
-                        if (existing >= 0)
-                        {
-                            // A keyframe already lives here: toggle that lane's channel on/off.
-                            var ekf = asset.Keyframes[existing];
-                            selected.Clear();
-                            selected.Add(existing);
-                            primary = existing;
-                            Edit("Toggle Channel", () =>
-                            {
-                                if (lane == 0)
-                                {
-                                    // Keyframes lane: switch every channel off, or all on if none are enabled.
-                                    bool on = !AnyEnabled(ekf);
-                                    for (int l = 1; l <= 3; l++) SetChannel(ekf, l, on);
-                                }
-                                else
-                                {
-                                    SetChannel(ekf, lane, !LaneHas(ekf, lane));
-                                }
-                            });
-                        }
-                        else
-                        {
-                            AddKeyframe(Snap(XToTime(m.x)), lane == 0 || lane == 1, lane == 0 || lane == 2, lane == 0 || lane == 3);
-                        }
-                        e.Use();
-                        Mutated();
-                    }
-                    else if ((stackHits = GetHits(m, lanes)).Count > 0)
-                    {
-                        int hit = PickFromStack(stackHits);
-                        bool wasSelected = selected.Contains(hit);
-                        bool mod = e.control || e.command || e.shift;
-                        if (mod)
-                        {
-                            if (selected.Contains(hit))
-                            {
-                                selected.Remove(hit);
-                                primary = selected.Count > 0 ? selected[selected.Count - 1] : -1;
-                            }
-                            else
-                            {
-                                selected.Add(hit);
-                                primary = hit;
-                            }
-                        }
-                        else
-                        {
-                            if (!wasSelected)
-                            {
-                                selected.Clear();
-                                selected.Add(hit);
-                                ClearEventSelection();
-                            }
-                            primary = hit;
-                        }
-                        if (selected.Contains(hit)) eventFocus = false;
-
-                        // Clicking an already-selected key in a stack (without dragging) cycles to the next key in it.
-                        cycleStack = stackHits;
-                        cycleArmed = !mod && wasSelected && stackHits.Count > 1 && selected.Count == 1 && selectedEv.Count == 0;
-
-                        if (selected.Contains(hit))
-                        {
-                            drag = DragMode.Keys;
-                            dragStartX = m.x;
-                            dragUndoRecorded = false;
-                            dragOrigin.Clear();
-                            dragOriginEv.Clear();
-                            foreach (var i in selected) dragOrigin[i] = asset.Keyframes[i].Time;
-                            foreach (var i in selectedEv) dragOriginEv[i] = asset.Events[i].Time;
-                            GUIUtility.hotControl = id;
-                        }
-                        e.Use();
-                        Mutated();
-                    }
-                    else if ((evHits = GetEventHits(m, lanes)).Count > 0)
-                    {
-                        int hit = PickEventFromStack(evHits);
-                        bool wasSelected = selectedEv.Contains(hit);
-                        bool mod = e.control || e.command || e.shift;
-                        if (mod)
-                        {
-                            if (wasSelected)
-                            {
-                                selectedEv.Remove(hit);
-                                primaryEv = selectedEv.Count > 0 ? selectedEv[selectedEv.Count - 1] : -1;
-                            }
-                            else
-                            {
-                                selectedEv.Add(hit);
-                                primaryEv = hit;
-                            }
-                        }
-                        else
-                        {
-                            if (!wasSelected)
-                            {
-                                selected.Clear();
-                                primary = -1;
-                                selectedEv.Clear();
-                                selectedEv.Add(hit);
-                            }
-                            primaryEv = hit;
-                        }
-                        eventFocus = primaryEv >= 0;
-
-                        if (selectedEv.Contains(hit))
-                        {
-                            drag = DragMode.Keys; // same drag logic moves keys and events together
-                            dragStartX = m.x;
-                            dragUndoRecorded = false;
-                            cycleArmed = false;
-                            dragOrigin.Clear();
-                            dragOriginEv.Clear();
-                            foreach (var i in selected) dragOrigin[i] = asset.Keyframes[i].Time;
-                            foreach (var i in selectedEv) dragOriginEv[i] = asset.Events[i].Time;
-                            GUIUtility.hotControl = id;
-                        }
-                        e.Use();
-                        Mutated();
-                    }
-                    else
-                    {
-                        boxBase = e.shift ? new List<int>(selected) : new List<int>();
-                        boxBaseEv = e.shift ? new List<int>(selectedEv) : new List<int>();
-                        if (!e.shift)
-                        {
-                            selected.Clear();
-                            primary = -1;
-                            ClearEventSelection();
-                        }
-                        drag = DragMode.Box;
-                        boxStart = boxEnd = m;
-                        GUIUtility.hotControl = id;
-                        e.Use();
-                        Mutated();
-                    }
-                }
-                else if (e.button == 1)
-                {
-                    var rightHits = GetHits(m, lanes);
-                    var rightEv = GetEventHits(m, lanes);
-                    if (rightHits.Count > 0)
-                    {
-                        int rhit = PickFromStack(rightHits);
-                        if (!selected.Contains(rhit))
-                        {
-                            selected.Clear();
-                            selected.Add(rhit);
-                            ClearEventSelection();
-                        }
-                        primary = rhit;
-                        eventFocus = false;
-                        ShowKeyMenu();
-                    }
-                    else if (rightEv.Count > 0)
-                    {
-                        int rhit = PickEventFromStack(rightEv);
-                        if (!selectedEv.Contains(rhit))
-                        {
-                            selected.Clear();
-                            primary = -1;
-                            selectedEv.Clear();
-                            selectedEv.Add(rhit);
-                        }
-                        primaryEv = rhit;
-                        eventFocus = true;
-                        ShowEventMenu();
-                    }
-                    else
-                    {
-                        ShowAddMenu(Snap(XToTime(m.x)));
-                    }
-                    e.Use();
-                    Mutated();
-                }
+                if (e.button == 0) HandleLeftClick(id, e, lanes);
+                else if (e.button == 1) HandleRightClick(e, lanes);
                 break;
 
             case EventType.MouseDrag:
@@ -1886,41 +1614,12 @@ public class OXKeyframeTimelineWindow : EditorWindow
                         viewStart = dragStartView - (m.x - dragStartX) / pxPerSec;
                         ClampView();
                         break;
-
                     case DragMode.Playhead:
                         playhead = Snap(XToTime(m.x));
                         break;
-
                     case DragMode.Keys:
-                        if (!dragUndoRecorded)
-                        {
-                            if (Mathf.Abs(m.x - dragStartX) < 2f) break;
-                            Undo.RecordObject(asset, "Move Keyframes/Events");
-                            dragUndoRecorded = true;
-                        }
-                        {
-                            float delta = (m.x - dragStartX) / pxPerSec;
-                            float leadOrig;
-                            if (dragOrigin.ContainsKey(primary)) leadOrig = dragOrigin[primary];
-                            else if (dragOriginEv.ContainsKey(primaryEv)) leadOrig = dragOriginEv[primaryEv];
-                            else if (dragOrigin.Count > 0) leadOrig = dragOrigin.Values.First();
-                            else leadOrig = dragOriginEv.Values.First();
-                            float newLead = Snap(leadOrig + delta);
-                            delta = newLead - leadOrig;
-                            float minOrig = float.MaxValue;
-                            foreach (var v in dragOrigin.Values) minOrig = Mathf.Min(minOrig, v);
-                            foreach (var v in dragOriginEv.Values) minOrig = Mathf.Min(minOrig, v);
-                            delta = Mathf.Max(delta, -minOrig);
-                            foreach (var kv in dragOrigin)
-                                if (kv.Key < asset.Keyframes.Count && asset.Keyframes[kv.Key] != null)
-                                    asset.Keyframes[kv.Key].Time = kv.Value + delta;
-                            foreach (var kv in dragOriginEv)
-                                if (kv.Key < asset.Events.Count && asset.Events[kv.Key] != null)
-                                    asset.Events[kv.Key].Time = kv.Value + delta;
-                            EditorUtility.SetDirty(asset);
-                        }
+                        DragKeys(m.x);
                         break;
-
                     case DragMode.Box:
                         boxEnd = m;
                         break;
@@ -1933,27 +1632,9 @@ public class OXKeyframeTimelineWindow : EditorWindow
                 if (GUIUtility.hotControl != id) break;
                 GUIUtility.hotControl = 0;
                 bool wasBox = drag == DragMode.Box;
-                if (wasBox)
-                {
-                    // A plain click (no real drag) on empty timeline space moves the playhead there.
-                    if ((boxEnd - boxStart).sqrMagnitude < 9f) playhead = Snap(XToTime(boxStart.x));
+                if (wasBox) FinishBoxSelect(lanes);
 
-                    var hits = BoxHits(lanes, MakeBoxRect());
-                    selected.Clear();
-                    selected.AddRange(boxBase);
-                    foreach (var h in hits)
-                        if (!selected.Contains(h)) selected.Add(h);
-                    primary = selected.Count > 0 ? selected[selected.Count - 1] : -1;
-
-                    var evBoxHits = EventBoxHits(lanes, MakeBoxRect());
-                    selectedEv.Clear();
-                    selectedEv.AddRange(boxBaseEv);
-                    foreach (var h in evBoxHits)
-                        if (!selectedEv.Contains(h)) selectedEv.Add(h);
-                    primaryEv = selectedEv.Count > 0 ? selectedEv[selectedEv.Count - 1] : -1;
-                    eventFocus = primaryEv >= 0 && (primary < 0 || (hits.Count == 0 && evBoxHits.Count > 0));
-                }
-
+                // A click on an already-selected key in a stack (without dragging) cycles to the next key.
                 bool cycled = false;
                 if (drag == DragMode.Keys && cycleArmed && !dragUndoRecorded && cycleStack != null && cycleStack.Count > 1)
                 {
@@ -1961,9 +1642,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
                     int next = cycleStack[(at + 1) % cycleStack.Count];
                     preCyclePrimary = primary;
                     cycledAt = EditorApplication.timeSinceStartup;
-                    selected.Clear();
-                    selected.Add(next);
-                    primary = next;
+                    SelectOnlyKey(next);
                     cycled = true;
                 }
                 cycleArmed = false;
@@ -1976,6 +1655,216 @@ public class OXKeyframeTimelineWindow : EditorWindow
         }
     }
 
+    private void DragKeys(float mouseX)
+    {
+        if (!dragUndoRecorded)
+        {
+            if (Mathf.Abs(mouseX - dragStartX) < 2f) return;
+            Undo.RecordObject(asset, "Move Keyframes/Events");
+            dragUndoRecorded = true;
+        }
+
+        float delta = (mouseX - dragStartX) / pxPerSec;
+        float leadOrig;
+        if (dragOrigin.ContainsKey(primary)) leadOrig = dragOrigin[primary];
+        else if (dragOriginEv.ContainsKey(primaryEv)) leadOrig = dragOriginEv[primaryEv];
+        else if (dragOrigin.Count > 0) leadOrig = dragOrigin.Values.First();
+        else leadOrig = dragOriginEv.Values.First();
+
+        delta = Snap(leadOrig + delta) - leadOrig;
+        float minOrig = float.MaxValue;
+        foreach (var v in dragOrigin.Values) minOrig = Mathf.Min(minOrig, v);
+        foreach (var v in dragOriginEv.Values) minOrig = Mathf.Min(minOrig, v);
+        delta = Mathf.Max(delta, -minOrig);
+
+        foreach (var kv in dragOrigin)
+            if (kv.Key < asset.Keyframes.Count && asset.Keyframes[kv.Key] != null)
+                asset.Keyframes[kv.Key].Time = kv.Value + delta;
+        foreach (var kv in dragOriginEv)
+            if (kv.Key < asset.Events.Count && asset.Events[kv.Key] != null)
+                asset.Events[kv.Key].Time = kv.Value + delta;
+        EditorUtility.SetDirty(asset);
+    }
+
+    private void FinishBoxSelect(Rect lanes)
+    {
+        // A plain click (no real drag) on empty timeline space moves the playhead there.
+        if ((boxEnd - boxStart).sqrMagnitude < 9f) playhead = Snap(XToTime(boxStart.x));
+
+        var box = MakeBoxRect();
+        var hits = BoxHits(lanes, box);
+        selected.Clear();
+        selected.AddRange(boxBase);
+        foreach (var h in hits)
+            if (!selected.Contains(h)) selected.Add(h);
+        primary = Last(selected);
+
+        var evHits = EventBoxHits(lanes, box);
+        selectedEv.Clear();
+        selectedEv.AddRange(boxBaseEv);
+        foreach (var h in evHits)
+            if (!selectedEv.Contains(h)) selectedEv.Add(h);
+        primaryEv = Last(selectedEv);
+        eventFocus = primaryEv >= 0 && (primary < 0 || (hits.Count == 0 && evHits.Count > 0));
+    }
+
+    private void HandleLeftClick(int id, Event e, Rect lanes)
+    {
+        Vector2 m = e.mousePosition;
+        int clickLane = Mathf.Clamp(Mathf.FloorToInt((m.y - lanes.y) / LaneH), 0, LaneCount - 1);
+        bool mod = e.control || e.command || e.shift;
+
+        if (e.clickCount == 2 && clickLane == EventLane)
+        {
+            // Double-click empty space in the Events lane adds an event.
+            if (GetEventHits(m, lanes).Count == 0) AddEvent(Snap(XToTime(m.x)), "Event");
+            e.Use();
+            Mutated();
+        }
+        else if (e.clickCount == 2)
+        {
+            DoubleClickLane(clickLane, m.x);
+            e.Use();
+            Mutated();
+        }
+        else
+        {
+            var stackHits = GetHits(m, lanes);
+            if (stackHits.Count > 0)
+            {
+                int hit = PickFromStack(stackHits);
+                bool wasSelected = selected.Contains(hit);
+                if (mod)
+                {
+                    if (wasSelected) selected.Remove(hit);
+                    else selected.Add(hit);
+                    primary = wasSelected ? Last(selected) : hit;
+                }
+                else
+                {
+                    if (!wasSelected)
+                    {
+                        selected.Clear();
+                        selected.Add(hit);
+                        ClearEventSelection();
+                    }
+                    primary = hit;
+                }
+                if (selected.Contains(hit)) eventFocus = false;
+
+                cycleStack = stackHits;
+                cycleArmed = !mod && wasSelected && stackHits.Count > 1 && selected.Count == 1 && selectedEv.Count == 0;
+                if (selected.Contains(hit)) BeginKeyDrag(id, m.x);
+                e.Use();
+                Mutated();
+                return;
+            }
+
+            var evHits = GetEventHits(m, lanes);
+            if (evHits.Count > 0)
+            {
+                int hit = PickEventFromStack(evHits);
+                bool wasSelected = selectedEv.Contains(hit);
+                if (mod)
+                {
+                    if (wasSelected) selectedEv.Remove(hit);
+                    else selectedEv.Add(hit);
+                    primaryEv = wasSelected ? Last(selectedEv) : hit;
+                }
+                else
+                {
+                    if (!wasSelected) SelectOnlyEvent(hit);
+                    primaryEv = hit;
+                }
+                eventFocus = primaryEv >= 0;
+
+                if (selectedEv.Contains(hit))
+                {
+                    cycleArmed = false;
+                    BeginKeyDrag(id, m.x); // same drag logic moves keys and events together
+                }
+                e.Use();
+                Mutated();
+                return;
+            }
+
+            // Empty space: start a box select.
+            boxBase = e.shift ? new List<int>(selected) : new List<int>();
+            boxBaseEv = e.shift ? new List<int>(selectedEv) : new List<int>();
+            if (!e.shift)
+            {
+                selected.Clear();
+                primary = -1;
+                ClearEventSelection();
+            }
+            drag = DragMode.Box;
+            boxStart = boxEnd = m;
+            GUIUtility.hotControl = id;
+            e.Use();
+            Mutated();
+        }
+    }
+
+    /// <summary>Double-click on a key lane: toggle that channel on an existing key, or add a key.</summary>
+    private void DoubleClickLane(int lane, float mouseX)
+    {
+        // If the first click of this double-click cycled the stack, go back to the key that was selected.
+        if (EditorApplication.timeSinceStartup - cycledAt < 0.6 &&
+            preCyclePrimary >= 0 && preCyclePrimary < asset.Keyframes.Count)
+            SelectOnlyKey(preCyclePrimary);
+        cycledAt = -10;
+
+        int existing = FindKeyAtX(mouseX);
+        if (existing < 0)
+        {
+            AddKeyframe(Snap(XToTime(mouseX)), lane == 0 || lane == 1, lane == 0 || lane == 2, lane == 0 || lane == 3);
+            return;
+        }
+
+        var ekf = asset.Keyframes[existing];
+        SelectOnlyKey(existing);
+        Edit("Toggle Channel", () =>
+        {
+            if (lane == 0)
+            {
+                // Keyframes lane: switch every channel off, or all on if none are enabled.
+                bool on = !AnyEnabled(ekf);
+                for (int l = 1; l <= 3; l++) SetChannel(ekf, l, on);
+            }
+            else SetChannel(ekf, lane, !LaneHas(ekf, lane));
+        });
+    }
+
+    private void HandleRightClick(Event e, Rect lanes)
+    {
+        Vector2 m = e.mousePosition;
+        var rightHits = GetHits(m, lanes);
+        var rightEv = GetEventHits(m, lanes);
+        if (rightHits.Count > 0)
+        {
+            int hit = PickFromStack(rightHits);
+            if (!selected.Contains(hit))
+            {
+                SelectOnlyKey(hit);
+                ClearEventSelection();
+            }
+            primary = hit;
+            eventFocus = false;
+            ShowKeyMenu();
+        }
+        else if (rightEv.Count > 0)
+        {
+            int hit = PickEventFromStack(rightEv);
+            if (!selectedEv.Contains(hit)) SelectOnlyEvent(hit);
+            primaryEv = hit;
+            eventFocus = true;
+            ShowEventMenu();
+        }
+        else ShowAddMenu(Snap(XToTime(m.x)));
+        e.Use();
+        Mutated();
+    }
+
     private void ShowKeyMenu()
     {
         var menu = new GenericMenu();
@@ -1984,8 +1873,8 @@ public class OXKeyframeTimelineWindow : EditorWindow
         menu.AddItem(new GUIContent("Copy"), false, CopySelected);
         menu.AddSeparator("");
 
-        var pkf = primary >= 0 && primary < asset.Keyframes.Count ? asset.Keyframes[primary] : null;
-        float atTime = pkf != null ? pkf.Time : 0f;
+        var pk = primary >= 0 && primary < asset.Keyframes.Count ? asset.Keyframes[primary] : null;
+        float atTime = pk != null ? pk.Time : 0f;
         menu.AddItem(new GUIContent("Select All Keys At This Time"), false, () => { SelectAtTime(atTime); Repaint(); });
         if (selected.Count > 1)
             menu.AddItem(new GUIContent("Merge Selected Keyframes"), false, () => { MergeKeys(new List<int>(selected)); Repaint(); });
@@ -1993,7 +1882,6 @@ public class OXKeyframeTimelineWindow : EditorWindow
             menu.AddDisabledItem(new GUIContent("Merge Selected Keyframes"));
         menu.AddSeparator("");
 
-        var pk = pkf;
         for (int lane = 1; lane <= 3; lane++)
         {
             int l = lane;
@@ -2035,9 +1923,6 @@ public class OXKeyframeTimelineWindow : EditorWindow
 
     // ------------------------------------------------------------------ inspector
 
-    private Vector2 leftScroll;
-    private Vector2 rightScroll;
-
     private void DrawInspector()
     {
         if (eventFocus && primaryEv >= 0 && primaryEv < asset.Events.Count && asset.Events[primaryEv] != null)
@@ -2046,7 +1931,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
             return;
         }
 
-        OXKeyframe kf = (primary >= 0 && primary < asset.Keyframes.Count) ? asset.Keyframes[primary] : null;
+        OXKeyframe kf = primary >= 0 && primary < asset.Keyframes.Count ? asset.Keyframes[primary] : null;
 
         if (kf == null)
         {
@@ -2056,7 +1941,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
                 "Double-click a lane to add one (or toggle that channel on an existing key), right-click for more options.\n" +
                 "Double-click the purple Events lane to add a named event.",
                 MessageType.None);
-            DrawPreviewPanel(); // preview scene objects only show while nothing is selected
+            DrawPreviewPanel();
             EditorGUILayout.EndScrollView();
             return;
         }
@@ -2075,7 +1960,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
 
         EditorGUILayout.BeginHorizontal();
 
-        // ---------------- LEFT HALF: time + enabled channels and their interpolation ----------------
+        // ---- left half: time + channels and their interpolation ----
         EditorGUILayout.BeginVertical(GUILayout.Width(leftW));
         leftScroll = EditorGUILayout.BeginScrollView(leftScroll);
 
@@ -2097,13 +1982,11 @@ public class OXKeyframeTimelineWindow : EditorWindow
         EditorGUILayout.EndScrollView();
         EditorGUILayout.EndVertical();
 
-        // draggable divider
         DrawDetailsSplitter();
 
-        // ---------------- RIGHT HALF: object states ----------------
+        // ---- right half: object states ----
         EditorGUILayout.BeginVertical(GUILayout.Width(rightW));
 
-        // Header row stays pinned above the scrolling list: title on the left, "+ Add Object State" at the top-right.
         EditorGUILayout.BeginHorizontal();
         GUILayout.Label("Object States", EditorStyles.boldLabel);
         GUILayout.FlexibleSpace();
@@ -2112,13 +1995,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
 
         if (addObjectState)
         {
-            Edit("Add Object State", () =>
-            {
-                int next = 0;
-                foreach (var d in kf.Data)
-                    if (d != null && d.ObjectIndex >= next) next = d.ObjectIndex + 1;
-                kf.Data.Add(MakeState(next, kf.Time, kf));
-            });
+            Edit("Add Object State", () => kf.Data.Add(MakeState(NextObjectIndex(kf), kf.Time, kf)));
             Mutated();
         }
 
@@ -2140,10 +2017,8 @@ public class OXKeyframeTimelineWindow : EditorWindow
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             EditorGUILayout.BeginHorizontal();
 
-            // left column: which object this state belongs to (+ remove)
+            // left column: object index + duplicate/delete
             EditorGUILayout.BeginVertical(GUILayout.Width(110f));
-
-            // label and number side by side
             EditorGUILayout.BeginHorizontal();
             GUILayout.Label("Object", GUILayout.Width(44f));
             EditorGUI.BeginChangeCheck();
@@ -2157,11 +2032,10 @@ public class OXKeyframeTimelineWindow : EditorWindow
                 pendingRemove = i;
             EditorGUILayout.EndVertical();
 
-            // right column: the enabled channel values for that object
+            // right column: values of the enabled channels
             EditorGUILayout.BeginVertical();
             var tr = d.Transform;
 
-            // Only channels enabled on this keyframe are shown; disabled ones can't be edited.
             if (kf.Position.Enabled)
             {
                 EditorGUI.BeginChangeCheck();
@@ -2184,12 +2058,12 @@ public class OXKeyframeTimelineWindow : EditorWindow
                 if (EditorGUI.EndChangeCheck()) Edit("Change Scale", () => tr.Scale = s);
             }
 
-            if (!kf.Position.Enabled && !kf.Rotation.Enabled && !kf.Scale.Enabled)
+            if (!AnyEnabled(kf))
                 EditorGUILayout.LabelField("No channels enabled on this keyframe.", EditorStyles.miniLabel);
 
-            EditorGUILayout.EndVertical(); // channel rows
+            EditorGUILayout.EndVertical();
             EditorGUILayout.EndHorizontal();
-            EditorGUILayout.EndVertical(); // help box
+            EditorGUILayout.EndVertical();
         }
 
         EditorGUILayout.EndScrollView();
@@ -2204,16 +2078,15 @@ public class OXKeyframeTimelineWindow : EditorWindow
             Edit("Duplicate Object State", () =>
             {
                 var from = kf.Data[src];
-                int next = 0;
-                foreach (var d in kf.Data)
-                    if (d != null && d.ObjectIndex >= next) next = d.ObjectIndex + 1;
-
-                var copy = new OXKeyframeObjectState { ObjectIndex = next };
-                copy.Transform = new OXTransformWithScale
+                var copy = new OXKeyframeObjectState
                 {
-                    Position = from.Transform.Position,
-                    Rotation = IsZeroQuat(from.Transform.Rotation) ? Quaternion.identity : from.Transform.Rotation,
-                    Scale = from.Transform.Scale,
+                    ObjectIndex = NextObjectIndex(kf),
+                    Transform = new OXTransformWithScale
+                    {
+                        Position = from.Transform.Position,
+                        Rotation = IsZeroQuat(from.Transform.Rotation) ? Quaternion.identity : from.Transform.Rotation,
+                        Scale = from.Transform.Scale,
+                    }
                 };
                 kf.Data.Insert(src + 1, copy);
             });
@@ -2279,9 +2152,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
             bool on = GUILayout.Toggle(i == primaryEv, "#" + i + " " + nm, EditorStyles.miniButton);
             if (on && i != primaryEv)
             {
-                selectedEv.Clear();
-                selectedEv.Add(i);
-                primaryEv = i;
+                SelectOnlyEvent(i);
                 Mutated();
             }
         }
@@ -2311,9 +2182,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
             bool on = GUILayout.Toggle(i == primary, text, EditorStyles.miniButton);
             if (on && i != primary)
             {
-                selected.Clear();
-                selected.Add(i);
-                primary = i;
+                SelectOnlyKey(i);
                 Mutated();
             }
         }
@@ -2345,10 +2214,9 @@ public class OXKeyframeTimelineWindow : EditorWindow
         if (toggled)
         {
             EditorGUILayout.EndVertical();
-            Mutated(); // the Object States panel now shows/hides this channel, so restart the layout pass
+            Mutated(); // the Object States panel shows/hides this channel, so restart layout
         }
 
-        // Disabled channel: nothing but the checkbox (no interpolation settings, no graph).
         if (!ch.Enabled)
         {
             EditorGUILayout.EndVertical();
@@ -2358,7 +2226,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.BeginVertical();
 
-        // Axis mask: untick an axis to leave it untouched by this channel (e.g. only animate Z).
+        // Axis mask: untick an axis to leave it untouched by this channel.
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.PrefixLabel(new GUIContent("Axes", "Untick an axis to stop this channel from animating it. Unticked axes keep their current value."));
         string[] axisNames = { "X", "Y", "Z" };
@@ -2390,7 +2258,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
         {
             Edit("Change Interpolation", () => ch.InterpMode = mode);
             EditorGUILayout.EndVertical();
-            Mutated(); // the set of parameter fields below depends on the mode
+            Mutated(); // the parameter fields below depend on the mode
         }
 
         switch (ch.InterpMode)
@@ -2424,7 +2292,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
         EditorGUILayout.EndVertical();
     }
 
-    /// <summary>A label with its X/Y/Z fields on the same row, plus the channel's color as a side bar and a faint tint.</summary>
+    /// <summary>A label with X/Y/Z fields on one row, with the channel color as a side bar and faint tint. Masked-off axes are greyed out.</summary>
     private static Vector3 Vector3Row(string label, Vector3 value, Color color, OXKeyframeChannel mask = null)
     {
         Rect row = EditorGUILayout.BeginHorizontal();
@@ -2436,19 +2304,14 @@ public class OXKeyframeTimelineWindow : EditorWindow
 
         GUILayout.Label(label, GUILayout.Width(56f));
 
-        // Three separate fields so the layout never wraps the values onto a second line under the label.
         float oldLabelWidth = EditorGUIUtility.labelWidth;
         EditorGUIUtility.labelWidth = 12f;
-        // Axes the channel has switched off are greyed out: they aren't animated, so their value is ignored.
-        EditorGUI.BeginDisabledGroup(mask != null && !mask.AxisEnabled(0));
-        value.x = EditorGUILayout.FloatField("X", value.x);
-        EditorGUI.EndDisabledGroup();
-        EditorGUI.BeginDisabledGroup(mask != null && !mask.AxisEnabled(1));
-        value.y = EditorGUILayout.FloatField("Y", value.y);
-        EditorGUI.EndDisabledGroup();
-        EditorGUI.BeginDisabledGroup(mask != null && !mask.AxisEnabled(2));
-        value.z = EditorGUILayout.FloatField("Z", value.z);
-        EditorGUI.EndDisabledGroup();
+        for (int axis = 0; axis < 3; axis++)
+        {
+            EditorGUI.BeginDisabledGroup(mask != null && !mask.AxisEnabled(axis));
+            value[axis] = EditorGUILayout.FloatField(axis == 0 ? "X" : axis == 1 ? "Y" : "Z", value[axis]);
+            EditorGUI.EndDisabledGroup();
+        }
         EditorGUIUtility.labelWidth = oldLabelWidth;
 
         EditorGUILayout.EndHorizontal();

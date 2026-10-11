@@ -20,6 +20,9 @@
     - On Self Connect/Disconnect/FailedConnection
     - On Other Client Connect/Disconnect
     - On start as host
+- New Keyframe Animator
+  - Custom transform/event animator using OcksTools interpolations and other things.
+  - Mostly slopcoded this one, it does work tho.
 - Render Improvements
   - Fixed Get/Set Anti Aliasing
   - Added Get/Set for Renderscale.
@@ -39,8 +42,6 @@
   - InputManager and SoundSystem both now save to GlobalData
   - InputManager now finally saves its stuff in its own class instead of existing in the save system
   - Removed test variables from Profiles so it no longer stores junk data
-- New Experimental System: Keyframe Animator
-  - a very WIP system to animate things using keyframes
 - Misc 
   - New LerpU varients of all extension lerp functions, gives them unclamped bevahior
   - Finally fixed the warnings from GlobalAttributeCollector about creating monobehaviors

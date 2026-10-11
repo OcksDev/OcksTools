@@ -4,71 +4,82 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// Pure data asset. Holds NO runtime state, so it is safe to reference from any number of objects.
-/// Each Play() call creates its own OXKeyframeAnimationRuntime that owns the per-use state.
+/// Pure data asset with no runtime state. Each Play() creates its own OXKeyframeAnimationRuntime.
 /// </summary>
 [CreateAssetMenu(fileName = "NewKeyframeAnimation", menuName = "OcksTools/Animation/Keyframe Animation")]
 public class OXKeyframeAnimation : ScriptableObject
 {
     public bool ResetAfterFinish = false;
     public bool OverrideData = false;
+
     /// <summary>
-    /// Repeat the animation forever once it reaches its last key/event (until Stop() is called).
-    /// Each pass starts from the pose the objects had when Play() was called and re-fires the events.
-    /// If the animation ends on empty keyframe(s) (no channels enabled), the last one marks the loop length:
-    /// empty keys are ignored, and the objects ease from the last real key to the
-    /// first real key of the NEXT pass (using the first key's interpolation), so the return keeps the same rhythm as
-    /// the rest of the animation. At the end of a pass the objects are only part-way back, and the next pass carries
-    /// on from exactly that pose, so there is no pause and no snap.
-    /// Ignored for animations with zero duration.
+    /// Repeat until Stop(). Each pass re-fires events. If the animation ends on empty keyframe(s), the last one
+    /// marks the loop length: objects ease from the last real key to the first real key of the next pass
+    /// (using the first key's interpolation), and the next pass continues from that exact pose. Ignored for zero duration.
     /// </summary>
     public bool Loop = false;
+
     /// <summary>
-    /// Start the animation as if it were already transitioning from the last real keyframe (empty keyframes are
-    /// ignored) toward the first one, instead of easing out of the objects' current pose. With Loop on, this is
-    /// exactly the pose every later pass starts from, so even the first pass matches the loop. Without Loop, the
-    /// animation starts partway along that transition and ends on the last real keyframe as usual.
+    /// Start as if already transitioning from the last real keyframe toward the first, instead of easing out of
+    /// the current pose. With Loop on, this is exactly the pose every later pass starts from.
     /// </summary>
     public bool StartLast = false;
-    /// <summary>
-    /// Seconds to crossfade from the animation that is already playing on the same animator when this one starts.
-    /// The old animation keeps running while this one blends in over it, then it is stopped. 0 = no fade: the old
-    /// animation is stopped and reset immediately. Play(objects, fadeTime) can override this per call.
-    /// </summary>
+
+    /// <summary>Seconds to crossfade from the animation already playing on the same animator. 0 = cut straight over. Play() can override it.</summary>
     public float FadeTime = 0f;
+
     public List<OXKeyframe> Keyframes = new List<OXKeyframe>();
-    /// <summary>
-    /// Named events fired during playback when their time is reached. Hook them up from code with
-    /// runtime.Append("Name", callback) on the runtime returned by Play().
-    /// </summary>
+
+    /// <summary>Named events fired during playback. Hook up with runtime.Append("Name", callback).</summary>
     public List<OXEventKeyframe> Events = new List<OXEventKeyframe>();
 
 #if UNITY_EDITOR
-    /// <summary>
-    /// Editor-only: the objects that make up this animation's preview scene. Saved with the asset so the
-    /// scene comes back the same every time. Compiled out of builds, so prefabs referenced here are never pulled in.
-    /// </summary>
+    /// <summary>Editor-only preview scene contents, saved with the asset and compiled out of builds.</summary>
     public List<OXPreviewObject> PreviewObjects = new List<OXPreviewObject>();
 #endif
 
-    public List<OXKeyframe> GetSortedKeyframes()
+    private static readonly Func<OXKeyframe, float> KeyframeTime = k => k != null ? k.Time : float.NegativeInfinity;
+    private static readonly Func<OXEventKeyframe, float> EventTime = e => e != null ? e.Time : float.NegativeInfinity;
+
+    /// <summary>Returns a new list sorted by time (stable, like OrderBy, but without LINQ allocations).</summary>
+    public List<OXKeyframe> GetSortedKeyframes() => StableSortedCopy(Keyframes, KeyframeTime);
+    public List<OXEventKeyframe> GetSortedEventKeyframes() => StableSortedCopy(Events, EventTime);
+
+    // Copy + fast path for already-sorted input (the common case); otherwise stable binary insertion.
+    private static List<T> StableSortedCopy<T>(List<T> source, Func<T, float> time) where T : class
     {
-        return Keyframes.OrderBy(k => k.Time).ToList();
+        int n = source.Count;
+        var result = new List<T>(n);
+        float prev = float.NegativeInfinity;
+        int i = 0;
+        for (; i < n; i++)
+        {
+            float t = time(source[i]);
+            if (t < prev) break;
+            prev = t;
+            result.Add(source[i]);
+        }
+        for (; i < n; i++)
+        {
+            var item = source[i];
+            float t = time(item);
+            int lo = 0, hi = result.Count; // upper bound keeps equal times in original order
+            while (lo < hi)
+            {
+                int mid = (lo + hi) >> 1;
+                if (time(result[mid]) <= t) lo = mid + 1; else hi = mid;
+            }
+            result.Insert(lo, item);
+        }
+        return result;
     }
-    public List<OXEventKeyframe> GetSortedEventKeyframes()
-    {
-        return Events.OrderBy(k => k.Time).ToList();
-    }
-    /// <summary>
-    /// Plays this animation. fadeTime: seconds to crossfade from the animation currently playing on the same
-    /// animator. A negative value (default) uses FadeTime from the asset; 0 cuts straight over.
-    /// </summary>
+
+    /// <summary>Plays this animation. fadeTime &lt; 0 uses the asset's FadeTime; 0 cuts straight over.</summary>
     public OXKeyframeAnimationRuntime Play(BetterList<GameObject> objects, float fadeTime = -1f)
     {
-        var pp = objects.ToList();
-        if (pp == null || pp.Count == 0) return null;
-        var animator = OXKeyframeAnimator.GetOrAdd(pp[0]);
-        return animator.Play(this, pp, fadeTime);
+        var list = objects.ToList();
+        if (list == null || list.Count == 0) return null;
+        return OXKeyframeAnimator.GetOrAdd(list[0]).Play(this, list, fadeTime);
     }
 }
 
@@ -91,24 +102,19 @@ public enum OXKeyframeInterpolationMode
 [Serializable]
 public class OXKeyframeChannel
 {
-    /// <summary>Opt-in. When false, this keyframe contributes nothing to the channel's timeline.</summary>
+    /// <summary>Opt-in. When false, the keyframe contributes nothing to this channel's timeline.</summary>
     public bool Enabled = false;
 
     /// <summary>How the channel eases from its previous key into this one.</summary>
     public OXKeyframeInterpolationMode InterpMode = OXKeyframeInterpolationMode.Linear;
 
     /// <summary>
-    /// When true, this key's value is applied on top of the previous key's resulting value on this channel
-    /// (position adds, scale multiplies, rotation composes) instead of on top of the starting pose.
-    /// Repeated keys with Y = 5 therefore keep climbing. The first key of a channel has no previous key,
-    /// so it behaves the same either way.
+    /// Apply this key's value on top of the previous key's result (position adds, scale multiplies, rotation composes)
+    /// instead of on top of the starting pose. The first key of a channel behaves the same either way.
     /// </summary>
     public bool RelativeToSelf = false;
 
-    // Easing parameters. Each group is only read by the modes listed, and the defaults match
-    // the defaults in Ease, so leaving them alone gives the same result as before.
-    // They are kept separate (rather than one shared "power") so switching modes never loses a value.
-
+    // Separate parameter groups so switching modes never loses a value.
     [Tooltip("In, Out, InAndOut")]
     public float Power = 3f;
 
@@ -128,10 +134,7 @@ public class OXKeyframeChannel
     [Tooltip("Overshoot (shouldn't be less than 2)")]
     public float OvershootPower = 2f;
 
-    // Per-axis opt-out. Stored inverted (Disable*, default false) so every existing asset and clipboard entry
-    // keeps animating all three axes with no migration. A disabled axis is left completely untouched by
-    // this channel: it contributes no keys to that axis and the object keeps whatever value that axis has.
-    // Position/Scale: X, Y, Z. Rotation: the Euler X, Y, Z components of the key's rotation.
+    // Stored inverted so existing assets keep animating all axes. A disabled axis is left untouched.
     [Tooltip("Stop this channel from animating the X axis")]
     public bool DisableX = false;
     [Tooltip("Stop this channel from animating the Y axis")]
@@ -160,11 +163,8 @@ public class OXKeyframeChannel
         }
     }
 
-    /// <summary>True when at least one axis is still animated (Enabled is checked separately).</summary>
-    public bool AnyAxisEnabled { get { return !DisableX || !DisableY || !DisableZ; } }
-
-    /// <summary>True when every axis is animated, i.e. no masking is in effect.</summary>
-    public bool AllAxesEnabled { get { return !DisableX && !DisableY && !DisableZ; } }
+    public bool AnyAxisEnabled => !DisableX || !DisableY || !DisableZ;
+    public bool AllAxesEnabled => !DisableX && !DisableY && !DisableZ;
 
     public OXKeyframeChannel() { }
 
@@ -174,7 +174,7 @@ public class OXKeyframeChannel
         InterpMode = mode;
     }
 
-    /// <summary>Applies this channel's easing (mode + its parameters) to a 0..1 progress value.</summary>
+    /// <summary>Applies this channel's easing to a 0..1 progress value.</summary>
     public float Evaluate(float x)
     {
         switch (InterpMode)
@@ -190,7 +190,7 @@ public class OXKeyframeChannel
             case OXKeyframeInterpolationMode.Bounce: return Ease.Bounce(x, Bounces, BouncePower);
             case OXKeyframeInterpolationMode.CircIn: return Ease.CircIn(x, CircPower);
             case OXKeyframeInterpolationMode.CircOut: return Ease.CircOut(x, CircPower);
-            default: return x; // Linear
+            default: return x;
         }
     }
 }
@@ -209,11 +209,7 @@ public class OXKeyframeObjectState
 
     public static implicit operator OXKeyframeObjectState((int, OXTransformWithScale) tuple)
     {
-        return new OXKeyframeObjectState
-        {
-            ObjectIndex = tuple.Item1,
-            Transform = tuple.Item2
-        };
+        return new OXKeyframeObjectState { ObjectIndex = tuple.Item1, Transform = tuple.Item2 };
     }
 }
 
@@ -222,17 +218,14 @@ public class OXKeyframe
 {
     public float Time;
 
-    /// <summary>
-    /// One settings object per channel, all opted out by default.
-    /// Each channel runs on its own timeline made of just the keyframes that enabled it.
-    /// </summary>
+    /// <summary>Per-channel settings, all opted out by default. Each channel runs on its own timeline of the keys that enabled it.</summary>
     public OXKeyframeChannel Position = new OXKeyframeChannel();
     public OXKeyframeChannel Rotation = new OXKeyframeChannel();
     public OXKeyframeChannel Scale = new OXKeyframeChannel();
 
     public List<OXKeyframeObjectState> Data = new List<OXKeyframeObjectState>();
 
-    /// <summary>Code convenience: enables every channel with the same interpolation mode. Returns this for chaining.</summary>
+    /// <summary>Enables every channel with the same interpolation mode. Returns this for chaining.</summary>
     public OXKeyframe EnableAll(OXKeyframeInterpolationMode mode = OXKeyframeInterpolationMode.Linear)
     {
         Position = new OXKeyframeChannel(true, mode);
@@ -243,19 +236,18 @@ public class OXKeyframe
 }
 
 #if UNITY_EDITOR
-// Append only: these are serialized as ints.
+// Append only: serialized as ints.
 public enum OXPreviewObjectKind
 {
     Empty, Cube, Sphere, Capsule, Cylinder, Plane, Quad, Prefab,
-    /// <summary>A SpriteRenderer showing the Sprite asset in OXPreviewObject.Sprite.</summary>
     Sprite,
-    // Built-in 2D shapes (generated, no asset needed). Keep Square2D first and Hexagon2D last.
+    // Generated 2D shapes. Keep Square2D first and Hexagon2D last.
     Square2D, Circle2D, Triangle2D, Capsule2D, Diamond2D, Hexagon2D,
 }
 
 /// <summary>
-/// One object in the editor preview scene. ObjectIndex is the index keyframes use in their Object States
-/// (-1 = scenery that is shown but never animated). Transform is the REST pose the animation is applied on top of.
+/// One object in the editor preview scene. ObjectIndex matches the keyframes' Object States (-1 = scenery, never animated).
+/// Transform is the rest pose the animation is applied on top of.
 /// </summary>
 [Serializable]
 public class OXPreviewObject
@@ -264,9 +256,8 @@ public class OXPreviewObject
     public string Name = "Object";
     public OXPreviewObjectKind Kind = OXPreviewObjectKind.Empty;
     public GameObject Prefab;
-    /// <summary>For Kind = Sprite: the sprite to show.</summary>
     public Sprite Sprite;
-    /// <summary>Tint for the 2D kinds (SpriteRenderer.color).</summary>
+    /// <summary>Tint for sprite kinds.</summary>
     public Color Color = Color.white;
     public Vector3 Position = Vector3.zero;
     public Quaternion Rotation = Quaternion.identity;
@@ -274,7 +265,7 @@ public class OXPreviewObject
 }
 #endif
 
-/// <summary>A named point in time. When playback reaches Time, the callback(s) registered under Name run.</summary>
+/// <summary>A named point in time; callbacks registered under Name run when playback reaches Time.</summary>
 [Serializable]
 public class OXEventKeyframe
 {
