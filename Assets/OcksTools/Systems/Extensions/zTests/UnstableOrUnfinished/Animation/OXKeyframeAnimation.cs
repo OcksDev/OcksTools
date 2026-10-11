@@ -15,8 +15,8 @@ public class OXKeyframeAnimation : ScriptableObject
     /// <summary>
     /// Repeat the animation forever once it reaches its last key/event (until Stop() is called).
     /// Each pass starts from the pose the objects had when Play() was called and re-fires the events.
-    /// If the animation ends on empty keyframe(s) (no channels enabled, or keys that just repeat the previous value),
-    /// the last one marks the loop length: empty keys are ignored, and the objects ease from the last real key to the
+    /// If the animation ends on empty keyframe(s) (no channels enabled), the last one marks the loop length:
+    /// empty keys are ignored, and the objects ease from the last real key to the
     /// first real key of the NEXT pass (using the first key's interpolation), so the return keeps the same rhythm as
     /// the rest of the animation. At the end of a pass the objects are only part-way back, and the next pass carries
     /// on from exactly that pose, so there is no pause and no snap.
@@ -30,6 +30,12 @@ public class OXKeyframeAnimation : ScriptableObject
     /// animation starts partway along that transition and ends on the last real keyframe as usual.
     /// </summary>
     public bool StartLast = false;
+    /// <summary>
+    /// Seconds to crossfade from the animation that is already playing on the same animator when this one starts.
+    /// The old animation keeps running while this one blends in over it, then it is stopped. 0 = no fade: the old
+    /// animation is stopped and reset immediately. Play(objects, fadeTime) can override this per call.
+    /// </summary>
+    public float FadeTime = 0f;
     public List<OXKeyframe> Keyframes = new List<OXKeyframe>();
     /// <summary>
     /// Named events fired during playback when their time is reached. Hook them up from code with
@@ -53,12 +59,16 @@ public class OXKeyframeAnimation : ScriptableObject
     {
         return Events.OrderBy(k => k.Time).ToList();
     }
-    public OXKeyframeAnimationRuntime Play(BetterList<GameObject> objects)
+    /// <summary>
+    /// Plays this animation. fadeTime: seconds to crossfade from the animation currently playing on the same
+    /// animator. A negative value (default) uses FadeTime from the asset; 0 cuts straight over.
+    /// </summary>
+    public OXKeyframeAnimationRuntime Play(BetterList<GameObject> objects, float fadeTime = -1f)
     {
         var pp = objects.ToList();
         if (pp == null || pp.Count == 0) return null;
         var animator = OXKeyframeAnimator.GetOrAdd(pp[0]);
-        return animator.Play(this, pp);
+        return animator.Play(this, pp, fadeTime);
     }
 }
 

@@ -37,6 +37,9 @@ public class OXKeyframeAnimationRuntime
         public readonly List<Key<Quaternion>> RotKeys = new List<Key<Quaternion>>();
         public readonly List<Key<float>>[] ScaleKeys = NewAxisTracks();
 
+        /// <summary>The object's pose when this animation began. A fade blends away from the outgoing animation's pose, which starts here.</summary>
+        public readonly OXTransformWithScale FadeFrom = new OXTransformWithScale();
+
         private static List<Key<float>>[] NewAxisTracks()
         {
             return new[] { new List<Key<float>>(), new List<Key<float>>(), new List<Key<float>>() };
@@ -51,6 +54,19 @@ public class OXKeyframeAnimationRuntime
     private Coroutine routine;
     private float totalDuration;
     private bool hasAnyTrack;
+
+    // ---- Fading (crossfade from the animation that was playing on the same animator) ----
+    // The outgoing animation keeps running (time, loops, events) but no longer writes to the objects: every frame this
+    // animation poses it, then blends its own pose over the top with a weight that rises 0 -> 1 over fadeDuration.
+    private OXKeyframeAnimationRuntime outgoing;
+    private float fadeStartTime;
+    private float fadeDuration;
+    private bool isFadingOut;      // a newer animation is blending over this one and does the posing
+    private float curTime;         // last animation time this runtime was ticked at (an outgoing animation is posed from it)
+    private bool curWrapped;
+
+    /// <summary>True while this animation is still blending in over the one it replaced.</summary>
+    public bool IsFading { get { return outgoing != null; } }
 
     // Events from the asset, snapshotted and sorted by time when this runtime was created.
     private readonly List<OXEventKeyframe> eventList = new List<OXEventKeyframe>();
@@ -82,9 +98,22 @@ public class OXKeyframeAnimationRuntime
     }
 
     public OXKeyframeAnimationRuntime(OXKeyframeAnimation asset, OXKeyframeAnimator animator, IList<GameObject> objects)
+        : this(asset, animator, objects, null, 0f) { }
+
+    /// <param name="outgoing">The animation currently playing that this one fades in over (null = no fade).</param>
+    /// <param name="fadeTime">Seconds the fade takes. Ignored when 0 or when there is no outgoing animation.</param>
+    public OXKeyframeAnimationRuntime(OXKeyframeAnimation asset, OXKeyframeAnimator animator, IList<GameObject> objects,
+        OXKeyframeAnimationRuntime outgoing, float fadeTime)
     {
         Asset = asset;
         this.animator = animator;
+        if (outgoing != null && fadeTime > 0.0001f)
+        {
+            this.outgoing = outgoing;
+            outgoing.isFadingOut = true;
+            fadeDuration = fadeTime;
+            fadeStartTime = Time.time;
+        }
         foreach (var go in objects)
             targets.Add(CreateTarget(go));
         BuildTracks();
@@ -100,10 +129,29 @@ public class OXKeyframeAnimationRuntime
             t.Original.Rotation = go.transform.localRotation;
             t.Original.Scale = go.transform.localScale;
 
+            CopyState(t.Original, t.FadeFrom);
+            // While fading, the object is mid-way through the outgoing animation, so "current" is not its rest pose.
+            // Take the rest pose from the outgoing animation for every channel/axis it controls.
+            if (outgoing != null) TakeRestFromOutgoing(t);
+
             if (Asset.OverrideData) ResetToIdentity(t.Start);
             else CopyState(t.Original, t.Start);
         }
         return t;
+    }
+
+    private void TakeRestFromOutgoing(Target t)
+    {
+        var p = t.Original.Position;
+        var s = t.Original.Scale;
+        for (int a = 0; a < 3; a++)
+        {
+            if (outgoing.TryGetRestPosition(t.Go, a, out float pv)) p[a] = pv;
+            if (outgoing.TryGetRestScale(t.Go, a, out float sv)) s[a] = sv;
+        }
+        t.Original.Position = p;
+        t.Original.Scale = s;
+        if (outgoing.TryGetRestRotation(t.Go, out Quaternion q)) t.Original.Rotation = q;
     }
 
     /// <summary>
@@ -117,7 +165,7 @@ public class OXKeyframeAnimationRuntime
         totalDuration = 0f;
         hasAnyTrack = false;
         float lastKeyTime = 0f;    // time of the last keyframe of any kind (empty ones included)
-        float lastUsedTime = -1f;  // time of the last real keyframe: one that changes a track's value (spacer/empty keys don't count)
+        float lastUsedTime = -1f;  // time of the last real keyframe: one with at least one channel (and axis) enabled for a valid object. Keys with nothing enabled are empty and don't count
 
         foreach (var kf in keyframes)
         {
@@ -133,7 +181,6 @@ public class OXKeyframeAnimationRuntime
                 if (d.Transform == null) continue;
 
                 bool used = false;
-                bool changed = false; // did this keyframe change any track's value (or start a track)?
                 if (kf.Position != null && kf.Position.Enabled)
                 {
                     var pos = d.Transform.Position;
@@ -144,7 +191,6 @@ public class OXKeyframeAnimationRuntime
                         float v = pos[a];
                         if (kf.Position.RelativeToSelf && track.Count > 0)
                             v = track[track.Count - 1].Value + v;
-                        if (track.Count == 0 || Mathf.Abs(v - track[track.Count - 1].Value) > 1e-5f) changed = true;
                         track.Add(new Key<float> { Time = kf.Time, Value = v, Channel = kf.Position });
                         used = true;
                     }
@@ -163,7 +209,6 @@ public class OXKeyframeAnimationRuntime
                     }
                     if (kf.Rotation.RelativeToSelf && t.RotKeys.Count > 0)
                         rot = t.RotKeys[t.RotKeys.Count - 1].Value * rot;
-                    if (t.RotKeys.Count == 0 || Quaternion.Angle(rot, t.RotKeys[t.RotKeys.Count - 1].Value) > 0.001f) changed = true;
                     t.RotKeys.Add(new Key<Quaternion> { Time = kf.Time, Value = rot, Channel = kf.Rotation });
                     used = true;
                 }
@@ -177,7 +222,6 @@ public class OXKeyframeAnimationRuntime
                         float v = scl[a];
                         if (kf.Scale.RelativeToSelf && track.Count > 0)
                             v *= track[track.Count - 1].Value;
-                        if (track.Count == 0 || Mathf.Abs(v - track[track.Count - 1].Value) > 1e-5f) changed = true;
                         track.Add(new Key<float> { Time = kf.Time, Value = v, Channel = kf.Scale });
                         used = true;
                     }
@@ -187,13 +231,14 @@ public class OXKeyframeAnimationRuntime
                 {
                     hasAnyTrack = true;
                     if (kf.Time > totalDuration) totalDuration = kf.Time;
-                    // A key that only repeats the previous value is a spacer, not a "real" key (see the loop seam below).
-                    if (changed && kf.Time > lastUsedTime) lastUsedTime = kf.Time;
+                    // Any enabled channel makes this a real key, even if it only holds the previous value (a deliberate hold).
+                    // Only keys with no channel enabled are empty spacers (see the loop seam below).
+                    if (kf.Time > lastUsedTime) lastUsedTime = kf.Time;
                 }
             }
         }
 
-        // Looping animation that ends on empty keyframe(s) (no channels, or keys that only repeat the previous value):
+        // Looping animation that ends on empty keyframe(s) (no channels enabled):
         // the last keyframe is where the loop closes. Empty keys are ignored, and the pose eases from the last REAL
         // key to the first real key, arriving exactly at the closing time, so there is no pause and no snap.
         // Start Last needs the same structure (even with no empty tail, or with Loop off) so the first pass can begin
@@ -253,7 +298,7 @@ public class OXKeyframeAnimationRuntime
     public void Sample(float t, bool wrapped = false)
     {
         if (!hasAnyTrack) return;
-        Apply(t, wrapped);
+        Apply(t, wrapped, 1f);
     }
 
     public void Play()
@@ -270,6 +315,13 @@ public class OXKeyframeAnimationRuntime
         routine = null;
         IsPlaying = false;
         if (animator.CurrentAnim == this) animator.CurrentAnim = null;
+        // Stopping mid-fade also stops the animation being faded out; the objects stay at the pose they are in.
+        if (outgoing != null)
+        {
+            var o = outgoing;
+            outgoing = null;
+            o.Stop();
+        }
     }
 
     /// <summary>
@@ -279,6 +331,7 @@ public class OXKeyframeAnimationRuntime
     /// </summary>
     public void Reset()
     {
+        if (outgoing != null) outgoing.Reset();
         foreach (var t in targets)
         {
             if (t.Go == null) continue;
@@ -299,8 +352,11 @@ public class OXKeyframeAnimationRuntime
     /// <summary>Stops playback, then restores the objects to their starting state.</summary>
     public void StopAndReset()
     {
+        // Reset the whole fade chain, oldest first, so every channel ends up at its rest pose.
+        var chain = new List<OXKeyframeAnimationRuntime>();
+        for (var r = this; r != null; r = r.outgoing) chain.Add(r);
         Stop();
-        Reset();
+        for (int i = chain.Count - 1; i >= 0; i--) chain[i].Reset();
     }
 
     private static void ResetToIdentity(OXTransformWithScale t)
@@ -402,8 +458,9 @@ public class OXKeyframeAnimationRuntime
     /// Evaluates every channel track at animation time t and writes it to the objects.
     /// wrapped = this is a repeat pass of a loop, or the first pass with Start Last. It only matters for tracks with a
     /// closing key, which start the pass part-way along the return from the last real key so there is no snap.
+    /// weight &lt; 1 blends the result over whatever the objects currently show (used while fading in).
     /// </summary>
-    private void Apply(float t, bool wrapped)
+    private void Apply(float t, bool wrapped, float weight)
     {
         foreach (var tar in targets)
         {
@@ -416,22 +473,183 @@ public class OXKeyframeAnimationRuntime
                 var p = tr.localPosition;
                 for (int a = 0; a < 3; a++)
                     if (tar.PosKeys[a].Count > 0)
-                        p[a] = tar.Start.Position[a] + EvalFloat(tar.PosKeys[a], t, 0f, wrapped);
+                        p[a] = BlendFloat(p[a], tar.Start.Position[a] + EvalFloat(tar.PosKeys[a], t, 0f, wrapped), weight);
                 tr.localPosition = p;
             }
 
             if (tar.RotKeys.Count > 0)
-                tr.localRotation = tar.Start.Rotation * EvalRotation(tar.RotKeys, t, wrapped);
+                tr.localRotation = BlendRotation(tr.localRotation, tar.Start.Rotation * EvalRotation(tar.RotKeys, t, wrapped), weight);
 
             if (tar.ScaleKeys[0].Count > 0 || tar.ScaleKeys[1].Count > 0 || tar.ScaleKeys[2].Count > 0)
             {
                 var s = tr.localScale;
                 for (int a = 0; a < 3; a++)
                     if (tar.ScaleKeys[a].Count > 0)
-                        s[a] = EvalFloat(tar.ScaleKeys[a], t, 1f, wrapped) * tar.Start.Scale[a];
+                        s[a] = BlendFloat(s[a], EvalFloat(tar.ScaleKeys[a], t, 1f, wrapped) * tar.Start.Scale[a], weight);
                 tr.localScale = s;
             }
         }
+    }
+
+    private static float BlendFloat(float from, float to, float weight)
+    {
+        return weight >= 0.9999f ? to : Mathf.LerpUnclamped(from, to, weight);
+    }
+
+    private static Quaternion BlendRotation(Quaternion from, Quaternion to, float weight)
+    {
+        return weight >= 0.9999f ? to : Quaternion.Slerp(from, to, weight);
+    }
+
+    /// <summary>Called every frame instead of Apply. An outgoing animation only records its time: the animation fading in poses it.</summary>
+    private void Tick(float t, bool wrapped)
+    {
+        curTime = t;
+        curWrapped = wrapped;
+        if (isFadingOut) return;
+        if (hasAnyTrack || outgoing != null) ApplyBlended(t, wrapped);
+    }
+
+    /// <summary>
+    /// Poses the objects for this animation, blending over the outgoing animation while a fade is running.
+    /// Order each frame: put the channels this animation controls back to where they were when it began, let the
+    /// outgoing animation pose them (it may itself still be fading), ease the channels only the outgoing animation
+    /// controls back to their rest pose, then blend this animation's pose over the top.
+    /// </summary>
+    private void ApplyBlended(float t, bool wrapped)
+    {
+        float w = 1f;
+        if (outgoing != null)
+        {
+            w = FadeWeight();
+            if (w >= 1f)
+            {
+                ReturnUntouchedToRest(1f); // the outgoing animation is about to stop: leave its exclusive channels at rest
+                EndFade();
+            }
+            else
+            {
+                RestoreFadeFrom();
+                outgoing.ApplyBlended(outgoing.curTime, outgoing.curWrapped);
+                w = w * w * (3f - 2f * w); // smoothstep, so the blend eases in and out
+                ReturnUntouchedToRest(w);
+            }
+        }
+        Apply(t, wrapped, w);
+    }
+
+    private float FadeWeight()
+    {
+        if (outgoing == null || fadeDuration <= 0.0001f) return 1f;
+        return Mathf.Clamp01((Time.time - fadeStartTime) / fadeDuration);
+    }
+
+    /// <summary>The fade is over: the outgoing animation is stopped (not reset) and this one owns the objects.</summary>
+    private void EndFade()
+    {
+        var o = outgoing;
+        outgoing = null;
+        if (o != null) o.Stop();
+    }
+
+    private static readonly HashSet<GameObject> fadeScratch = new HashSet<GameObject>();
+
+    /// <summary>
+    /// Channels/axes (and whole objects) that the outgoing animation controls but this one has no keys for: this
+    /// animation does not drive them, so they ease back to their rest pose over the fade, exactly where a plain
+    /// Play() (stop and reset the old animation) would have put them. Called after the outgoing animation has posed
+    /// the objects, so "current" is its pose; at weight 1 they land on rest.
+    /// </summary>
+    private void ReturnUntouchedToRest(float weight)
+    {
+        if (outgoing == null) return;
+        fadeScratch.Clear();
+        for (var r = outgoing; r != null; r = r.outgoing)
+            foreach (var ot in r.targets)
+                if (ot.Go != null) fadeScratch.Add(ot.Go);
+
+        foreach (var go in fadeScratch)
+        {
+            var mine = FindTarget(go); // null when this animation doesn't use the object at all
+            var tr = go.transform;
+
+            var p = tr.localPosition;
+            var s = tr.localScale;
+            bool pChanged = false, sChanged = false;
+            for (int a = 0; a < 3; a++)
+            {
+                if ((mine == null || mine.PosKeys[a].Count == 0) && outgoing.TryGetRestPosition(go, a, out float pv))
+                {
+                    p[a] = BlendFloat(p[a], pv, weight);
+                    pChanged = true;
+                }
+                if ((mine == null || mine.ScaleKeys[a].Count == 0) && outgoing.TryGetRestScale(go, a, out float sv))
+                {
+                    s[a] = BlendFloat(s[a], sv, weight);
+                    sChanged = true;
+                }
+            }
+            if (pChanged) tr.localPosition = p;
+            if (sChanged) tr.localScale = s;
+            if ((mine == null || mine.RotKeys.Count == 0) && outgoing.TryGetRestRotation(go, out Quaternion q))
+                tr.localRotation = BlendRotation(tr.localRotation, q, weight);
+        }
+    }
+
+    /// <summary>Puts the channels this animation drives back to their pose at the start of the fade, so the outgoing animation poses from a clean slate.</summary>
+    private void RestoreFadeFrom()
+    {
+        foreach (var tar in targets)
+        {
+            if (tar.Go == null) continue;
+            var tr = tar.Go.transform;
+            if (tar.PosKeys[0].Count > 0 || tar.PosKeys[1].Count > 0 || tar.PosKeys[2].Count > 0)
+            {
+                var p = tr.localPosition;
+                for (int a = 0; a < 3; a++)
+                    if (tar.PosKeys[a].Count > 0) p[a] = tar.FadeFrom.Position[a];
+                tr.localPosition = p;
+            }
+            if (tar.RotKeys.Count > 0) tr.localRotation = tar.FadeFrom.Rotation;
+            if (tar.ScaleKeys[0].Count > 0 || tar.ScaleKeys[1].Count > 0 || tar.ScaleKeys[2].Count > 0)
+            {
+                var s = tr.localScale;
+                for (int a = 0; a < 3; a++)
+                    if (tar.ScaleKeys[a].Count > 0) s[a] = tar.FadeFrom.Scale[a];
+                tr.localScale = s;
+            }
+        }
+    }
+
+    private Target FindTarget(GameObject go)
+    {
+        foreach (var t in targets) if (t.Go == go) return t;
+        return null;
+    }
+
+    // Rest pose of a channel/axis as this animation (or, failing that, the animation it replaced) knows it.
+    private bool TryGetRestPosition(GameObject go, int axis, out float v)
+    {
+        var t = FindTarget(go);
+        if (t != null && t.PosKeys[axis].Count > 0) { v = t.Original.Position[axis]; return true; }
+        if (outgoing != null) return outgoing.TryGetRestPosition(go, axis, out v);
+        v = 0f; return false;
+    }
+
+    private bool TryGetRestScale(GameObject go, int axis, out float v)
+    {
+        var t = FindTarget(go);
+        if (t != null && t.ScaleKeys[axis].Count > 0) { v = t.Original.Scale[axis]; return true; }
+        if (outgoing != null) return outgoing.TryGetRestScale(go, axis, out v);
+        v = 0f; return false;
+    }
+
+    private bool TryGetRestRotation(GameObject go, out Quaternion q)
+    {
+        var t = FindTarget(go);
+        if (t != null && t.RotKeys.Count > 0) { q = t.Original.Rotation; return true; }
+        if (outgoing != null) return outgoing.TryGetRestRotation(go, out q);
+        q = Quaternion.identity; return false;
     }
 
     /// <summary>
@@ -457,6 +675,13 @@ public class OXKeyframeAnimationRuntime
         // Nothing opted into any channel and no events, so there is nothing to play.
         if (!hasAnyTrack && !hasEvents && totalDuration <= 0f)
         {
+            // Nothing to fade in: behave like a plain Play() and put whatever was playing back at rest.
+            if (outgoing != null)
+            {
+                var o = outgoing;
+                outgoing = null;
+                o.StopAndReset();
+            }
             Stop();
             yield break;
         }
@@ -469,11 +694,12 @@ public class OXKeyframeAnimationRuntime
         bool loop = Asset.Loop && totalDuration > 0.0001f;
 
         int pass = 0;
+        bool wrapped = false;
         do
         {
             nextEvent = 0; // every pass re-fires the events
             // Start Last: even the first pass begins part-way along the return from the last real key.
-            bool wrapped = pass > 0 || Asset.StartLast;
+            wrapped = pass > 0 || Asset.StartLast;
 
             if (totalDuration > 0f)
             {
@@ -482,13 +708,13 @@ public class OXKeyframeAnimationRuntime
                 yield return OXLerp.Frame.Linear((float x) =>
                 {
                     float t = x * duration;
-                    if (hasAnyTrack) Apply(t, wrapped);
+                    Tick(t, wrapped);
                     FireEventsUpTo(t);
                 }, duration);
             }
 
             // Make sure we land exactly on the final values, and nothing is skipped by a long frame.
-            if (hasAnyTrack) Apply(totalDuration, wrapped);
+            Tick(totalDuration, wrapped);
             FireEventsUpTo(float.PositiveInfinity);
 
             // Looping only ends through Stop(); always give a frame back before starting the next pass.
@@ -496,10 +722,18 @@ public class OXKeyframeAnimationRuntime
             pass++;
         } while (loop);
 
+        // Keep blending until the fade is over, even when this animation is shorter than the fade.
+        while (outgoing != null)
+        {
+            yield return null;
+            Tick(totalDuration, wrapped);
+        }
+
         // Finished naturally.
         routine = null;
         IsPlaying = false;
-        if (Asset.ResetAfterFinish) Reset();
+        // An animation that was faded out leaves the objects to the one that replaced it.
+        if (Asset.ResetAfterFinish && !isFadingOut) Reset();
         if (animator.CurrentAnim == this) animator.CurrentAnim = null;
     }
 }

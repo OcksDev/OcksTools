@@ -15,6 +15,7 @@ MonoBehaviour:
   ResetAfterFinish: 1
   OverrideData: 0
   Loop: 1
+  StartLast: 0
   Keyframes:
   - Time: 1
     Position:
@@ -163,9 +164,9 @@ MonoBehaviour:
         Position: {x: 0, y: 0, z: 0}
         Rotation: {x: 0, y: 0, z: 0, w: 1}
         Scale: {x: 1, y: 1, z: 1}
-  - Time: 2.3500001
+  - Time: 2.2
     Position:
-      Enabled: 0
+      Enabled: 1
       InterpMode: 0
       RelativeToSelf: 0
       Power: 3
@@ -179,7 +180,7 @@ MonoBehaviour:
       DisableY: 0
       DisableZ: 0
     Rotation:
-      Enabled: 0
+      Enabled: 1
       InterpMode: 0
       RelativeToSelf: 0
       Power: 3
@@ -193,7 +194,7 @@ MonoBehaviour:
       DisableY: 0
       DisableZ: 0
     Scale:
-      Enabled: 0
+      Enabled: 1
       InterpMode: 0
       RelativeToSelf: 0
       Power: 3
@@ -220,6 +221,8 @@ MonoBehaviour:
     Name: Agent
     Kind: 7
     Prefab: {fileID: 2744004212875093652, guid: 9a05e99d01807e64eb95263b0497d018, type: 3}
+    Sprite: {fileID: 0}
+    Color: {r: 1, g: 1, b: 1, a: 1}
     Position: {x: 0, y: 0, z: 0}
     Rotation: {x: 0, y: 0, z: 0, w: 1}
     Scale: {x: 1, y: 1, z: 1}

@@ -15,11 +15,25 @@ public class OXKeyframeAnimator : MonoBehaviour
         return a;
     }
 
-    public OXKeyframeAnimationRuntime Play(OXKeyframeAnimation asset, IList<GameObject> objects)
+    /// <summary>
+    /// Plays an animation on these objects.
+    /// fadeTime: seconds to crossfade from the animation that is currently playing on this animator.
+    /// Pass a negative value (the default) to use the asset's own FadeTime, or 0 to cut straight over
+    /// (the old animation is stopped and its objects reset to rest first).
+    /// While fading, the old animation keeps running underneath and is stopped when the fade ends.
+    /// </summary>
+    public OXKeyframeAnimationRuntime Play(OXKeyframeAnimation asset, IList<GameObject> objects, float fadeTime = -1f)
     {
-        if (CurrentAnim != null) CurrentAnim.StopAndReset();
+        if (fadeTime < 0f) fadeTime = asset != null ? asset.FadeTime : 0f;
 
-        var player = new OXKeyframeAnimationRuntime(asset, this, objects);
+        OXKeyframeAnimationRuntime outgoing = null;
+        if (CurrentAnim != null)
+        {
+            if (fadeTime > 0.0001f) outgoing = CurrentAnim; // blended away from, then stopped by the new runtime
+            else CurrentAnim.StopAndReset();
+        }
+
+        var player = new OXKeyframeAnimationRuntime(asset, this, objects, outgoing, fadeTime);
         CurrentAnim = player;
         LastAnim = player;
         player.Play();

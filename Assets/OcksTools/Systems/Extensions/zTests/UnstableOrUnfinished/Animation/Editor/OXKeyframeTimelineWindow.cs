@@ -1228,6 +1228,9 @@ public class OXKeyframeTimelineWindow : EditorWindow
             GUILayout.FlexibleSpace();
 
             EditorGUI.BeginChangeCheck();
+            GUILayout.Label(new GUIContent("Fade", "Seconds to crossfade from the animation already playing on the same animator when this one starts (0 = cut straight over)."),
+                EditorStyles.miniLabel, GUILayout.Width(28));
+            float fade = Mathf.Max(0f, EditorGUILayout.FloatField(asset.FadeTime, EditorStyles.toolbarTextField, GUILayout.Width(40)));
             bool loop = GUILayout.Toggle(asset.Loop, new GUIContent("Loop", "Repeat the animation until it is stopped"), EditorStyles.toolbarButton);
             bool startLast = GUILayout.Toggle(asset.StartLast,
                 new GUIContent("Start Last", "Start as if already transitioning from the last real keyframe toward the first (empty keyframes are ignored), instead of easing out of the current pose."),
@@ -1235,7 +1238,7 @@ public class OXKeyframeTimelineWindow : EditorWindow
             bool reset = GUILayout.Toggle(asset.ResetAfterFinish, "Reset After Finish", EditorStyles.toolbarButton);
             bool over = GUILayout.Toggle(asset.OverrideData, "Override Data", EditorStyles.toolbarButton);
             if (EditorGUI.EndChangeCheck())
-                Edit("Change Animation Settings", () => { asset.Loop = loop; asset.StartLast = startLast; asset.ResetAfterFinish = reset; asset.OverrideData = over; });
+                Edit("Change Animation Settings", () => { asset.FadeTime = fade; asset.Loop = loop; asset.StartLast = startLast; asset.ResetAfterFinish = reset; asset.OverrideData = over; });
         }
         else
         {
