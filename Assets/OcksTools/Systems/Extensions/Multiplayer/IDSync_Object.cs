@@ -1,11 +1,6 @@
 #if OXTLS_MULTIPLAYER
-using Unity.Collections;
-using Unity.Netcode;
-
-public class IDSync_Object : NetworkBehaviour
+public class IDSync_Object : IDSync
 {
-    [ShowFixedBetter]
-    public FixedString64Bytes MyID = "-";
     private void Start()
     {
         if (IsHost)

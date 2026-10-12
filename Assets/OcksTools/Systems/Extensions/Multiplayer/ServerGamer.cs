@@ -49,7 +49,7 @@ public static class Server
     public static void ObjectIDFunction(IDSync_Object o, FixedString64Bytes ID)
     {
         SpawnSystem.Spawn(new SpawnData("").ID(ID.ToString()).DontSpawn(o.gameObject));
-        o.MyID = ID;
+        o.AssignMyID(ID);
         Console.Log($"Hit: {ID}");
     }
 
@@ -219,21 +219,21 @@ public class ServerGamer : NetworkBehaviour
     }
 
 
-    public void IDSync(FixedString64Bytes ID, ulong bad_id)
+    public void IDSync(ulong bad_id)
     {
-        _IDSyncServerRpc(_Handover, ID, bad_id);
+        _IDSyncServerRpc(_Handover, bad_id);
     }
     [Rpc(SendTo.Everyone, InvokePermission = RpcInvokePermission.Everyone)]
-    public void _IDSyncServerRpc(OXNetworkRpcData id, FixedString64Bytes ID, ulong bad_id)
+    public void _IDSyncServerRpc(OXNetworkRpcData id, ulong bad_id)
     {
-        _IDSyncClientRpc(id, ID, bad_id);
+        _IDSyncClientRpc(id, bad_id);
     }
     //chat related method
     [ClientRpc]
-    public void _IDSyncClientRpc(OXNetworkRpcData id, FixedString64Bytes ID, ulong bad_id)
+    public void _IDSyncClientRpc(OXNetworkRpcData id, ulong bad_id)
     {
         if (id.ClientID == ClientID) return;
-        StartCoroutine(AddToNerds(ID, bad_id));
+        StartCoroutine(AddToNerds(id.ClientID, bad_id));
     }
 
     public IEnumerator AddToNerds(FixedString64Bytes ID, ulong bad_id)
@@ -245,7 +245,7 @@ public class ServerGamer : NetworkBehaviour
         if (Server.BADAllClients.ContainsKey(bad_id))
         {
             Server.AllClients.Add(ID, Server.BADAllClients[bad_id]);
-            Server.BADAllClients[bad_id].MyID = ID;
+            Server.BADAllClients[bad_id].AssignMyID(ID);
             LockBacklog(ID);
             Server.ClientIDSynced.Invoke(ID);
             yield break;
@@ -258,7 +258,7 @@ public class ServerGamer : NetworkBehaviour
         if (Server.BADAllClients.ContainsKey(bad_id))
         {
             Server.AllClients.Add(ID, Server.BADAllClients[bad_id]);
-            Server.BADAllClients[bad_id].MyID = ID;
+            Server.BADAllClients[bad_id].AssignMyID(ID);
             LockBacklog(ID);
             Server.ClientIDSynced.Invoke(ID);
             yield break;

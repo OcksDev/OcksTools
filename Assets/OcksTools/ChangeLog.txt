@@ -21,6 +21,7 @@
     - On Other Client Connect/Disconnect
     - On start as host
   - Began work for base entity integration with multiplayer
+  - Fixed bug with AllClients list retaining disconnected players who were tracked with IDSync
 - New Keyframe Animator
   - Custom transform/event animator using OcksTools interpolations and other things.
   - Mostly slopcoded this one, it does work tho.

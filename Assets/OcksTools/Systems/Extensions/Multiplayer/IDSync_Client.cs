@@ -1,13 +1,10 @@
 #if OXTLS_MULTIPLAYER
 using System.Collections;
-using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
-public class IDSync_Client : NetworkBehaviour
+public class IDSync_Client : IDSync
 {
-    [ShowFixedBetter]
-    public FixedString64Bytes MyID = "-";
     private void Awake()
     {
         StartCoroutine(waitforserver());
@@ -20,7 +17,7 @@ public class IDSync_Client : NetworkBehaviour
         if (IsLocalPlayer)
         {
             Server.AllClients.Add(Server.Instance.ClientID, this);
-            Server.Send().IDSync(Server.Instance.ClientID, OwnerClientId);
+            Server.Send().IDSync(OwnerClientId);
             MyID = Server.Instance.ClientID;
         }
     }
@@ -28,6 +25,7 @@ public class IDSync_Client : NetworkBehaviour
     public override void OnDestroy()
     {
         Server.BADAllClients.Remove(OwnerClientId);
+        Server.AllClients.Remove(MyID);
         if (NetworkManager.Singleton != null)
             NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
         base.OnDestroy();
@@ -36,7 +34,7 @@ public class IDSync_Client : NetworkBehaviour
     private void OnClientConnected(ulong XXXXXclientIdXXXX)
     {
         if (!IsLocalPlayer) return;
-        Server.Send().IDSync(Server.Instance.ClientID, OwnerClientId);
+        Server.Send().IDSync(OwnerClientId);
     }
 }
 #endif

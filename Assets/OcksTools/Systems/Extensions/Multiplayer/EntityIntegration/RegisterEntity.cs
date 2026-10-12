@@ -1,5 +1,6 @@
 #if OXTLS_MULTIPLAYER
 using NaughtyAttributes;
+using System.Collections;
 using UnityEngine;
 
 public class RegisterEntity : MonoBehaviour
@@ -7,10 +8,13 @@ public class RegisterEntity : MonoBehaviour
     public bool IsPlayer;
     [Required]
     public EntityObject Object;
+    [Required]
+    public IDSync Sync;
 
-    void Awake()
+    IEnumerator Start()
     {
-        string id = Object.GetOXID();
+        if (Sync.MyID == "-") yield return new WaitUntil(() => Sync.MyID != "-");
+        string id = Sync.MyID.ToString();
         Tags.From("Net").Add(Object, id);
         Object.Entity.OnKillEvent.Append(9999, "Dereg", (x, y) =>
         {
