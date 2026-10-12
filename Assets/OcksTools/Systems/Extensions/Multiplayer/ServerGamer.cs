@@ -212,7 +212,7 @@ public class ServerGamer : NetworkBehaviour
                     FlushBacklog(data);
                     break;
                 default:
-                    Server.MessageEvent.Invoke(id, type, data);
+                    Server.MessageEvent.InvokeWithHitCheck(id, type, data, true);
                     break;
             }
         });

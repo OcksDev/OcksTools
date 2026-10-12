@@ -20,6 +20,7 @@
     - On Self Connect/Disconnect/FailedConnection
     - On Other Client Connect/Disconnect
     - On start as host
+  - Began work for base entity integration with multiplayer
 - New Keyframe Animator
   - Custom transform/event animator using OcksTools interpolations and other things.
   - Mostly slopcoded this one, it does work tho.
