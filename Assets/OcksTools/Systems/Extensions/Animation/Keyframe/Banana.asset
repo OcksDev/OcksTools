@@ -16,6 +16,7 @@ MonoBehaviour:
   OverrideData: 0
   Loop: 1
   StartLast: 0
+  FadeTime: 0
   Keyframes:
   - Time: 1
     Position:
@@ -64,8 +65,10 @@ MonoBehaviour:
     - ObjectIndex: 0
       Transform:
         Position: {x: 0, y: 2, z: 0}
-        Rotation: {x: 0, y: 0, z: 0, w: 1}
+        Rotation: {x: 0, y: -0.021204162, z: 0, w: 0.9997752}
         Scale: {x: 3.62, y: 1.55, z: 1}
+      RotationEuler: {x: -0, y: -2.43, z: 0}
+      HasRotationEuler: 1
   - Time: 1.4
     Position:
       Enabled: 1
@@ -115,6 +118,8 @@ MonoBehaviour:
         Position: {x: 0, y: 0, z: 0}
         Rotation: {x: 0, y: 0, z: 0, w: 1}
         Scale: {x: 1, y: 1, z: 1}
+      RotationEuler: {x: 0, y: 0, z: 0}
+      HasRotationEuler: 0
   - Time: 1.5999999
     Position:
       Enabled: 0
@@ -162,9 +167,11 @@ MonoBehaviour:
     - ObjectIndex: 0
       Transform:
         Position: {x: 0, y: 0, z: 0}
-        Rotation: {x: 0, y: 0, z: 0, w: 1}
+        Rotation: {x: 0, y: 0, z: -0.11094838, w: 0.99382615}
         Scale: {x: 1, y: 1, z: 1}
-  - Time: 2.2
+      RotationEuler: {x: -0, y: 0, z: 707.26}
+      HasRotationEuler: 1
+  - Time: 2
     Position:
       Enabled: 1
       InterpMode: 0
@@ -213,6 +220,8 @@ MonoBehaviour:
         Position: {x: 0, y: 0, z: 0}
         Rotation: {x: 0, y: 0, z: 0, w: 1}
         Scale: {x: 1, y: 1, z: 1}
+      RotationEuler: {x: 0, y: 0, z: 0}
+      HasRotationEuler: 0
   Events:
   - Time: 1
     Name: Peak

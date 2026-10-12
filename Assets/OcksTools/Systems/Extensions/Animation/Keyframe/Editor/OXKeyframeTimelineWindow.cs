@@ -495,6 +495,8 @@ public class OXKeyframeTimelineWindow : EditorWindow
                 Rotation = IsZeroQuat(bestState.Transform.Rotation) ? Quaternion.identity : bestState.Transform.Rotation,
                 Scale = bestState.Transform.Scale
             };
+            state.RotationEuler = bestState.RotationEuler;
+            state.HasRotationEuler = bestState.HasRotationEuler;
         }
         return state;
     }
@@ -700,7 +702,12 @@ public class OXKeyframeTimelineWindow : EditorWindow
                 }
                 if (td.Transform == null) td.Transform = new OXTransformWithScale { Rotation = Quaternion.identity, Scale = Vector3.one };
                 if (LaneHas(src, 1)) td.Transform.Position = sd.Transform.Position;
-                if (LaneHas(src, 2)) td.Transform.Rotation = sd.Transform.Rotation;
+                if (LaneHas(src, 2))
+                {
+                    td.Transform.Rotation = sd.Transform.Rotation;
+                    td.RotationEuler = sd.RotationEuler;
+                    td.HasRotationEuler = sd.HasRotationEuler;
+                }
                 if (LaneHas(src, 3)) td.Transform.Scale = sd.Transform.Scale;
             }
         }
@@ -2047,8 +2054,16 @@ public class OXKeyframeTimelineWindow : EditorWindow
             {
                 EditorGUI.BeginChangeCheck();
                 Quaternion q = IsZeroQuat(tr.Rotation) ? Quaternion.identity : tr.Rotation;
-                Vector3 eul = Vector3Row("Rotation", q.eulerAngles, LaneColors[2], kf.Rotation);
-                if (EditorGUI.EndChangeCheck()) Edit("Change Rotation", () => tr.Rotation = Quaternion.Euler(eul));
+                // Show the stored unwrapped angles (720 stays 720); legacy keys fall back to the quaternion's Euler angles.
+                Vector3 shown = d.HasRotationEuler ? d.RotationEuler : q.eulerAngles;
+                Vector3 eul = Vector3Row("Rotation", shown, LaneColors[2], kf.Rotation);
+                if (EditorGUI.EndChangeCheck())
+                    Edit("Change Rotation", () =>
+                    {
+                        d.RotationEuler = eul;
+                        d.HasRotationEuler = true;
+                        tr.Rotation = Quaternion.Euler(eul);
+                    });
             }
 
             if (kf.Scale.Enabled)
@@ -2081,6 +2096,8 @@ public class OXKeyframeTimelineWindow : EditorWindow
                 var copy = new OXKeyframeObjectState
                 {
                     ObjectIndex = NextObjectIndex(kf),
+                    RotationEuler = from.RotationEuler,
+                    HasRotationEuler = from.HasRotationEuler,
                     Transform = new OXTransformWithScale
                     {
                         Position = from.Transform.Position,

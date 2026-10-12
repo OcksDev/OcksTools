@@ -207,6 +207,14 @@ public class OXKeyframeObjectState
         Scale = Vector3.one
     };
 
+    /// <summary>
+    /// Unwrapped rotation in Euler degrees (e.g. 720 = two full spins). A quaternion can't hold more than one turn, so the
+    /// rotation channel reads this instead when HasRotationEuler is set. Transform.Rotation is kept in sync as Quaternion.Euler(RotationEuler).
+    /// Old assets leave this off and keep the shortest-path quaternion behavior.
+    /// </summary>
+    public Vector3 RotationEuler;
+    public bool HasRotationEuler;
+
     public static implicit operator OXKeyframeObjectState((int, OXTransformWithScale) tuple)
     {
         return new OXKeyframeObjectState { ObjectIndex = tuple.Item1, Transform = tuple.Item2 };

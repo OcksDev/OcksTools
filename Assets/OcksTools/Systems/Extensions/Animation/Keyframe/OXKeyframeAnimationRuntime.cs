@@ -6,6 +6,29 @@ public class OXKeyframeAnimationRuntime
 {
     private const float Eps = 0.0001f;
 
+    /// <summary>
+    /// A rotation key value. Euler keys (IsEuler) carry unwrapped degrees, so 0 -> 360 spins a full turn and 0 -> -720 spins
+    /// twice the other way. Legacy quaternion keys keep slerping the short way. Q is always valid (Euler keys store Quaternion.Euler(E)).
+    /// </summary>
+    private struct RotValue
+    {
+        public Quaternion Q;
+        public Vector3 E;
+        public bool IsEuler;
+
+        public static RotValue FromEuler(Vector3 e) => new RotValue { Q = Quaternion.Euler(e), E = e, IsEuler = true };
+        public static RotValue FromQuat(Quaternion q) => new RotValue { Q = q, E = Vector3.zero, IsEuler = false };
+        /// <summary>The pose before the first key. Counts as Euler zero so the first key can spin from rest.</summary>
+        public static RotValue Identity => FromEuler(Vector3.zero);
+
+        /// <summary>Euler to Euler goes straight through the unwrapped angles; anything else slerps the short way.</summary>
+        public static Quaternion Lerp(RotValue a, RotValue b, float x)
+        {
+            if (a.IsEuler && b.IsEuler) return Quaternion.Euler(Vector3.LerpUnclamped(a.E, b.E, x));
+            return a.Q.SlerpU(b.Q, x);
+        }
+    }
+
     private struct Key<T>
     {
         public float Time;
@@ -71,7 +94,7 @@ public class OXKeyframeAnimationRuntime
 
         // One timeline per channel; position and scale are split per axis. Null/zero mask = channel/axis untouched.
         public Track<float>[] Pos;
-        public Track<Quaternion> Rot;
+        public Track<RotValue> Rot;
         public Track<float>[] Scale;
 
         /// <summary>Bit per axis (x=1, y=2, z=4) that has keys.</summary>
@@ -272,7 +295,7 @@ public class OXKeyframeAnimationRuntime
                         used |= AddAxisKeys(ref t.Pos, kf, kf.Position, d.Transform.Position, false);
                     if (kf.Rotation != null && kf.Rotation.Enabled && kf.Rotation.AnyAxisEnabled)
                     {
-                        AddRotationKey(t, kf, d.Transform.Rotation);
+                        AddRotationKey(t, kf, d);
                         used = true;
                     }
                     if (kf.Scale != null && kf.Scale.Enabled)
@@ -340,23 +363,43 @@ public class OXKeyframeAnimationRuntime
         return used;
     }
 
-    private static void AddRotationKey(Target t, OXKeyframe kf, Quaternion value)
+    private static void AddRotationKey(Target t, OXKeyframe kf, OXKeyframeObjectState d)
     {
         var ch = kf.Rotation;
-        var rot = IsZeroQuat(value) ? Quaternion.identity : value;
-        if (!ch.AllAxesEnabled)
+        RotValue v;
+        if (d.HasRotationEuler)
         {
-            // Disabled Euler axes contribute no rotation.
-            var e = rot.eulerAngles;
+            // Unwrapped degrees; disabled axes contribute no rotation.
+            var e = d.RotationEuler;
             if (!ch.AxisEnabled(0)) e.x = 0f;
             if (!ch.AxisEnabled(1)) e.y = 0f;
             if (!ch.AxisEnabled(2)) e.z = 0f;
-            rot = Quaternion.Euler(e);
+            v = RotValue.FromEuler(e);
         }
-        var track = t.Rot ??= new Track<Quaternion>();
+        else
+        {
+            var rot = IsZeroQuat(d.Transform.Rotation) ? Quaternion.identity : d.Transform.Rotation;
+            if (!ch.AllAxesEnabled)
+            {
+                // Disabled Euler axes contribute no rotation.
+                var e = rot.eulerAngles;
+                if (!ch.AxisEnabled(0)) e.x = 0f;
+                if (!ch.AxisEnabled(1)) e.y = 0f;
+                if (!ch.AxisEnabled(2)) e.z = 0f;
+                rot = Quaternion.Euler(e);
+            }
+            v = RotValue.FromQuat(rot);
+        }
+
+        var track = t.Rot ??= new Track<RotValue>();
         if (ch.RelativeToSelf && track.Count > 0)
-            rot = track.Items[track.Count - 1].Value * rot;
-        track.Add(new Key<Quaternion> { Time = kf.Time, Value = rot, Channel = ch });
+        {
+            var prev = track.Items[track.Count - 1].Value;
+            // Euler on Euler accumulates the angles (so +360 keys keep spinning); otherwise compose as before.
+            if (prev.IsEuler && v.IsEuler) v = RotValue.FromEuler(prev.E + v.E);
+            else v = RotValue.FromQuat(prev.Q * v.Q);
+        }
+        track.Add(new Key<RotValue> { Time = kf.Time, Value = v, Channel = ch });
     }
 
     /// <summary>
@@ -478,16 +521,16 @@ public class OXKeyframeAnimationRuntime
         return Mathf.LerpUnclamped(prev, items[i].Value, SegmentX(keys, i, t));
     }
 
-    private static Quaternion EvalRotation(Track<Quaternion> keys, float t, bool wrapped)
+    private static Quaternion EvalRotation(Track<RotValue> keys, float t, bool wrapped)
     {
         int n = keys.Used;
         int i = keys.Seek(t);
         var items = keys.Items;
-        if (i >= n) return items[n - 1].Value;
+        if (i >= n) return items[n - 1].Value.Q;
         if (i == 0 && wrapped && items[keys.Count - 1].Closing)
-            return items[keys.Count - 2].Value.SlerpU(items[0].Value, WrapX(keys, t));
-        Quaternion prev = i == 0 ? Quaternion.identity : items[i - 1].Value;
-        return prev.SlerpU(items[i].Value, SegmentX(keys, i, t));
+            return RotValue.Lerp(items[keys.Count - 2].Value, items[0].Value, WrapX(keys, t));
+        RotValue prev = i == 0 ? RotValue.Identity : items[i - 1].Value;
+        return RotValue.Lerp(prev, items[i].Value, SegmentX(keys, i, t));
     }
 
     /// <summary>

@@ -108,11 +108,11 @@ public class Achievement : SingleInstance<Achievement>
             if (item.Value == null) sex.Remove(item.Key);
             if (!item.Value.Progress.HasAnything()) sex.Remove(item.Key);
         }
-        a.SetString("Achievements", sex.DictionaryToString("$", "#"));
+        a.SetDict("Achievements", sex);
     }
     public void LoadAchievements(SaveProfile a)
     {
-        var Achievements = a.GetString("Achievements").StringToDictionary("$", "#").ABToCD((x, y) => x, (x, y) =>
+        var Achievements = a.GetDict("Achievements", new Dictionary<string, string>()).ABToCD((x, y) => x, (x, y) =>
         {
             AchievementData ad = new AchievementData();
             ad.FromString(x, y);
