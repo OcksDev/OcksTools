@@ -46,6 +46,7 @@
   - InputManager now finally saves its stuff in its own class instead of existing in the save system
   - Removed test variables from Profiles so it no longer stores junk data
 - Misc 
+  - Custom icon added for Dialog Files (.dlg)
   - New LerpU varients of all extension lerp functions, gives them unclamped bevahior
   - Finally fixed the warnings from GlobalAttributeCollector about creating monobehaviors
   - Converter now distinguishes between Color and Color32

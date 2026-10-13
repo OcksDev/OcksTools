@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: c1488d85e455c4e4084549e795a67725
+guid: 1441160dea6ca8b4bb442049eb831e99
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5548478299305396979
-    second: Copy of OcksFile_0
+      213: -3181371707546382502
+    second: Copy of OcksFile (1)_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,7 +100,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Copy of OcksFile_0
+      name: Copy of OcksFile (1)_0
       rect:
         serializedVersion: 2
         x: 66
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: d0530f54268dff2b0800000000000000
-      internalID: -5548478299305396979
+      spriteID: a5f4831a94f79d3d0800000000000000
+      internalID: -3181371707546382502
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Copy of OcksFile_0: -5548478299305396979
+      Copy of OcksFile (1)_0: -3181371707546382502
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
