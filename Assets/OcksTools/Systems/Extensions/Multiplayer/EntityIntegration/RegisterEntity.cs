@@ -16,6 +16,10 @@ public class RegisterEntity : MonoBehaviour
         if (Sync.MyID == "-") yield return new WaitUntil(() => Sync.MyID != "-");
         string id = Sync.MyID.ToString();
         Tags.From("Net").Add(Object, id);
+        Object.Entity.OnKillEvent.Append("Dereg", (x, y) =>
+        {
+            Server.Send().Message("kill", $"{Tags.ID.Get(y.gameObject)}, {id}");
+        });
         Object.Entity.OnKillEvent.Append(9999, "Dereg", (x, y) =>
         {
             Tags.From("Net").ClearAllOf(id, Object);

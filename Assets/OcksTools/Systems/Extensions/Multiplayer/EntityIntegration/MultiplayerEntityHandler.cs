@@ -1,5 +1,6 @@
 #if OXTLS_MULTIPLAYER
 using Unity.Collections;
+using UnityEngine;
 
 public abstract class MultiplayerEntityHandler
 {
@@ -20,6 +21,12 @@ public abstract class MultiplayerEntityHandler
                 att = Tags.From("Net").Get<EntityObject>(q[0]);
                 vict = Tags.From("Net").Get<EntityObject>(q[1]);
                 Hit(att, vict);
+                full_res = true;
+                break;
+            case "phit":
+                var proj = Tags.ID.Get<GameObject>(q[0]).GetComponent<Projectile>();
+                vict = Tags.From("Net").Get<EntityObject>(q[1]);
+                proj.Hit(vict);
                 full_res = true;
                 break;
             case "heal":
