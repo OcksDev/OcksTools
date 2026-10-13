@@ -25,6 +25,7 @@
 - New Keyframe Animator
   - Custom transform/event animator using OcksTools interpolations and other things.
   - Custom window for editing it
+  - Icons for the animation scriptable objects are also included
   - Mostly slopcoded this one, it does work tho.
 - Render Improvements
   - Fixed Get/Set Anti Aliasing
