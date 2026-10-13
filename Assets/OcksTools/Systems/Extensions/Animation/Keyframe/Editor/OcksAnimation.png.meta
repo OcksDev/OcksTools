@@ -1,0 +1,611 @@
+fileFormatVersion: 2
+guid: a6d53cdc892ac4a4d890dfc3a6d2e4d4
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -6007068082925873591
+    second: OcksAnimation_0
+  - first:
+      213: 2906935841353426066
+    second: OcksAnimation_1
+  - first:
+      213: 3694129826550414122
+    second: OcksAnimation_2
+  - first:
+      213: -9130906095718504163
+    second: OcksAnimation_3
+  - first:
+      213: -8977496294912470987
+    second: OcksAnimation_4
+  - first:
+      213: -8614460249311528016
+    second: OcksAnimation_5
+  - first:
+      213: -1934761977602768195
+    second: OcksAnimation_6
+  - first:
+      213: -8494146724386060379
+    second: OcksAnimation_7
+  - first:
+      213: -8517973364099910101
+    second: OcksAnimation_8
+  - first:
+      213: -4966960245002781104
+    second: OcksAnimation_9
+  - first:
+      213: 1063237893943354830
+    second: OcksAnimation_10
+  - first:
+      213: -7071627788118155388
+    second: OcksAnimation_11
+  - first:
+      213: -6207156445103986786
+    second: OcksAnimation_12
+  - first:
+      213: 5972602027824724565
+    second: OcksAnimation_13
+  - first:
+      213: 3072407036176100094
+    second: OcksAnimation_14
+  - first:
+      213: 834250700820516649
+    second: OcksAnimation_15
+  - first:
+      213: 7287310329284709178
+    second: OcksAnimation_16
+  - first:
+      213: 5083951077937384241
+    second: OcksAnimation_17
+  - first:
+      213: -3003590092470420164
+    second: OcksAnimation_18
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: OcksAnimation_0
+      rect:
+        serializedVersion: 2
+        x: 154
+        y: 422
+        width: 18
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 946dd97c76b92aca0800000000000000
+      internalID: -6007068082925873591
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OcksAnimation_1
+      rect:
+        serializedVersion: 2
+        x: 201
+        y: 436
+        width: 17
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 294e8b00fb2875820800000000000000
+      internalID: 2906935841353426066
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OcksAnimation_2
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 438
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a2b76b1418f244330800000000000000
+      internalID: 3694129826550414122
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OcksAnimation_3
+      rect:
+        serializedVersion: 2
+        x: 295
+        y: 428
+        width: 18
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d19ef379841884180800000000000000
+      internalID: -9130906095718504163
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OcksAnimation_4
+      rect:
+        serializedVersion: 2
+        x: 49
+        y: 328
+        width: 19
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5305b514fa6896380800000000000000
+      internalID: -8977496294912470987
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OcksAnimation_5
+      rect:
+        serializedVersion: 2
+        x: 52
+        y: 52
+        width: 376
+        height: 376
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0bb301c6b0a437880800000000000000
+      internalID: -8614460249311528016
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OcksAnimation_6
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 284
+        width: 17
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: db20e007b385625e0800000000000000
+      internalID: -1934761977602768195
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OcksAnimation_7
+      rect:
+        serializedVersion: 2
+        x: 427
+        y: 298
+        width: 18
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5a7cbeede8abe1a80800000000000000
+      internalID: -8494146724386060379
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OcksAnimation_8
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 236
+        width: 15
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b26f5920b541ac980800000000000000
+      internalID: -8517973364099910101
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OcksAnimation_9
+      rect:
+        serializedVersion: 2
+        x: 437
+        y: 252
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 05e3f1729ffc11bb0800000000000000
+      internalID: -4966960245002781104
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OcksAnimation_10
+      rect:
+        serializedVersion: 2
+        x: 30
+        y: 187
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec56a343b3161ce00800000000000000
+      internalID: 1063237893943354830
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OcksAnimation_11
+      rect:
+        serializedVersion: 2
+        x: 436
+        y: 203
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 48f9f696ef78cdd90800000000000000
+      internalID: -7071627788118155388
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OcksAnimation_12
+      rect:
+        serializedVersion: 2
+        x: 44
+        y: 141
+        width: 19
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e97ec40a910cbd9a0800000000000000
+      internalID: -6207156445103986786
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OcksAnimation_13
+      rect:
+        serializedVersion: 2
+        x: 424
+        y: 156
+        width: 18
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 55a354d66e1f2e250800000000000000
+      internalID: 5972602027824724565
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OcksAnimation_14
+      rect:
+        serializedVersion: 2
+        x: 145
+        y: 42
+        width: 19
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: efaefaccbe163aa20800000000000000
+      internalID: 3072407036176100094
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OcksAnimation_15
+      rect:
+        serializedVersion: 2
+        x: 287
+        y: 32
+        width: 18
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 92f0704a79ad39b00800000000000000
+      internalID: 834250700820516649
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OcksAnimation_16
+      rect:
+        serializedVersion: 2
+        x: 331
+        y: 49
+        width: 19
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a3bcc09722ab12560800000000000000
+      internalID: 7287310329284709178
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OcksAnimation_17
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 29
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 13b0ce7c192dd8640800000000000000
+      internalID: 5083951077937384241
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OcksAnimation_18
+      rect:
+        serializedVersion: 2
+        x: 241
+        y: 26
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c3dfa6f79ba1156d0800000000000000
+      internalID: -3003590092470420164
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      OcksAnimation_0: -6007068082925873591
+      OcksAnimation_1: 2906935841353426066
+      OcksAnimation_10: 1063237893943354830
+      OcksAnimation_11: -7071627788118155388
+      OcksAnimation_12: -6207156445103986786
+      OcksAnimation_13: 5972602027824724565
+      OcksAnimation_14: 3072407036176100094
+      OcksAnimation_15: 834250700820516649
+      OcksAnimation_16: 7287310329284709178
+      OcksAnimation_17: 5083951077937384241
+      OcksAnimation_18: -3003590092470420164
+      OcksAnimation_2: 3694129826550414122
+      OcksAnimation_3: -9130906095718504163
+      OcksAnimation_4: -8977496294912470987
+      OcksAnimation_5: -8614460249311528016
+      OcksAnimation_6: -1934761977602768195
+      OcksAnimation_7: -8494146724386060379
+      OcksAnimation_8: -8517973364099910101
+      OcksAnimation_9: -4966960245002781104
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

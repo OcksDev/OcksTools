@@ -222,7 +222,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d06e130831b59ce4aac509d424aa1397, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TestAnimator
-  anim: {fileID: 11400000, guid: 1b2cf4a49b8fdcd4f8f37d7d2e34a241, type: 2}
+  anim: {fileID: 11400000, guid: 19f60be17d0a39e4890b57192c0169cc, type: 2}
+  anim2: {fileID: 0}
 --- !u!1 &2137288521
 GameObject:
   m_ObjectHideFlags: 0
