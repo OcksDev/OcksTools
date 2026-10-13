@@ -1,3 +1,4 @@
+#if OXTLS_MULTIPLAYER
 using Unity.Collections;
 using Unity.Netcode;
 
@@ -10,3 +11,4 @@ public class IDSync : NetworkBehaviour
         MyID = id;
     }
 }
+#endif
