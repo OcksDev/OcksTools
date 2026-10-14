@@ -43,9 +43,14 @@
 - Save System Improvements
   - Added Get/Set functionality for the following types:
     - Int, Long, Double, Bool, Vector2, Vector2Int, Vector3, Vector3Int, Quaterion, and Color
-  - InputManager and SoundSystem both now save to GlobalData
-  - InputManager now finally saves its stuff in its own class instead of existing in the save system
   - Removed test variables from Profiles so it no longer stores junk data
+  - SoundSystem now saves to GlobalData
+- Input Manager Improvements
+  - Fixed get axis of controller inputs
+  - Added better default controller button mappings
+    - Player Controller and Player Controller 3D should both now work with controller
+  - Now saves to GlobalData 
+  - Now finally saves its stuff in its own class instead of existing in the save system
 - Misc 
   - Custom icon added for Dialog Files (.dlg)
   - New LerpU varients of all extension lerp functions, gives them unclamped bevahior
