@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class InputManager : SingleInstance<InputManager>
@@ -48,7 +49,43 @@ public class InputManager : SingleInstance<InputManager>
         ResetLockLevel();
     }
 
+    public static float StickDeadzone = 0.2f;
 
+    public static Vector2 GetWishDirection(BetterList<string> ide, int controller = 0)
+    {
+        if (!CheckAxisAvailability(ide)) return Vector2.zero;
+
+        Vector2 dir = Vector2.zero;
+
+        // keyboard
+        if (IsBindHeld("move_right")) dir.x += 1f;
+        if (IsBindHeld("move_left")) dir.x -= 1f;
+        if (IsBindHeld("move_forward")) dir.y += 1f;
+        if (IsBindHeld("move_back")) dir.y -= 1f;
+
+        // controller
+        Vector2 stick = new Vector2(
+            GetAxis(InputAxis.ControllerRightLeft, controller),
+            GetAxis(InputAxis.ControllerUpDown, controller));
+        if (stick.magnitude >= StickDeadzone) dir += stick;
+
+        return Vector2.ClampMagnitude(dir, 1f);
+    }
+
+    public static Vector2 GetWishDirectionNormalized(BetterList<string> ide, int controller = 0)
+    {
+        return GetWishDirection(ide, controller).normalized;
+    }
+
+    private static bool IsBindHeld(string bind)
+    {
+        if (!gamekeys.TryGetValue(bind, out var keys)) return false;
+        for (int i = 0; i < keys.Count; i++)
+        {
+            if (Input.GetKey(keys[i])) return true;
+        }
+        return false;
+    }
 
     public static void AssembleTheCodes()
     {
@@ -72,13 +109,13 @@ public class InputManager : SingleInstance<InputManager>
         CreateInputSet("move_back", KeyCode.S);
         CreateInputSet("move_left", KeyCode.A);
         CreateInputSet("move_right", KeyCode.D);
-        CreateInputSet("jump", KeyCode.Space);
-        CreateInputSet("slide", KeyCode.LeftControl);
-        CreateInputSet("dash", KeyCode.LeftShift);
-        CreateInputSet("reload", KeyCode.R);
-        CreateInputSet("interact", KeyCode.F);
-        CreateInputSet("close_menu", new List<KeyCode>() { KeyCode.Escape, KeyCode.JoystickButton1 });
-        CreateInputSet("tab_menu", KeyCode.Tab);
+        CreateInputSet("jump", KeyCode.Space, KeyCode.JoystickButton0);
+        CreateInputSet("slide", KeyCode.LeftControl, KeyCode.JoystickButton5);
+        CreateInputSet("dash", KeyCode.LeftShift, KeyCode.JoystickButton4);
+        CreateInputSet("reload", KeyCode.R, KeyCode.JoystickButton3);
+        CreateInputSet("interact", KeyCode.F, KeyCode.JoystickButton2);
+        CreateInputSet("close_menu", KeyCode.Escape, KeyCode.JoystickButton1);
+        CreateInputSet("tab_menu", KeyCode.Tab, KeyCode.JoystickButton7);
 
         CollectInputAllocs.Invoke();
 
@@ -281,7 +318,7 @@ public class InputManager : SingleInstance<InputManager>
 
     public static void ResetBind(string keyname)
     {
-        gamekeys[keyname] = defaultgamekeys[keyname];
+        gamekeys[keyname] = new List<KeyCode>(defaultgamekeys[keyname]);
     }
 
 
@@ -390,38 +427,100 @@ public class InputManager : SingleInstance<InputManager>
         return IsKeyUp(baller);
     }
 
-    public static float GetAxis(InputAxis a, BetterList<string> ide, int controller = 1)
+    // Axes must NOT go through CheckAvailability: it requires Input.anyKey, and
+    // anyKey is false when only a stick / the mouse is moving. Axes only respect the lock level.
+    public static bool CheckAxisAvailability(List<string> ide)
     {
-        if (!CheckAvailability(ide)) return 0;
+        return InputPassesLockLevel(ide);
+    }
+
+    public static float GetAxis(InputAxis a, BetterList<string> ide, int controller = 0)
+    {
+        if (!CheckAxisAvailability(ide)) return 0;
         return GetAxis(a, controller);
     }
 
-    public static float GetAxis(InputAxis a, int controller = 1)
+    private static readonly HashSet<string> missingAxes = new HashSet<string>();
+
+    // Unity throws if an axis name isn't defined. Catch it so a missing axis
+    // logs once instead of breaking the game every frame.
+    private static float RawAxis(string axisName)
+    {
+        if (missingAxes.Contains(axisName)) return 0f;
+        try
+        {
+            return Input.GetAxisRaw(axisName);
+        }
+        catch (ArgumentException)
+        {
+            missingAxes.Add(axisName);
+            Debug.LogError($"[InputManager] Input axis '{axisName}' is not defined. Make sure InputAxisBootstrapper.cs is in the project (it registers controller axes automatically).");
+            return 0f;
+        }
+    }
+
+    private static float Joy(int controller, int axisNumber)
+    {
+        return RawAxis($"joystick {controller} axis {axisNumber}");
+    }
+
+    /// <summary>Right stick look speed, in mouse-delta units per second at full tilt.</summary>
+    public static float StickLookSpeed = 150f;
+    /// <summary>Radial deadzone for the right stick (stops drift).</summary>
+    public static float LookStickDeadzone = 0.15f;
+
+    // Right stick with a radial deadzone, rescaled so it ramps smoothly from 0. Up = +y.
+    private static Vector2 GetRightStick(int controller)
+    {
+        Vector2 s = new Vector2(Joy(controller, 4), -Joy(controller, 5));
+        float mag = s.magnitude;
+        if (mag < LookStickDeadzone) return Vector2.zero;
+        float scaled = Mathf.Min(1f, (mag - LookStickDeadzone) / (1f - LookStickDeadzone));
+        return s / mag * scaled;
+    }
+
+    /// <summary>
+    /// Mouse + right stick look input for this frame (x = right, y = up).
+    /// The mouse is already a per-frame delta; the stick is a rate, so it is scaled by
+    /// StickLookSpeed * deltaTime to be the same kind of number. Call once per frame from Update.
+    /// </summary>
+    public static Vector2 GetLook(int controller = 0)
+    {
+        Vector2 mouse = new Vector2(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y"));
+        return mouse + GetRightStick(controller) * (StickLookSpeed * Time.deltaTime);
+    }
+
+    /// <param name="controller">0 = any controller, 1-4 = a specific one.</param>
+    public static float GetAxis(InputAxis a, int controller = 0)
     {
         switch (a)
         {
             case InputAxis.SharedHorizontal: return Input.GetAxisRaw("Horizontal");
             case InputAxis.SharedVertical: return Input.GetAxisRaw("Vertical");
-            case InputAxis.ControllerUpDown: return Input.GetAxisRaw($"joystick {controller} axis 2");
-            case InputAxis.ControllerRightLeft: return Input.GetAxisRaw($"joystick {controller} axis 1");
+            // Unity reports stick "up" as negative, so Y axes are flipped to make up = +1.
+            case InputAxis.ControllerRightLeft: return Joy(controller, 1);        // left stick X
+            case InputAxis.ControllerUpDown: return -Joy(controller, 2);          // left stick Y
             case InputAxis.MouseX: return Input.GetAxis("Mouse X");
             case InputAxis.MouseY: return Input.GetAxis("Mouse Y");
             case InputAxis.MouseWheel: return Input.GetAxis("Mouse ScrollWheel");
             case InputAxis.MouseXRaw: return Input.GetAxisRaw("Mouse X");
             case InputAxis.MouseYRaw: return Input.GetAxisRaw("Mouse Y");
             case InputAxis.MouseWheelRaw: return Input.GetAxisRaw("Mouse ScrollWheel");
-            case InputAxis.ControllerLT: return Mathf.Clamp01(-Input.GetAxisRaw($"joystick {controller} axis 3"));
-            case InputAxis.ControllerRT: return Mathf.Clamp01(Input.GetAxisRaw($"joystick {controller} axis 3"));
-            case InputAxis.ControllerPlusUpDown: return Input.GetAxisRaw($"joystick {controller} axis 7");
-            case InputAxis.ControllerPlusRightLeft: return Input.GetAxisRaw($"joystick {controller} axis 6");
-            case InputAxis.ControllerUpDownOther: return Input.GetAxisRaw($"joystick {controller} axis 4");
-            case InputAxis.ControllerRightLeftOther: return Input.GetAxisRaw($"joystick {controller} axis 5");
+            case InputAxis.ControllerLT: return Mathf.Clamp01(-Joy(controller, 3));
+            case InputAxis.ControllerRT: return Mathf.Clamp01(Joy(controller, 3));
+            case InputAxis.ControllerPlusRightLeft: return Joy(controller, 6);    // d-pad X
+            case InputAxis.ControllerPlusUpDown: return Joy(controller, 7);       // d-pad Y
+            case InputAxis.ControllerRightLeftOther: return Joy(controller, 4);   // right stick X
+            case InputAxis.ControllerUpDownOther: return -Joy(controller, 5);     // right stick Y
+            case InputAxis.SharedLookRightLight: return GetLook(controller).x;
+            case InputAxis.SharedLookUpDown: return GetLook(controller).y;
             default: throw new NotImplementedException();
         }
     }
     public enum InputAxis
     {
         SharedHorizontal, SharedVertical,
+        SharedLookUpDown, SharedLookRightLight,
         ControllerUpDown, ControllerRightLeft,
         MouseX, MouseY, MouseWheel,
         MouseXRaw, MouseYRaw, MouseWheelRaw,
@@ -573,12 +672,12 @@ public class InputManager : SingleInstance<InputManager>
             { KeyCode.JoystickButton1, "cB" },
             { KeyCode.JoystickButton2, "cX" },
             { KeyCode.JoystickButton3, "cY" },
-            { KeyCode.JoystickButton4, "cLB" },
-            { KeyCode.JoystickButton5, "cRB" },
-            { KeyCode.JoystickButton6, "cBACK" },
-            { KeyCode.JoystickButton7, "cSTRT" },
-            { KeyCode.JoystickButton8, "cLSB" },
-            { KeyCode.JoystickButton9, "cRSB" },
+            { KeyCode.JoystickButton4, "cLB" }, // bumper
+            { KeyCode.JoystickButton5, "cRB" }, // bumper
+            { KeyCode.JoystickButton6, "cBACK" }, // left helper button
+            { KeyCode.JoystickButton7, "cSTRT" }, // right helper button
+            { KeyCode.JoystickButton8, "cLSB" }, // stick press
+            { KeyCode.JoystickButton9, "cRSB" }, // stick press
             { KeyCode.JoystickButton10, "c10" }, // do these controller inputs have real names?
             { KeyCode.JoystickButton11, "c11" },
             { KeyCode.JoystickButton12, "c12" },
@@ -594,8 +693,13 @@ public class InputManager : SingleInstance<InputManager>
     }
     public static void CreateInputSet(string name, List<KeyCode> keys)
     {
-        gamekeys.Add(name, keys);
-        defaultgamekeys.Add(name, keys);
+        gamekeys.Add(name, new List<KeyCode>(keys));
+        defaultgamekeys.Add(name, new List<KeyCode>(keys));
+    }
+    public static void CreateInputSet(string name, params KeyCode[] keys)
+    {
+        gamekeys.Add(name, keys.ToList());
+        defaultgamekeys.Add(name, keys.ToList());
     }
 }
 

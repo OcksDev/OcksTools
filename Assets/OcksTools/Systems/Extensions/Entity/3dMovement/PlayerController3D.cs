@@ -153,18 +153,11 @@ public class PlayerController3D : MonoBehaviour
         {
             rigid.linearVelocity = new Vector3(rigid.linearVelocity.x * airsex, rigid.linearVelocity.y, rigid.linearVelocity.z * airsex);
         }
-
-        Vector3 dir = new Vector3(0, 0, 0);
-        if (InputManager.IsKey("move_forward", "Player")) dir += HeadXZ.forward;
-        if (InputManager.IsKey("move_back", "Player")) dir += HeadXZ.forward * -1;
-        if (InputManager.IsKey("move_right", "Player")) dir += HeadY.right;
-        if (InputManager.IsKey("move_left", "Player")) dir += HeadY.right * -1;
+        var wdir = InputManager.GetWishDirection("Player");
+        Vector3 dir = Vector3.zero;
+        dir += wdir.y * HeadXZ.forward;
+        dir += wdir.x * HeadY.right;
         move_dir = dir;
-        if (dir.magnitude > 0.5f)
-        {
-            slip = 1;
-            dir.Normalize();
-        }
         var xzy = rigid.linearVelocity;
         var xz = xzy;
         xz.y = 0;
@@ -425,14 +418,9 @@ public class PlayerController3D : MonoBehaviour
             case MoveState.Dashing: return false;
             case MoveState.WallRunning: return false;
             default:
-                Vector3 dir = Vector3.zero;
-                if (InputManager.IsKey("move_forward", "Player")) dir += HeadXZ.forward;
-                if (InputManager.IsKey("move_back", "Player")) dir += HeadXZ.forward * -1;
-                if (InputManager.IsKey("move_right", "Player")) dir += HeadY.right;
-                if (InputManager.IsKey("move_left", "Player")) dir += HeadY.right * -1;
-                if (dir.magnitude > 0.5)
+                if (move_dir.magnitude > 0.1)
                 {
-                    Dc = StartCoroutine(DashCour(dir.normalized));
+                    Dc = StartCoroutine(DashCour(move_dir.normalized));
                     return true;
                 }
                 return true;

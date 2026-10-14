@@ -8,8 +8,8 @@ public class Camera3D_FPS : OXCamera3D
     private float rot_x = 0;
     private void Update()
     {
-        var x = Input.GetAxis("Mouse X") * hori_mouse_sense;
-        var y = Input.GetAxis("Mouse Y") * vert_mouse_sense;
+        var x = InputManager.GetAxis(InputManager.InputAxis.SharedLookRightLight) * hori_mouse_sense;
+        var y = InputManager.GetAxis(InputManager.InputAxis.SharedLookUpDown) * vert_mouse_sense;
         rot_x += x;
         rot_y = Mathf.Clamp(rot_y - y, -90, 90);
         HeadY.localRotation = Quaternion.Euler(rot_y, 0, 0);
