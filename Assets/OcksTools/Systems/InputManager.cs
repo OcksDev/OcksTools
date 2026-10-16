@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
 using UnityEngine;
 
 public class InputManager : SingleInstance<InputManager>
@@ -82,7 +84,7 @@ public class InputManager : SingleInstance<InputManager>
         if (!gamekeys.TryGetValue(bind, out var keys)) return false;
         for (int i = 0; i < keys.Count; i++)
         {
-            if (Input.GetKey(keys[i])) return true;
+            if (KeyHeld(keys[i])) return true;
         }
         return false;
     }
@@ -126,66 +128,35 @@ public class InputManager : SingleInstance<InputManager>
     public static Dictionary<string, MRef<string, List<string>, OXEvent>> InputEventsDown = new();
     private void Update()
     {
+        RefreshVirtualKeys(); // always, so down/up edges for triggers + d-pad are never missed
         if (!PollForEvents) return;
         foreach (var a in gamekeys)
         {
-            foreach (var key in a.Value)
+            // Dispatch bails immediately when no listener is registered for this bind,
+            // so unused binds cost nothing beyond the dictionary lookup.
+            Dispatch(InputEvents, a.Key, a.Value, 0);
+            Dispatch(InputEventsUp, a.Key, a.Value, 1);
+            Dispatch(InputEventsDown, a.Key, a.Value, 2);
+        }
+    }
+
+    // mode: 0 = held, 1 = released this frame, 2 = pressed this frame
+    private static void Dispatch(Dictionary<string, MRef<string, List<string>, OXEvent>> events, string name, List<KeyCode> keys, int mode)
+    {
+        if (events.Count == 0 || !events.TryGetValue(name, out var c)) return;
+        for (int i = 0; i < keys.Count; i++)
+        {
+            KeyCode key = keys[i];
+            if (!(mode == 0 ? KeyHeld(key) : mode == 1 ? KeyUp(key) : KeyDown(key))) continue;
+            if (c.b == null)
             {
-                if (Input.GetKey(key))
-                {
-                    if (InputEvents.ContainsKey(a.Key))
-                    {
-                        var c = InputEvents[a.Key];
-                        if (c.b == null)
-                        {
-                            c.c.Invoke();
-                            continue;
-                        }
-                        if (!AllowInputToPass(c.b)) continue;
-                        if (!InputPassesLockLevel(c.b)) continue;
-                        c.c.Invoke();
-                    }
-                    break;
-                }
+                c.c.Invoke();
+                continue;
             }
-            foreach (var key in a.Value)
-            {
-                if (Input.GetKeyUp(key))
-                {
-                    if (InputEventsUp.ContainsKey(a.Key))
-                    {
-                        var c = InputEventsUp[a.Key];
-                        if (c.b == null)
-                        {
-                            c.c.Invoke();
-                            continue;
-                        }
-                        if (!AllowInputToPass(c.b)) continue;
-                        if (!InputPassesLockLevel(c.b)) continue;
-                        c.c.Invoke();
-                    }
-                    break;
-                }
-            }
-            foreach (var key in a.Value)
-            {
-                if (Input.GetKeyDown(key))
-                {
-                    if (InputEventsDown.ContainsKey(a.Key))
-                    {
-                        var c = InputEventsDown[a.Key];
-                        if (c.b == null)
-                        {
-                            c.c.Invoke();
-                            continue;
-                        }
-                        if (!AllowInputToPass(c.b)) continue;
-                        if (!InputPassesLockLevel(c.b)) continue;
-                        c.c.Invoke();
-                    }
-                    break;
-                }
-            }
+            if (!AllowInputToPass(c.b)) continue;
+            if (!InputPassesLockLevel(c.b)) continue;
+            c.c.Invoke();
+            break;
         }
     }
 
@@ -271,49 +242,74 @@ public class InputManager : SingleInstance<InputManager>
         return GetReadableStringOf(gamekeys[a], first_only);
     }
 
+    public static bool IsControllerKey(KeyCode k) =>
+    (k >= KeyCode.JoystickButton0 && k <= KeyCode.JoystickButton19) || IsVirtualKey(k);
+
+    // Tags are built once per key, so repeated UI refreshes don't allocate.
+    private static readonly Dictionary<KeyCode, string> spriteTags = new();
+
+    public static string GetKeyRichText(KeyCode k)
+    {
+        if (!IsControllerKey(k)) return keynames[k];
+        if (!spriteTags.TryGetValue(k, out var tag))
+            spriteTags[k] = tag = $"<sprite name=\"{keynames[k]}\">";
+        return tag;
+    }
+
+    public static string GetRichStringOf(List<KeyCode> keys, bool first_only = false)
+    {
+        if (keys.Count == 0) return "";
+
+        if (first_only || keys.Count == 1) return GetKeyRichText(keys[0]);
+        var sb = new StringBuilder();
+        for (int i = 0; i < keys.Count; i++)
+        {
+            if (i > 0) sb.Append(", ");
+            sb.Append(GetKeyRichText(keys[i]));
+        }
+        return sb.ToString();
+    }
+
+    public static string GetRichStringOf(string bind, bool first_only = false) =>
+        GetRichStringOf(gamekeys[bind], first_only);
+
+
+
 
     public static KeyCode GetArbitraryKeyPressed()
     {
         if (Input.anyKeyDown)
         {
-            bool goodboi = false;
-            KeyCode boi = KeyCode.Mouse0;
             foreach (var kb in keynames)
             {
-                if (Input.GetKeyDown(kb.Key))
-                {
-                    boi = kb.Key;
-                    goodboi = true;
-                    break;
-                }
+                if (!IsVirtualKey(kb.Key) && Input.GetKeyDown(kb.Key)) return kb.Key;
             }
-            if (goodboi)
+        }
+        // triggers / d-pad never set Input.anyKeyDown, so check them separately
+        RefreshVirtualKeys();
+        if (vDown != 0)
+        {
+            for (int i = 0; i < VKeyCount; i++)
             {
-                return boi;
+                if ((vDown & (1 << i)) != 0) return (KeyCode)(VKeyStart + i);
             }
         }
         return KeyCode.None;
     }
     public static List<KeyCode> GetAllCurrentlyPressedKeys()
     {
-        if (Input.anyKeyDown)
+        RefreshVirtualKeys();
+        var boi = new List<KeyCode>();
+        if (!Input.anyKeyDown && vDown == 0) return boi;
+        foreach (var kb in keynames)
         {
-            bool goodboi = false;
-            List<KeyCode> boi = new List<KeyCode>();
-            foreach (var kb in keynames)
-            {
-                if (Input.GetKey(kb.Key))
-                {
-                    boi.Add(kb.Key);
-                    goodboi = true;
-                }
-            }
-            if (goodboi)
-            {
-                return boi;
-            }
+            if (!IsVirtualKey(kb.Key) && Input.GetKey(kb.Key)) boi.Add(kb.Key);
         }
-        return new List<KeyCode>();
+        for (int i = 0; i < VKeyCount; i++)
+        {
+            if ((vHeld & (1 << i)) != 0) boi.Add((KeyCode)(VKeyStart + i));
+        }
+        return boi;
     }
 
     public static void ResetBind(string keyname)
@@ -366,11 +362,11 @@ public class InputManager : SingleInstance<InputManager>
 
     public static bool AllowInputToPass(List<string> ide)
     {
-        //set a = false to deny inputs
-        bool a = true;
-        if (!Input.anyKey) a = false;
-
-        return a;
+        //return false to deny inputs
+        // Input.anyKey ignores triggers / d-pad (they're axes), so check the virtual keys too.
+        if (Input.anyKey) return true;
+        RefreshVirtualKeys();
+        return (vHeld | vUp) != 0;
     }
 
 
@@ -389,7 +385,7 @@ public class InputManager : SingleInstance<InputManager>
         var keys = baller.ToList();
         foreach (var key in keys)
         {
-            if (Input.GetKeyDown(key)) return true;
+            if (KeyDown(key)) return true;
         }
         return false;
     }
@@ -398,7 +394,7 @@ public class InputManager : SingleInstance<InputManager>
         var keys = baller.ToList();
         foreach (var key in keys)
         {
-            if (Input.GetKey(key)) return true;
+            if (KeyHeld(key)) return true;
         }
         return false;
     }
@@ -407,7 +403,7 @@ public class InputManager : SingleInstance<InputManager>
         var keys = baller.ToList();
         foreach (var key in keys)
         {
-            if (Input.GetKeyUp(key)) return true;
+            if (KeyUp(key)) return true;
         }
         return false;
     }
@@ -454,14 +450,118 @@ public class InputManager : SingleInstance<InputManager>
         catch (ArgumentException)
         {
             missingAxes.Add(axisName);
-            Debug.LogError($"[InputManager] Input axis '{axisName}' is not defined. Make sure InputAxisBootstrapper.cs is in the project (it registers controller axes automatically).");
+            LogMissingAxis(axisName);
             return 0f;
         }
     }
 
+    private static void LogMissingAxis(string axisName)
+    {
+        Debug.LogError($"[InputManager] Input axis '{axisName}' is not defined. Make sure InputAxisBootstrapper.cs is in the project (it registers controller axes automatically).");
+    }
+
+    // Axis names are built once, so polling never allocates a string per call.
+    private const int MaxJoy = 4;
+    private const int MaxJoyAxis = 10;
+    private static readonly string[,] joyAxisNames = BuildJoyAxisNames();
+    private static readonly bool[,] joyAxisMissing = new bool[MaxJoy + 1, MaxJoyAxis + 1];
+
+    private static string[,] BuildJoyAxisNames()
+    {
+        var names = new string[MaxJoy + 1, MaxJoyAxis + 1];
+        for (int c = 0; c <= MaxJoy; c++)
+            for (int a = 0; a <= MaxJoyAxis; a++)
+                names[c, a] = $"joystick {c} axis {a}";
+        return names;
+    }
+
     private static float Joy(int controller, int axisNumber)
     {
-        return RawAxis($"joystick {controller} axis {axisNumber}");
+        if ((uint)controller > MaxJoy || (uint)axisNumber > MaxJoyAxis)
+            return RawAxis($"joystick {controller} axis {axisNumber}");
+        if (joyAxisMissing[controller, axisNumber]) return 0f;
+        try
+        {
+            return Input.GetAxisRaw(joyAxisNames[controller, axisNumber]);
+        }
+        catch (ArgumentException)
+        {
+            joyAxisMissing[controller, axisNumber] = true;
+            LogMissingAxis(joyAxisNames[controller, axisNumber]);
+            return 0f;
+        }
+    }
+    public const KeyCode VKeyLT = KeyCode.Joystick8Button10;
+    public const KeyCode VKeyRT = KeyCode.Joystick8Button11;
+    public const KeyCode VKeyDpadUp = KeyCode.Joystick8Button12;
+    public const KeyCode VKeyDpadDown = KeyCode.Joystick8Button13;
+    public const KeyCode VKeyDpadLeft = KeyCode.Joystick8Button14;
+    public const KeyCode VKeyDpadRight = KeyCode.Joystick8Button15;
+
+    private const int VKeyStart = (int)KeyCode.Joystick8Button10;
+    private const int VKeyCount = 6;
+
+    /// <summary>Axis value needed to count as pressed.</summary>
+    public static float VirtualPressThreshold = 0.5f;
+    /// <summary>Axis value an already-pressed virtual key must fall below to release (hysteresis, stops flicker).</summary>
+    public static float VirtualReleaseThreshold = 0.35f;
+
+    private static int vHeld, vDown, vUp;
+    private static int vFrame = -1;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsVirtualKey(KeyCode k) => (uint)((int)k - VKeyStart) < VKeyCount;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static int VBit(float value, int bit, int prev)
+    {
+        float threshold = (prev & (1 << bit)) != 0 ? VirtualReleaseThreshold : VirtualPressThreshold;
+        return value > threshold ? 1 << bit : 0;
+    }
+
+    // Recomputes the virtual key state at most once per frame (3 axis reads total).
+    private static void RefreshVirtualKeys()
+    {
+        int frame = Time.frameCount;
+        if (vFrame == frame) return;
+        vFrame = frame;
+
+        float trig = Joy(0, 3); // shared trigger axis: LT = negative, RT = positive (matches GetAxis)
+        float dx = Joy(0, 6);   // d-pad X, right = +
+        float dy = Joy(0, 7);   // d-pad Y, up = +
+
+        int prev = vHeld;
+        int now = VBit(-trig, 0, prev) | VBit(trig, 1, prev)
+                | VBit(dy, 2, prev) | VBit(-dy, 3, prev)
+                | VBit(-dx, 4, prev) | VBit(dx, 5, prev);
+
+        vDown = now & ~prev;
+        vUp = prev & ~now;
+        vHeld = now;
+    }
+
+    /// <summary>Drop-in for Input.GetKey that also understands the virtual trigger / d-pad keys.</summary>
+    public static bool KeyHeld(KeyCode k)
+    {
+        if (!IsVirtualKey(k)) return Input.GetKey(k);
+        RefreshVirtualKeys();
+        return (vHeld & (1 << ((int)k - VKeyStart))) != 0;
+    }
+
+    /// <summary>Drop-in for Input.GetKeyDown that also understands the virtual trigger / d-pad keys.</summary>
+    public static bool KeyDown(KeyCode k)
+    {
+        if (!IsVirtualKey(k)) return Input.GetKeyDown(k);
+        RefreshVirtualKeys();
+        return (vDown & (1 << ((int)k - VKeyStart))) != 0;
+    }
+
+    /// <summary>Drop-in for Input.GetKeyUp that also understands the virtual trigger / d-pad keys.</summary>
+    public static bool KeyUp(KeyCode k)
+    {
+        if (!IsVirtualKey(k)) return Input.GetKeyUp(k);
+        RefreshVirtualKeys();
+        return (vUp & (1 << ((int)k - VKeyStart))) != 0;
     }
 
     /// <summary>Right stick look speed, in mouse-delta units per second at full tilt.</summary>
@@ -517,6 +617,9 @@ public class InputManager : SingleInstance<InputManager>
             default: throw new NotImplementedException();
         }
     }
+
+
+
     public enum InputAxis
     {
         SharedHorizontal, SharedVertical,
@@ -684,6 +787,13 @@ public class InputManager : SingleInstance<InputManager>
             { KeyCode.JoystickButton13, "c13" },
             { KeyCode.JoystickButton14, "c14" },
             { KeyCode.JoystickButton15, "c15" },
+            // virtual keys (axis-derived, see RefreshVirtualKeys)
+            { VKeyLT, "cLT" },
+            { VKeyRT, "cRT" },
+            { VKeyDpadUp, "cDUP" },
+            { VKeyDpadDown, "cDDOWN" },
+            { VKeyDpadLeft, "cDLEFT" },
+            { VKeyDpadRight, "cDRIGHT" },
         };
     }
 

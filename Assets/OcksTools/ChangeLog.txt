@@ -27,6 +27,14 @@
   - Custom window for editing it
   - Icons for the animation scriptable objects are also included
   - Mostly slopcoded this one, it does work tho.
+- Input Manager Improvements
+  - Added rich text rendering of controller buttons
+  - Should now support button remapping of controller DPad and Triggers
+  - Added better default controller button mappings
+    - Player Controller and Player Controller 3D should both now work with controller
+  - Fixed get axis of controller inputs
+  - Now saves to GlobalData 
+  - Now finally saves its stuff in its own class instead of existing in the save system
 - Render Improvements
   - Fixed Get/Set Anti Aliasing
   - Added Get/Set for Renderscale.
@@ -45,13 +53,8 @@
     - Int, Long, Double, Bool, Vector2, Vector2Int, Vector3, Vector3Int, Quaterion, and Color
   - Removed test variables from Profiles so it no longer stores junk data
   - SoundSystem now saves to GlobalData
-- Input Manager Improvements
-  - Fixed get axis of controller inputs
-  - Added better default controller button mappings
-    - Player Controller and Player Controller 3D should both now work with controller
-  - Now saves to GlobalData 
-  - Now finally saves its stuff in its own class instead of existing in the save system
 - Misc 
+  - Added image atlas creator thing for assets
   - Custom icon added for Dialog Files (.dlg)
   - New LerpU varients of all extension lerp functions, gives them unclamped bevahior
   - Finally fixed the warnings from GlobalAttributeCollector about creating monobehaviors

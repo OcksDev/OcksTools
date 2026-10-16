@@ -1,0 +1,605 @@
+fileFormatVersion: 2
+guid: 494dae93421162e4182e655bddf50385
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 900068442925993479
+    second: ControllerIcons_Atlas_0
+  - first:
+      213: -4052065656266098193
+    second: ControllerIcons_Atlas_1
+  - first:
+      213: -8655938433914174932
+    second: ControllerIcons_Atlas_2
+  - first:
+      213: -7807422800429684659
+    second: ControllerIcons_Atlas_3
+  - first:
+      213: 8220650179480747967
+    second: ControllerIcons_Atlas_4
+  - first:
+      213: 2997484739325446765
+    second: ControllerIcons_Atlas_5
+  - first:
+      213: 221220455684356401
+    second: ControllerIcons_Atlas_6
+  - first:
+      213: 7562443559712479341
+    second: ControllerIcons_Atlas_7
+  - first:
+      213: 7863888183072885316
+    second: ControllerIcons_Atlas_8
+  - first:
+      213: -4684394155138198448
+    second: ControllerIcons_Atlas_9
+  - first:
+      213: 4608772176916069624
+    second: ControllerIcons_Atlas_10
+  - first:
+      213: 5168944497611949046
+    second: ControllerIcons_Atlas_11
+  - first:
+      213: -1763270845301861196
+    second: ControllerIcons_Atlas_12
+  - first:
+      213: 563052384699397213
+    second: ControllerIcons_Atlas_13
+  - first:
+      213: -6839114239689370582
+    second: ControllerIcons_Atlas_14
+  - first:
+      213: 7100822849950481929
+    second: ControllerIcons_Atlas_15
+  - first:
+      213: 6548736871676242530
+    second: ControllerIcons_Atlas_16
+  - first:
+      213: -8607336144632703525
+    second: ControllerIcons_Atlas_17
+  - first:
+      213: -7290950667464357650
+    second: cA
+  - first:
+      213: -2268970770609054985
+    second: cB
+  - first:
+      213: -3778301748215157371
+    second: cBACK
+  - first:
+      213: 7206907210390772962
+    second: cDDOWN
+  - first:
+      213: -3044689426527663142
+    second: cDLEFT
+  - first:
+      213: -6378105022072781266
+    second: cDRIGHT
+  - first:
+      213: -8677492940409674361
+    second: cDUP
+  - first:
+      213: -6702634024031907244
+    second: cLB
+  - first:
+      213: -6954878124404001353
+    second: cLSB
+  - first:
+      213: -7560259339850702275
+    second: cLT
+  - first:
+      213: 7672129312590175356
+    second: cRB
+  - first:
+      213: -2348149209663350541
+    second: cRSB
+  - first:
+      213: -1776905549096693692
+    second: cRT
+  - first:
+      213: -1954291396187412978
+    second: cSTRT
+  - first:
+      213: -4319851682050347527
+    second: cX
+  - first:
+      213: -7651294380980010049
+    second: cY
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: cA
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ee8c3ee3ff651da90800000000000000
+      internalID: -7290950667464357650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cB
+      rect:
+        serializedVersion: 2
+        x: 104
+        y: 0
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7fa5a1c0b1ff280e0800000000000000
+      internalID: -2268970770609054985
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cBACK
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 0
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 58de56b0496c09bc0800000000000000
+      internalID: -3778301748215157371
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cDDOWN
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 0
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2ec1b8c8ce3140460800000000000000
+      internalID: 7206907210390772962
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cDLEFT
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 104
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: adb4e6819171fb5d0800000000000000
+      internalID: -3044689426527663142
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cDRIGHT
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 208
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e26873b664b6c77a0800000000000000
+      internalID: -6378105022072781266
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cDUP
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 312
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 785ebe1652a539780800000000000000
+      internalID: -8677492940409674361
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cLB
+      rect:
+        serializedVersion: 2
+        x: 104
+        y: 104
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 45291220ed57bf2a0800000000000000
+      internalID: -6702634024031907244
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cLSB
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 104
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b5b3c2c13f4b7f90800000000000000
+      internalID: -6954878124404001353
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cLT
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 104
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d32ae56bf20941790800000000000000
+      internalID: -7560259339850702275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cRB
+      rect:
+        serializedVersion: 2
+        x: 104
+        y: 208
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c7c9ccb06f0e87a60800000000000000
+      internalID: 7672129312590175356
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cRSB
+      rect:
+        serializedVersion: 2
+        x: 104
+        y: 312
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f8d66e1cb2b96fd0800000000000000
+      internalID: -2348149209663350541
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cRT
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 208
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 440dbaa41d92757e0800000000000000
+      internalID: -1776905549096693692
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cSTRT
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 208
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e06a5a65456f0e4e0800000000000000
+      internalID: -1954291396187412978
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cX
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 312
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9fde30168cdcc04c0800000000000000
+      internalID: -4319851682050347527
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cY
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 312
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb38ebd7c4421d590800000000000000
+      internalID: -7651294380980010049
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      ControllerIcons_Atlas_0: 900068442925993479
+      ControllerIcons_Atlas_1: -4052065656266098193
+      ControllerIcons_Atlas_10: 4608772176916069624
+      ControllerIcons_Atlas_11: 5168944497611949046
+      ControllerIcons_Atlas_12: -1763270845301861196
+      ControllerIcons_Atlas_13: 563052384699397213
+      ControllerIcons_Atlas_14: -6839114239689370582
+      ControllerIcons_Atlas_15: 7100822849950481929
+      ControllerIcons_Atlas_16: 6548736871676242530
+      ControllerIcons_Atlas_17: -8607336144632703525
+      ControllerIcons_Atlas_2: -8655938433914174932
+      ControllerIcons_Atlas_3: -7807422800429684659
+      ControllerIcons_Atlas_4: 8220650179480747967
+      ControllerIcons_Atlas_5: 2997484739325446765
+      ControllerIcons_Atlas_6: 221220455684356401
+      ControllerIcons_Atlas_7: 7562443559712479341
+      ControllerIcons_Atlas_8: 7863888183072885316
+      ControllerIcons_Atlas_9: -4684394155138198448
+      cA: -7290950667464357650
+      cB: -2268970770609054985
+      cBACK: -3778301748215157371
+      cDDOWN: 7206907210390772962
+      cDLEFT: -3044689426527663142
+      cDRIGHT: -6378105022072781266
+      cDUP: -8677492940409674361
+      cLB: -6702634024031907244
+      cLSB: -6954878124404001353
+      cLT: -7560259339850702275
+      cRB: 7672129312590175356
+      cRSB: -2348149209663350541
+      cRT: -1776905549096693692
+      cSTRT: -1954291396187412978
+      cX: -4319851682050347527
+      cY: -7651294380980010049
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

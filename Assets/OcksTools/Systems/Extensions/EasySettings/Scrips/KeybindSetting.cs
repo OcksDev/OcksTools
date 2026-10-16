@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class KeybindSetting : BaseSettingInput<SettingKeybindSO>
@@ -18,14 +19,14 @@ public class KeybindSetting : BaseSettingInput<SettingKeybindSO>
     {
         if (Setting.CurrentlySelecting) yield break;
         Setting.CurrentlySelecting = true;
-        yield return new WaitUntil(() => { return InputManager.GetAllCurrentlyPressedKeys().Count > 0; });
-        var aa = InputManager.GetAllCurrentlyPressedKeys();
-        if (aa[0] == KeyCode.Escape)
+        List<KeyCode> keys = new();
+        yield return new WaitUntil(() => { keys = InputManager.GetAllCurrentlyPressedKeys(); return keys.Count > 0; });
+        if (keys[0] == KeyCode.Escape)
         {
             Setting.CurrentlySelecting = false;
             yield break;
         }
-        Setting.SetValue(aa[0]);
+        Setting.SetValue(keys[0]);
         yield return new WaitUntil(() => { return !Input.GetKey(KeyCode.Mouse0); });
         Setting.CurrentlySelecting = false;
     }

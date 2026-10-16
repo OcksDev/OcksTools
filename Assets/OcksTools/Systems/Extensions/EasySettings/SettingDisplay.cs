@@ -34,7 +34,7 @@ public class SettingDisplay : MonoBehaviour
             case SettingData.SType.Keybind:
                 var q = sd as SettingKeybindSO;
                 if (q.CurrentlySelecting) return "...";
-                return InputManager.keynames[q.GetValue<KeyCode>()];
+                return InputManager.GetKeyRichText(q.GetValue<KeyCode>());
             case SettingData.SType.Text: return sd.GetValue<string>();
             default: return "";
         }
