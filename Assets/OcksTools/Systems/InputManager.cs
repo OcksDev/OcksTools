@@ -25,7 +25,7 @@ public class InputManager : SingleInstance<InputManager>
 
     private static void SaveInput(SaveProfile dict)
     {
-        Dictionary<string, string> dic = gamekeys.ABToCD(x => x, y => y.AToB(x => keynames[x]).ListToString(","));
+        Dictionary<string, string> dic = gamekeys.ABDictionaryToCDDictionary(x => x, y => y.AListToBList(x => keynames[x]).ListToString(","));
         SaveSystem.GlobalProfile().SetDict("keybinds", dic);
     }
 
@@ -38,7 +38,7 @@ public class InputManager : SingleInstance<InputManager>
         {
             foreach (var a in dic)
             {
-                InputManager.gamekeys[a.Key] = a.Value.StringToList(",").AToB((x) => namekeys[x]);
+                InputManager.gamekeys[a.Key] = a.Value.StringToList(",").AListToBList((x) => namekeys[x]);
             }
         }
     }
@@ -105,8 +105,8 @@ public class InputManager : SingleInstance<InputManager>
 
 
         //create custom key allocations
-        CreateInputSet("shoot", KeyCode.Mouse0);
-        CreateInputSet("alt_shoot", KeyCode.Mouse1);
+        CreateInputSet("shoot", KeyCode.Mouse0, VKeyRT);
+        CreateInputSet("alt_shoot", KeyCode.Mouse1, VKeyLT);
         CreateInputSet("move_forward", KeyCode.W);
         CreateInputSet("move_back", KeyCode.S);
         CreateInputSet("move_left", KeyCode.A);
@@ -118,17 +118,20 @@ public class InputManager : SingleInstance<InputManager>
         CreateInputSet("interact", KeyCode.F, KeyCode.JoystickButton2);
         CreateInputSet("close_menu", KeyCode.Escape, KeyCode.JoystickButton1);
         CreateInputSet("tab_menu", KeyCode.Tab, KeyCode.JoystickButton7);
-
+        CreateInputSet("weapon0", KeyCode.Alpha1);
+        CreateInputSet("weapon1", KeyCode.Alpha2);
+        CreateInputSet("weapon2", KeyCode.Alpha3);
         CollectInputAllocs.Invoke();
 
     }
 
-    public static Dictionary<string, MRef<string, List<string>, OXEvent>> InputEvents = new();
-    public static Dictionary<string, MRef<string, List<string>, OXEvent>> InputEventsUp = new();
-    public static Dictionary<string, MRef<string, List<string>, OXEvent>> InputEventsDown = new();
+    public static Dictionary<string, MultiRef<string, List<string>, OXEvent>> InputEvents = new();
+    public static Dictionary<string, MultiRef<string, List<string>, OXEvent>> InputEventsUp = new();
+    public static Dictionary<string, MultiRef<string, List<string>, OXEvent>> InputEventsDown = new();
     private void Update()
     {
         RefreshVirtualKeys(); // always, so down/up edges for triggers + d-pad are never missed
+        UpdateLastInputDevice(); // always, so UI prompts stay correct even while polling is off
         if (!PollForEvents) return;
         foreach (var a in gamekeys)
         {
@@ -141,7 +144,7 @@ public class InputManager : SingleInstance<InputManager>
     }
 
     // mode: 0 = held, 1 = released this frame, 2 = pressed this frame
-    private static void Dispatch(Dictionary<string, MRef<string, List<string>, OXEvent>> events, string name, List<KeyCode> keys, int mode)
+    private static void Dispatch(Dictionary<string, MultiRef<string, List<string>, OXEvent>> events, string name, List<KeyCode> keys, int mode)
     {
         if (events.Count == 0 || !events.TryGetValue(name, out var c)) return;
         for (int i = 0; i < keys.Count; i++)
@@ -164,7 +167,7 @@ public class InputManager : SingleInstance<InputManager>
     {
         var sex = GetExistingEvent(name);
         if (sex != null) return sex;
-        MRef<string, List<string>, OXEvent> b = new();
+        MultiRef<string, List<string>, OXEvent> b = new();
         b.a = name;
         b.b = ide.HasValue ? ide.Value.ToList() : null;
         b.c = new OXEvent();
@@ -176,7 +179,7 @@ public class InputManager : SingleInstance<InputManager>
     {
         var sex = GetExistingEventUp(name);
         if (sex != null) return sex;
-        MRef<string, List<string>, OXEvent> b = new();
+        MultiRef<string, List<string>, OXEvent> b = new();
         b.a = name;
         b.b = ide.HasValue ? ide.Value.ToList() : null;
         b.c = new OXEvent();
@@ -188,7 +191,7 @@ public class InputManager : SingleInstance<InputManager>
     {
         var sex = GetExistingEventDown(name);
         if (sex != null) return sex;
-        MRef<string, List<string>, OXEvent> b = new();
+        MultiRef<string, List<string>, OXEvent> b = new();
         b.a = name;
         b.b = ide.HasValue ? ide.Value.ToList() : null;
         b.c = new OXEvent();
@@ -230,7 +233,7 @@ public class InputManager : SingleInstance<InputManager>
 
     public static string GetReadableStringOf(List<KeyCode> n, bool first_only = false)
     {
-        var dd = n.AToB((x) => keynames[x]);
+        var dd = n.AListToBList((x) => keynames[x]);
         if (first_only && dd.Count > 1)
         {
             dd = dd.GetRange(0, 1);
@@ -275,6 +278,96 @@ public class InputManager : SingleInstance<InputManager>
 
 
 
+
+    // ---------------------------------------------------------------
+    // Last-used input device tracking
+    // ---------------------------------------------------------------
+
+    public enum InputDevice { KeyboardMouse, Controller }
+
+    /// <summary>Which kind of device produced the most recent input.</summary>
+    public static InputDevice LastInputDevice { get; private set; } = InputDevice.KeyboardMouse;
+
+    /// <summary>Fires only when the last-used device actually changes (handy for refreshing UI prompts).</summary>
+    public static event Action<InputDevice> OnLastInputDeviceChanged;
+
+    /// <summary>Mouse delta (per frame) needed to count as "using the mouse".</summary>
+    public static float MouseMoveThreshold = 0.001f;
+
+    private static void SetLastInputDevice(InputDevice device)
+    {
+        if (LastInputDevice == device) return;
+        LastInputDevice = device;
+        OnLastInputDeviceChanged?.Invoke(device);
+    }
+
+    // Called once per frame from Update.
+    private static void UpdateLastInputDevice()
+    {
+        // Continuous controller input first (sticks, triggers, d-pad), so that a discrete
+        // keyboard / mouse event this same frame takes priority over a held stick.
+        Vector2 leftStick = new Vector2(Joy(0, 1), Joy(0, 2));
+        if (leftStick.magnitude >= StickDeadzone
+            || GetRightStick(0) != Vector2.zero
+            || vDown != 0)
+        {
+            SetLastInputDevice(InputDevice.Controller);
+        }
+
+        // Discrete key / button presses (keyboard, mouse buttons, controller buttons).
+        if (Input.anyKeyDown)
+        {
+            foreach (var kb in keynames)
+            {
+                if (IsVirtualKey(kb.Key)) continue; // handled above via vDown
+                if (!Input.GetKeyDown(kb.Key)) continue;
+                SetLastInputDevice(IsControllerKey(kb.Key) ? InputDevice.Controller : InputDevice.KeyboardMouse);
+                break;
+            }
+        }
+
+        // Mouse movement / scrolling.
+        if (Mathf.Abs(Input.GetAxisRaw("Mouse X")) > MouseMoveThreshold
+            || Mathf.Abs(Input.GetAxisRaw("Mouse Y")) > MouseMoveThreshold
+            || Input.GetAxisRaw("Mouse ScrollWheel") != 0f)
+        {
+            SetLastInputDevice(InputDevice.KeyboardMouse);
+        }
+    }
+
+    /// <summary>
+    /// The keycodes bound to a gamekey that belong to the last-used input method
+    /// (keyboard/mouse or controller). Empty if that bind has nothing on that side.
+    /// </summary>
+    public static List<KeyCode> GetLatestInputTypeKeys(string bind)
+    {
+        return GetLatestInputTypeKeys(gamekeys[bind]);
+    }
+
+    public static List<KeyCode> GetLatestInputTypeKeys(List<KeyCode> keys)
+    {
+        bool wantController = LastInputDevice == InputDevice.Controller;
+        var result = new List<KeyCode>();
+        for (int i = 0; i < keys.Count; i++)
+        {
+            if (IsControllerKey(keys[i]) == wantController) result.Add(keys[i]);
+        }
+        return result;
+    }
+
+    /// <summary>Like GetRichStringOf, but only shows the last-used input method's keys.</summary>
+    public static string GetLatestRichTextOf(string bind, bool first_only = false) =>
+        GetRichStringOf(GetLatestInputTypeKeys(bind), first_only);
+
+    public static string GetLatestRichTextOf(List<KeyCode> keys, bool first_only = false) =>
+        GetRichStringOf(GetLatestInputTypeKeys(keys), first_only);
+
+    /// <summary>Like GetReadableStringOf, but only shows the last-used input method's keys.</summary>
+    public static string GetLatestReadableStringOf(string bind, bool first_only = false) =>
+        GetReadableStringOf(GetLatestInputTypeKeys(bind), first_only);
+
+    public static string GetLatestReadableStringOf(List<KeyCode> keys, bool first_only = false) =>
+        GetReadableStringOf(GetLatestInputTypeKeys(keys), first_only);
 
     public static KeyCode GetArbitraryKeyPressed()
     {
