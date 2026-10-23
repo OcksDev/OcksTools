@@ -25,7 +25,7 @@ public class InputManager : SingleInstance<InputManager>
 
     private static void SaveInput(SaveProfile dict)
     {
-        Dictionary<string, string> dic = gamekeys.ABDictionaryToCDDictionary(x => x, y => y.AListToBList(x => keynames[x]).ListToString(","));
+        Dictionary<string, string> dic = gamekeys.ABToCD(x => x, y => y.AToB(x => keynames[x]).ListToString(","));
         SaveSystem.GlobalProfile().SetDict("keybinds", dic);
     }
 
@@ -38,7 +38,7 @@ public class InputManager : SingleInstance<InputManager>
         {
             foreach (var a in dic)
             {
-                InputManager.gamekeys[a.Key] = a.Value.StringToList(",").AListToBList((x) => namekeys[x]);
+                InputManager.gamekeys[a.Key] = a.Value.StringToList(",").AToB((x) => namekeys[x]);
             }
         }
     }
@@ -125,9 +125,9 @@ public class InputManager : SingleInstance<InputManager>
 
     }
 
-    public static Dictionary<string, MultiRef<string, List<string>, OXEvent>> InputEvents = new();
-    public static Dictionary<string, MultiRef<string, List<string>, OXEvent>> InputEventsUp = new();
-    public static Dictionary<string, MultiRef<string, List<string>, OXEvent>> InputEventsDown = new();
+    public static Dictionary<string, MRef<string, List<string>, OXEvent>> InputEvents = new();
+    public static Dictionary<string, MRef<string, List<string>, OXEvent>> InputEventsUp = new();
+    public static Dictionary<string, MRef<string, List<string>, OXEvent>> InputEventsDown = new();
     private void Update()
     {
         RefreshVirtualKeys(); // always, so down/up edges for triggers + d-pad are never missed
@@ -144,7 +144,7 @@ public class InputManager : SingleInstance<InputManager>
     }
 
     // mode: 0 = held, 1 = released this frame, 2 = pressed this frame
-    private static void Dispatch(Dictionary<string, MultiRef<string, List<string>, OXEvent>> events, string name, List<KeyCode> keys, int mode)
+    private static void Dispatch(Dictionary<string, MRef<string, List<string>, OXEvent>> events, string name, List<KeyCode> keys, int mode)
     {
         if (events.Count == 0 || !events.TryGetValue(name, out var c)) return;
         for (int i = 0; i < keys.Count; i++)
@@ -167,7 +167,7 @@ public class InputManager : SingleInstance<InputManager>
     {
         var sex = GetExistingEvent(name);
         if (sex != null) return sex;
-        MultiRef<string, List<string>, OXEvent> b = new();
+        MRef<string, List<string>, OXEvent> b = new();
         b.a = name;
         b.b = ide.HasValue ? ide.Value.ToList() : null;
         b.c = new OXEvent();
@@ -179,7 +179,7 @@ public class InputManager : SingleInstance<InputManager>
     {
         var sex = GetExistingEventUp(name);
         if (sex != null) return sex;
-        MultiRef<string, List<string>, OXEvent> b = new();
+        MRef<string, List<string>, OXEvent> b = new();
         b.a = name;
         b.b = ide.HasValue ? ide.Value.ToList() : null;
         b.c = new OXEvent();
@@ -191,7 +191,7 @@ public class InputManager : SingleInstance<InputManager>
     {
         var sex = GetExistingEventDown(name);
         if (sex != null) return sex;
-        MultiRef<string, List<string>, OXEvent> b = new();
+        MRef<string, List<string>, OXEvent> b = new();
         b.a = name;
         b.b = ide.HasValue ? ide.Value.ToList() : null;
         b.c = new OXEvent();
@@ -233,7 +233,7 @@ public class InputManager : SingleInstance<InputManager>
 
     public static string GetReadableStringOf(List<KeyCode> n, bool first_only = false)
     {
-        var dd = n.AListToBList((x) => keynames[x]);
+        var dd = n.AToB((x) => keynames[x]);
         if (first_only && dd.Count > 1)
         {
             dd = dd.GetRange(0, 1);
