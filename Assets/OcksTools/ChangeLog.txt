@@ -1,5 +1,10 @@
 
 ------------
+   v1.2.8
+- It begins...
+------------
+
+------------
    v1.2.7
 - Easy Settings v2 (Completely rewrote from the ground up)
   - Added default settings that can be easily added/swapped into any project
