@@ -23,20 +23,21 @@ public class TreeHandler : SingleInstance<TreeHandler>
         CurrentOwnerships = dict.GetDict("TreeData", new Dictionary<string, int>());
         //phase 2 - the canvas partner objects
         SpawnPartners.Invoke();
-        //phase 3 - update the state of nodes to make sure they all know their state
-        LoadCurrentState.Invoke();
-        //phase 4 - all nodes know about their related nodes
+        //phase 3 - all nodes know about their related nodes
+        //(done before the state update so backward unlocking can see dependents)
         foreach (var node in Nodes)
         {
             foreach (var n in node.Value.Prerequisites)
             {
-                Nodes[n].RelateNodes.Add(node.Key);
+                if (!Nodes[n].RelateNodes.Contains(node.Key)) Nodes[n].RelateNodes.Add(node.Key);
             }
             foreach (var n in node.Value.LockPrerequisites)
             {
-                Nodes[n].RelatedUpdates.Add(node.Key);
+                if (!Nodes[n].RelatedUpdates.Contains(node.Key)) Nodes[n].RelatedUpdates.Add(node.Key);
             }
         }
+        //phase 4 - update the state of nodes to make sure they all know their state
+        LoadCurrentState.Invoke();
         //phase 5 - spawn every line object
         SpawnLines.Invoke();
         //phase 6 - set the state of every line object
@@ -78,6 +79,23 @@ public class TreeHandler : SingleInstance<TreeHandler>
     weenorus:
         return passedreq;
     }
+
+    /// <summary>
+    /// True if any node that has this node as a prerequisite is obtained and
+    /// has BidirectionalPrereq enabled. That lets the player work backwards.
+    /// </summary>
+    public bool BackwardUnlocked(TreeNode node)
+    {
+        foreach (var name in node.RelateNodes)
+        {
+            var other = Nodes[name];
+            //only dependents (nodes that list us as a prerequisite) count
+            if (!other.Prerequisites.Contains(node.Name)) continue;
+            if (other.BidirectionalPrereq && MetNodeReqs(other)) return true;
+        }
+        return false;
+    }
+
     public static int GetNodeLevel(string node)
     {
         if (!CurrentOwnerships.ContainsKey(node)) return 0;

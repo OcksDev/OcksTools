@@ -12,6 +12,7 @@ public class TreeNode : MonoBehaviour
     [HideInInspector]
     public List<string> RelatedUpdates;
     public ViewReq ViewRequirement = ViewReq.AtLeastOne;
+    public bool BidirectionalPrereq = true;
     public List<string> LockPrerequisites = new List<string>();
     public ViewReq UnlockRequirement = ViewReq.AtLeastOne;
     public ViewStates StartState = ViewStates.Hidden;
@@ -52,11 +53,21 @@ public class TreeNode : MonoBehaviour
         TreeHandler.SpawnLines.Append(Name, SpawnLines);
         TreeHandler.UpdateLines.Append(Name, UpdateAllLines);
     }
+
+    /// <summary>
+    /// True if the normal prerequisites are met, or if a later node that is
+    /// bidirectional has been obtained (working your way back).
+    /// </summary>
+    public bool ReqsMet(TreeHandler t)
+    {
+        return t.MeetsReqs(Prerequisites, ViewRequirement) || t.BackwardUnlocked(this);
+    }
+
     public void UpdateState()
     {
         var t = TreeHandler.Instance;
         bool lockedview = false;
-        if (t.MeetsReqs(Prerequisites, ViewRequirement))
+        if (ReqsMet(t))
         {
             switch (ViewState)
             {
@@ -105,6 +116,7 @@ public class TreeNode : MonoBehaviour
     public void PropogatedUpdate()
     {
         UpdateState();
+        //RelateNodes holds both prerequisites (backward) and dependents (forward)
         foreach (var a in RelateNodes)
         {
             TreeHandler.Nodes[a].UpdateState();
@@ -120,6 +132,8 @@ public class TreeNode : MonoBehaviour
             TreeHandler.Nodes[a].UpdateAllLines();
             TreeHandler.Nodes[a].UpdatePrereqLines(Name);
         }
+        //lines owned by our prerequisites point at us, they may now need to show (backward)
+        UpdatePrereqLines(null);
     }
     public void UpdateAllLines()
     {
@@ -139,7 +153,7 @@ public class TreeNode : MonoBehaviour
     public void ClickEffect()
     {
         var t = TreeHandler.Instance;
-        if (!t.MeetsReqs(Prerequisites, ViewRequirement))
+        if (!ReqsMet(t))
         {
             return;
         }
@@ -193,17 +207,20 @@ public class TreeNode : MonoBehaviour
     }
     public void UpdateLineStatus(KeyValuePair<string, Transform> s)
     {
-        if (!TreeHandler.MetNodeReqs(this))
+        //s.Key is a node that has us as a prerequisite (a later node)
+        var other = TreeHandler.Nodes[s.Key];
+        bool show = false;
+        if (TreeHandler.MetNodeReqs(this) && other.canseeme)
         {
-            s.Value.gameObject.SetActive(false);
-            return;
+            //forward: we are obtained and the next node is visible
+            show = true;
         }
-        if (TreeHandler.Nodes[s.Key].canseeme)
+        else if (other.BidirectionalPrereq && TreeHandler.MetNodeReqs(other) && canseeme)
         {
-            s.Value.gameObject.SetActive(true);
-            return;
+            //backward: the later node is obtained and bidirectional, and we are visible
+            show = true;
         }
-        s.Value.gameObject.SetActive(false);
+        s.Value.gameObject.SetActive(show);
     }
 
     private void OnEnable()
