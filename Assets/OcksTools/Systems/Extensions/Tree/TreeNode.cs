@@ -27,9 +27,8 @@ public class TreeNode : MonoBehaviour
 
 
 
-    public void Click()
+    public void Click() // I lowkey have no idea why I made this function lol
     {
-        //return out of this function to stop a click from going through and getting this node
         ClickEffect();
     }
 
@@ -53,11 +52,6 @@ public class TreeNode : MonoBehaviour
         TreeHandler.SpawnLines.Append(Name, SpawnLines);
         TreeHandler.UpdateLines.Append(Name, UpdateAllLines);
     }
-
-    /// <summary>
-    /// True if the normal prerequisites are met, or if a later node that is
-    /// bidirectional has been obtained (working your way back).
-    /// </summary>
     public bool ReqsMet(TreeHandler t)
     {
         return t.MeetsReqs(Prerequisites, ViewRequirement) || t.BackwardUnlocked(this);
