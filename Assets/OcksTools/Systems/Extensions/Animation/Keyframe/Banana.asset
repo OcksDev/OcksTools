@@ -69,7 +69,7 @@ MonoBehaviour:
         Scale: {x: 3.62, y: 1.55, z: 1}
       RotationEuler: {x: -0, y: -2.43, z: 0}
       HasRotationEuler: 1
-  - Time: 1.4
+  - Time: 1.35
     Position:
       Enabled: 1
       InterpMode: 1
@@ -120,7 +120,7 @@ MonoBehaviour:
         Scale: {x: 1, y: 1, z: 1}
       RotationEuler: {x: 0, y: 0, z: 0}
       HasRotationEuler: 0
-  - Time: 1.5999999
+  - Time: 1.55
     Position:
       Enabled: 0
       InterpMode: 1
@@ -171,7 +171,7 @@ MonoBehaviour:
         Scale: {x: 1, y: 1, z: 1}
       RotationEuler: {x: -0, y: 0, z: 707.26}
       HasRotationEuler: 1
-  - Time: 2
+  - Time: 1.95
     Position:
       Enabled: 1
       InterpMode: 0

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 /// <summary>
@@ -74,12 +73,15 @@ public class OXKeyframeAnimation : ScriptableObject
         return result;
     }
 
-    /// <summary>Plays this animation. fadeTime &lt; 0 uses the asset's FadeTime; 0 cuts straight over.</summary>
-    public OXKeyframeAnimationRuntime Play(BetterList<GameObject> objects, float fadeTime = -1f)
+    /// <summary>
+    /// Plays this animation. fadeTime &lt; 0 uses the asset's FadeTime; 0 cuts straight over.
+    /// speed multiplies the playback rate (2 = double speed); a negative speed starts at the end and plays backwards.
+    /// </summary>
+    public OXKeyframeAnimationRuntime Play(BetterList<GameObject> objects, float fadeTime = -1f, float speed = 1)
     {
         var list = objects.ToList();
         if (list == null || list.Count == 0) return null;
-        return OXKeyframeAnimator.GetOrAdd(list[0]).Play(this, list, fadeTime);
+        return OXKeyframeAnimator.GetOrAdd(list[0]).Play(this, list, fadeTime, speed);
     }
 }
 

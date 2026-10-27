@@ -4,6 +4,13 @@ using UnityEngine;
 
 public class OXKeyframeAnimationRuntime
 {
+    /// <summary>
+    /// Multiplies the playback rate (2 = twice as fast, 0.5 = half speed, 0 = paused). Read every frame, so it can change
+    /// mid-playback. A negative value plays backwards: if playback starts with a negative speed it begins at the end of
+    /// the animation and runs toward the start (events fire in reverse order). Flipping the sign mid-playback reverses
+    /// direction from the current position. Fade time is always real seconds and is not affected.
+    /// </summary>
+    public float PlaybackSpeed = 1;
     private const float Eps = 0.0001f;
 
     /// <summary>
@@ -161,13 +168,10 @@ public class OXKeyframeAnimationRuntime
     private bool curWrapped;
     private FadeEntry[] fadeEntries;
 
-    // Per-pass state read by OnFrame (avoids allocating a closure per pass).
-    private float passDuration;
-    private bool passWrapped;
-
     public bool IsFading => outgoing != null;
 
     private List<OXEventKeyframe> eventList = NoEvents;
+    /// <summary>Next event to fire: counts up while playing forward, down while playing backward.</summary>
     private int nextEvent;
 
     /// <summary>Callbacks by event name, invoked when an event keyframe with a matching Name is reached.</summary>
@@ -193,12 +197,12 @@ public class OXKeyframeAnimationRuntime
     }
 
     public OXKeyframeAnimationRuntime(OXKeyframeAnimation asset, OXKeyframeAnimator animator, IList<GameObject> objects)
-        : this(asset, animator, objects, null, 0f) { }
+        : this(asset, animator, objects, null, 0f, 1f) { }
 
     /// <param name="outgoing">Animation currently playing that this one fades in over (null = no fade).</param>
     /// <param name="fadeTime">Fade seconds; ignored when 0 or without an outgoing animation.</param>
     public OXKeyframeAnimationRuntime(OXKeyframeAnimation asset, OXKeyframeAnimator animator, IList<GameObject> objects,
-        OXKeyframeAnimationRuntime outgoing, float fadeTime)
+        OXKeyframeAnimationRuntime outgoing, float fadeTime, float speed)
     {
         Asset = asset;
         this.animator = animator;
@@ -209,7 +213,7 @@ public class OXKeyframeAnimationRuntime
             fadeDuration = fadeTime;
             fadeStartTime = Time.time;
         }
-
+        PlaybackSpeed = speed;
         int count = objects.Count;
         targets = new Target[count];
         for (int i = 0; i < count; i++) targets[i] = CreateTarget(objects[i]);
@@ -797,11 +801,46 @@ public class OXKeyframeAnimationRuntime
         }
     }
 
-    private void OnFrame(float x)
+    /// <summary>Backward counterpart of FireEventsUpTo: fires, latest first, every unfired event at or after t.</summary>
+    private void FireEventsDownTo(float t)
     {
-        float t = x * passDuration;
-        Tick(t, passWrapped);
-        FireEventsUpTo(t);
+        while (nextEvent >= 0 && nextEvent < eventList.Count && eventList[nextEvent].Time >= t)
+        {
+            var ev = eventList[nextEvent--];
+            if (string.IsNullOrEmpty(ev.Name)) continue;
+            try { Invoke(ev.Name); }
+            catch (System.Exception ex) { Debug.LogException(ex); }
+        }
+    }
+
+    private void FireEvents(float t, bool reverse)
+    {
+        if (reverse) FireEventsDownTo(t);
+        else FireEventsUpTo(t);
+    }
+
+    /// <summary>Points the event cursor at the start of a pass: first event going forward, last event going backward.</summary>
+    private void ResetEventCursor(bool reverse) => nextEvent = reverse ? eventList.Count - 1 : 0;
+
+    /// <summary>
+    /// Re-aims the event cursor after the direction flips mid-pass. Events at exactly t count as not yet fired in the new
+    /// direction, so a flip re-fires them; events behind the new direction of travel fire again as they are crossed.
+    /// </summary>
+    private void SeekEventCursor(float t, bool reverse)
+    {
+        int n = eventList.Count;
+        if (reverse)
+        {
+            int i = n - 1;
+            while (i >= 0 && eventList[i].Time > t) i--;
+            nextEvent = i;
+        }
+        else
+        {
+            int i = 0;
+            while (i < n && eventList[i].Time < t) i++;
+            nextEvent = i;
+        }
     }
 
     private IEnumerator Animation()
@@ -822,27 +861,59 @@ public class OXKeyframeAnimationRuntime
             yield break;
         }
 
-        // Callbacks are registered after Play() returns, so give them a frame if an event sits at the very start.
-        if (hasEvents && eventList[0].Time <= Eps) yield return null;
+        // Callbacks are registered after Play() returns, so give them a frame if an event sits at the very start
+        // (the end of the animation when it starts out playing backwards).
+        if (hasEvents)
+        {
+            bool startsReversed = PlaybackSpeed < 0f;
+            bool eventAtStart = startsReversed
+                ? eventList[eventList.Count - 1].Time >= totalDuration - Eps
+                : eventList[0].Time <= Eps;
+            if (eventAtStart) yield return null;
+        }
 
         bool loop = Asset.Loop && totalDuration > Eps; // a zero-length loop would spin forever
         int pass = 0;
         bool wrapped = false;
+        float endTime = 0f; // where the last pass finished, so a trailing fade keeps holding that pose
+        bool reverse = false;
         do
         {
-            nextEvent = 0;
+            // Direction is picked when a pass starts: a negative speed starts at the end and plays toward 0.
+            reverse = PlaybackSpeed < 0f;
             wrapped = pass > 0 || Asset.StartLast;
+            ResetEventCursor(reverse);
+
+            float pos = reverse ? totalDuration : 0f;
 
             if (totalDuration > 0f)
             {
-                passDuration = totalDuration;
-                passWrapped = wrapped;
-                yield return OXLerp.Frame.Linear(OnFrame, passDuration);
+                bool first = true;
+                while (true)
+                {
+                    float speed = PlaybackSpeed;
+                    if (speed != 0f && (speed < 0f) != reverse)
+                    {
+                        reverse = speed < 0f;
+                        SeekEventCursor(pos, reverse);
+                    }
+
+                    // The first iteration just poses the starting edge; later ones advance by the scaled frame time.
+                    if (!first) pos = Mathf.Clamp(pos + Time.deltaTime * speed, 0f, totalDuration);
+                    first = false;
+
+                    Tick(pos, wrapped);
+                    FireEvents(pos, reverse);
+
+                    if (reverse ? pos <= 0f : pos >= totalDuration) break;
+                    yield return null;
+                }
             }
 
             // Land exactly on the final values, even after a long frame.
-            Tick(totalDuration, wrapped);
-            FireEventsUpTo(float.PositiveInfinity);
+            endTime = reverse ? 0f : totalDuration;
+            Tick(endTime, wrapped);
+            FireEvents(reverse ? float.NegativeInfinity : float.PositiveInfinity, reverse);
 
             if (loop) yield return null;
             pass++;
@@ -852,7 +923,7 @@ public class OXKeyframeAnimationRuntime
         while (outgoing != null)
         {
             yield return null;
-            Tick(totalDuration, wrapped);
+            Tick(endTime, wrapped);
         }
 
         routine = null;

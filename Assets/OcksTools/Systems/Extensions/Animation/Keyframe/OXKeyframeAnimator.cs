@@ -16,8 +16,9 @@ public class OXKeyframeAnimator : MonoBehaviour
     /// <summary>
     /// Plays an animation on these objects. fadeTime &lt; 0 uses the asset's FadeTime; 0 stops and resets the
     /// current animation first. While fading, the old animation keeps running and is stopped when the fade ends.
+    /// speed multiplies the playback rate; a negative speed plays the animation backwards from its end.
     /// </summary>
-    public OXKeyframeAnimationRuntime Play(OXKeyframeAnimation asset, IList<GameObject> objects, float fadeTime = -1f)
+    public OXKeyframeAnimationRuntime Play(OXKeyframeAnimation asset, IList<GameObject> objects, float fadeTime = -1f, float speed = 1)
     {
         if (fadeTime < 0f) fadeTime = asset != null ? asset.FadeTime : 0f;
 
@@ -28,7 +29,7 @@ public class OXKeyframeAnimator : MonoBehaviour
             else CurrentAnim.StopAndReset();
         }
 
-        var player = new OXKeyframeAnimationRuntime(asset, this, objects, outgoing, fadeTime);
+        var player = new OXKeyframeAnimationRuntime(asset, this, objects, outgoing, fadeTime, speed);
         CurrentAnim = LastAnim = player;
         player.Play();
         return player;
