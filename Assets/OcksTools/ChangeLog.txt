@@ -3,7 +3,8 @@
    v1.2.8
 - Tree Improvements
   - Added Bi-directionality to the nodes as an optional feature
-
+- Keyframe Improvements
+  - Added playback speed attribute
 ------------
 
 ------------
