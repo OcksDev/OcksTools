@@ -25,18 +25,18 @@ public class ManualRoomCreator : MonoBehaviour
         switch (type)
         {
             case "NoDoorsError":
-                main = InitialRoom(RoomGen.RoomNerds[0]);
-                main.AppendRoom(RoomGen.RoomNerds[3], RoomLol.RoomDirecton.Right);
-                var notenoughdoors = main.AppendRoom(RoomGen.RoomNerds[2], RoomLol.RoomDirecton.Left);
-                notenoughdoors.AppendRoom(RoomGen.RoomNerds[3], RoomLol.RoomDirecton.Top);
+                main = InitialRoom(RoomGen.RoomNerds["HorizontalRoom"]);
+                main.AppendRoom(RoomGen.RoomNerds["Ender"], RoomLol.RoomDirecton.Right);
+                var notenoughdoors = main.AppendRoom(RoomGen.RoomNerds["FourWay"], RoomLol.RoomDirecton.Left);
+                notenoughdoors.AppendRoom(RoomGen.RoomNerds["Ender"], RoomLol.RoomDirecton.Top);
                 // "notenoughdoors" has no available top doors
-                notenoughdoors.AppendRoom(RoomGen.RoomNerds[3], RoomLol.RoomDirecton.Top);
+                notenoughdoors.AppendRoom(RoomGen.RoomNerds["Ender"], RoomLol.RoomDirecton.Top);
                 break;
             default:
-                main = InitialRoom(RoomGen.RoomNerds[0]);
-                main.AppendRoom(RoomGen.RoomNerds[3], RoomLol.RoomDirecton.Right);
-                var c = main.AppendRoom(RoomGen.RoomNerds[2], RoomLol.RoomDirecton.Left);
-                c.AppendRoom(RoomGen.RoomNerds[3], RoomLol.RoomDirecton.Top);
+                main = InitialRoom(RoomGen.RoomNerds["HorizontalRoom"]);
+                main.AppendRoom(RoomGen.RoomNerds["Ender"], RoomLol.RoomDirecton.Right);
+                var c = main.AppendRoom(RoomGen.RoomNerds["FourWay"], RoomLol.RoomDirecton.Left);
+                c.AppendRoom(RoomGen.RoomNerds["Ender"], RoomLol.RoomDirecton.Top);
                 break;
 
 

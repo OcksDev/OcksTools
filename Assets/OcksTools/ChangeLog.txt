@@ -1,6 +1,8 @@
 
 ------------
    v1.2.8
+- Room Generator Improvements
+  - Changed underlying room data structure from array to dictionary
 - Tree Improvements
   - Added Bi-directionality to the nodes as an optional feature
 - Keyframe Improvements

@@ -25,13 +25,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9063481460969481341}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -1.2135868, y: -0.13442232, z: -0.96748316}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &-3949468990596044743
 MonoBehaviour:
@@ -48,7 +48,99 @@ MonoBehaviour:
   RoomDensity: 6
   DistanceScaler: 1
   CenterSpawn: {x: 0, y: 0, z: 0}
-  RoomNerds: []
+  RoomNerds:
+    List:
+    - Name: HorizontalRoom
+      RoomObject: {fileID: 7492567958466505728, guid: 2e8c1080c4bacc44e900694ebc97221c, type: 3}
+      IsEndpoint: 0
+      RoomSize: {x: 0, y: 0}
+      LeftDoors:
+      - {x: 1, y: 0}
+      RightDoors: []
+      TopDoors: []
+      BottomDoors: []
+    - Name: VerticalRoom
+      RoomObject: {fileID: 7492567958466505728, guid: 8c5e41f64d455df4ab696c14e779cf83, type: 3}
+      IsEndpoint: 0
+      RoomSize: {x: 0, y: 0}
+      LeftDoors: []
+      RightDoors:
+      - {x: 0, y: 0}
+      TopDoors:
+      - {x: 0, y: 1}
+      BottomDoors: []
+    - Name: FourWay
+      RoomObject: {fileID: 7492567958466505728, guid: 9c7204bc4bf4f8742ba3f0e4b168d2bf, type: 3}
+      IsEndpoint: 0
+      RoomSize: {x: 0, y: 0}
+      LeftDoors:
+      - {x: 0, y: 0}
+      RightDoors:
+      - {x: 0, y: 0}
+      TopDoors:
+      - {x: 0, y: 0}
+      BottomDoors: []
+    - Name: HorizontalRoom
+      RoomObject: {fileID: 0}
+      IsEndpoint: 0
+      RoomSize: {x: 0, y: 0}
+      LeftDoors:
+      - {x: 0, y: 0}
+      RightDoors:
+      - {x: 0, y: 0}
+      TopDoors:
+      - {x: 0, y: 0}
+      BottomDoors:
+      - {x: 0, y: 0}
+    - Name: HorizontalRoom
+      RoomObject: {fileID: 0}
+      IsEndpoint: 0
+      RoomSize: {x: 0, y: 0}
+      LeftDoors: []
+      RightDoors:
+      - {x: 0, y: 0}
+      TopDoors: []
+      BottomDoors: []
+    - Name: HorizontalRoom
+      RoomObject: {fileID: 0}
+      IsEndpoint: 0
+      RoomSize: {x: 0, y: 0}
+      LeftDoors: []
+      RightDoors: []
+      TopDoors:
+      - {x: 0, y: 0}
+      BottomDoors:
+      - {x: 0, y: 0}
+    - Name: HorizontalRoom
+      RoomObject: {fileID: 0}
+      IsEndpoint: 0
+      RoomSize: {x: 0, y: 0}
+      LeftDoors:
+      - {x: 0, y: 0}
+      RightDoors: []
+      TopDoors:
+      - {x: 0, y: 0}
+      BottomDoors: []
+    - Name: HorizontalRoom
+      RoomObject: {fileID: 0}
+      IsEndpoint: 0
+      RoomSize: {x: 0, y: 0}
+      LeftDoors:
+      - {x: 0, y: 0}
+      RightDoors:
+      - {x: 0, y: 0}
+      TopDoors: []
+      BottomDoors: []
+    - Name: HorizontalRoom
+      RoomObject: {fileID: 7492567958466505728, guid: b6847a7900e430d45ae6f0959c618cb6, type: 3}
+      IsEndpoint: 0
+      RoomSize: {x: 0, y: 0}
+      LeftDoors: []
+      RightDoors: []
+      TopDoors:
+      - {x: 0, y: 0}
+      - {x: 1, y: 0}
+      BottomDoors: []
   SpawnedRooms: []
   runs: 0
   cycles: 0

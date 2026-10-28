@@ -9,7 +9,7 @@ public class RoomLol : MonoBehaviour
     public int RoomDensity = 6;
     public float DistanceScaler = 1f;
     public Vector3 CenterSpawn = new Vector3(0, 0, 0);
-    public Room[] RoomNerds;
+    public CompileableDictionaryAlt<string, Room> RoomNerds;
     public List<GameObject> SpawnedRooms = new List<GameObject>();
     public int[,] RoomColliders = new int[200, 200];
     private List<Room> AllRooms = new List<Room>();
@@ -108,13 +108,17 @@ public class RoomLol : MonoBehaviour
 
         RoomColliders = new int[200, 200];
 
-        //change rooms to use here
-        AllRooms = new List<Room>();
 
-        for (int i = 0; i < RoomNerds.Length; i++)
+        //update roomlist
+        RoomNerds.Clear();
+        RoomNerds.Compile(x => x.Name);
+
+
+        //change rooms to use here
+        AllRooms.Clear();
+        foreach (var a in RoomNerds)
         {
-            RoomNerds[i].SetData(i);
-            AllRooms.Add(RoomNerds[i]);
+            AllRooms.Add(a.Value);
         }
         LeftRooms.Clear();
         RightRooms.Clear();
@@ -425,6 +429,7 @@ public class RoomLol : MonoBehaviour
 [Serializable]
 public class Room
 {
+    public string Name;
     public GameObject RoomObject;
     public bool IsEndpoint = false;
     public Vector2 RoomSize = new Vector2(1, 1);
@@ -432,13 +437,6 @@ public class Room
     public List<Vector2> RightDoors = new List<Vector2>();
     public List<Vector2> TopDoors = new List<Vector2>();
     public List<Vector2> BottomDoors = new List<Vector2>();
-    [HideInInspector]
-    public int RoomID = -1;
-
-    public void SetData(int index)
-    {
-        RoomID = index;
-    }
 
     /*
     public Room(int roomid)
