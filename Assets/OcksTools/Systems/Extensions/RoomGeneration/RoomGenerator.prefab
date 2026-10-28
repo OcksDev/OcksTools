@@ -53,26 +53,27 @@ MonoBehaviour:
     - Name: HorizontalRoom
       RoomObject: {fileID: 7492567958466505728, guid: 2e8c1080c4bacc44e900694ebc97221c, type: 3}
       IsEndpoint: 0
-      RoomSize: {x: 0, y: 0}
+      RoomSize: {x: 2, y: 1}
       LeftDoors:
+      - {x: 0, y: 0}
+      RightDoors:
       - {x: 1, y: 0}
-      RightDoors: []
       TopDoors: []
       BottomDoors: []
     - Name: VerticalRoom
       RoomObject: {fileID: 7492567958466505728, guid: 8c5e41f64d455df4ab696c14e779cf83, type: 3}
       IsEndpoint: 0
-      RoomSize: {x: 0, y: 0}
+      RoomSize: {x: 1, y: 2}
       LeftDoors: []
-      RightDoors:
-      - {x: 0, y: 0}
+      RightDoors: []
       TopDoors:
+      - {x: 0, y: 0}
+      BottomDoors:
       - {x: 0, y: 1}
-      BottomDoors: []
     - Name: FourWay
       RoomObject: {fileID: 7492567958466505728, guid: 9c7204bc4bf4f8742ba3f0e4b168d2bf, type: 3}
       IsEndpoint: 0
-      RoomSize: {x: 0, y: 0}
+      RoomSize: {x: 1, y: 1}
       LeftDoors:
       - {x: 0, y: 0}
       RightDoors:
@@ -84,7 +85,7 @@ MonoBehaviour:
     - Name: Ender
       RoomObject: {fileID: 7492567958466505728, guid: 65ada62d7668b3a49bbc32f578455e1b, type: 3}
       IsEndpoint: 1
-      RoomSize: {x: 0, y: 0}
+      RoomSize: {x: 1, y: 1}
       LeftDoors:
       - {x: 0, y: 0}
       RightDoors:
@@ -96,52 +97,53 @@ MonoBehaviour:
     - Name: Corner1
       RoomObject: {fileID: 7492567958466505728, guid: 6f1a07cae096f65498c0784e8e0270ca, type: 3}
       IsEndpoint: 0
-      RoomSize: {x: 0, y: 0}
-      LeftDoors: []
-      RightDoors:
+      RoomSize: {x: 1, y: 1}
+      LeftDoors:
       - {x: 0, y: 0}
-      TopDoors: []
+      RightDoors: []
+      TopDoors:
+      - {x: 0, y: 0}
       BottomDoors: []
     - Name: Corner2
       RoomObject: {fileID: 7492567958466505728, guid: 6f1a07cae096f65498c0784e8e0270ca, type: 3}
       IsEndpoint: 0
-      RoomSize: {x: 0, y: 0}
+      RoomSize: {x: 1, y: 1}
       LeftDoors: []
-      RightDoors: []
+      RightDoors:
+      - {x: 0, y: 0}
       TopDoors:
       - {x: 0, y: 0}
-      BottomDoors:
-      - {x: 0, y: 0}
+      BottomDoors: []
     - Name: Corner3
       RoomObject: {fileID: 7492567958466505728, guid: 6f1a07cae096f65498c0784e8e0270ca, type: 3}
       IsEndpoint: 0
-      RoomSize: {x: 0, y: 0}
+      RoomSize: {x: 1, y: 1}
       LeftDoors:
       - {x: 0, y: 0}
       RightDoors: []
-      TopDoors:
+      TopDoors: []
+      BottomDoors:
       - {x: 0, y: 0}
-      BottomDoors: []
     - Name: Corner4
       RoomObject: {fileID: 7492567958466505728, guid: 6f1a07cae096f65498c0784e8e0270ca, type: 3}
       IsEndpoint: 0
-      RoomSize: {x: 0, y: 0}
-      LeftDoors:
-      - {x: 0, y: 0}
+      RoomSize: {x: 1, y: 1}
+      LeftDoors: []
       RightDoors:
       - {x: 0, y: 0}
       TopDoors: []
-      BottomDoors: []
+      BottomDoors:
+      - {x: 0, y: 0}
     - Name: TwoDoor
       RoomObject: {fileID: 7492567958466505728, guid: b6847a7900e430d45ae6f0959c618cb6, type: 3}
       IsEndpoint: 0
-      RoomSize: {x: 0, y: 0}
+      RoomSize: {x: 2, y: 1}
       LeftDoors: []
       RightDoors: []
-      TopDoors:
+      TopDoors: []
+      BottomDoors:
       - {x: 0, y: 0}
       - {x: 1, y: 0}
-      BottomDoors: []
   SpawnedRooms: []
   runs: 0
   cycles: 0
