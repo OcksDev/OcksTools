@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -11,16 +10,44 @@ public class RoomLol : MonoBehaviour
     public Vector3 CenterSpawn = new Vector3(0, 0, 0);
     public CompileableDictionaryAlt<string, Room> RoomNerds;
     public List<GameObject> SpawnedRooms = new List<GameObject>();
-    public int[,] RoomColliders = new int[200, 200];
-    private List<Room> AllRooms = new List<Room>();
-    private List<Room> LeftRooms = new List<Room>();
-    private List<Room> RightRooms = new List<Room>();
-    private List<Room> UpRooms = new List<Room>();
-    private List<Room> DownRooms = new List<Room>();
-    private List<Room> EndLeftRooms = new List<Room>();
-    private List<Room> EndRightRooms = new List<Room>();
-    private List<Room> EndUpRooms = new List<Room>();
-    private List<Room> EndDownRooms = new List<Room>();
+
+    public int runs = 0;
+    public int cycles = 0;
+    public const int GridSize = 200;
+    private readonly bool[] grid = new bool[GridSize * GridSize];
+
+    // Direction tables, indexed by (int)RoomDirecton: None, Top, Bottom, Left, Right
+    private static readonly int[] Opposite = { 0, 2, 1, 4, 3 };
+    private static readonly int[] StepX = { 0, 0, 0, -1, 1 };
+    private static readonly int[] StepY = { 0, -1, 1, 0, 0 };
+
+    /// <summary>
+    /// Integer-only snapshot of a Room, built once per generation so the hot
+    /// search loop never touches List&lt;Vector2&gt; or float math.
+    /// </summary>
+    private sealed class RoomInfo
+    {
+        public Room Source;
+        public int W, H;
+        public int[][] DoorX = new int[5][]; // indexed by (int)RoomDirecton, [0] unused
+        public int[][] DoorY = new int[5][];
+    }
+
+    private RoomInfo[] allRooms = new RoomInfo[0];
+    private readonly RoomInfo[][] normalByDoor = EmptyTable(); // non-endpoint rooms that have a door facing [dir]
+    private readonly RoomInfo[][] endByDoor = EmptyTable();    // endpoint rooms that have a door facing [dir]
+
+    // One scratch buffer per recursion depth, so no List copies are made while searching.
+    private RoomInfo[][] bufferPool = new RoomInfo[0][];
+    private int poolWidth = -1;
+
+    private static RoomInfo[][] EmptyTable()
+    {
+        var t = new RoomInfo[5][];
+        for (int i = 0; i < t.Length; i++) t[i] = new RoomInfo[0];
+        return t;
+    }
+
     public void ClearRooms()
     {
         foreach (var r in SpawnedRooms)
@@ -34,7 +61,7 @@ public class RoomLol : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            GenerateRandomLayout();
+            GenerateRandomLayout(RoomDensity);
         }
         if (Input.GetKeyDown(KeyCode.Q))
         {
@@ -58,303 +85,241 @@ public class RoomLol : MonoBehaviour
         Debug.Log($"Build Stats: [{runs}], [{cycles}]");
     }
 
-
-    public int runs = 0;
-    public int cycles = 0;
-
-    public CoolRoom CalcRoomLayout(int density, OXRandom rnd)
+    public CoolRoom CalcRoomLayout(int density, OXRandom rnd = null)
     {
         PopulateRooms();
-        int sz = RoomColliders.GetLength(0) / 2;
-        return GenerateFromRooms(density, RoomColliders, RoomDirecton.None, new Vector2(sz, sz), rnd);
-    }
-    public CoolRoom CalcRoomLayout(int density)
-    {
-        return CalcRoomLayout(density, null);
-    }
-
-    public CoolRoom CalcRoomLayout(OXRandom rnd)
-    {
-        return CalcRoomLayout(RoomDensity, rnd);
-    }
-    public CoolRoom CalcRoomLayout()
-    {
-        return CalcRoomLayout(RoomDensity, null);
+        int sz = GridSize / 2;
+        var p = GenerateFromRooms(density, RoomDirecton.None, new Vector2(sz, sz), rnd);
+        Debug.Log($"Build Stats: [{runs}], [{cycles}]");
+        return p;
     }
 
 
-
-    public void GenerateRandomLayout(int dens)
+    public void GenerateRandomLayout(int dens, OXRandom r = null)
     {
         ClearRooms();
-        PlaceFromCoolRoom(CalcRoomLayout(dens), gameObject);
-
-        Debug.Log($"Build Stats: [{runs}], [{cycles}]");
-
+        PlaceFromCoolRoom(CalcRoomLayout(dens, r), gameObject);
     }
 
-    public void GenerateRandomLayout()
-    {
-        ClearRooms();
-        PlaceFromCoolRoom(CalcRoomLayout(), gameObject);
-
-        Debug.Log($"Build Stats: [{runs}], [{cycles}]");
-
-    }
     public void PopulateRooms()
     {
         runs = 0;
         cycles = 0;
 
-        RoomColliders = new int[200, 200];
-
+        Array.Clear(grid, 0, grid.Length);
 
         //update roomlist
         RoomNerds.Clear();
         RoomNerds.Compile(x => x.Name);
 
-
         //change rooms to use here
-        AllRooms.Clear();
+        var all = new List<RoomInfo>();
         foreach (var a in RoomNerds)
         {
-            AllRooms.Add(a.Value);
+            all.Add(CompileRoom(a.Value));
         }
-        LeftRooms.Clear();
-        RightRooms.Clear();
-        UpRooms.Clear();
-        DownRooms.Clear();
-        EndLeftRooms.Clear();
-        EndRightRooms.Clear();
-        EndUpRooms.Clear();
-        EndDownRooms.Clear();
-        //whichs rooms are chosen for certain directions
-        foreach (var room in AllRooms)
+        allRooms = all.ToArray();
+
+        //which rooms are chosen for certain directions
+        var normal = new List<RoomInfo>();
+        var end = new List<RoomInfo>();
+        for (int d = 1; d <= 4; d++)
         {
-            if (room.LeftDoors.Count > 0 && !room.IsEndpoint) LeftRooms.Add(room);
-            if (room.RightDoors.Count > 0 && !room.IsEndpoint) RightRooms.Add(room);
-            if (room.TopDoors.Count > 0 && !room.IsEndpoint) UpRooms.Add(room);
-            if (room.BottomDoors.Count > 0 && !room.IsEndpoint) DownRooms.Add(room);
-            if (room.LeftDoors.Count > 0 && room.IsEndpoint) EndLeftRooms.Add(room);
-            if (room.RightDoors.Count > 0 && room.IsEndpoint) EndRightRooms.Add(room);
-            if (room.TopDoors.Count > 0 && room.IsEndpoint) EndUpRooms.Add(room);
-            if (room.BottomDoors.Count > 0 && room.IsEndpoint) EndDownRooms.Add(room);
+            normal.Clear();
+            end.Clear();
+            for (int i = 0; i < allRooms.Length; i++)
+            {
+                var r = allRooms[i];
+                if (r.DoorX[d].Length == 0) continue;
+                if (r.Source.IsEndpoint) end.Add(r); else normal.Add(r);
+            }
+            normalByDoor[d] = normal.ToArray();
+            endByDoor[d] = end.ToArray();
+        }
+
+        if (poolWidth != allRooms.Length)
+        {
+            poolWidth = allRooms.Length;
+            bufferPool = new RoomInfo[0][];
         }
     }
-    public CoolRoom GenerateFromRooms(int lvl, int[,] roomcol, RoomDirecton SearchDirection, Vector2 pos, OXRandom rnd = null)
-    {
-        CoolRoom ret = new CoolRoom();
 
+    private static RoomInfo CompileRoom(Room r)
+    {
+        var info = new RoomInfo { Source = r, W = (int)r.RoomSize.x, H = (int)r.RoomSize.y };
+        FillDoors(info, RoomDirecton.Top, r.TopDoors);
+        FillDoors(info, RoomDirecton.Bottom, r.BottomDoors);
+        FillDoors(info, RoomDirecton.Left, r.LeftDoors);
+        FillDoors(info, RoomDirecton.Right, r.RightDoors);
+        return info;
+    }
+
+    private static void FillDoors(RoomInfo info, RoomDirecton dir, List<Vector2> doors)
+    {
+        int n = doors.Count;
+        var xs = new int[n];
+        var ys = new int[n];
+        for (int i = 0; i < n; i++)
+        {
+            xs[i] = (int)doors[i].x;
+            ys[i] = (int)doors[i].y;
+        }
+        info.DoorX[(int)dir] = xs;
+        info.DoorY[(int)dir] = ys;
+    }
+
+    private RoomInfo[] GetBuffer(int depth)
+    {
+        if (depth >= bufferPool.Length)
+        {
+            Array.Resize(ref bufferPool, Math.Max(depth + 1, bufferPool.Length * 2));
+        }
+        var b = bufferPool[depth];
+        if (b == null)
+        {
+            b = new RoomInfo[Math.Max(1, poolWidth)];
+            bufferPool[depth] = b;
+        }
+        return b;
+    }
+
+    /* dir:
+     * None = any direction
+     * Top / Bottom / Left / Right = the direction the room is trying to be generated from the previous room.
+     */
+    public CoolRoom GenerateFromRooms(int lvl, RoomDirecton SearchDirection, Vector2 pos, OXRandom rnd = null)
+    {
+        if (rnd == null) rnd = new OXRandom(); // created once, not once per loop iteration
+        return Gen(lvl, 0, (int)SearchDirection, (int)pos.x, (int)pos.y, rnd);
+    }
+
+    private CoolRoom Gen(int lvl, int depth, int dir, int px, int py, OXRandom rnd)
+    {
         runs++;
+        var ret = new CoolRoom();
         if (lvl < 1)
         {
             ret.WasChill = true;
             return ret;
         }
-        /* dir:
-         * -1 = any direction
-         * 0 = top
-         * 1 = bottom
-         * 2 = left
-         * 3 = right
-         * 
-         * dir is the direction the room is trying to be generated from the previous room.
-         * Lists
-         * 
-         */
-        List<Room> available_rooms;
-        switch (SearchDirection)
-        {
-            default:
-                available_rooms = new List<Room>(AllRooms);
-                break;
-            case RoomDirecton.Top:
-                available_rooms = new List<Room>(lvl == 1 ? EndDownRooms : DownRooms);
-                break;
-            case RoomDirecton.Bottom:
-                available_rooms = new List<Room>(lvl == 1 ? EndUpRooms : UpRooms);
-                break;
-            case RoomDirecton.Left:
-                available_rooms = new List<Room>(lvl == 1 ? EndRightRooms : RightRooms);
-                break;
-            case RoomDirecton.Right:
-                available_rooms = new List<Room>(lvl == 1 ? EndLeftRooms : LeftRooms);
-                break;
-        }
-        bool found_place = false;
-        //bool found_ever = false;
-        //Debug.Log("Fuck dawg " + lvl + ", " + dir);
-        while (available_rooms.Count > 0)
-        {
-            var randy = rnd != null ? rnd : new OXRandom();
-            int index = randy.Next(0, available_rooms.Count);
-            Room rom = available_rooms[index];
-            Func<RoomDirecton, int> getamnt = (x) =>
-            {
 
-                switch (x)
-                {
-                    case RoomDirecton.Top:
-                        return rom.BottomDoors.Count;
-                    case RoomDirecton.Bottom:
-                        return rom.TopDoors.Count;
-                    case RoomDirecton.Left:
-                        return rom.RightDoors.Count;
-                    case RoomDirecton.Right:
-                        return rom.LeftDoors.Count;
-                    default:
-                        return 1;
-                }
+        int opp = Opposite[dir];
+        RoomInfo[] source = dir == 0 ? allRooms : (lvl == 1 ? endByDoor[opp] : normalByDoor[opp]);
+        int count = source.Length;
+        if (count == 0) return ret;
 
-            };
-            var aaa = getamnt(SearchDirection);
-            for (int doorindexlol = 0; doorindexlol < aaa; doorindexlol++)
+        RoomInfo[] avail = GetBuffer(depth);
+        Array.Copy(source, avail, count);
+
+        while (count > 0)
+        {
+            int index = rnd.Next(0, count);
+            RoomInfo rom = avail[index];
+            int attempts = dir == 0 ? 1 : rom.DoorX[opp].Length;
+
+            for (int door = 0; door < attempts; door++)
             {
                 cycles++;
-                bool keepgoing = true;
-                ret.room = rom;
-                var pos2 = ModPos(SearchDirection, pos, rom, doorindexlol);
 
-                ret.pos = pos2;
-
-                for (int i = 0; i < rom.RoomSize.x && keepgoing; i++)
+                int x = px, y = py;
+                if (dir != 0)
                 {
-                    for (int j = 0; j < rom.RoomSize.y && keepgoing; j++)
-                    {
-                        if (roomcol[i + (int)pos2.x, j + (int)pos2.y] > 0)
-                        {
-                            keepgoing = false;
-                        }
-                    }
+                    x = px - rom.DoorX[opp][door] + StepX[dir];
+                    y = py - rom.DoorY[opp][door] + StepY[dir];
                 }
-                if (keepgoing)
-                {
 
-                    if (rom.TopDoors.Count > 0)
+                if (!Fits(rom, x, y, opp, door)) continue;
+
+                SetCells(x, y, rom.W, rom.H, true);
+                ret.room = rom.Source;
+                ret.pos = new Vector2(x, y);
+
+                bool good = true;
+                for (int d = 1; d <= 4 && good; d++)
+                {
+                    var dx = rom.DoorX[d];
+                    var dy = rom.DoorY[d];
+                    int skipDoor = d == opp ? door : -1; // the door we entered through
+                    for (int i = 0; i < dx.Length && good; i++)
                     {
-                        for (int i = 0; i < rom.TopDoors.Count; i++)
+                        if (i == skipDoor) continue;
+                        if (lvl > 1)
                         {
-                            if (SearchDirection == RoomDirecton.Bottom && i == doorindexlol) continue;
-                            var v = pos2 + rom.TopDoors[i] - new Vector2(0, 1);
-                            if (roomcol[(int)v.x, (int)v.y] > 0) keepgoing = false;
+                            var child = Gen(lvl - 1, depth + 1, d, x + dx[i], y + dy[i], rnd);
+                            if (child.room != null && child.WasChill)
+                            {
+                                ret.comlpetedRooms.Add(child);
+                            }
+                            good = child.WasChill;
                         }
-                    }
-                    if (rom.BottomDoors.Count > 0 && keepgoing)
-                    {
-                        for (int i = 0; i < rom.BottomDoors.Count; i++)
+                        else
                         {
-                            if (SearchDirection == RoomDirecton.Top && i == doorindexlol) continue;
-                            var v = pos2 + rom.BottomDoors[i] + new Vector2(0, 1);
-                            if (roomcol[(int)v.x, (int)v.y] > 0) keepgoing = false;
-                        }
-                    }
-                    if (rom.LeftDoors.Count > 0 && keepgoing)
-                    {
-                        for (int i = 0; i < rom.LeftDoors.Count; i++)
-                        {
-                            if (SearchDirection == RoomDirecton.Right && i == doorindexlol) continue;
-                            var v = pos2 + rom.LeftDoors[i] - new Vector2(1, 0);
-                            if (roomcol[(int)v.x, (int)v.y] > 0) keepgoing = false;
-                        }
-                    }
-                    if (rom.RightDoors.Count > 0 && keepgoing)
-                    {
-                        for (int i = 0; i < rom.RightDoors.Count; i++)
-                        {
-                            if (SearchDirection == RoomDirecton.Left && i == doorindexlol) continue;
-                            var v = pos2 + rom.RightDoors[i] + new Vector2(1, 0);
-                            if (roomcol[(int)v.x, (int)v.y] > 0) keepgoing = false;
+                            runs++; // a level-0 child is always "chill"; counted but never allocated
                         }
                     }
                 }
 
-                if (keepgoing)
+                if (good)
                 {
-                    for (int i = 0; i < rom.RoomSize.x && keepgoing; i++)
-                    {
-                        for (int j = 0; j < rom.RoomSize.y && keepgoing; j++)
-                        {
-                            roomcol[i + (int)pos2.x, j + (int)pos2.y]++;
-                        }
-                    }
-                    bool good = true;
-                    if (good && rom.TopDoors.Count > 0)
-                    {
-                        for (int i = 0; i < rom.TopDoors.Count && good; i++)
-                        {
-                            if (SearchDirection == RoomDirecton.Bottom && i == doorindexlol) continue;
-                            var a = GenerateFromRooms(lvl - 1, roomcol, RoomDirecton.Top, pos2 + rom.TopDoors[i], randy);
-                            if (a.room != null && a.WasChill)
-                            {
-                                ret.comlpetedRooms.Add(a);
-                            }
-                            good = a.WasChill;
-                        }
-                    }
-                    if (good && rom.BottomDoors.Count > 0)
-                    {
-                        for (int i = 0; i < rom.BottomDoors.Count && good; i++)
-                        {
-                            if (SearchDirection == RoomDirecton.Top && i == doorindexlol) continue;
-                            var a = GenerateFromRooms(lvl - 1, roomcol, RoomDirecton.Bottom, pos2 + rom.BottomDoors[i], randy);
-                            if (a.room != null && a.WasChill)
-                            {
-                                ret.comlpetedRooms.Add(a);
-                            }
-                            good = a.WasChill;
-                        }
-
-                    }
-                    if (good && rom.LeftDoors.Count > 0)
-                    {
-                        for (int i = 0; i < rom.LeftDoors.Count && good; i++)
-                        {
-                            if (SearchDirection == RoomDirecton.Right && i == doorindexlol) continue;
-                            var a = GenerateFromRooms(lvl - 1, roomcol, RoomDirecton.Left, pos2 + rom.LeftDoors[i], randy);
-                            if (a.room != null && a.WasChill)
-                            {
-                                ret.comlpetedRooms.Add(a);
-                            }
-                            good = a.WasChill;
-                        }
-                    }
-                    if (good && rom.RightDoors.Count > 0)
-                    {
-                        for (int i = 0; i < rom.RightDoors.Count && good; i++)
-                        {
-                            if (SearchDirection == RoomDirecton.Left && i == doorindexlol) continue;
-                            var a = GenerateFromRooms(lvl - 1, roomcol, RoomDirecton.Right, pos2 + rom.RightDoors[i], randy);
-                            if (a.room != null && a.WasChill)
-                            {
-                                ret.comlpetedRooms.Add(a);
-                            }
-                            good = a.WasChill;
-                        }
-                    }
-                    //Debug.Log("Child Is Chill: " + lvl + ", " + good + ", " + dir);
-                    if (!good)
-                    {
-                        ClearFromCoolRoom(ret);
-                    }
-                    else
-                    {
-                        found_place = true;
-                        goto exitee;
-                    }
+                    ret.WasChill = true;
+                    return ret;
                 }
+                ClearFromCoolRoom(ret);
             }
 
-            if (!found_place)
-            {
-                available_rooms.RemoveAt(index);
-            }
-
-
+            // remove the tried room, keeping the order of the rest
+            count--;
+            if (index < count) Array.Copy(avail, index + 1, avail, index, count - index);
         }
-    exitee:
-        //Debug.Log("Shit dawg " + lvl + ", " + found_place + ", " + dir);
-        ret.WasChill = found_place;
+
+        ret.WasChill = false;
         return ret;
+    }
+
+    /// <summary>Is the room's footprint free, and is the cell outside each of its doors free?</summary>
+    private bool Fits(RoomInfo rom, int x, int y, int opp, int enteredDoor)
+    {
+        int w = rom.W, h = rom.H;
+        if (x < 0 || y < 0 || x + w > GridSize || y + h > GridSize) return false;
+
+        var g = grid;
+        for (int i = 0; i < w; i++)
+        {
+            int row = (x + i) * GridSize + y;
+            for (int j = 0; j < h; j++)
+            {
+                if (g[row + j]) return false;
+            }
+        }
+
+        for (int d = 1; d <= 4; d++)
+        {
+            var dx = rom.DoorX[d];
+            var dy = rom.DoorY[d];
+            int sx = StepX[d], sy = StepY[d];
+            for (int i = 0; i < dx.Length; i++)
+            {
+                if (d == opp && i == enteredDoor) continue;
+                int cx = x + dx[i] + sx;
+                int cy = y + dy[i] + sy;
+                if (cx < 0 || cy < 0 || cx >= GridSize || cy >= GridSize) return false;
+                if (g[cx * GridSize + cy]) return false;
+            }
+        }
+        return true;
+    }
+
+    private void SetCells(int x, int y, int w, int h, bool value)
+    {
+        var g = grid;
+        for (int i = 0; i < w; i++)
+        {
+            int row = (x + i) * GridSize + y;
+            for (int j = 0; j < h; j++)
+            {
+                g[row + j] = value;
+            }
+        }
     }
 
     public static Vector2 ModPos(RoomDirecton dir, Vector2 pos2, Room rom, int doorindexlol)
@@ -380,26 +345,31 @@ public class RoomLol : MonoBehaviour
         }
         return pos2;
     }
+
     public void ClearFromCoolRoom(CoolRoom cr)
     {
+        SetCells((int)cr.pos.x, (int)cr.pos.y, (int)cr.room.RoomSize.x, (int)cr.room.RoomSize.y, false);
 
-        for (int i = 0; i < cr.room.RoomSize.x; i++)
+        var kids = cr.completed;
+        if (kids != null)
         {
-            for (int j = 0; j < cr.room.RoomSize.y; j++)
+            for (int i = 0; i < kids.Count; i++)
             {
-                RoomColliders[i + (int)cr.pos.x, j + (int)cr.pos.y]--;
+                ClearFromCoolRoom(kids[i]);
             }
+            kids.Clear();
         }
-        foreach (var c in cr.comlpetedRooms)
-        {
-            ClearFromCoolRoom(c);
-        }
-        cr.comlpetedRooms.Clear();
     }
+
     public void PlaceFromCoolRoom(CoolRoom cr, GameObject parent)
     {
+        if (cr == null || cr.room == null)
+        {
+            Debug.LogWarning("Room generation failed to find a valid layout.");
+            return;
+        }
         float z = 0;
-        int sz = RoomColliders.GetLength(0) / 2;
+        int sz = GridSize / 2;
         var sp = cr.room.RoomObject;
         var aaaaaaaaa = ((new Vector3(cr.pos.x, cr.pos.y, z) - new Vector3(sz, sz, 0)) * DistanceScaler);
         aaaaaaaaa.y *= -1;
@@ -407,11 +377,16 @@ public class RoomLol : MonoBehaviour
         SpawnedRooms.Add(gm);
         cr.iroom = gm.GetComponent<I_Room>();
         if (cr.daddy != null) cr.iroom.RelatedRooms.Add(cr.daddy.iroom);
-        foreach (var c in cr.comlpetedRooms)
+        var kids = cr.completed;
+        if (kids != null)
         {
-            c.daddy = cr;
-            PlaceFromCoolRoom(c, parent);
-            cr.iroom.RelatedRooms.Add(c.iroom);
+            for (int i = 0; i < kids.Count; i++)
+            {
+                var c = kids[i];
+                c.daddy = cr;
+                PlaceFromCoolRoom(c, parent);
+                cr.iroom.RelatedRooms.Add(c.iroom);
+            }
         }
     }
 
@@ -547,8 +522,13 @@ public class CoolRoom
     public CoolRoom daddy;
     public I_Room iroom;
     public Vector2 pos;
-    public List<CoolRoom> comlpetedRooms = new List<CoolRoom>();
-    public Dictionary<RoomLol.RoomDirecton, List<bool>> complileduses = new Dictionary<RoomLol.RoomDirecton, List<bool>>();
+
+    // Allocated on first use: most rooms in a failed search never need either of these.
+    internal List<CoolRoom> completed;
+    private Dictionary<RoomLol.RoomDirecton, List<bool>> uses;
+    public List<CoolRoom> comlpetedRooms { get { return completed ?? (completed = new List<CoolRoom>()); } }
+    public Dictionary<RoomLol.RoomDirecton, List<bool>> complileduses { get { return uses ?? (uses = new Dictionary<RoomLol.RoomDirecton, List<bool>>()); } }
+
     public void CompileUsedDoors()
     {
         complileduses.Clear();
@@ -564,6 +544,7 @@ public class CoolRoom
         room.room = newnerd;
         room.CompileUsedDoors();
         var daddy = this;
+        if (daddy.complileduses.Count == 0) daddy.CompileUsedDoors();
 
         if (daddydoorindex == -1)
         {

@@ -50,7 +50,7 @@ public class ManualRoomCreator : MonoBehaviour
         room.room = init;
         room.CompileUsedDoors();
 
-        int sz = RoomGen.RoomColliders.GetLength(0) / 2;
+        int sz = RoomLol.GridSize / 2;
         room.pos = new Vector2(sz, sz);
         return room;
     }
