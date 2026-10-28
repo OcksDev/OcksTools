@@ -435,26 +435,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
-      propertyPath: RoomNerds.List.Array.data[1].Name
-      value: VerticalRoom
-      objectReference: {fileID: 0}
-    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
-      propertyPath: RoomNerds.List.Array.data[2].Name
-      value: FourWay
-      objectReference: {fileID: 0}
-    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
-      propertyPath: RoomNerds.List.Array.data[3].Name
-      value: Ender
-      objectReference: {fileID: 0}
-    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
-      propertyPath: RoomNerds.List.Array.data[4].Name
-      value: Corner1
-      objectReference: {fileID: 0}
-    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
-      propertyPath: RoomNerds.List.Array.data[5].Name
-      value: Corner2
-      objectReference: {fileID: 0}
-    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
       propertyPath: RoomNerds.Array.data[0].IsEndpoint
       value: 0
       objectReference: {fileID: 0}
@@ -783,38 +763,6 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
-      propertyPath: RoomNerds.List.Array.data[1].RoomObject
-      value: 
-      objectReference: {fileID: 7492567958466505728, guid: 8c5e41f64d455df4ab696c14e779cf83, type: 3}
-    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
-      propertyPath: RoomNerds.List.Array.data[1].RoomSize.y
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
-      propertyPath: RoomNerds.List.Array.data[2].IsEndpoint
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
-      propertyPath: RoomNerds.List.Array.data[2].RoomObject
-      value: 
-      objectReference: {fileID: 7492567958466505728, guid: 9c7204bc4bf4f8742ba3f0e4b168d2bf, type: 3}
-    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
-      propertyPath: RoomNerds.List.Array.data[3].IsEndpoint
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
-      propertyPath: RoomNerds.List.Array.data[3].RoomObject
-      value: 
-      objectReference: {fileID: 7492567958466505728, guid: 65ada62d7668b3a49bbc32f578455e1b, type: 3}
-    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
-      propertyPath: RoomNerds.List.Array.data[5].RoomObject
-      value: 
-      objectReference: {fileID: 7492567958466505728, guid: 6f1a07cae096f65498c0784e8e0270ca, type: 3}
-    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
-      propertyPath: RoomNerds.List.Array.data[5].RoomSize.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
       propertyPath: RoomNerds.Array.data[1].TopDoors.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -923,31 +871,7 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
-      propertyPath: RoomNerds.List.Array.data[1].LeftDoors.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
-      propertyPath: RoomNerds.List.Array.data[4].LeftDoors.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
       propertyPath: RoomNerds.Array.data[0].RightDoors.Array.data[0].x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
-      propertyPath: RoomNerds.List.Array.data[1].RightDoors.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
-      propertyPath: RoomNerds.List.Array.data[3].RightDoors.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
-      propertyPath: RoomNerds.List.Array.data[4].RightDoors.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
-      propertyPath: RoomNerds.List.Array.data[5].RightDoors.Array.size
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
@@ -957,22 +881,6 @@ PrefabInstance:
     - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
       propertyPath: RoomNerds.Array.data[8].BottomDoors.Array.data[1].x
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
-      propertyPath: RoomNerds.List.Array.data[3].BottomDoors.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
-      propertyPath: RoomNerds.List.Array.data[5].BottomDoors.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
-      propertyPath: RoomNerds.List.Array.data[1].TopDoors.Array.data[0].y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: -3949468990596044743, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
-      propertyPath: RoomNerds.List.Array.data[5].TopDoors.Array.data[0].y
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2820689779679550378, guid: cf41a64e3ae834e4c9c3abff32889d84, type: 3}
       propertyPath: m_RootOrder
