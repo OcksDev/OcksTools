@@ -97,10 +97,12 @@ public struct CardCollection
     }
     public Card PeekTop()
     {
+        if (Cards.Count == 0) return null;
         return Cards[^1];
     }
     public Card DrawTop()
     {
+        if (Cards.Count == 0) return null;
         var d = Cards[^1];
         Cards.Remove(d);
         return d;
