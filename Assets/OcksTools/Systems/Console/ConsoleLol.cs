@@ -114,6 +114,10 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
         {
             RealAppend(a.a, a.b);
         }
+        foreach (var a in st_pathcomps)
+        {
+            RealAppend(a.a, a.b);
+        }
         CommandDict2 = (from entry in CommandDict orderby entry.Key ascending select entry);
     }
 
@@ -197,28 +201,10 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
     public void SelfCommands()
     {
         Add(new OXCommand("test", "Console", "Message_HelpTest")
-            .Append(new OXCommand("tag").Action(ConsoleCommands.Test_tag))
-            .Append(new OXCommand("circle").Action(ConsoleCommands.Test_circle))
-            .Append(new OXCommand("listall").Action(ConsoleCommands.Test_listall))
-            .Append(new OXCommand("compver").Action(ConsoleCommands.Test_compver))
-            .Append(new OXCommand("escape").Action(ConsoleCommands.Test_escape))
-            .Append(new OXCommand("max").Action(ConsoleCommands.Test_max))
-            .Append(new OXCommand("dict").Action(ConsoleCommands.Test_dict))
-            .Append(new OXCommand("gevent").Action(ConsoleCommands.Test_gevent))
-            .Append(new OXCommand("remap").Action(ConsoleCommands.Test_remap))
-            .Append(new OXCommand("cleanstack").Action(ConsoleCommands.Test_cleanstack))
-            .Append(new OXCommand("eventinputs").Action(ConsoleCommands.Test_eventinputs))
             .Append(new OXCommand("comp")
                 .Append(new OXCommand(OXCommand.ExpectedInputType.String)
                     .Append(new OXCommand(OXCommand.ExpectedInputType.String).Action(ConsoleCommands.Test_comp))))
             .Append(new OXCommand("roman").Action(ConsoleCommands.Test_roman))
-            .Append(new OXCommand("refs").Action(ConsoleCommands.Test_refs))
-            .Append(new OXCommand("threadedlogs").Action(ConsoleCommands.Test_threadedlogs))
-            .Append(new OXCommand("destroy").Action(ConsoleCommands.Test_destroy))
-            .Append(new OXCommand("meetup").Action(ConsoleCommands.Test_meetup))
-            .Append(new OXCommand("oxfile").Action(ConsoleCommands.Test_oxfile))
-            .Append(new OXCommand("image_compression").Action(ConsoleCommands.Test_image_compression))
-            .Append(new OXCommand("oxrand").Action(ConsoleCommands.Test_oxrand))
             .Append(new OXCommand("read")
                 .Append(new OXCommand(OXCommand.ExpectedInputType.String).Action(ConsoleCommands.Test_read)))
             .Append(new OXCommand("events").Action(ConsoleCommands.Test_events)));
@@ -529,10 +515,22 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
 
     public void Add(OXCommand x)
     {
-        CommandDict.Add(x.Value, x);
+        if (CommandDict.ContainsKey(x.Value))
+        {
+            foreach (var a in CommandDict[x.Value].SubCommands)
+            {
+                x.Append(a);
+            }
+            if (x.Execution == null && CommandDict[x.Value].Execution != null)
+            {
+                x.Execution = CommandDict[x.Value].Execution;
+            }
+        }
+        CommandDict.AddOrUpdate(x.Value, x);
     }
     [HideInInspector]
     public List<MRef<string, OXCommand>> pathcomps = new List<MRef<string, OXCommand>>();
+    public static List<MRef<string, OXCommand>> st_pathcomps = new List<MRef<string, OXCommand>>();
     public void Append(string path, OXCommand x)
     {
         pathcomps.Add(new MRef<string, OXCommand>(path, x));
@@ -541,20 +539,47 @@ public class ConsoleLol : SingleInstance<ConsoleLol>
     {
         // path formatted like "help listall", like how you would type in the console normally
         var a = path.StringToList(" ").Clean();
-        OXCommand latest = CommandDict[a[0]];
+        if (a.Count == 0) return;
+        if (a.Count == 1)
+        {
+            Add(x);
+            return;
+        }
+        OXCommand latest = CommandDict.GetOrDefineLazy(a[0], () => new OXCommand(a[0]));
         a.RemoveAt(0);
+        a.RemoveAt(a.Count - 1);
         foreach (var b in a)
         {
+            bool fnd = false;
             foreach (var c in latest.SubCommands)
             {
                 if (c.Value == b)
                 {
                     latest = c;
+                    fnd = true;
                     break;
                 }
             }
+            if (!fnd)
+            {
+                var newc = new OXCommand(b);
+                latest.Append(newc);
+                latest = newc;
+            }
         }
         latest.Append(x);
+
+
+        if (x.Value.Contains("test_"))
+        {
+            Console.Log("--");
+            latest.Value.Log();
+            latest.SubCommands.Count.Log();
+            x.Value.Log();
+            x.SubCommands.Count.Log();
+
+            Console.Log("--");
+        }
     }
 
     public void SaveConsole(SaveProfile dict)
@@ -693,5 +718,40 @@ public class ConsoleCommandBuilder
     public static void Build(Action build)
     {
         GlobalEvent.Append("Console", build);
+    }
+}
+
+public class ConsoleCommand : Attribute
+{
+    public string path = "";
+    public bool newname = false;
+    public (string, string) lang_location = ("", "");
+    public ConsoleCommand()
+    {
+        path = "";
+    }
+    public ConsoleCommand(string full_path)
+    {
+        path = full_path.Replace("\\", "/").Replace("/", " ").ToLower();
+    }
+    public ConsoleCommand(string full_path, string namespac, string text)
+    {
+        path = full_path.Replace("\\", "/").Replace("/", " ").ToLower();
+        lang_location = (namespac, text);
+    }
+}
+
+public class ConsoleCommandOverrideName : ConsoleCommand
+{
+    public ConsoleCommandOverrideName(string path_and_override_name)
+    {
+        path = path_and_override_name.Replace("\\", "/").Replace("/", " ").ToLower();
+        newname = true;
+    }
+    public ConsoleCommandOverrideName(string path_and_override_name, string namespac, string text)
+    {
+        path = path_and_override_name.Replace("\\", "/").Replace("/", " ").ToLower();
+        newname = true;
+        lang_location = (namespac, text);
     }
 }

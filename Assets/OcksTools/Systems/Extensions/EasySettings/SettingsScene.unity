@@ -1041,9 +1041,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SaveMethod_: 1
-  test: 0
-  TestBool: 0
-  testkeybind: 0
   LoadedData: 0
 --- !u!114 &1732864415
 MonoBehaviour:
@@ -1478,14 +1475,14 @@ PrefabInstance:
     - target: {fileID: 1120054763215006296, guid: fb4e353fc2ee30f4e8a91b7210d79279, type: 3}
       propertyPath: Setting
       value: 
-      objectReference: {fileID: 11400000, guid: c4b3ffb525c50874b95ad315b5ce6d14, type: 2}
+      objectReference: {fileID: 11400000, guid: 1ac3966358bc4db468128bb432238ad1, type: 2}
     - target: {fileID: 8460228231971407236, guid: fb4e353fc2ee30f4e8a91b7210d79279, type: 3}
       propertyPath: m_Name
       value: Switcher
       objectReference: {fileID: 0}
     - target: {fileID: 8460228231971407236, guid: fb4e353fc2ee30f4e8a91b7210d79279, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8460228231971407237, guid: fb4e353fc2ee30f4e8a91b7210d79279, type: 3}
       propertyPath: m_Pivot.x

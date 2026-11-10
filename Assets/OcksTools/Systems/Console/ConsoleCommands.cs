@@ -7,6 +7,8 @@ using UnityEngine;
 
 public class ConsoleCommands : MonoBehaviour
 {
+
+    [ConsoleCommandOverrideName("test tag")]
     public static void Test_tag()
     {
         Tags.ID.Add(ConsoleLol.Instance.gameObject, "penis");
@@ -18,6 +20,7 @@ public class ConsoleCommands : MonoBehaviour
         ), "#bdbdbdff");
         Tags.ClearAllOf("penis");
     }
+    [ConsoleCommandOverrideName("test dict")]
     public static void Test_dict()
     {
         Console.Log("50".StringToObject<TestClass>());
@@ -63,6 +66,7 @@ public class ConsoleCommands : MonoBehaviour
         dict.ContainsKey((0, 1)).Log();
 
     }
+    [ConsoleCommandOverrideName("test cleanstack")]
     public static void Test_cleanstack()
     {
         var a = new TestClass2(() => Environment.StackTrace, null, Vector3.one, null);
@@ -71,6 +75,8 @@ public class ConsoleCommands : MonoBehaviour
         "----".Log();
         a.run(OXFunctions.GetCleanStackTraceRichtextified);
     }
+
+    [ConsoleCommandOverrideName("test eventinputs")]
     public static void Test_eventinputs()
     {
         InputManager.IsKeyDownEvent("shoot").Append("aa", () => { "Shoot event triggered".Log(); });
@@ -78,6 +84,7 @@ public class ConsoleCommands : MonoBehaviour
         "Events made, try left/right clicking lol".Log();
     }
     private static OXThreadPoolA thread_a;
+    [ConsoleCommandOverrideName("test threadedlogs")]
     public static void Test_threadedlogs()
     {
         if (thread_a == null)
@@ -95,14 +102,19 @@ public class ConsoleCommands : MonoBehaviour
         thread_a.Add("7 Npoopo".Log);
         thread_a.Add("8 Garzunzulbub".Log);
     }
+
+    [ConsoleCommandOverrideName("test createthread")]
     public static void Test_createthread()
     {
         thread_a = new OXThreadPoolA(3);
     }
+    [ConsoleCommandOverrideName("test gevent")]
     public static void Test_gevent()
     {
         GlobalEvent.Invoke("TestEvent");
     }
+
+    [ConsoleCommandOverrideName("test oxfile")]
     public static void Test_oxfile()
     {
         try
@@ -160,6 +172,8 @@ public class ConsoleCommands : MonoBehaviour
             Console.LogError(e);
         }
     }
+
+    [ConsoleCommandOverrideName("test image_compression")]
     public static void Test_image_compression()
     {
         "Started".Log();
@@ -210,6 +224,7 @@ public class ConsoleCommands : MonoBehaviour
         }
     }
 
+    [ConsoleCommandOverrideName("test remap")]
     public static void Test_remap()
     {
         Console.Log(0.5.Remap(0, 1, 0, 10));
@@ -239,6 +254,7 @@ public class ConsoleCommands : MonoBehaviour
 
 
 
+    [ConsoleCommandOverrideName("test circle")]
     public static void Test_circle(OXCommandData r)
     {
         var a = SpawnSystem.Spawn(new SpawnData("Circle")
@@ -255,6 +271,8 @@ public class ConsoleCommands : MonoBehaviour
         Console.Log(r.com_caps[2]);
         Console.Log(Tags.ID.Get<GameObject>(r.com_caps[2]).ToString());
     }
+
+    [ConsoleCommandOverrideName("test rand")]
     public static void Test_oxrand()
     {
         var a = new OXRandom();
@@ -284,6 +302,7 @@ public class ConsoleCommands : MonoBehaviour
         Console.Log(a.NextDouble());
         Console.Log(a.NextDouble());
     }
+    [ConsoleCommandOverrideName("test meetup")]
     public static void Test_meetup()
     {
         var meet = new MeetUp<int, int>((x, y) => $"({x}/{y})".Log());
@@ -317,6 +336,7 @@ public class ConsoleCommands : MonoBehaviour
         m.AddT2("Hello", 2, 1);
     }
 
+    [ConsoleCommandOverrideName("test listall")]
     public static void Test_listall()
     {
         foreach (var d in Tags.ID.StringToObject)
@@ -326,6 +346,7 @@ public class ConsoleCommands : MonoBehaviour
 
             ), "#bdbdbdff");
     }
+    [ConsoleCommandOverrideName("test static_compver")]
     public static void Test_compver()
     {
         Console.Log((
@@ -380,6 +401,7 @@ public class ConsoleCommands : MonoBehaviour
         ), "#bdbdbdff");
     }
 
+    [ConsoleCommandOverrideName("test escape")]
     public static void Test_escape()
     {
         string banana = "help(0)eat()cumjjragbanana your_welcum";
@@ -407,11 +429,17 @@ public class ConsoleCommands : MonoBehaviour
 
         ), "#bdbdbdff");
     }
+
+    [ConsoleCommandOverrideName("test max")]
     public static void Test_max()
     {
         Console.Log((
 
-                            "Double Max: " + double.MaxValue.ToString()
+                            "Int Max: " + int.MaxValue.ToString().NumToRead() +
+                            "\nLong Max: " + long.MaxValue.ToString().NumToRead() +
+                            "\nFloat Max: " + float.MaxValue.ToString().NumToRead() +
+                            "\nDouble Max: " + double.MaxValue.ToString().NumToRead() +
+                            "\nBig Ass Num Max: " + BigAssNumber.Max.NumToRead()
 
                         ), "#bdbdbdff");
     }
@@ -450,6 +478,8 @@ public class ConsoleCommands : MonoBehaviour
         f.WriteFile(x, ConsoleLol.Instance.BackLog.Replace("<br>", "\n"), true);
         Console.Log("Saved console to: " + x);
     }
+
+    [ConsoleCommandOverrideName("test refs")]
     public static void Test_refs()
     {
         string cum = "";
@@ -466,6 +496,8 @@ public class ConsoleCommands : MonoBehaviour
 
         ), "#bdbdbdff");
     }
+
+    [ConsoleCommandOverrideName("test destroy")]
     public static void Test_destroy()
     {
         foreach (var b in Tags.ID.StringToObject)

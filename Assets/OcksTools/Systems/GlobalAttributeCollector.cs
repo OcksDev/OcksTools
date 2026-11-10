@@ -37,6 +37,29 @@ public class GlobalAttributeCollector
                     attribute.dingle,
                     () => { method.Invoke(instance, new object[] { }); });
             });
+
+            Register<ConsoleCommand>(methods, (method, attribute, instance) =>
+            {
+                string mname = method.Name.ToLower();
+                if (attribute.newname)
+                {
+                    mname = attribute.path;
+                    if (mname.Contains(" ")) mname = mname.Substring(mname.LastIndexOf(" ") + 1);
+                }
+                else
+                {
+                    if (!attribute.path.EndsWith(mname)) attribute.path += " " + mname;
+                }
+                if (attribute.path.StartsWith(" ")) attribute.path = attribute.path.Substring(1);
+                var c = new OXCommand(mname).Action(() => { method.Invoke(instance, new object[] { }); });
+                if (attribute.lang_location.Item1 != "" || attribute.lang_location.Item2 != "")
+                {
+                    c.ParentLanguage = attribute.lang_location.Item1;
+                    c.LanguageIndex = attribute.lang_location.Item2;
+                }
+                ConsoleLol.st_pathcomps.Add((attribute.path, c));
+                $"{mname}: {attribute.path}".Log();
+            });
         }
     }
 

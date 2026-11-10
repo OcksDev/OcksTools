@@ -547,6 +547,14 @@ public static class OXFunctions
         }
         return ti[inp];
     }
+    public static T2 GetOrDefineLazy<T, T2>(this Dictionary<T, T2> ti, T inp, Func<T2> def)
+    {
+        if (!ti.ContainsKey(inp))
+        {
+            ti.Add(inp, def());
+        }
+        return ti[inp];
+    }
 
 
 
