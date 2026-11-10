@@ -242,27 +242,11 @@ public class OXNotif
     }
 }
 
-public abstract class Notification
+public abstract class Notification : SizedUIElement
 {
-    public GameObject Nerd;
     public OXNotif oxnotifref;
-    private RectTransform _rectTransform;
     public float _duration = 5f;
-    /// <summary>
-    /// Calculates the initial state of the notification.
-    /// </summary>
-    /// <returns>size of UI element as vector2</returns>
-    public abstract Vector2 CalculateInitial(GameObject spawned);
-    public virtual RectTransform GetRectTransform(GameObject spawned)
-    {
-        if (_rectTransform == null) _rectTransform = spawned.GetComponent<RectTransform>();
-        return _rectTransform;
-    }
-    public abstract GameObject GetPrefab();
-    public virtual BetterList<GameObject> GetHandoffObjects() => Nerd;
-    public virtual OXAnimationSet GetSpawnAnimation() => OXAnimationSet.FromBasicWithHandoff(OXDefaultAnimations.WobbleInEven);
-    public virtual OXAnimationSet GetKillAnimation() => OXAnimationSet.FromBasicWithHandoff(OXDefaultAnimations.EaseOutEven);
-    public virtual void KillMe() => NotificationSystem.Instance.KillObject(Nerd);
+    public override void KillMe() => NotificationSystem.Instance.KillObject(Nerd);
 
     public Notification Duration(float t)
     {

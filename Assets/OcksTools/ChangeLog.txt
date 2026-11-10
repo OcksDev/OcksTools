@@ -6,12 +6,15 @@
   - Cleaned up the public facing API a bit
   - Ran the main generation file through an AI to reduce the runtime cost a bit
 - Misc Changes
-  - Console now has a new method attribute called ConsoleCommand, which lets you easily define console commands without having to manually add them to the command tree
+  - Added Console method attribute called ConsoleCommand, which lets you easily define console commands without having to manually add them to the command tree
+  - Added new simple type called TransformReferences, which lets you easily reference  many transforms in the inspector with string names
   - Keyframes: Added playback speed attribute
   - Tree: Added Bi-directionality to the nodes as an optional feature
-  - CardCore: Fixed Peak/DrawTop() to not throw an exception when the deck is empty, now returns null instead
+  - CardCore: Fixed PeakTop()/DrawTop() to not throw an exception when the deck is empty, now returns null instead
   - New ShuffleBag class, which is a tetris style randomization thing
   - GetOrDefine now has a lazy version (GetOrDefineLazy), which takes in a Func<T2> to generate the value if the key doesn't exist
+  - Refactored some Notification System behavior to be generic for use in other systems
+  - Hover moved to become a Core System
 ------------
 
 ------------
