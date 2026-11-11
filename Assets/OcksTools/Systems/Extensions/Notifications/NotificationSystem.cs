@@ -143,8 +143,11 @@ public class NotificationSystem : SingleInstance<NotificationSystem>
         o._life = o.duration;
         o.Publish();
         var d = o.notification.GetSpawnAnimation();
-        d.HandleHandoffs(o.notification.GetHandoffObjects());
-        StartCoroutine(d.PlayAnimation(this));
+        if (d != null)
+        {
+            d.HandleHandoffs(o.notification.GetHandoffObjects());
+            StartCoroutine(d.PlayAnimation(this));
+        }
     }
     public void KillObject(GameObject o)
     {
@@ -155,8 +158,11 @@ public class NotificationSystem : SingleInstance<NotificationSystem>
     public IEnumerator KillProcess(OXNotif o)
     {
         var d = o.notification.GetKillAnimation();
-        d.HandleHandoffs(o.notification.GetHandoffObjects());
-        yield return d.PlayAnimation(this);
+        if (d != null)
+        {
+            d.HandleHandoffs(o.notification.GetHandoffObjects());
+            yield return d.PlayAnimation(this);
+        }
         o.notification.KillMe();
     }
 

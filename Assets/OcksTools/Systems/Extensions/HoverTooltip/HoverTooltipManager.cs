@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,6 +12,9 @@ public class HoverTooltipManager : SingleInstance<HoverTooltipManager>
     public bool SmoothLocation = true;
     [NaughtyAttributes.ShowIf("SmoothLocation")]
     public float SmoothLocationSpeed = 0.1f;
+    private Coroutine current_animation = null;
+    private Coroutine current_fuckassanimation = null;
+    private bool killing = false;
     private void Update()
     {
         bool shouldkill = true;
@@ -20,33 +24,76 @@ public class HoverTooltipManager : SingleInstance<HoverTooltipManager>
             {
                 if (current_tip != null)
                 {
-                    if (current_tip.htooltip != null && current_tip.htooltip == a)
+                    if (current_tip.htooltip != null && current_tip.htooltip == a && a.Hovering)
                     {
                         shouldkill = false;
                         break;
                     }
-                    current_tip.tooltip.KillMe();
-                    current_tip = null;
+                    KillCurrent();
                 }
+                a.Hovering = true;
                 current_tip = new HoverTooltipHolder(a.NameOfTooltip, a);
                 current_tip.tooltip.AssignDataFromCreator(a);
                 current_tip.Publish();
+                var d = current_tip.tooltip.GetSpawnAnimation();
+                if (d != null)
+                {
+                    d.HandleHandoffs(current_tip.tooltip.GetHandoffObjects());
+                    current_fuckassanimation = StartCoroutine(FuckassAnim(d));
+                }
                 shouldkill = false;
                 break;
             }
         }
-        if (current_tip != null)
+        if (current_tip != null && !killing)
         {
             if (shouldkill)
             {
-                current_tip.tooltip.KillMe();
-                current_tip = null;
+                killing = true;
+                if (current_tip.htooltip != null) current_tip.htooltip.Hovering = false;
+                StartCoroutine(SoftKillCurrentWait(current_tip));
             }
             else
             {
                 PositionTip(current_tip);
             }
         }
+    }
+    public IEnumerator FuckassAnim(OXAnimationSet d)
+    {
+        current_animation = StartCoroutine(d.PlayAnimation(this));
+        yield return current_animation;
+        current_animation = null;
+    }
+    public IEnumerator SoftKillCurrentWait(HoverTooltipHolder o)
+    {
+        if (current_animation == null)
+        {
+            current_animation = StartCoroutine(SoftKillCurrent(o));
+            yield break;
+        }
+        else
+        {
+            yield return new WaitUntil(() => current_animation == null);
+            if (current_tip != o) yield break;
+            current_animation = StartCoroutine(SoftKillCurrent(o));
+        }
+    }
+    public IEnumerator SoftKillCurrent(HoverTooltipHolder o)
+    {
+        var d = o.tooltip.GetKillAnimation();
+        d.HandleHandoffs(o.tooltip.GetHandoffObjects());
+        yield return d.PlayAnimation(this);
+        KillCurrent(true);
+    }
+    public void KillCurrent(bool nono = false)
+    {
+        if (!nono && current_animation != null) StopCoroutine(current_animation);
+        if (!nono && current_fuckassanimation != null) StopCoroutine(current_fuckassanimation);
+        if (current_tip.htooltip != null) current_tip.htooltip.Hovering = false;
+        current_tip.tooltip.KillMe();
+        current_tip = null;
+        killing = false;
     }
 
     private void PositionTip(HoverTooltipHolder tip)
@@ -67,6 +114,7 @@ public class HoverTooltipManager : SingleInstance<HoverTooltipManager>
 
         Vector2 mouse = Input.mousePosition;
         Vector2 screen = new Vector2(Screen.width, Screen.height);
+
         Vector2 size = tip.size;
 
         bool isMouse = true;
@@ -134,18 +182,18 @@ public class HoverTooltipManager : SingleInstance<HoverTooltipManager>
         anchored.x = Mathf.Clamp(anchored.x, minX, Mathf.Max(minX, maxX));
         anchored.y = Mathf.Clamp(anchored.y, minY, Mathf.Max(minY, maxY));
 
-        Vector2 targetCorner = anchored - Vector2.Scale(pivot, size);
-        Vector2 newCorner = targetCorner;
+        Vector2 targetCenter = anchored + Vector2.Scale(new Vector2(0.5f, 0.5f) - pivot, size);
+
+        Vector2 newCenter = targetCenter;
         if (SmoothLocation && tip.hasposset)
         {
-            Vector2 oldCorner = rt.anchoredPosition - Vector2.Scale(rt.pivot, size);
-            newCorner = oldCorner.LerpT(targetCorner, SmoothLocationSpeed);
+            newCenter = rt.anchoredPosition.LerpT(targetCenter, SmoothLocationSpeed);
         }
 
         rt.anchorMin = Vector2.zero;
         rt.anchorMax = Vector2.zero;
-        rt.pivot = pivot;
-        rt.anchoredPosition = newCorner + Vector2.Scale(pivot, size);
+        rt.pivot = new Vector2(0.5f, 0.5f);
+        rt.anchoredPosition = newCenter;
         tip.hasposset = true;
     }
 

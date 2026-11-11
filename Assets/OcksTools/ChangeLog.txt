@@ -2,6 +2,7 @@
 ------------
    v1.2.8
 - New Hover Tooltip system
+  - Fully animatable using AnimationSets
   - Hover moved to become a Core System (it should have been before lol)
   - Refactored some Notification System behavior to be generic for use in other systems (like this one)
 - Room Generator Improvements
@@ -14,6 +15,7 @@
   - Keyframes: Added playback speed attribute
   - New ShuffleBag class, which is a tetris style randomization thing
   - Added TMPExtensions class, which has some useful extension methods for TextMeshProUGUI to let it fit to text (AI generated)
+  - Fixed some null reference exceptions for no animations on Notifications
   - Tree: Added Bi-directionality to the nodes as an optional feature
   - CardCore: Fixed PeakTop()/DrawTop() to not throw an exception when the deck is empty, now returns null instead
   - GetOrDefine now has a lazy version (GetOrDefineLazy), which takes in a Func<T2> to generate the value if the key doesn't exist
