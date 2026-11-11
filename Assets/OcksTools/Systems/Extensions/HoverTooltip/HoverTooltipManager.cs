@@ -82,8 +82,11 @@ public class HoverTooltipManager : SingleInstance<HoverTooltipManager>
     public IEnumerator SoftKillCurrent(HoverTooltipHolder o)
     {
         var d = o.tooltip.GetKillAnimation();
-        d.HandleHandoffs(o.tooltip.GetHandoffObjects());
-        yield return d.PlayAnimation(this);
+        if (d != null)
+        {
+            d.HandleHandoffs(o.tooltip.GetHandoffObjects());
+            yield return d.PlayAnimation(this);
+        }
         KillCurrent(true);
     }
     public void KillCurrent(bool nono = false)
