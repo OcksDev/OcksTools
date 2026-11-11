@@ -41,6 +41,10 @@ public class HoverTooltipManager : SingleInstance<HoverTooltipManager>
                     d.HandleHandoffs(current_tip.tooltip.GetHandoffObjects());
                     current_fuckassanimation = StartCoroutine(FuckassAnim(d));
                 }
+                else
+                {
+                    current_animation = null;
+                }
                 shouldkill = false;
                 break;
             }
