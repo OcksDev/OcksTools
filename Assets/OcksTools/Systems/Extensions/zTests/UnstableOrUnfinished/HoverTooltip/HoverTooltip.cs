@@ -5,6 +5,7 @@ public class HoverTooltip : MonoBehaviour
     public GameObject HoverHitbox;
     public string NameOfTooltip;
     public string ExtraCustomData;
+    public HoverTooltipManager.TooltipLocation Location = HoverTooltipManager.TooltipLocation.MouseLeftFlip;
     private void OnEnable()
     {
         HoverTooltipManager.Tooltips.Add(this);
