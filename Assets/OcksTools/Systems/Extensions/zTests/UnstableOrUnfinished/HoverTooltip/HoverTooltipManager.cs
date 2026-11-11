@@ -67,77 +67,86 @@ public class HoverTooltipManager : SingleInstance<HoverTooltipManager>
 
         Vector2 mouse = Input.mousePosition;
         Vector2 screen = new Vector2(Screen.width, Screen.height);
+        Vector2 size = tip.size;
 
-        Vector2 screenPoint;
-        Vector2 pivot;
+        bool isMouse = true;
+        bool flip = false;
+        Vector2 dir = Vector2.zero;
+        Vector2 screenPoint = mouse;
+        Vector2 pivot = new Vector2(0.5f, 0.5f);
+
         switch (tip.htooltip.Location)
         {
-            case TooltipLocation.MouseLeftClamp:
-                screenPoint = mouse; pivot = new Vector2(1f, 0.5f); break;
-            case TooltipLocation.MouseRightClamp:
-                screenPoint = mouse; pivot = new Vector2(0f, 0.5f); break;
-            case TooltipLocation.MouseAboveClamp:
-                screenPoint = mouse; pivot = new Vector2(0.5f, 0f); break;
-            case TooltipLocation.MouseBelowClamp:
-                screenPoint = mouse; pivot = new Vector2(0.5f, 1f); break;
+            case TooltipLocation.MouseLeftFlip: flip = true; dir = new Vector2(-1f, 0f); break;
+            case TooltipLocation.MouseRightFlip: flip = true; dir = new Vector2(1f, 0f); break;
+            case TooltipLocation.MouseAboveFlip: flip = true; dir = new Vector2(0f, 1f); break;
+            case TooltipLocation.MouseBelowFlip: flip = true; dir = new Vector2(0f, -1f); break;
+            case TooltipLocation.MouseLeftClamp: dir = new Vector2(-1f, 0f); break;
+            case TooltipLocation.MouseRightClamp: dir = new Vector2(1f, 0f); break;
+            case TooltipLocation.MouseAboveClamp: dir = new Vector2(0f, 1f); break;
+            case TooltipLocation.MouseBelowClamp: dir = new Vector2(0f, -1f); break;
             case TooltipLocation.ViewportTopLeft:
-                screenPoint = new Vector2(0f, screen.y); pivot = new Vector2(0f, 1f); break;
+                isMouse = false; screenPoint = new Vector2(0f, screen.y); pivot = new Vector2(0f, 1f); break;
             case TooltipLocation.ViewportTopRight:
-                screenPoint = new Vector2(screen.x, screen.y); pivot = new Vector2(1f, 1f); break;
+                isMouse = false; screenPoint = new Vector2(screen.x, screen.y); pivot = new Vector2(1f, 1f); break;
             case TooltipLocation.ViewportBottomLeft:
-                screenPoint = Vector2.zero; pivot = new Vector2(0f, 0f); break;
+                isMouse = false; screenPoint = Vector2.zero; pivot = new Vector2(0f, 0f); break;
             case TooltipLocation.ViewportBottomRight:
-                screenPoint = new Vector2(screen.x, 0f); pivot = new Vector2(1f, 0f); break;
+                isMouse = false; screenPoint = new Vector2(screen.x, 0f); pivot = new Vector2(1f, 0f); break;
             default:
-                screenPoint = mouse; pivot = new Vector2(0.5f, 0.5f); break;
+                break;
         }
-
-        rt.anchorMin = Vector2.zero;
-        rt.anchorMax = Vector2.zero;
-        rt.pivot = pivot;
 
         // Screen pixels -> local point in the parent (handles CanvasScaler / camera).
         RectTransformUtility.ScreenPointToLocalPointInRectangle(parent, screenPoint, cam, out Vector2 local);
 
         Rect pr = parent.rect;
         Vector2 anchored = local - pr.min;
-        switch (tip.htooltip.Location)
+
+        if (isMouse)
         {
-            case TooltipLocation.MouseLeftClamp:
-                anchored.x -= MousePadding.x; break;
-            case TooltipLocation.MouseRightClamp:
-                anchored.x += MousePadding.x; break;
-            case TooltipLocation.MouseAboveClamp:
-                anchored.y += MousePadding.y; break;
-            case TooltipLocation.MouseBelowClamp:
-                anchored.y -= MousePadding.y; break;
-            case TooltipLocation.ViewportTopLeft:
-                anchored.x += ViewportPadding.x; anchored.y -= ViewportPadding.y; break;
-            case TooltipLocation.ViewportTopRight:
-                anchored.x -= ViewportPadding.x; anchored.y -= ViewportPadding.y; break;
-            case TooltipLocation.ViewportBottomLeft:
-                anchored.x += ViewportPadding.x; anchored.y += ViewportPadding.y; break;
-            case TooltipLocation.ViewportBottomRight:
-                anchored.x -= ViewportPadding.x; anchored.y += ViewportPadding.y; break;
+            if (flip)
+            {
+                if (dir.x < 0f && anchored.x - MousePadding.x - size.x < ViewportPadding.x) dir.x = 1f;
+                else if (dir.x > 0f && anchored.x + MousePadding.x + size.x > pr.width - ViewportPadding.x) dir.x = -1f;
+
+                if (dir.y > 0f && anchored.y + MousePadding.y + size.y > pr.height - ViewportPadding.y) dir.y = -1f;
+                else if (dir.y < 0f && anchored.y - MousePadding.y - size.y < ViewportPadding.y) dir.y = 1f;
+            }
+
+            pivot = new Vector2(
+                dir.x < 0f ? 1f : (dir.x > 0f ? 0f : 0.5f),
+                dir.y < 0f ? 1f : (dir.y > 0f ? 0f : 0.5f));
+
+            anchored += Vector2.Scale(dir, MousePadding);
+        }
+        else
+        {
+            // Inset away from the screen corner (pivot 0 -> +padding, pivot 1 -> -padding).
+            Vector2 inset = new Vector2(1f - 2f * pivot.x, 1f - 2f * pivot.y);
+            anchored += Vector2.Scale(inset, ViewportPadding);
         }
 
-        // Keep the whole tooltip inside the screen, leaving ViewportPadding at every edge.
-        Vector2 size = tip.size;
         float minX = pivot.x * size.x + ViewportPadding.x;
         float maxX = pr.width - (1f - pivot.x) * size.x - ViewportPadding.x;
         float minY = pivot.y * size.y + ViewportPadding.y;
         float maxY = pr.height - (1f - pivot.y) * size.y - ViewportPadding.y;
         anchored.x = Mathf.Clamp(anchored.x, minX, Mathf.Max(minX, maxX));
         anchored.y = Mathf.Clamp(anchored.y, minY, Mathf.Max(minY, maxY));
-        if (!tip.hasposset)
+
+        Vector2 targetCorner = anchored - Vector2.Scale(pivot, size);
+        Vector2 newCorner = targetCorner;
+        if (SmoothLocation && tip.hasposset)
         {
-            rt.anchoredPosition = anchored;
-            tip.hasposset = true;
+            Vector2 oldCorner = rt.anchoredPosition - Vector2.Scale(rt.pivot, size);
+            newCorner = oldCorner.LerpT(targetCorner, SmoothLocationSpeed);
         }
-        else
-        {
-            rt.anchoredPosition = rt.anchoredPosition.LerpT(anchored, SmoothLocationSpeed);
-        }
+
+        rt.anchorMin = Vector2.zero;
+        rt.anchorMax = Vector2.zero;
+        rt.pivot = pivot;
+        rt.anchoredPosition = newCorner + Vector2.Scale(pivot, size);
+        tip.hasposset = true;
     }
 
     public override void Awake2()
