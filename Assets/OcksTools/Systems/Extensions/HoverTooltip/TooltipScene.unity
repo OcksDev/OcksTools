@@ -864,7 +864,7 @@ MonoBehaviour:
   HoverHitbox: {fileID: 2087228632}
   NameOfTooltip: Example Tooltip
   ExtraCustomData: Blue
-  Location: 4
+  Location: 8
 --- !u!114 &2087228635
 MonoBehaviour:
   m_ObjectHideFlags: 0
