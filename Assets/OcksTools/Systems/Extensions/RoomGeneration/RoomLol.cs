@@ -11,6 +11,11 @@ public class RoomLol : MonoBehaviour
     public CompileableDictionaryAlt<string, Room> RoomNerds;
     public List<GameObject> SpawnedRooms = new List<GameObject>();
 
+    [Tooltip("Search steps allowed in the first attempt before restarting with fresh randomness. Doubles every restart. <= 0 disables restarts.")]
+    public int RestartBudget = 20000;
+    [Tooltip("After this many restarts the search runs unbounded (exhaustive), so a layout is never missed just because of the budget.")]
+    public int MaxBoundedRestarts = 12;
+
     public int runs = 0;
     public int cycles = 0;
     public const int GridSize = 200;
@@ -20,6 +25,18 @@ public class RoomLol : MonoBehaviour
     private const byte Occupied = 1;
     private const byte Reserved = 2; // the cell just outside a placed room's door; only that door's child may take it
     private readonly byte[] grid = new byte[GridSize * GridSize];
+
+    // Scratch for the dead-end flood fill (stamp trick: no clearing between floods)
+    private readonly int[] floodMark = new int[GridSize * GridSize];
+    private readonly int[] floodQueue = new int[GridSize * GridSize];
+    private int floodStamp;
+
+    // Restart bookkeeping
+    private int attemptCycles;
+    private int budget = int.MaxValue;
+    private bool aborted;
+
+    private int minArea = 1; // smallest room footprint, used by the dead-end check
 
     // Direction tables, indexed by (int)RoomDirecton: None, Top, Bottom, Left, Right
     private static readonly int[] Opposite = { 0, 2, 1, 4, 3 };
@@ -129,6 +146,13 @@ public class RoomLol : MonoBehaviour
         }
         allRooms = all.ToArray();
 
+        minArea = int.MaxValue;
+        for (int i = 0; i < allRooms.Length; i++)
+        {
+            minArea = Math.Min(minArea, Math.Max(1, allRooms[i].W * allRooms[i].H));
+        }
+        if (allRooms.Length == 0) minArea = 1;
+
         //which rooms are chosen for certain directions
         var normal = new List<RoomInfo>();
         var end = new List<RoomInfo>();
@@ -163,6 +187,7 @@ public class RoomLol : MonoBehaviour
 
         int n = 0;
         for (int d = 1; d <= 4; d++) n += info.DoorX[d].Length;
+        if (n > 64) throw new InvalidOperationException($"Room '{r.Name}' has {n} doors; at most 64 are supported.");
         info.N = n;
         info.FD = new int[n];
         info.FI = new int[n];
@@ -220,7 +245,23 @@ public class RoomLol : MonoBehaviour
         if (rnd == null) rnd = new OXRandom(); // created once, not once per loop iteration
         if (lvl < 1) return new CoolRoom { WasChill = true };
 
-        var result = Gen(lvl, 0, (int)SearchDirection, (int)pos.x, (int)pos.y, rnd);
+        // Randomized restarts: backtracking search has heavy-tailed run times (one unlucky early choice can
+        // cost millions of steps while most seeds finish instantly). Cut an attempt off after 'budget' steps
+        // and start over with fresh random choices. The budget doubles each time and after
+        // MaxBoundedRestarts the search runs unbounded, so it still ends in an exhaustive answer.
+        CoolRoom result = null;
+        for (int attempt = 0; ; attempt++)
+        {
+            if (attempt > 0) Array.Clear(grid, 0, grid.Length);
+            aborted = false;
+            attemptCycles = 0;
+            if (RestartBudget <= 0 || attempt >= MaxBoundedRestarts) budget = int.MaxValue;
+            else budget = (int)Math.Min((long)RestartBudget << attempt, int.MaxValue);
+
+            result = Gen(lvl, 0, (int)SearchDirection, (int)pos.x, (int)pos.y, rnd);
+            if (result != null || !aborted) break; // success, or a genuinely exhausted search
+        }
+
         // A failed search returns an empty CoolRoom (room == null) so PlaceFromCoolRoom logs a warning
         // instead of placing a half-built layout.
         return result ?? new CoolRoom();
@@ -228,16 +269,17 @@ public class RoomLol : MonoBehaviour
 
     /// <summary>
     /// Backtracking search. Returns the placed room (with its subtree) on success, or null on failure.
-    /// Contract: on failure the grid is left exactly as it was found (the entry cell, if any, stays Reserved);
-    /// on success the whole subtree's footprints stay Occupied.
+    /// Contract: on failure the grid is left exactly as it was found (the entry cell, if any, stays Reserved)
+    /// unless the attempt was aborted for its budget, in which case the caller clears the grid.
     ///
-    /// Speedups over the previous version:
-    ///  1. Door cells are Reserved the moment a room is placed, so a sibling's subtree can no longer
-    ///     steal the cell a pending child needs (that used to cause late failures and huge rollbacks).
-    ///  2. Forward checking: before descending, every pending door must have at least one room that
-    ///     fits right now. If not, the attempt dies immediately instead of after building sibling subtrees.
-    ///  3. CoolRoom objects are only allocated once a room actually fits (most tries never do).
-    ///  4. Swap-remove instead of shifting the candidate array.
+    /// Pruning, in the order it fires:
+    ///  1. Door cells are Reserved when a room is placed, so siblings can't steal a pending child's cell.
+    ///  2. Dead-end check: every pending door must reach enough free space (flood fill) for the rooms its
+    ///     branch still needs. This is what catches "walled-in pocket" mistakes at the room that created the
+    ///     pocket, instead of after the chain has crawled 40 rooms into it.
+    ///  3. Forward check + most-constrained-first: every pending door must have a room that fits now, and
+    ///     the door with the fewest options is built first, so doomed branches fail before expensive ones are built.
+    ///  4. Lazy CoolRoom allocation and swap-remove for candidates.
     /// </summary>
     private CoolRoom Gen(int lvl, int depth, int dir, int px, int py, OXRandom rnd)
     {
@@ -255,6 +297,8 @@ public class RoomLol : MonoBehaviour
             ey = py + StepY[dir];
         }
         bool grow = lvl > 1; // rooms at lvl 1 are leaves: their doors need free space but no children
+        int childLvl = lvl - 1;
+        int needCells = childLvl * minArea;
 
         RoomInfo[] avail = GetBuffer(depth);
         Array.Copy(source, avail, count);
@@ -263,6 +307,8 @@ public class RoomLol : MonoBehaviour
 
         while (count > 0)
         {
+            if (aborted) return null;
+
             int index = rnd.Next(0, count);
             RoomInfo rom = avail[index];
             avail[index] = avail[--count]; // swap-remove; order of the rest doesn't matter
@@ -271,6 +317,11 @@ public class RoomLol : MonoBehaviour
             for (int door = 0; door < attempts; door++)
             {
                 cycles++;
+                if (++attemptCycles > budget)
+                {
+                    aborted = true;
+                    return null;
+                }
 
                 int x = px, y = py;
                 if (dir != 0)
@@ -290,23 +341,47 @@ public class RoomLol : MonoBehaviour
                 if (grow)
                 {
                     MarkDoorCells(rom, x, y, opp, door, Reserved);
-                    good = CheckDoors(rom, x, y, opp, door, lvl - 1, 0);
 
-                    for (int k = 0; k < rom.N && good; k++)
+                    ulong pending = 0;
+                    for (int k = 0; k < rom.N; k++)
                     {
-                        int d = rom.FD[k];
-                        if (d == opp && rom.FI[k] == door) continue; // the door we entered through
+                        if (rom.FD[k] == opp && rom.FI[k] == door) continue; // the door we entered through
+                        pending |= 1UL << k;
+                    }
 
-                        var child = Gen(lvl - 1, depth + 1, d, x + rom.FX[k], y + rom.FY[k], rnd);
+                    while (pending != 0)
+                    {
+                        // Re-evaluate every pending door against the current grid and take the most constrained one.
+                        int best = -1, bestCount = int.MaxValue;
+                        for (int k = 0; k < rom.N; k++)
+                        {
+                            if ((pending & (1UL << k)) == 0) continue;
+                            int d = rom.FD[k];
+                            int cx = x + rom.FX[k];
+                            int cy = y + rom.FY[k];
+
+                            int c = CountCandidates(childLvl, d, cx, cy, Math.Min(bestCount, 8));
+                            if (c == 0 || !HasSpace(cx + StepX[d], cy + StepY[d], needCells))
+                            {
+                                good = false;
+                                break;
+                            }
+                            if (c < bestCount)
+                            {
+                                bestCount = c;
+                                best = k;
+                            }
+                        }
+                        if (!good) break;
+
+                        pending &= ~(1UL << best);
+                        var child = Gen(childLvl, depth + 1, rom.FD[best], x + rom.FX[best], y + rom.FY[best], rnd);
                         if (child == null)
                         {
                             good = false;
                             break;
                         }
                         node.comlpetedRooms.Add(child);
-
-                        // earlier children may have eaten space the remaining doors needed
-                        good = CheckDoors(rom, x, y, opp, door, lvl - 1, k + 1);
                     }
                 }
                 else
@@ -324,6 +399,8 @@ public class RoomLol : MonoBehaviour
                 ClearFromCoolRoom(node);                              // footprint + already-built children
                 if (grow) MarkDoorCells(rom, x, y, opp, door, Free);   // release reservations
                 if (ex >= 0) grid[ex * GridSize + ey] = Reserved;      // give the entry cell back to our parent
+
+                if (aborted) return null;
             }
         }
 
@@ -345,28 +422,18 @@ public class RoomLol : MonoBehaviour
     }
 
     /// <summary>
-    /// Forward check: from door index 'start' on, does every pending door still have at least one
-    /// candidate room that fits right now? (Siblings only ever add obstacles, so "none fits now" is final.)
+    /// How many (room, door) placements fit for a child entered from (px,py) going 'dir', stopping at 'cap'.
+    /// 0 means the branch is already dead.
     /// </summary>
-    private bool CheckDoors(RoomInfo rom, int x, int y, int opp, int enteredDoor, int childLvl, int start)
-    {
-        for (int k = start; k < rom.N; k++)
-        {
-            int d = rom.FD[k];
-            if (d == opp && rom.FI[k] == enteredDoor) continue;
-            if (!HasCandidate(childLvl, d, x + rom.FX[k], y + rom.FY[k])) return false;
-        }
-        return true;
-    }
-
-    private bool HasCandidate(int lvl, int dir, int px, int py)
+    private int CountCandidates(int lvl, int dir, int px, int py, int cap)
     {
         int opp = Opposite[dir];
         RoomInfo[] src = lvl == 1 ? endByDoor[opp] : normalByDoor[opp];
-        int ex = px + StepX[dir];
-        int ey = py + StepY[dir];
         int sx = StepX[dir], sy = StepY[dir];
+        int ex = px + sx;
+        int ey = py + sy;
 
+        int n = 0;
         for (int r = 0; r < src.Length; r++)
         {
             var rom = src[r];
@@ -374,10 +441,72 @@ public class RoomLol : MonoBehaviour
             var dys = rom.DoorY[opp];
             for (int door = 0; door < dxs.Length; door++)
             {
-                if (Fits(rom, px - dxs[door] + sx, py - dys[door] + sy, opp, door, ex, ey)) return true;
+                if (Fits(rom, px - dxs[door] + sx, py - dys[door] + sy, opp, door, ex, ey))
+                {
+                    if (++n >= cap) return n;
+                }
             }
         }
-        return false;
+        return n;
+    }
+
+    /// <summary>
+    /// Necessary condition for a branch: every room of a branch is connected, so the branch lives inside the
+    /// connected free region around its entry cell, and a branch of 'lvl' levels needs at least lvl rooms.
+    /// Flood fill from the entry cell, stopping as soon as enough cells are known, so open space is cheap
+    /// and only real pockets are explored to the end. Reserved cells of other doors count as blocked.
+    /// </summary>
+    private bool HasSpace(int sx, int sy, int need)
+    {
+        if (need <= 1) return true;
+
+        if (++floodStamp == int.MaxValue)
+        {
+            Array.Clear(floodMark, 0, floodMark.Length);
+            floodStamp = 1;
+        }
+        int stamp = floodStamp;
+
+        var g = grid;
+        var mark = floodMark;
+        var q = floodQueue;
+        int head = 0, tail = 0;
+
+        int start = sx * GridSize + sy;
+        mark[start] = stamp;
+        q[tail++] = start;
+
+        while (head < tail)
+        {
+            if (tail >= need) return true;
+
+            int c = q[head++];
+            int cx = c / GridSize;
+            int cy = c - cx * GridSize;
+
+            int n;
+            if (cx > 0)
+            {
+                n = c - GridSize;
+                if (g[n] == Free && mark[n] != stamp) { mark[n] = stamp; q[tail++] = n; }
+            }
+            if (cx < GridSize - 1)
+            {
+                n = c + GridSize;
+                if (g[n] == Free && mark[n] != stamp) { mark[n] = stamp; q[tail++] = n; }
+            }
+            if (cy > 0)
+            {
+                n = c - 1;
+                if (g[n] == Free && mark[n] != stamp) { mark[n] = stamp; q[tail++] = n; }
+            }
+            if (cy < GridSize - 1)
+            {
+                n = c + 1;
+                if (g[n] == Free && mark[n] != stamp) { mark[n] = stamp; q[tail++] = n; }
+            }
+        }
+        return tail >= need;
     }
 
     /// <summary>
