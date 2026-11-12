@@ -14,7 +14,12 @@ public class RoomLol : MonoBehaviour
     public int runs = 0;
     public int cycles = 0;
     public const int GridSize = 200;
-    private readonly bool[] grid = new bool[GridSize * GridSize];
+
+    // Cell states
+    private const byte Free = 0;
+    private const byte Occupied = 1;
+    private const byte Reserved = 2; // the cell just outside a placed room's door; only that door's child may take it
+    private readonly byte[] grid = new byte[GridSize * GridSize];
 
     // Direction tables, indexed by (int)RoomDirecton: None, Top, Bottom, Left, Right
     private static readonly int[] Opposite = { 0, 2, 1, 4, 3 };
@@ -31,6 +36,10 @@ public class RoomLol : MonoBehaviour
         public int W, H;
         public int[][] DoorX = new int[5][]; // indexed by (int)RoomDirecton, [0] unused
         public int[][] DoorY = new int[5][];
+
+        // Flat door list (same order as the nested d/i loops): direction, index within direction, x, y
+        public int N;
+        public int[] FD, FI, FX, FY;
     }
 
     private RoomInfo[] allRooms = new RoomInfo[0];
@@ -151,6 +160,25 @@ public class RoomLol : MonoBehaviour
         FillDoors(info, RoomDirecton.Bottom, r.BottomDoors);
         FillDoors(info, RoomDirecton.Left, r.LeftDoors);
         FillDoors(info, RoomDirecton.Right, r.RightDoors);
+
+        int n = 0;
+        for (int d = 1; d <= 4; d++) n += info.DoorX[d].Length;
+        info.N = n;
+        info.FD = new int[n];
+        info.FI = new int[n];
+        info.FX = new int[n];
+        info.FY = new int[n];
+        int k = 0;
+        for (int d = 1; d <= 4; d++)
+        {
+            for (int i = 0; i < info.DoorX[d].Length; i++, k++)
+            {
+                info.FD[k] = d;
+                info.FI[k] = i;
+                info.FX[k] = info.DoorX[d][i];
+                info.FY[k] = info.DoorY[d][i];
+            }
+        }
         return info;
     }
 
@@ -190,31 +218,54 @@ public class RoomLol : MonoBehaviour
     public CoolRoom GenerateFromRooms(int lvl, RoomDirecton SearchDirection, Vector2 pos, OXRandom rnd = null)
     {
         if (rnd == null) rnd = new OXRandom(); // created once, not once per loop iteration
-        return Gen(lvl, 0, (int)SearchDirection, (int)pos.x, (int)pos.y, rnd);
+        if (lvl < 1) return new CoolRoom { WasChill = true };
+
+        var result = Gen(lvl, 0, (int)SearchDirection, (int)pos.x, (int)pos.y, rnd);
+        // A failed search returns an empty CoolRoom (room == null) so PlaceFromCoolRoom logs a warning
+        // instead of placing a half-built layout.
+        return result ?? new CoolRoom();
     }
 
+    /// <summary>
+    /// Backtracking search. Returns the placed room (with its subtree) on success, or null on failure.
+    /// Contract: on failure the grid is left exactly as it was found (the entry cell, if any, stays Reserved);
+    /// on success the whole subtree's footprints stay Occupied.
+    ///
+    /// Speedups over the previous version:
+    ///  1. Door cells are Reserved the moment a room is placed, so a sibling's subtree can no longer
+    ///     steal the cell a pending child needs (that used to cause late failures and huge rollbacks).
+    ///  2. Forward checking: before descending, every pending door must have at least one room that
+    ///     fits right now. If not, the attempt dies immediately instead of after building sibling subtrees.
+    ///  3. CoolRoom objects are only allocated once a room actually fits (most tries never do).
+    ///  4. Swap-remove instead of shifting the candidate array.
+    /// </summary>
     private CoolRoom Gen(int lvl, int depth, int dir, int px, int py, OXRandom rnd)
     {
         runs++;
-        var ret = new CoolRoom();
-        if (lvl < 1)
-        {
-            ret.WasChill = true;
-            return ret;
-        }
 
         int opp = Opposite[dir];
         RoomInfo[] source = dir == 0 ? allRooms : (lvl == 1 ? endByDoor[opp] : normalByDoor[opp]);
         int count = source.Length;
-        if (count == 0) return ret;
+        if (count == 0) return null;
+
+        int ex = -1, ey = -1; // the Reserved cell we are allowed to overlap
+        if (dir != 0)
+        {
+            ex = px + StepX[dir];
+            ey = py + StepY[dir];
+        }
+        bool grow = lvl > 1; // rooms at lvl 1 are leaves: their doors need free space but no children
 
         RoomInfo[] avail = GetBuffer(depth);
         Array.Copy(source, avail, count);
+
+        CoolRoom node = null;
 
         while (count > 0)
         {
             int index = rnd.Next(0, count);
             RoomInfo rom = avail[index];
+            avail[index] = avail[--count]; // swap-remove; order of the rest doesn't matter
             int attempts = dir == 0 ? 1 : rom.DoorX[opp].Length;
 
             for (int door = 0; door < attempts; door++)
@@ -228,70 +279,119 @@ public class RoomLol : MonoBehaviour
                     y = py - rom.DoorY[opp][door] + StepY[dir];
                 }
 
-                if (!Fits(rom, x, y, opp, door)) continue;
+                if (!Fits(rom, x, y, opp, door, ex, ey)) continue;
 
-                SetCells(x, y, rom.W, rom.H, true);
-                ret.room = rom.Source;
-                ret.pos = new Vector2(x, y);
+                if (node == null) node = new CoolRoom();
+                node.room = rom.Source;
+                node.pos = new Vector2(x, y);
+                SetCells(x, y, rom.W, rom.H, Occupied);
 
                 bool good = true;
-                for (int d = 1; d <= 4 && good; d++)
+                if (grow)
                 {
-                    var dx = rom.DoorX[d];
-                    var dy = rom.DoorY[d];
-                    int skipDoor = d == opp ? door : -1; // the door we entered through
-                    for (int i = 0; i < dx.Length && good; i++)
+                    MarkDoorCells(rom, x, y, opp, door, Reserved);
+                    good = CheckDoors(rom, x, y, opp, door, lvl - 1, 0);
+
+                    for (int k = 0; k < rom.N && good; k++)
                     {
-                        if (i == skipDoor) continue;
-                        if (lvl > 1)
+                        int d = rom.FD[k];
+                        if (d == opp && rom.FI[k] == door) continue; // the door we entered through
+
+                        var child = Gen(lvl - 1, depth + 1, d, x + rom.FX[k], y + rom.FY[k], rnd);
+                        if (child == null)
                         {
-                            var child = Gen(lvl - 1, depth + 1, d, x + dx[i], y + dy[i], rnd);
-                            if (child.room != null && child.WasChill)
-                            {
-                                ret.comlpetedRooms.Add(child);
-                            }
-                            good = child.WasChill;
+                            good = false;
+                            break;
                         }
-                        else
-                        {
-                            runs++; // a level-0 child is always "chill"; counted but never allocated
-                        }
+                        node.comlpetedRooms.Add(child);
+
+                        // earlier children may have eaten space the remaining doors needed
+                        good = CheckDoors(rom, x, y, opp, door, lvl - 1, k + 1);
                     }
+                }
+                else
+                {
+                    runs += rom.N - (dir != 0 ? 1 : 0); // level-0 children: counted, never allocated
                 }
 
                 if (good)
                 {
-                    ret.WasChill = true;
-                    return ret;
+                    node.WasChill = true;
+                    return node;
                 }
-                ClearFromCoolRoom(ret);
-            }
 
-            // remove the tried room, keeping the order of the rest
-            count--;
-            if (index < count) Array.Copy(avail, index + 1, avail, index, count - index);
+                // roll this attempt back
+                ClearFromCoolRoom(node);                              // footprint + already-built children
+                if (grow) MarkDoorCells(rom, x, y, opp, door, Free);   // release reservations
+                if (ex >= 0) grid[ex * GridSize + ey] = Reserved;      // give the entry cell back to our parent
+            }
         }
 
-        ret.WasChill = false;
-        return ret;
+        return null;
     }
 
-    /// <summary>Is the room's footprint free, and is the cell outside each of its doors free?</summary>
-    private bool Fits(RoomInfo rom, int x, int y, int opp, int enteredDoor)
+    /// <summary>Sets the cell just outside every door (except the entered one) to the given state.</summary>
+    private void MarkDoorCells(RoomInfo rom, int x, int y, int opp, int enteredDoor, byte value)
+    {
+        var g = grid;
+        for (int k = 0; k < rom.N; k++)
+        {
+            int d = rom.FD[k];
+            if (d == opp && rom.FI[k] == enteredDoor) continue;
+            int cx = x + rom.FX[k] + StepX[d];
+            int cy = y + rom.FY[k] + StepY[d];
+            g[cx * GridSize + cy] = value;
+        }
+    }
+
+    /// <summary>
+    /// Forward check: from door index 'start' on, does every pending door still have at least one
+    /// candidate room that fits right now? (Siblings only ever add obstacles, so "none fits now" is final.)
+    /// </summary>
+    private bool CheckDoors(RoomInfo rom, int x, int y, int opp, int enteredDoor, int childLvl, int start)
+    {
+        for (int k = start; k < rom.N; k++)
+        {
+            int d = rom.FD[k];
+            if (d == opp && rom.FI[k] == enteredDoor) continue;
+            if (!HasCandidate(childLvl, d, x + rom.FX[k], y + rom.FY[k])) return false;
+        }
+        return true;
+    }
+
+    private bool HasCandidate(int lvl, int dir, int px, int py)
+    {
+        int opp = Opposite[dir];
+        RoomInfo[] src = lvl == 1 ? endByDoor[opp] : normalByDoor[opp];
+        int ex = px + StepX[dir];
+        int ey = py + StepY[dir];
+        int sx = StepX[dir], sy = StepY[dir];
+
+        for (int r = 0; r < src.Length; r++)
+        {
+            var rom = src[r];
+            var dxs = rom.DoorX[opp];
+            var dys = rom.DoorY[opp];
+            for (int door = 0; door < dxs.Length; door++)
+            {
+                if (Fits(rom, px - dxs[door] + sx, py - dys[door] + sy, opp, door, ex, ey)) return true;
+            }
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Is the room's footprint free (apart from the one Reserved entry cell at ex,ey),
+    /// and is the cell outside each of its other doors free?
+    /// </summary>
+    private bool Fits(RoomInfo rom, int x, int y, int opp, int enteredDoor, int ex, int ey)
     {
         int w = rom.W, h = rom.H;
         if (x < 0 || y < 0 || x + w > GridSize || y + h > GridSize) return false;
 
         var g = grid;
-        for (int i = 0; i < w; i++)
-        {
-            int row = (x + i) * GridSize + y;
-            for (int j = 0; j < h; j++)
-            {
-                if (g[row + j]) return false;
-            }
-        }
 
+        // door-outside cells first: only a handful of reads, and they reject most candidates
         for (int d = 1; d <= 4; d++)
         {
             var dx = rom.DoorX[d];
@@ -303,13 +403,24 @@ public class RoomLol : MonoBehaviour
                 int cx = x + dx[i] + sx;
                 int cy = y + dy[i] + sy;
                 if (cx < 0 || cy < 0 || cx >= GridSize || cy >= GridSize) return false;
-                if (g[cx * GridSize + cy]) return false;
+                if (cx >= x && cx < x + w && cy >= y && cy < y + h) return false; // door opens into itself
+                if (g[cx * GridSize + cy] != Free) return false;
+            }
+        }
+
+        for (int i = 0; i < w; i++)
+        {
+            int row = (x + i) * GridSize + y;
+            for (int j = 0; j < h; j++)
+            {
+                byte v = g[row + j];
+                if (v != Free && (v != Reserved || x + i != ex || y + j != ey)) return false;
             }
         }
         return true;
     }
 
-    private void SetCells(int x, int y, int w, int h, bool value)
+    private void SetCells(int x, int y, int w, int h, byte value)
     {
         var g = grid;
         for (int i = 0; i < w; i++)
@@ -348,7 +459,7 @@ public class RoomLol : MonoBehaviour
 
     public void ClearFromCoolRoom(CoolRoom cr)
     {
-        SetCells((int)cr.pos.x, (int)cr.pos.y, (int)cr.room.RoomSize.x, (int)cr.room.RoomSize.y, false);
+        SetCells((int)cr.pos.x, (int)cr.pos.y, (int)cr.room.RoomSize.x, (int)cr.room.RoomSize.y, Free);
 
         var kids = cr.completed;
         if (kids != null)
@@ -412,108 +523,6 @@ public class Room
     public List<Vector2> RightDoors = new List<Vector2>();
     public List<Vector2> TopDoors = new List<Vector2>();
     public List<Vector2> BottomDoors = new List<Vector2>();
-
-    /*
-    public Room(int roomid)
-    {
-        RoomID = roomid;
-        switch (roomid)
-        {
-            case 0:
-                RoomSize = new Vector2(2, 1);
-                HasLeftDoor = true;
-                HasRightDoor = true;
-                LeftDoor = new Vector2(0, 0);
-                RightDoor = new Vector2(1, 0);
-                break;
-            case 1:
-                RoomSize = new Vector2(1, 2);
-                HasTopDoor = true;
-                HasBottomDoor = true;
-                TopDoor = new Vector2(0, 0);
-                BottomDoor = new Vector2(0, 1);
-                break;
-            case 2:
-                RoomSize = new Vector2(1, 1);
-                HasBottomDoor = true;
-                HasTopDoor = true;
-                HasLeftDoor = true;
-                HasRightDoor = true;
-                LeftDoor = new Vector2(0, 0);
-                RightDoor = new Vector2(0, 0);
-                TopDoor = new Vector2(0, 0);
-                BottomDoor = new Vector2(0, 0);
-                break;
-            case 3:
-                RoomSize = new Vector2(1, 1);
-                //HasBottomDoor = true;
-                HasTopDoor = true;
-                HasLeftDoor = true;
-                //HasRightDoor = true;
-                LeftDoor = new Vector2(0, 0);
-                //RightDoor = new Vector2(0, 0);
-                TopDoor = new Vector2(0, 0);
-                //BottomDoor = new Vector2(0, 0);
-                break;
-            case 4:
-                RoomSize = new Vector2(1, 1);
-                //HasBottomDoor = true;
-                HasTopDoor = true;
-                //HasLeftDoor = true;
-                HasRightDoor = true;
-                //LeftDoor = new Vector2(0, 0);
-                RightDoor = new Vector2(0, 0);
-                TopDoor = new Vector2(0, 0);
-                //BottomDoor = new Vector2(0, 0);
-                break;
-            case 5:
-                RoomSize = new Vector2(1, 1);
-                HasBottomDoor = true;
-                //HasTopDoor = true;
-                //HasLeftDoor = true;
-                HasRightDoor = true;
-                //LeftDoor = new Vector2(0, 0);
-                RightDoor = new Vector2(0, 0);
-                //TopDoor = new Vector2(0, 0);
-                BottomDoor = new Vector2(0, 0);
-                break;
-            case 6:
-                RoomSize = new Vector2(1, 1);
-                HasBottomDoor = true;
-                //HasTopDoor = true;
-                HasLeftDoor = true;
-                //HasRightDoor = true;
-                LeftDoor = new Vector2(0, 0);
-                //RightDoor = new Vector2(0, 0);
-                //TopDoor = new Vector2(0, 0);
-                BottomDoor = new Vector2(0, 0);
-                break;
-            case 7:
-                RoomSize = new Vector2(1, 1);
-                HasBottomDoor = true;
-                HasTopDoor = true;
-                HasLeftDoor = true;
-                HasRightDoor = true;
-                LeftDoor = new Vector2(0, 0);
-                RightDoor = new Vector2(0, 0);
-                TopDoor = new Vector2(0, 0);
-                BottomDoor = new Vector2(0, 0);
-                IsEndpoint = true;
-                break;
-            default:
-                RoomSize = new Vector2(1, 1);
-                HasBottomDoor = true;
-                HasTopDoor = true;
-                HasLeftDoor = true;
-                HasRightDoor = true;
-                IsEndpoint = true;
-                LeftDoor = new Vector2(0,0);
-                RightDoor = new Vector2(0,0);
-                TopDoor = new Vector2(0,0);
-                BottomDoor = new Vector2(0,0);
-                break;
-        }
-    }*/
 }
 public class CoolRoom
 {
