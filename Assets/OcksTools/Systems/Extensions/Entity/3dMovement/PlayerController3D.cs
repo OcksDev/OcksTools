@@ -369,6 +369,7 @@ public class PlayerController3D : MonoBehaviour
         jump_bananas = 1;
         grounded = false;
         var dd = rigid.linearVelocity;
+        bool airjumped = false;
         switch (CurrentState)
         {
             case MoveState.Sliding:
@@ -384,15 +385,16 @@ public class PlayerController3D : MonoBehaviour
                 dd.y = jump_str / wall_shungle_consecutive;
                 break;
             case MoveState.Jumping:
+                airjumped = true;
                 air_jumps--;
                 goto default;
             default:
                 dd.y = jump_str;
                 break;
         }
-        if (ticks_on_ground < 2)
+        if (ticks_on_ground < 2 && !airjumped)
         {
-            if (rigid.linearVelocity.magnitude > (fast_punish_speed / fast_punish))
+            if (rigid.linearVelocity.magnitude > (fast_punish_speed * fast_punish))
             {
                 dd.x *= fast_punish;
                 dd.z *= fast_punish;

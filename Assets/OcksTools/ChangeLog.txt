@@ -19,6 +19,7 @@
   - Fixed some null reference exceptions for no animations on Notifications
   - Tree: Added Bi-directionality to the nodes as an optional feature
   - CardCore: Fixed PeakTop()/DrawTop() to not throw an exception when the deck is empty, now returns null instead
+  - Player Controller 3D Fast punish now doesn't trigger on air jumping
   - GetOrDefine now has a lazy version (GetOrDefineLazy), which takes in a Func<T2> to generate the value if the key doesn't exist
 ------------
 
