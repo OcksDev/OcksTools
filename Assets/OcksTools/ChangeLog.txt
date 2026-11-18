@@ -10,6 +10,7 @@
   - Cleaned up the public facing API a bit
   - Ran the main generation file through an AI to reduce the runtime cost
 - Misc Changes
+  - 3d Depth Outline Shader updated to be screen pixel size agnostic
   - Added Console method attribute called ConsoleCommand, which lets you easily define console commands without having to manually add them to the command tree
   - Added new simple type called TransformReferences, which lets you easily reference  many transforms in the inspector with string names
   - Keyframes: Added playback speed attribute
