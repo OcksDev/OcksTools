@@ -2,7 +2,7 @@ public class DefSet_ResY : SettingModifierSO<int>
 {
     public override int GetDefault(SettingSO<int> setting, int v)
     {
-        var x = Render.GetWindowSize().y.ToString();
+        var x = Render.GetMonitorSize().y.ToString();
         int i = (setting as SettingSwitcherSO).Items.IndexOf(x);
         if (i > -1) return i;
         return base.GetDefault(setting, v);
