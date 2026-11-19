@@ -2,14 +2,12 @@ using UnityEngine;
 
 public class Camera3D_FPS : OXCamera3D
 {
-    public float vert_mouse_sense = 1;
-    public float hori_mouse_sense = 1;
     private float rot_y = 0;
     private float rot_x = 0;
     private void Update()
     {
-        var x = InputManager.GetAxis(InputManager.InputAxis.SharedLookRightLight) * hori_mouse_sense;
-        var y = InputManager.GetAxis(InputManager.InputAxis.SharedLookUpDown) * vert_mouse_sense;
+        var x = InputManager.GetAxis(InputManager.InputAxis.SharedLookRightLight) * x_sense;
+        var y = InputManager.GetAxis(InputManager.InputAxis.SharedLookUpDown) * y_sense;
         rot_x += x;
         rot_y = Mathf.Clamp(rot_y - y, -90, 90);
         HeadY.localRotation = Quaternion.Euler(rot_y, 0, 0);

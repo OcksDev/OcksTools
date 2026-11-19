@@ -22,7 +22,7 @@ public class InputManager : SingleInstance<InputManager>
         SaveSystem.SaveAllData.Append(SaveInput);
         SaveSystem.LoadAllData.Append(LoadInput);
     }
-
+    public static bool IsControllerLastInput => LastInputDevice == InputDevice.Controller;
     private static void SaveInput(SaveProfile dict)
     {
         Dictionary<string, string> dic = gamekeys.ABToCD(x => x, y => y.AToB(x => keynames[x]).ListToString(","));
