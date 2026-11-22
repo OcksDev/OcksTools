@@ -18,7 +18,7 @@ public class ColliderGizmoOverride : MonoBehaviour
     [NaughtyAttributes.ShowIf("useSeparateTriggerColors")]
     [SerializeField] private Color triggerWireColor = new Color(1, 0.6883331f, 0.2980392f, 1f);
 
-    [SerializeField, Range(8, 128)] private int circleSegments = 48;
+    private int circleSegments = 55;
 
     // Scratch data reused every draw to limit allocations
     private readonly List<Collider> colliders3D = new List<Collider>();

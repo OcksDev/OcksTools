@@ -30,8 +30,16 @@ public class Camera2D : OXCamera
         if (FollowsMouse)
         {
             if (WaypointStopsMouseFollow && WaypointState != 0) return p;
-            p = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            p -= transform.position;
+            if (InputManager.IsControllerLastInput)
+            {
+                p = new Vector3(InputManager.GetAxis(InputManager.InputAxis.ControllerRightLeftOther), InputManager.GetAxis(InputManager.InputAxis.ControllerUpDownOther));
+                p *= 9;
+            }
+            else
+            {
+                p = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                p -= transform.position;
+            }
             p /= 5;
             p *= MouseFollowStrength;
         }

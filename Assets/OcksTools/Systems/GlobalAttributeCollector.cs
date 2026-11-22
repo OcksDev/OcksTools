@@ -58,7 +58,7 @@ public class GlobalAttributeCollector
                     c.LanguageIndex = attribute.lang_location.Item2;
                 }
                 ConsoleLol.st_pathcomps.Add((attribute.path, c));
-                $"{mname}: {attribute.path}".Log();
+                //$"{mname}: {attribute.path}".Log();
             });
         }
     }

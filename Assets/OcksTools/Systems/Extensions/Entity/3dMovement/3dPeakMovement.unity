@@ -252,7 +252,6 @@ MonoBehaviour:
   useSeparateTriggerColors: 0
   triggerFillColor: {r: 1, g: 0.6883331, b: 0.2980392, a: 0.25}
   triggerWireColor: {r: 1, g: 0.6883331, b: 0.2980392, a: 1}
-  circleSegments: 97
 --- !u!64 &7374539
 MeshCollider:
   m_ObjectHideFlags: 0

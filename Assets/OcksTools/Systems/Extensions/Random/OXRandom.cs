@@ -16,12 +16,22 @@ public class OXRandom : IOXFile_SaveLoadable<OXRandom>
     public OXRandom(string load) => FromString(load);
     public OXRandom(ulong[] state) => _state = state;
     public OXRandom(OXRandom other) => _state = (ulong[])other._state.Clone();
+    public OXRandom(OXRandom other, ulong mutator)
+    {
+        _state = (ulong[])other._state.Clone();
+        Mutate(mutator);
+    }
     public void SetState(ulong seed)
     {
         _state = xorshift256_init(seed);
     }
     /// <returns>[0, ulong.MaxValue]</returns>
     public ulong Next() => xoshiro256p(_state);
+
+    public OXRandom CreateMutatedChild(ulong mutator)
+    {
+        return new OXRandom(this, mutator);
+    }
 
     /// <returns>[0, max)</returns>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
