@@ -247,7 +247,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2119536594326930540, guid: b179dfa0287e88040b3eeaa3252dc028, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2119536594326930547, guid: b179dfa0287e88040b3eeaa3252dc028, type: 3}
       propertyPath: m_Pivot.x
@@ -594,6 +594,7 @@ MonoBehaviour:
   sd2: {fileID: 1838384394}
   Prepend: 'FPS: '
   Postpend: 
+  ReadTrueState: 0
 --- !u!114 &1223753434
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1482,7 +1483,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8460228231971407236, guid: fb4e353fc2ee30f4e8a91b7210d79279, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8460228231971407237, guid: fb4e353fc2ee30f4e8a91b7210d79279, type: 3}
       propertyPath: m_Pivot.x
