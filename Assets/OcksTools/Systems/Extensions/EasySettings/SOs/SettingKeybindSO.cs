@@ -11,7 +11,7 @@ public class SettingKeybindSO : SettingSO<KeyCode>
 
     public override void LoadFromProfile(SaveProfile dict, string key)
     {
-        if (Enum.TryParse(dict.GetString(key, Data.Value.ToString()), out KeyCode parsed)) Data.Value = parsed;
+        if (Enum.TryParse(dict.GetString(key, Data.Value.ToString()), out KeyCode parsed)) HeldData = parsed;
     }
 
     public override void SaveToProfile(SaveProfile dict, string key) => dict.SetString(key, Data.Value.ToString());

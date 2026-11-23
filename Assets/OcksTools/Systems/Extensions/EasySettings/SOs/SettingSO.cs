@@ -16,7 +16,7 @@ public abstract class SettingSO<T> : SettingData
     [NaughtyAttributes.ReadOnly]
     [HideIf("AutoApply")]
     public bool MarkedChanged = false;
-    public virtual bool AutoApply => Modifier == null || Modifier.AutoApply;
+    public override bool AutoApply => Modifier == null || Modifier.AutoApply;
     public override void ResetToDefault() => Data.Value = Data.DefaultValue;
     public override void SaveCurrentToDefault() => Data.DefaultValue = Data.Value;
     public virtual void SetValue(T v)
@@ -31,9 +31,21 @@ public abstract class SettingSO<T> : SettingData
         if (Modifier != null) return Modifier.ModifyGet(this, Data.Value);
         return Data.Value;
     }
+    public virtual T GetHeldValue()
+    {
+        if (Modifier != null) return Modifier.ModifyGet(this, HeldData);
+        return HeldData;
+    }
     public override Q GetValue<Q>()
     {
         T value = GetValue();
+        if (value is Q q) return q;
+        throw new System.InvalidCastException(
+            $"Setting '{Name}' stores {typeof(T).Name}, but {typeof(Q).Name} was requested.");
+    }
+    public override Q GetHeldValue<Q>()
+    {
+        T value = GetHeldValue();
         if (value is Q q) return q;
         throw new System.InvalidCastException(
             $"Setting '{Name}' stores {typeof(T).Name}, but {typeof(Q).Name} was requested.");
@@ -68,6 +80,7 @@ public abstract class SettingSO<T> : SettingData
         }
     }
     public override string GetDisplayMod() => Modifier != null ? Modifier.ModifyDisplay(this, GetValue()) : null;
+    public override string GetDisplayHeldMod() => Modifier != null ? Modifier.ModifyDisplay(this, GetHeldValue()) : null;
     public override bool GetShouldSkip() => Modifier != null ? Modifier.DisableSaving : false;
     public override void LateDataFind()
     {
@@ -79,11 +92,6 @@ public abstract class SettingSO<T> : SettingData
         }
     }
     public override bool HasLateDefault => Modifier != null ? Modifier.HasLateDefault : false;
-    public override void ApplyModiferValue()
-    {
-        if (Modifier == null) return;
-        Modifier.ApplyValue(this, Data.Value);
-    }
 }
 
 
@@ -92,6 +100,7 @@ public abstract class SettingData : ScriptableObject
     public string Name;
     public virtual SType Type => SType.Toggle;
     public abstract T GetValue<T>();
+    public abstract T GetHeldValue<T>();
     public abstract void Apply();
     public abstract void SetValue<T>(T v);
     public abstract void ResetToDefault();
@@ -101,10 +110,10 @@ public abstract class SettingData : ScriptableObject
     /// <summary>Writes this setting to the profile using the typed setter.</summary>
     public abstract void SaveToProfile(SaveProfile dict, string key);
     public abstract string GetDisplayMod();
+    public abstract string GetDisplayHeldMod();
     public abstract bool GetShouldSkip();
     public abstract void DupeData();
     public abstract void LateDataFind();
-    public abstract void ApplyModiferValue();
     public virtual bool HasLateDefault => false;
     public enum SType
     {
@@ -114,6 +123,7 @@ public abstract class SettingData : ScriptableObject
         Switcher,
         Text,
     }
+    public virtual bool AutoApply => true;
 }
 
 [System.Serializable]

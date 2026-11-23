@@ -53,7 +53,7 @@ public class SettingManager : SingleInstance<SettingManager>
             if (kvp.Value.GetShouldSkip()) continue;
             // Each setting falls back to its current value if the key is missing.
             kvp.Value.LoadFromProfile(dict, kvp.Key);
-            kvp.Value.ApplyModiferValue();
+            kvp.Value.Apply();
         }
     }
 }
