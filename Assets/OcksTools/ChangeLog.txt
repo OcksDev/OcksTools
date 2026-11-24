@@ -12,6 +12,7 @@
 - Easy Settings Improvements
   - Added Apply feature to allow settings to opt-out of automatically applying their value (instead requiring manual apply)
     - Added Apply Button as a very simple wrapper for this
+      - Also Apply All Button which works for all settings tracked by the manager
     - Display can now choose to show either the current temporary data, or the current actually applied value
   - Can now drag BaseInputs into SettingData fields to more easily assign them
 - Misc Changes
