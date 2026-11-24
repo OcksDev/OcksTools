@@ -13,16 +13,13 @@ public abstract class SettingSO<T> : SettingData
     [NaughtyAttributes.ReadOnly]
     [HideIf("AutoApply")]
     public T HeldData;
-    [NaughtyAttributes.ReadOnly]
-    [HideIf("AutoApply")]
-    public bool MarkedChanged = false;
     public override bool AutoApply => Modifier == null || Modifier.AutoApply;
     public override void ResetToDefault() => Data.Value = Data.DefaultValue;
     public override void SaveCurrentToDefault() => Data.DefaultValue = Data.Value;
     public virtual void SetValue(T v)
     {
         if (Modifier != null) v = Modifier.ModifySet(this, v);
-        if (!v.Equals(HeldData)) MarkedChanged = true;
+        MarkedChanged = !v.Equals(HeldData);
         HeldData = v;
         if (Modifier == null || Modifier.AutoApply) Apply();
     }
@@ -98,6 +95,8 @@ public abstract class SettingSO<T> : SettingData
 public abstract class SettingData : ScriptableObject
 {
     public string Name;
+    [HideInInspector]
+    public bool MarkedChanged = false;
     public virtual SType Type => SType.Toggle;
     public abstract T GetValue<T>();
     public abstract T GetHeldValue<T>();

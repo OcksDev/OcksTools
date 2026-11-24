@@ -9,8 +9,12 @@
   - Changed underlying room data structure from array to dictionary
   - Cleaned up the public facing API a bit
   - Ran the main generation file through an AI to reduce the runtime cost
+- Easy Settings Improvements
+  - Added Apply feature to allow settings to opt-out of automatically applying their value (instead requiring manual apply)
+    - Added Apply Button as a very simple wrapper for this
+    - Display can now choose to show either the current temporary data, or the current actually applied value
+  - Can now drag BaseInputs into SettingData fields to more easily assign them
 - Misc Changes
-  - Added Easy Settings applying/storage
   - 3d Depth Outline Shader updated to be screen pixel size agnostic
   - 3d Camera now has seperate mouse/controller sensitivity settings
   - 2d Camera now supports controller input for the "follow mouse" offset
