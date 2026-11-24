@@ -60,6 +60,11 @@ public abstract class SettingSO<T> : SettingData
         Data.Value = v;
         MarkedChanged = false;
     }
+    public override void Discard()
+    {
+        HeldData = Data.Value;
+        MarkedChanged = false;
+    }
     public override void DupeData()
     {
         Data = new()
@@ -101,6 +106,7 @@ public abstract class SettingData : ScriptableObject
     public abstract T GetValue<T>();
     public abstract T GetHeldValue<T>();
     public abstract void Apply();
+    public abstract void Discard();
     public abstract void SetValue<T>(T v);
     public abstract void ResetToDefault();
     public abstract void SaveCurrentToDefault();

@@ -56,4 +56,29 @@ public class SettingManager : SingleInstance<SettingManager>
             kvp.Value.Apply();
         }
     }
+
+    public void ApplyAll()
+    {
+        foreach (var kvp in StoredData)
+        {
+            if (kvp.Value.AutoApply) continue;
+            kvp.Value.Apply();
+        }
+    }
+    public void DiscardAll()
+    {
+        foreach (var kvp in StoredData)
+        {
+            if (kvp.Value.AutoApply) continue;
+            kvp.Value.Discard();
+        }
+    }
+    public bool AnyMarkedForChange()
+    {
+        foreach (var kvp in StoredData)
+        {
+            if (kvp.Value.MarkedChanged) return true;
+        }
+        return false;
+    }
 }
