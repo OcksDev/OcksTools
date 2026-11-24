@@ -150,7 +150,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d9edf79da8baea48ab46e183a37751f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FPSLightweightReader
-  ReadInterval: 0.025
+  ReadInterval: 0.07
   LastMeasuredFPS: 0
   LastOutgoingFPS: 0
 --- !u!114 &3494144988294876128

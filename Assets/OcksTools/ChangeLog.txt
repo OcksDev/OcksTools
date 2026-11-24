@@ -31,6 +31,7 @@
   - Input Manager has new thing to easily check for the last input being from a controller
   - Fixed some null reference exceptions for no animations on Notifications
   - Fixed GetOXID() extension method not applying to gameobjects
+  - Fixed FPS reader scaling with time.timescale lol
   - CardCore: Fixed PeakTop()/DrawTop() to not throw an exception when the deck is empty, now returns null instead
   - New BoxGizmo misc simple script that simply draws a box gismo with the object's transform, slopcoded
   - New ColliderGizmoOverride misc script for cooler collider gizmoing, slopcoded
