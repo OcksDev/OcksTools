@@ -45,6 +45,7 @@ public static class TagsExtensions
     {
         Tags.From(tag).Add(go, id);
     }
+    public static string GetOXID(this GameObject go) => Tags.ID.Get(go);
     public static string GetOXID(this Component go) => Tags.ID.Get(go);
 }
 

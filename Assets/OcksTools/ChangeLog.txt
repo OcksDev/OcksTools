@@ -15,6 +15,7 @@
       - Also Apply All Button which works for all settings tracked by the manager
     - Display can now choose to show either the current temporary data, or the current actually applied value
   - Can now drag BaseInputs into SettingData fields to more easily assign them
+- New TagCheck, a simple tool to compare the Gameobject.tag value
 - Misc Changes
   - 3d Depth Outline Shader updated to be screen pixel size agnostic
   - 3d Camera now has seperate mouse/controller sensitivity settings
@@ -26,9 +27,10 @@
   - Added TMPExtensions class, which has some useful extension methods for TextMeshProUGUI to let it fit to text (AI generated)
   - Added new constructor for OXRandom to more easily create+mutate
     - Also added a function to OXRandom, CreateMutatedChild(), that provides a different syntax for doing the same thing
+  - Tree: Added Bi-directionality to the nodes as an optional feature
   - Input Manager has new thing to easily check for the last input being from a controller
   - Fixed some null reference exceptions for no animations on Notifications
-  - Tree: Added Bi-directionality to the nodes as an optional feature
+  - Fixed GetOXID() extension method not applying to gameobjects
   - CardCore: Fixed PeakTop()/DrawTop() to not throw an exception when the deck is empty, now returns null instead
   - New BoxGizmo misc simple script that simply draws a box gismo with the object's transform, slopcoded
   - New ColliderGizmoOverride misc script for cooler collider gizmoing, slopcoded
