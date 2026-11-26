@@ -4,11 +4,17 @@ using UnityEngine;
 
 public class OXLerp
 {
-    //all input functions garentee a call at x=1, but not at x=0
     public static _OXL_Fixed Fixed = new _OXL_Fixed();
     public static _OXL_FrameSTart Frame = new _OXL_FrameSTart();
     public static _OXL_FrameEnd FrameEnd = new _OXL_FrameEnd();
     public static _OXL_Custom Custom(float t) => new _OXL_Custom(t, Time.time);
+}
+public class OXSpeed
+{
+    public float Value;
+    public OXSpeed(float value = 1f) { Value = value; }
+    public void Reverse() => Value = -Value;
+    public static implicit operator OXSpeed(float value) => new OXSpeed(value);
 }
 
 public class _OXL_Fixed : _OXLerpType<WaitForFixedUpdate>
@@ -24,7 +30,7 @@ public class _OXL_Custom : _OXLerpType<WaitForSeconds>
     private float t;
     private float ct;
     public _OXL_Custom(float tt, float ctt) { t = tt; ct = ctt; }
-    public override WaitForSeconds Get() => new WaitForSeconds(t);
+    public override WaitForSeconds Get() => new(t);
     public float GetDelta()
     {
         var dif = Time.time - ct;
@@ -43,27 +49,21 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
 {
     public abstract T Get();
     public virtual float Delta => Time.deltaTime;
-    public IEnumerator Linear(Action<float> method, float time = 1f)
+
+    public IEnumerator Linear(Action<float> method, float time = 1f, OXSpeed speed = null)
+        => Linear(Wrap(method), time, speed);
+    public IEnumerator Linear(Func<float, OXYielder> method, float time = 1f, OXSpeed speed = null)
     {
-        float x = 0f;
         float f = 1 / time;
+        float x = Spd(speed) < 0f ? 1f : 0f;
         method(x);
-        while (x < 1)
+        while (!LinearDone(x, Spd(speed)))
         {
             yield return Get();
-            x = Mathf.Clamp01(x + (Delta * f));
-            method(x);
-        }
-    }
-    public IEnumerator Linear(Func<float, OXYielder> method, float time = 1f)
-    {
-        float x = 0f;
-        float f = 1 / time;
-        method(x);
-        while (x < 1)
-        {
-            yield return Get();
-            x = Mathf.Clamp01(x + (Delta * f));
+            float d = Delta;
+            float s = Spd(speed);
+            if (s == 0f) continue;
+            x = Mathf.Clamp01(x + (d * f * s));
             var q = method(x);
             if (q.setperc.HasValue)
             {
@@ -73,28 +73,21 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
             if (q.yielder != null) yield return q.yielder;
         }
     }
-    //infinitely progresses from 0-1, when it reaches 1 it jumps back to 0
-    public IEnumerator LinearInfniteLooped(Action<float> method, float time = 1f)
+    public IEnumerator LinearInfniteLooped(Action<float> method, float time = 1f, OXSpeed speed = null)
+        => LinearInfniteLooped(Wrap(method), time, speed);
+    public IEnumerator LinearInfniteLooped(Func<float, OXYielder> method, float time = 1f, OXSpeed speed = null)
     {
-        float x = 0f;
         float f = 1 / time;
+        float x = Spd(speed) < 0f ? 1f : 0f;
         method(x);
         while (true)
         {
             yield return Get();
-            x = (x + Delta * f) % 1;
-            method(x);
-        }
-    }
-    public IEnumerator LinearInfniteLooped(Func<float, OXYielder> method, float time = 1f)
-    {
-        float x = 0f;
-        float f = 1 / time;
-        method(x);
-        while (true)
-        {
-            yield return Get();
-            x = (x + Delta * f) % 1;
+            float d = Delta;
+            float s = Spd(speed);
+            if (s == 0f) continue;
+            x = (x + d * f * s) % 1;
+            if (x < 0f) x += 1f;
             var q = method(x);
             if (q.setperc.HasValue)
             {
@@ -104,29 +97,20 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
             if (q.yielder != null) yield return q.yielder;
         }
     }
-
-    //infinitely progresses from 0-infinity, never stops increasing
-    public IEnumerator LinearInfniteUncapped(Action<float> method, float time = 1f)
+    public IEnumerator LinearInfniteUncapped(Action<float> method, float time = 1f, OXSpeed speed = null)
+        => LinearInfniteUncapped(Wrap(method), time, speed);
+    public IEnumerator LinearInfniteUncapped(Func<float, OXYielder> method, float time = 1f, OXSpeed speed = null)
     {
-        float x = 0f;
         float f = 1 / time;
+        float x = Spd(speed) < 0f ? 1f : 0f;
         method(x);
         while (true)
         {
             yield return Get();
-            x = x + Delta * f;
-            method(x);
-        }
-    }
-    public IEnumerator LinearInfniteUncapped(Func<float, OXYielder> method, float time = 1f)
-    {
-        float x = 0f;
-        float f = 1 / time;
-        method(x);
-        while (true)
-        {
-            yield return Get();
-            x = x + Delta * f;
+            float d = Delta;
+            float s = Spd(speed);
+            if (s == 0f) continue;
+            x = x + d * f * s;
             var q = method(x);
             if (q.setperc.HasValue)
             {
@@ -136,128 +120,105 @@ public abstract class _OXLerpType<T> where T : YieldInstruction
             if (q.yielder != null) yield return q.yielder;
         }
     }
+    public IEnumerator Bounce(Action<float> method, int bounces, float time = 1f, OXSpeed speed = null)
+        => Bounce(Wrap(method), bounces, time, speed);
 
-    //bounces back and forth linearly between 0-1
-    public IEnumerator Bounce(Action<float> method, int bounces, float time = 1f)
+    public IEnumerator Bounce(Func<float, OXYielder> method, int bounces, float time = 1f, OXSpeed speed = null)
     {
-        float x = 0f;
         float f = 1 / time;
-        int i = 0;
-        method(x);
-        while (i < bounces)
-        {
-            while (x < 1)
-            {
-                yield return Get();
-                x = Mathf.Clamp01(x + Delta * f);
-                method(x);
-            }
-            i++;
-            if (i >= bounces) yield break;
-            while (x > 0)
-            {
-                yield return Get();
-                x = Mathf.Clamp01(x - Delta * f);
-                method(x);
-            }
-            i++;
-            if (i >= bounces) yield break;
-        }
-    }
-
-    //bounces back and forth linearly between 0-1
-    public IEnumerator Bounce(Func<float, OXYielder> method, int bounces, float time = 1f)
-    {
-        float x = 0f;
-        float f = 1 / time;
-        int i = 0;
-        method(x);
-        while (i < bounces)
-        {
-            while (x < 1)
-            {
-                yield return Get();
-                x = Mathf.Clamp01(x + Delta * f);
-                var q = method(x);
-                if (q.setperc.HasValue)
-                {
-                    x = q.setperc.Value;
-                    method(x);
-                }
-                if (q.yielder != null) yield return q.yielder;
-            }
-            i++;
-            if (i >= bounces) yield break;
-            while (x > 0)
-            {
-                yield return Get();
-                x = Mathf.Clamp01(x - Delta * f);
-                var q = method(x);
-                if (q.setperc.HasValue)
-                {
-                    x = q.setperc.Value;
-                    method(x);
-                }
-                if (q.yielder != null) yield return q.yielder;
-            }
-            i++;
-            if (i >= bounces) yield break;
-        }
-    }
-    public IEnumerator BounceInfinite(Action<float> method, float time = 1f)
-    {
-        float x = 0f;
-        float f = 1 / time;
-        method(x);
+        double end = bounces > 0 ? bounces : 0;
+        double p = Spd(speed) < 0f ? end : 0.0;
+        method(BounceX(p));
         while (true)
         {
-            while (x < 1)
+            float s = Spd(speed);
+            if ((s > 0f && p >= end) || (s < 0f && p <= 0.0)) yield break;
+            yield return Get();
+            float d = Delta;
+            s = Spd(speed);
+            if (s == 0f) continue;
+            p = BounceStep(p, (double)(d * f * s));
+            if (p < 0.0) p = 0.0;
+            if (p > end) p = end;
+            var q = method(BounceX(p));
+            if (q.setperc.HasValue)
             {
-                yield return Get();
-                x = Mathf.Clamp01(x + Delta * f);
-                method(x);
+                p = BounceSet(p, q.setperc.Value, s);
+                if (p < 0.0) p = 0.0;
+                if (p > end) p = end;
+                method(q.setperc.Value);
             }
-            while (x > 0)
-            {
-                yield return Get();
-                x = Mathf.Clamp01(x - Delta * f);
-                method(x);
-            }
+            if (q.yielder != null) yield return q.yielder;
         }
     }
-    public IEnumerator BounceInfinite(Func<float, OXYielder> method, float time = 1f)
+
+    public IEnumerator BounceInfinite(Action<float> method, float time = 1f, OXSpeed speed = null)
+        => BounceInfinite(Wrap(method), time, speed);
+    public IEnumerator BounceInfinite(Func<float, OXYielder> method, float time = 1f, OXSpeed speed = null)
     {
-        float x = 0f;
         float f = 1 / time;
-        method(x);
+        double p = Spd(speed) < 0f ? 1.0 : 0.0; //p lives in [0,2): 0->1 rising, 1->2 falling
+        method(BounceX(p));
         while (true)
         {
-            while (x < 1)
+            yield return Get();
+            float d = Delta;
+            float s = Spd(speed);
+            if (s == 0f) continue;
+            p = Wrap2(BounceStep(p, (double)(d * f * s)));
+            var q = method(BounceX(p));
+            if (q.setperc.HasValue)
             {
-                yield return Get();
-                x = Mathf.Clamp01(x + Delta * f);
-                var q = method(x);
-                if (q.setperc.HasValue)
-                {
-                    x = q.setperc.Value;
-                    method(x);
-                }
-                if (q.yielder != null) yield return q.yielder;
+                p = Wrap2(BounceSet(p, q.setperc.Value, s));
+                method(q.setperc.Value);
             }
-            while (x > 0)
-            {
-                yield return Get();
-                x = Mathf.Clamp01(x - Delta * f);
-                var q = method(x);
-                if (q.setperc.HasValue)
-                {
-                    x = q.setperc.Value;
-                    method(x);
-                }
-                if (q.yielder != null) yield return q.yielder;
-            }
+            if (q.yielder != null) yield return q.yielder;
         }
     }
+
+    //helpers and shit
+    private static float Spd(OXSpeed speed) => speed == null ? 1f : speed.Value;
+
+    private static bool LinearDone(float x, float s) => (s > 0f && x >= 1f) || (s < 0f && x <= 0f);
+
+    private static float BounceX(double p)
+    {
+        double leg = Math.Floor(p);
+        double frac = p - leg;
+        bool descending = (((long)leg) & 1L) == 1L;
+        return (float)(descending ? 1.0 - frac : frac);
+    }
+    private static double BounceStep(double p, double d)
+    {
+        double np = p + d;
+        if (d > 0.0)
+        {
+            double b = Math.Floor(p) + 1.0;
+            if (np >= b) np = b;
+        }
+        else if (d < 0.0)
+        {
+            double b = Math.Ceiling(p) - 1.0;
+            if (np <= b) np = b;
+        }
+        return np;
+    }
+    private static double BounceSet(double p, float x, float s)
+    {
+        double xc = x < 0f ? 0.0 : (x > 1f ? 1.0 : x);
+        long leg = s >= 0f ? (long)Math.Ceiling(p) - 1L : (long)Math.Floor(p);
+        bool descending = (leg & 1L) == 1L;
+        return leg + (descending ? 1.0 - xc : xc);
+    }
+    private static double Wrap2(double p)
+    {
+        p %= 2.0;
+        if (p < 0.0) p += 2.0;
+        return p;
+    }
+    private static Func<float, OXYielder> Wrap(Action<float> method)
+        => x => { method(x); return default(OXYielder); };
+
 }
 
 

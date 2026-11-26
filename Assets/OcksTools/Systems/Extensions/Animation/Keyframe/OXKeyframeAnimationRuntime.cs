@@ -196,12 +196,12 @@ public class OXKeyframeAnimationRuntime
         if (Events.TryGetValue(a, out var e) && e != null) e.Invoke();
     }
 
-    public OXKeyframeAnimationRuntime(OXKeyframeAnimation asset, OXKeyframeAnimator animator, IList<GameObject> objects)
+    public OXKeyframeAnimationRuntime(OXKeyframeAnimation asset, OXKeyframeAnimator animator, BetterList<GameObject> objects)
         : this(asset, animator, objects, null, 0f, 1f) { }
 
     /// <param name="outgoing">Animation currently playing that this one fades in over (null = no fade).</param>
     /// <param name="fadeTime">Fade seconds; ignored when 0 or without an outgoing animation.</param>
-    public OXKeyframeAnimationRuntime(OXKeyframeAnimation asset, OXKeyframeAnimator animator, IList<GameObject> objects,
+    public OXKeyframeAnimationRuntime(OXKeyframeAnimation asset, OXKeyframeAnimator animator, BetterList<GameObject> objects,
         OXKeyframeAnimationRuntime outgoing, float fadeTime, float speed)
     {
         Asset = asset;
@@ -214,9 +214,10 @@ public class OXKeyframeAnimationRuntime
             fadeStartTime = Time.time;
         }
         PlaybackSpeed = speed;
-        int count = objects.Count;
+        var olist = objects.ToList();
+        int count = olist.Count;
         targets = new Target[count];
-        for (int i = 0; i < count; i++) targets[i] = CreateTarget(objects[i]);
+        for (int i = 0; i < count; i++) targets[i] = CreateTarget(olist[i]);
         BuildTracks();
     }
 

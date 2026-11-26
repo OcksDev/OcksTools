@@ -16,13 +16,17 @@
     - Display can now choose to show either the current temporary data, or the current actually applied value
   - Can now drag BaseInputs into SettingData fields to more easily assign them
 - New TagCheck, a simple tool to compare the Gameobject.tag value
+- Animation Improvements
+  - Added ability to convert a KeyframeAnimation into an AnimationSet
+  - Keyframes: Added playback speed attribute
+  - OXLerp: Added speed attribute
+  - Renamed OXAnimator to OXUnityAnimator for better clarity
 - Misc Changes
   - 3d Depth Outline Shader updated to be screen pixel size agnostic
   - 3d Camera now has seperate mouse/controller sensitivity settings
   - 2d Camera now supports controller input for the "follow mouse" offset
   - Added Console method attribute called ConsoleCommand, which lets you easily define console commands without having to manually add them to the command tree
   - Added new simple type called TransformReferences, which lets you easily reference  many transforms in the inspector with string names
-  - Keyframes: Added playback speed attribute
   - New ShuffleBag class, which is a tetris style randomization thing
   - Added TMPExtensions class, which has some useful extension methods for TextMeshProUGUI to let it fit to text (AI generated)
   - Added new constructor for OXRandom to more easily create+mutate

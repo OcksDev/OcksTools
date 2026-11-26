@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class OXKeyframeAnimator : MonoBehaviour
@@ -6,6 +5,7 @@ public class OXKeyframeAnimator : MonoBehaviour
     [HideInInspector]
     public OXKeyframeAnimationRuntime CurrentAnim;
 
+    [HideInInspector]
     private OXKeyframeAnimationRuntime LastAnim;
 
     public static OXKeyframeAnimator GetOrAdd(GameObject go)
@@ -13,12 +13,7 @@ public class OXKeyframeAnimator : MonoBehaviour
         return go.TryGetComponent(out OXKeyframeAnimator a) ? a : go.AddComponent<OXKeyframeAnimator>();
     }
 
-    /// <summary>
-    /// Plays an animation on these objects. fadeTime &lt; 0 uses the asset's FadeTime; 0 stops and resets the
-    /// current animation first. While fading, the old animation keeps running and is stopped when the fade ends.
-    /// speed multiplies the playback rate; a negative speed plays the animation backwards from its end.
-    /// </summary>
-    public OXKeyframeAnimationRuntime Play(OXKeyframeAnimation asset, IList<GameObject> objects, float fadeTime = -1f, float speed = 1)
+    public OXKeyframeAnimationRuntime Play(OXKeyframeAnimation asset, BetterList<GameObject> objects, float fadeTime = -1f, float speed = 1)
     {
         if (fadeTime < 0f) fadeTime = asset != null ? asset.FadeTime : 0f;
 

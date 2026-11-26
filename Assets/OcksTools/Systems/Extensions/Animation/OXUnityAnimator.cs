@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 [RequireComponent(typeof(Animator))]
-public class OXAnimator : MonoBehaviour
+public class OXUnityAnimator : MonoBehaviour
 {
     private Animator animator;
     private OXAnimRuleset curanim;
@@ -48,7 +48,7 @@ public class OXAnimator : MonoBehaviour
         if (pp.priority < curanim.priority) return;
         if (pp.priority > curanim.priority) goto fard;
         if (!curanim.canbeoverwritten) return;
-        fard:
+    fard:
         if (pp.crosstime > 0)
         {
             animator.CrossFade(pp.name, pp.crosstime);

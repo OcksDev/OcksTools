@@ -17,6 +17,11 @@ public class OXAnimationSet
     {
         return new OXAnimationPart(s, nerds);
     }
+    public static OXAnimationSet FromKeyframeAnimation(OXKeyframeAnimation anim, float speed = 1)
+    {
+        return new OXAnimationPart(new _OXKeyframeToAnimationSetConversion(anim, speed).AnimFunc);
+    }
+
 
     public OXAnimationSet()
     {
@@ -66,9 +71,10 @@ public class OXAnimationSet
 
     //this converter is too powerful and c# is limiting my power
     //
-    //public static implicit operator OXAnimationSet(System.Func<List<GameObject>, IEnumerator> r) => new OXAnimationSet(new OXAnimationPart(r));
+    //public static implicit operator OXAnimationSet(System.Func<BetterList<GameObject>, IEnumerator> r) => new OXAnimationSet(new OXAnimationPart(r));
 
     public static implicit operator OXAnimationSet(OXAnimationPart r) => new OXAnimationSet(r);
+    public static implicit operator OXAnimationSet(OXKeyframeAnimation r) => FromKeyframeAnimation(r);
 
     public enum OXAnimationPlayType
     {
@@ -76,7 +82,22 @@ public class OXAnimationSet
         DontWaitUntilComplete,
     }
 }
-
+public struct _OXKeyframeToAnimationSetConversion // fuck ass struct bro
+{
+    public OXKeyframeAnimation anim;
+    public float speed;
+    public _OXKeyframeToAnimationSetConversion(OXKeyframeAnimation a, float f)
+    {
+        speed = f;
+        anim = a;
+    }
+    public IEnumerator AnimFunc(BetterList<GameObject> gms)
+    {
+        var p = anim.Play(gms, speed: speed);
+        // call this when anim func gets stopped with StopCoroutine:     p.Stop();
+        yield return new WaitUntil(() => !p.IsPlaying);
+    }
+}
 public class OXAnimationPart
 {
     public System.Func<BetterList<GameObject>, IEnumerator> _Func;
