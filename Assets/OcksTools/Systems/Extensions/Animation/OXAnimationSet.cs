@@ -94,7 +94,6 @@ public struct _OXKeyframeToAnimationSetConversion // fuck ass struct bro
     public IEnumerator AnimFunc(BetterList<GameObject> gms)
     {
         var p = anim.Play(gms, speed: speed);
-        // call this when anim func gets stopped with StopCoroutine:     p.Stop();
         yield return new WaitUntil(() => !p.IsPlaying);
     }
 }
